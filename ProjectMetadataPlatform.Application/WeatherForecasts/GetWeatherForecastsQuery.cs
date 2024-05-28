@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using System.Collections.Generic;
+using MediatR;
 using ProjectMetadataPlatform.Domain.WeatherForecasts;
 
 namespace ProjectMetadataPlatform.Application.WeatherForecasts;

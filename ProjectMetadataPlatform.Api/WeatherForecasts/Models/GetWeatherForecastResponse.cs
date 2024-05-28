@@ -1,4 +1,6 @@
-﻿namespace ProjectMetadataPlatform.Api.Models.WeatherForecast;
+﻿using System;
+
+namespace ProjectMetadataPlatform.Api.Models.WeatherForecast;
 
 public record GetWeatherForecastResponse(DateTime Date, int TemperatureC, string? Summary)
 {

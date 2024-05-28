@@ -1,4 +1,6 @@
-﻿using ProjectMetadataPlatform.Domain.WeatherForecasts;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using ProjectMetadataPlatform.Domain.WeatherForecasts;
 
 namespace ProjectMetadataPlatform.Application.Interfaces;
 

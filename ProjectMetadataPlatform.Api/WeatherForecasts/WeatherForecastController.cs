@@ -1,4 +1,7 @@
-﻿using MediatR;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using ProjectMetadataPlatform.Api.Models.WeatherForecast;
 using ProjectMetadataPlatform.Application.WeatherForecasts;
@@ -22,7 +25,7 @@ public class WeatherForecastController : ControllerBase
     {
         _mediator = mediator;
     }
-    
+
     /// <summary>
     /// Retrieves the given number of weather forecasts.
     /// </summary>
@@ -32,14 +35,14 @@ public class WeatherForecastController : ControllerBase
     public async Task<ActionResult<IEnumerable<GetWeatherForecastResponse>>> Get([FromQuery] int count)
     {
         var query = new GetWeatherForecastsQuery(count);
-        
+
         var weatherForecasts = await _mediator.Send(query);
 
         var responses = weatherForecasts.Select(weatherForecast => new GetWeatherForecastResponse(
             weatherForecast.Date,
             weatherForecast.TemperatureC,
             weatherForecast.Summary));
-        
+
         return Ok(responses);
     }
 }
