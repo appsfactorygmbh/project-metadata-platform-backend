@@ -13,6 +13,8 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services
         .AddApplicationDependencies()
         .AddInfrastructureDependencies();
+
+    builder.Services.AddCors(options => options.AddDefaultPolicy(policyBuilder => policyBuilder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
 }
 
 var app = builder.Build();
@@ -23,6 +25,8 @@ var app = builder.Build();
     app.UseHttpsRedirection();
     app.UseAuthorization();
     app.MapControllers();
+
+    app.UseCors();
 
     app.Run();
 }
