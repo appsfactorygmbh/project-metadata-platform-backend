@@ -1,6 +1,3 @@
 namespace ProjectMetadataPlatform.Api.Plugins.Models;
 
-public class GetPluginResponse
-{
-    
-}
+public record GetPluginResponse(string PluginName, string Url);

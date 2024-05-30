@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Infrastructure.DataAccess;
-using ProjectMetadataPlatform.Infrastructure.WeatherForecasts;
+using ProjectMetadataPlatform.Infrastructure.Plugins;
 
 namespace ProjectMetadataPlatform.Infrastructure;
 
@@ -21,7 +21,7 @@ public static class DependencyInjection
         serviceCollection.AddDbContext<ProjectMetadataPlatformDbContext>(options =>
             options.UseSqlite("Data Source = Database.db"));
 
-        serviceCollection.AddScoped<IWeatherForecastRepository, WeatherForecastRepository>();
+        serviceCollection.AddScoped<IPluginRepository, PluginRepository>();
         
         return serviceCollection;
     }

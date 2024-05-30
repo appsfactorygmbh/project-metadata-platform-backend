@@ -1,6 +1,5 @@
+using System.Collections.Generic;
+
 namespace ProjectMetadataPlatform.Api.Plugins.Models;
 
-public class GetPluginListResponse
-{
-    
-}
+public record GetPluginListResponse(IEnumerable<GetPluginResponse> Plugins);
