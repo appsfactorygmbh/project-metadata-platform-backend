@@ -8,7 +8,7 @@ namespace ProjectMetadataPlatform.Application.Interfaces;
 /// Repository for all projects.
 /// </summary>
 
-public interface IProjectRepository
+public interface IProjectsRepository
 {
     /// <summary>
     /// Returns a collection of all projects.

@@ -1,3 +1,5 @@
+using System.Runtime.InteropServices;
+
 namespace ProjectMetadataPlatform.Domain.Projects;
 
 /// <summary>
@@ -8,4 +10,33 @@ namespace ProjectMetadataPlatform.Domain.Projects;
 /// <param name="BusinessUnit">The Business Units id.</param>
 /// <param name="TeamNumber">The team responsible for the project.</param>
 // TODO Add list of plugins as property.
-public record Project(string ProjectName, string ClientName, string BusinessUnit, int TeamNumber);
+public class Project()
+{
+    private string _projectName;
+    public string ProjectName
+    {
+        get => _projectName;
+        set => _projectName = value;
+    }
+    
+    private string _clientName;
+    public string ClientName
+    {
+        get => _clientName;
+        set => _clientName = value;
+    }
+    
+    private string _businessUnit;
+
+    public string BusinessUnit 
+    {
+        get => _businessUnit;
+        set => _businessUnit = value;
+    }
+    private int _teamNumber;
+    public int TeamNumber
+    {
+        get => _teamNumber;
+        set => _teamNumber = value;
+    }
+}
