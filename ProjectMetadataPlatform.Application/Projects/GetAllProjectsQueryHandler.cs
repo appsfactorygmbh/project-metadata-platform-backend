@@ -12,14 +12,14 @@ namespace ProjectMetadataPlatform.Application.Projects;
 /// </summary>
 public class GetAllProjectsQueryHandler : IRequestHandler<GetAllProjectsQuery, IEnumerable<Project>>
 {
-    private readonly IProjectRepository _projectRepository;
+    private readonly IProjectsRepository _projectRepository;
     
     /// <summary>
     /// Creates a new instance of <see cref="GetAllProjectsQueryHandler"/>.
     /// </summary>
-    public GetAllProjectsQueryHandler(IProjectRepository projectRepository)
+    public GetAllProjectsQueryHandler(IProjectsRepository projectsRepository)
     {
-        _projectRepository = projectRepository;
+        _projectRepository = projectsRepository;
     }
 
     /// <inheritdoc />
