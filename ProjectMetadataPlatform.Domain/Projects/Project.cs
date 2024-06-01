@@ -3,15 +3,18 @@ using System.Runtime.InteropServices;
 namespace ProjectMetadataPlatform.Domain.Projects;
 
 /// <summary>
-/// Project properties.
+/// The representation of a project in the Database.
 /// </summary>
-/// <param name="ProjectName">The name of the project.</param>
-/// <param name="ClientName">The name of the client.</param>
-/// <param name="BusinessUnit">The Business Units id.</param>
-/// <param name="TeamNumber">The team responsible for the project.</param>
 // TODO Add list of plugins as property.
 public class Project()
 {
+    /// <summary>
+    /// Project properties.
+    /// </summary>
+    /// <param name="projectName">The name of the project.</param>
+    /// <param name="clientName">The name of the client.</param>
+    /// <param name="businessUnit">The Business Units id.</param>
+    /// <param name="teamNumber">The team responsible for the project.</param>
     public Project(string projectName, string clientName, string businessUnit, int teamNumber) : this()
     {
         _projectName = projectName;
@@ -35,12 +38,12 @@ public class Project()
     }
     
     private string _businessUnit;
-
     public string BusinessUnit 
     {
         get => _businessUnit;
         set => _businessUnit = value;
     }
+    
     private int _teamNumber;
     public int TeamNumber
     {
