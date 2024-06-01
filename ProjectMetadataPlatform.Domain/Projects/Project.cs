@@ -12,6 +12,14 @@ namespace ProjectMetadataPlatform.Domain.Projects;
 // TODO Add list of plugins as property.
 public class Project()
 {
+    public Project(string projectName, string clientName, string businessUnit, int teamNumber) : this()
+    {
+        _projectName = projectName;
+        _clientName = clientName;
+        _businessUnit = businessUnit;
+        _teamNumber = teamNumber;
+    }
+    
     private string _projectName;
     public string ProjectName
     {
