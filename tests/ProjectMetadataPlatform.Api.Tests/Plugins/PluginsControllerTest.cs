@@ -37,27 +37,28 @@ public class Tests
     [Test]
     public async Task GetAllPluginsToId()
     {
-        var ResponseContent = new List<Plugin>
+        var responseContent = new List<Plugin>
+        
         {
             new Plugin{ Id = 1, PluginName = "TestPlugin", Url = "http://test.com"},
             new Plugin{ Id = 2, PluginName = "TestPlugin2", Url = "http://test2.com"}
         };
-        _mediator.Setup(m => m.Send(It.IsAny<GetAllPluginsForProjectIdQuery>(),It.IsAny<CancellationToken>())).ReturnsAsync(ResponseContent);
+        _mediator.Setup(m => m.Send(It.IsAny<GetAllPluginsForProjectIdQuery>(),It.IsAny<CancellationToken>())).ReturnsAsync(responseContent);
         var result =  await _controller.Get(0);
         
         Assert.IsInstanceOf<OkObjectResult>(result.Result);
         
         var okResult = result.Result as OkObjectResult;
-        Assert.IsNotNull(okResult.Value);
+        Assert.IsNotNull(okResult!.Value);
         Assert.IsInstanceOf<IEnumerable<GetPluginResponse>>(okResult.Value);
         
-        var resultValue = okResult.Value as IEnumerable<GetPluginResponse>;
-        Assert.AreEqual(2, resultValue.Count());
+        var resultValue = (okResult.Value as IEnumerable<GetPluginResponse>)!.ToList();
+        Assert.That(resultValue.Count(), Is.EqualTo(2));
         
-        Assert.AreEqual("TestPlugin", resultValue.First().PluginName);
-        Assert.AreEqual("TestPlugin2", resultValue.ElementAt(1).PluginName);
+        Assert.That(resultValue.First().PluginName, Is.EqualTo("TestPlugin"));
+        Assert.That(resultValue.ElementAt(1).PluginName, Is.EqualTo("TestPlugin2"));
         
-        Assert.AreEqual("http://test.com", resultValue.First().Url);
-        Assert.AreEqual("http://test2.com", resultValue.ElementAt(1).Url);
+        Assert.That(resultValue.First().Url, Is.EqualTo("http://test.com"));
+        Assert.That(resultValue.ElementAt(1).Url, Is.EqualTo("http://test2.com"));
     }
 }
