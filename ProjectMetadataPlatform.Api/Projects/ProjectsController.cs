@@ -1,10 +1,13 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ProjectMetadataPlatform.Api.Projects.Models;
 using ProjectMetadataPlatform.Application.Projects;
+using ProjectMetadataPlatform.Domain.Projects;
 
 namespace ProjectMetadataPlatform.Api.Projects;
 
@@ -19,6 +22,7 @@ public class ProjectsController : ControllerBase
     /// <summary>
     /// Creates a new instance of the <see cref="ProjectsController"/> class.
     /// </summary>
+    
     public ProjectsController(IMediator mediator)
     {
         _mediator = mediator;
@@ -32,8 +36,15 @@ public class ProjectsController : ControllerBase
     public async Task<ActionResult<IEnumerable<GetProjectsResponse>>> Get()
     {
         var query = new GetAllProjectsQuery();
-
-        var projects = await _mediator.Send(query);
+        IEnumerable<Project> projects;
+        try
+        {
+            projects = await _mediator.Send(query);
+        }
+        catch (Exception e)
+        {
+            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+        }
 
         var response = projects.Select(project => new GetProjectsResponse(
             project.ProjectName,
