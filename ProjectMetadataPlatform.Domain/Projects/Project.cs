@@ -1,5 +1,3 @@
-using System.Runtime.InteropServices;
-
 namespace ProjectMetadataPlatform.Domain.Projects;
 
 /// <summary>
@@ -25,12 +23,28 @@ public class Project()
         Department = department;
     }
 
-    public string ProjectName { get; set; }
-    public string ClientName { get; set; }
-    public string BusinessUnit { get; set; }
-    public int TeamNumber { get; set; }
-    public string Department { get; set; }
-    
+    /// <summary>
+    /// Gets or sets the name of the project. This property is required.
+    /// </summary>
+    public required string ProjectName { get; set; }
 
+    /// <summary>
+    /// Gets or sets the name of the client associated with the project. This property is nullable.
+    /// </summary>
+    public required string ClientName { get; set; }
 
+    /// <summary>
+    /// Gets or sets the business unit associated with the project. This property is nullable.
+    /// </summary>
+    public required string BusinessUnit { get; set; }
+
+    /// <summary>
+    /// Gets or sets the team number associated with the project. This property is required.
+    /// </summary>
+    public required int TeamNumber { get; set; }
+
+    /// <summary>
+    /// Gets or sets the department associated with the project. This property is nullable.
+    /// </summary>
+    public required string Department { get; set; }
 }

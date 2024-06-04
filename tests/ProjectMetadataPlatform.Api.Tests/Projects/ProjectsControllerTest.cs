@@ -56,7 +56,14 @@ public class ProjectsControllerTest
         // prepare
         var projectsResponseContent = new List<Project>
         {
-            new ("Regen", "Nasa", "BuWeather", 42, "Homelandsecurity")
+            new()
+            {
+                ProjectName = "Regen",
+                ClientName = "Nasa",
+                BusinessUnit = "BuWeather",
+                TeamNumber = 42,
+                Department = "Homelandsecurity"
+            }
         };
         _mediator.Setup(m => m.Send(It.IsAny<GetAllProjectsQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(projectsResponseContent);
         

@@ -41,7 +41,7 @@ public class ProjectsController : ControllerBase
         {
             projects = await _mediator.Send(query);
         }
-        catch (Exception e)
+        catch 
         {
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }

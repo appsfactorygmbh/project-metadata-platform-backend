@@ -41,7 +41,14 @@ public class GetAllProjectsQueryHandlerTest
     {
         var projectsResponseContent = new List<Project>
         {
-            new ("Regen", "Nasa", "BuWeather", 42, "Homelandsecurity")
+            new()
+            {
+                ProjectName = "Regen",
+                ClientName = "Nasa",
+                BusinessUnit = "BuWeather",
+                TeamNumber = 42,
+                Department = "Homelandsecurity"
+            }
         };
         _mockProjectRepo.Setup(m => m.GetAllProjectsAsync()).ReturnsAsync(projectsResponseContent);
         
