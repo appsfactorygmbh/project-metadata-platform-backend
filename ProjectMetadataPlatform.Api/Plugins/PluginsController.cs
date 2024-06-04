@@ -5,6 +5,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using ProjectMetadataPlatform.Api.Plugins.Models;
 using ProjectMetadataPlatform.Application.Plugins;
+using ProjectMetadataPlatform.Domain.Plugins;
 
 namespace ProjectMetadataPlatform.Api.Plugins;
 
@@ -32,7 +33,7 @@ public class PluginsController : ControllerBase
     /// <param name="id">select for what Project</param>
     /// <returns>The weather forecasts.</returns>
     [HttpGet]
-    public async Task<ActionResult<GetPluginListResponse>> Get([FromQuery] int id)
+    public async Task<ActionResult<IEnumerable<Plugin>>> Get([FromQuery] int id)
     {
        var query = new GetAllPluginsForProjectIdQuery(id);
        var plugins = await _mediator.Send(query);
