@@ -69,11 +69,12 @@ public class ProjectsController : ControllerBase
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
 
-        var response =  new GetProjectsResponse(
+        var response =  new GetProjectResponse(
             project.ProjectName,
             project.ClientName,
             project.BusinessUnit,
-            project.TeamNumber);
+            project.TeamNumber,
+            project.Department);
 
         return Ok(response);
     }
