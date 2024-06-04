@@ -15,12 +15,14 @@ public class Project()
     /// <param name="clientName">The name of the client.</param>
     /// <param name="businessUnit">The Business Units id.</param>
     /// <param name="teamNumber">The team responsible for the project.</param>
-    public Project(string projectName, string clientName, string businessUnit, int teamNumber) : this()
+    /// <param name="department">The departments id.</param>
+    public Project(string projectName, string clientName, string businessUnit, int teamNumber, string department) : this()
     {
         _projectName = projectName;
         _clientName = clientName;
         _businessUnit = businessUnit;
         _teamNumber = teamNumber;
+        _department = department;
     }
     
     private string _projectName;
@@ -49,5 +51,13 @@ public class Project()
     {
         get => _teamNumber;
         set => _teamNumber = value;
+    }
+    
+    
+    private string _department;
+    public string Department
+    {
+        get => _department;
+        set => _department = value;
     }
 }
