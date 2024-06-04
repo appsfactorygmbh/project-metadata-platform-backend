@@ -15,4 +15,6 @@ public interface IProjectsRepository
     /// </summary>
     /// <returns>An Enumeration of projects.</returns>
     Task<IEnumerable<Project>> GetAllProjectsAsync();
+    
+    Task<Project> GetProjectAsync(int id);
 }

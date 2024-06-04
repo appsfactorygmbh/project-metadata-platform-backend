@@ -54,4 +54,27 @@ public class ProjectsController : ControllerBase
 
         return Ok(response);
     }
+    
+    [HttpGet("{id:int}")]
+    public async Task<ActionResult<GetProjectsResponse>> Get(int id)
+    {
+        var query = new GetProjectQuery(id);
+        Project project;
+        try
+        {
+            project = await _mediator.Send(query);
+        }
+        catch (Exception e)
+        {
+            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+        }
+
+        var response =  new GetProjectsResponse(
+            project.ProjectName,
+            project.ClientName,
+            project.BusinessUnit,
+            project.TeamNumber);
+
+        return Ok(response);
+    }
 }
