@@ -17,37 +17,17 @@ public class Project()
     /// <param name="teamNumber">The team responsible for the project.</param>
     public Project(string projectName, string clientName, string businessUnit, int teamNumber) : this()
     {
-        _projectName = projectName;
-        _clientName = clientName;
-        _businessUnit = businessUnit;
-        _teamNumber = teamNumber;
+        ProjectName = projectName;
+        ClientName = clientName;
+        BusinessUnit = businessUnit;
+        TeamNumber = teamNumber;
     }
+
+    public string ProjectName { get; set; }
+    public string ClientName { get; set; }
+    public string BusinessUnit { get; set; }
+    public int TeamNumber { get; set; }
     
-    private string _projectName;
-    public string ProjectName
-    {
-        get => _projectName;
-        set => _projectName = value;
-    }
-    
-    private string _clientName;
-    public string ClientName
-    {
-        get => _clientName;
-        set => _clientName = value;
-    }
-    
-    private string _businessUnit;
-    public string BusinessUnit 
-    {
-        get => _businessUnit;
-        set => _businessUnit = value;
-    }
-    
-    private int _teamNumber;
-    public int TeamNumber
-    {
-        get => _teamNumber;
-        set => _teamNumber = value;
-    }
+
+
 }
