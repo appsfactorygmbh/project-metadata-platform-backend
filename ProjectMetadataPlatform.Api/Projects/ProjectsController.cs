@@ -70,6 +70,7 @@ public class ProjectsController : ControllerBase
         }
 
         var response =  new GetProjectResponse(
+            project.Id,
             project.ProjectName,
             project.ClientName,
             project.BusinessUnit,
