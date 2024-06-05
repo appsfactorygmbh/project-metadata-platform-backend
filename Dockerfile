@@ -11,6 +11,10 @@ COPY ["ProjectMetadataPlatform.Api/ProjectMetadataPlatform.Api.csproj", "Project
 COPY ["ProjectMetadataPlatform.Application/ProjectMetadataPlatform.Application.csproj", "ProjectMetadataPlatform.Application/"]
 COPY ["ProjectMetadataPlatform.Domain/ProjectMetadataPlatform.Domain.csproj", "ProjectMetadataPlatform.Domain/"]
 COPY ["ProjectMetadataPlatform.Infrastructure/ProjectMetadataPlatform.Infrastructure.csproj", "ProjectMetadataPlatform.Infrastructure/"]
+RUN mkdir "ProjectMetadataPlatform.Api/bin" -p
+RUN mkdir "ProjectMetadataPlatform.Application/bin" -p
+RUN mkdir "ProjectMetadataPlatform.Domain/bin" -p
+RUN mkdir "ProjectMetadataPlatform.Infrastructure/bin" -p
 RUN dotnet restore "ProjectMetadataPlatform.Api/ProjectMetadataPlatform.Api.csproj"
 COPY . .
 WORKDIR "/src/ProjectMetadataPlatform.Api"

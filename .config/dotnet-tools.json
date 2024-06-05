@@ -1,0 +1,24 @@
+﻿{
+  "version": 1,
+  "isRoot": true,
+  "tools": {
+    "roslynator.dotnet.cli": {
+      "version": "0.8.9",
+      "commands": [
+        "roslynator"
+      ]
+    },
+    "dotnet-reportgenerator-globaltool": {
+      "version": "5.3.5",
+      "commands": [
+        "reportgenerator"
+      ]
+    },
+    "codequalitytogitlab": {
+      "version": "1.0.0",
+      "commands": [
+        "cq"
+      ]
+    }
+  }
+}

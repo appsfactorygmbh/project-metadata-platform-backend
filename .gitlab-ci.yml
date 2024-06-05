@@ -1,6 +1,5 @@
 stages:
   - test
-  - sonarqube
   - build
   - deploy
 
@@ -26,20 +25,25 @@ test:
       junit:
         - ./**/*test-result.xml
 
-sonarqube:
-  stage: sonarqube
-  image: gitlab.dit.htwk-leipzig.de:5050/projekt2024_a_appsfactory_project_metadata_platform/backend/sonarqube-base
+code-quality:
+  stage: test
+  image: mcr.microsoft.com/dotnet/sdk:8.0
   variables:
-    SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"
-    GIT_DEPTH: "0"
-  cache:
-    key: "${CI_JOB_NAME}"
-    paths:
-      - .sonar/cache
+    DOTNET_ROLL_FORWARD: Major
   script: 
-      - "/root/.dotnet/tools/dotnet-sonarscanner begin /k:\"Project-Metadata-Platform-Backend\" /d:sonar.token=\"$SONAR_TOKEN\" /d:\"sonar.host.url=$SONAR_HOST_URL\" "
-      - "dotnet build --no-incremental --configuration Release"
-      - "/root/.dotnet/tools/dotnet-sonarscanner end /d:sonar.token=\"$SONAR_TOKEN\""
-  allow_failure: true
+    - 'dotnet tool restore'
+    - 'dotnet build'
+    - 'export DIR=file://$(pwd)'
+    - 'dotnet tool run cq sarif ProjectMetadataPlatform.Domain/bin/codeanalysis.sarif.json gl-code-quality-report1.json $DIR'
+    - 'dotnet tool run cq sarif ProjectMetadataPlatform.Application/bin/codeanalysis.sarif.json gl-code-quality-report2.json $DIR'
+    - 'dotnet tool run cq sarif ProjectMetadataPlatform.Infrastructure/bin/codeanalysis.sarif.json gl-code-quality-report3.json $DIR'
+    - 'dotnet tool run cq sarif ProjectMetadataPlatform.Api/bin/codeanalysis.sarif.json gl-code-quality-report4.json $DIR'
+    - 'dotnet tool run cq merge gl-code-quality-report.json gl-code-quality-report1.json gl-code-quality-report2.json gl-code-quality-report3.json gl-code-quality-report4.json'
+  artifacts:
+    paths:
+      - gl-code-quality-report.json
+    expose_as: 'code_quality_reports'
+    reports:
+      codequality: gl-code-quality-report.json
   rules:
-    - if: $CI_COMMIT_BRANCH == $DEVELOP_BRANCH
+    - if: $CI_COMMIT_BRANCH
