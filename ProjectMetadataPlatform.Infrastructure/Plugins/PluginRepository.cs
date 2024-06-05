@@ -7,11 +7,15 @@ using System.Threading.Tasks;
 namespace ProjectMetadataPlatform.Infrastructure.Plugins;
 
 /// <summary>
-/// 
+/// The repository for plugins that handles the data access.
 /// </summary>
-
 public class PluginRepository : IPluginRepository
 {
+    /// <summary>
+    /// Gets all plugins for a given project id from database.
+    /// </summary>
+    /// <param name="projectId">selects the project</param>
+    /// <returns>The data received by the database.</returns>
     public Task<IEnumerable<Plugin>> GetAllPluginsForProjectIdAsync(int projectId)
     {
         //implement database with EF core and send request to it from here

@@ -10,7 +10,7 @@ using ProjectMetadataPlatform.Domain.Plugins;
 namespace ProjectMetadataPlatform.Api.Plugins;
 
 /// <summary>
-/// Controller for weather forecasts.
+/// Controller to get Plugins for given Project.
 /// </summary>
 [ApiController]
 [Route("[controller]")]
@@ -18,20 +18,20 @@ public class PluginsController : ControllerBase
 {
     private readonly IMediator _mediator;
 
-    /// <summary>
-    /// Creates a new instance of the <see cref="WeatherForecastController"/> class.
-    /// </summary>
-    /// <param name="mediator"></param>
+   /// <summary>
+   /// Creates a new instance of the <see cref="PluginsController"/>.
+   /// </summary>
+   /// <param name="mediator"></param>
     public PluginsController(IMediator mediator)
     {
         _mediator = mediator;
     }
 
     /// <summary>
-    /// Retrieves the given number of weather forecasts.
+    /// Get all the plugins for a given project id.
     /// </summary>
-    /// <param name="id">select for what Project</param>
-    /// <returns>The weather forecasts.</returns>
+    /// <param name="id">selects the project</param>
+    /// <returns>An HTML ok response with List of Plugins.</returns>
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Plugin>>> Get([FromQuery] int id)
     {
