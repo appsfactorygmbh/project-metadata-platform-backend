@@ -5,7 +5,7 @@ using ProjectMetadataPlatform.Domain.Plugins;
 namespace ProjectMetadataPlatform.Application.Plugins;
 
 /// <summary>
-/// Query to get weather forecasts.
+/// Query to get all plugins for a given project id.
 /// </summary>
-/// <param name="Count">How many weather forecasts to retrieve.</param>
+/// <param name="Id">selects the project</param>
 public record GetAllPluginsForProjectIdQuery(int Id) : IRequest<IEnumerable<Plugin>>;

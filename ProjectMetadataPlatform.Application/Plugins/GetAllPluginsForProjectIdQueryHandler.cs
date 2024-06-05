@@ -7,13 +7,13 @@ using ProjectMetadataPlatform.Application.Interfaces;
 
 namespace ProjectMetadataPlatform.Application.Plugins;
 /// <summary>
-/// 
+/// Handler for the <see cref="GetAllPluginsForProjectIdQuery"/>
 /// </summary>
 public class GetAllPluginsForProjectIdQueryHandler : IRequestHandler<GetAllPluginsForProjectIdQuery, IEnumerable<Plugin>>
 {
     IPluginRepository _pluginRepository;
     /// <summary>
-    /// 
+    /// Creates a new instance of<see cref="GetAllPluginsForProjectIdQueryHandler"/>.
     /// </summary>
     /// <param name="pluginRepository"></param>
     public GetAllPluginsForProjectIdQueryHandler(IPluginRepository pluginRepository)
@@ -21,11 +21,11 @@ public class GetAllPluginsForProjectIdQueryHandler : IRequestHandler<GetAllPlugi
         _pluginRepository = pluginRepository;
     }
     /// <summary>
-    /// 
+    /// Handles the request to get all plugins for a given project id.
     /// </summary>
-    /// <param name="request"></param>
+    /// <param name="request">the request that needs to be handled</param>
     /// <param name="cancellationToken"></param>
-    /// <returns></returns>
+    /// <returns>the response of the request</returns>
     public Task<IEnumerable<Plugin>> Handle(GetAllPluginsForProjectIdQuery request, CancellationToken cancellationToken)
     {
         return _pluginRepository.GetAllPluginsForProjectIdAsync(request.Id);
