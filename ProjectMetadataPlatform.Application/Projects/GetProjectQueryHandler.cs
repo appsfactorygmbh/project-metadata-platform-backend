@@ -6,15 +6,22 @@ using ProjectMetadataPlatform.Domain.Projects;
 
 namespace ProjectMetadataPlatform.Application.Projects;
 
+/// <summary>
+///  <inheritdoc />
+/// </summary>
 public class GetProjectQueryHandler : IRequestHandler<GetProjectQuery,Project>
 {
     private readonly IProjectsRepository _projectsRepository;
     
+    /// <summary>
+    /// Creates a new instance of <see cref="GetProjectQueryHandler"/>.
+    /// </summary>
     public GetProjectQueryHandler(IProjectsRepository projectsRepository)
     {
         _projectsRepository = projectsRepository;
     }
     
+    /// <inheritdoc />
     public Task<Project> Handle(GetProjectQuery request, CancellationToken cancellationToken)
     {
         return _projectsRepository.GetProjectAsync(request.Id);

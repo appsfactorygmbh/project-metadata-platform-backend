@@ -55,6 +55,11 @@ public class ProjectsController : ControllerBase
         return Ok(response);
     }
     
+    /// <summary>
+    /// Retrieves a project by id.
+    /// </summary>
+    /// <param name="id">Identifiacation number for the project</param>
+    /// <returns>A project.</returns>
     [HttpGet("{id:int}")]
     public async Task<ActionResult<GetProjectsResponse>> Get(int id)
     {
@@ -63,12 +68,17 @@ public class ProjectsController : ControllerBase
         try
         {
             project = await _mediator.Send(query);
+            
+            
         }
         catch (Exception e)
         {
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
-
+        if(project == null)
+        {
+            return NotFound(project);
+        }
         var response =  new GetProjectResponse(
             project.Id,
             project.ProjectName,
@@ -77,6 +87,6 @@ public class ProjectsController : ControllerBase
             project.TeamNumber,
             project.Department);
 
-        return Ok(response);
+        return  Ok(response);
     }
 }

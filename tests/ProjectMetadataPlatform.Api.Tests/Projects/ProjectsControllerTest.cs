@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
@@ -49,6 +50,8 @@ public class ProjectsControllerTest
         var getProjectsResponseArray = getProjectsResponseEnumeration as GetProjectsResponse[] ?? getProjectsResponseEnumeration.ToArray();
         Assert.That(getProjectsResponseArray, Has.Length.EqualTo(0));
     }
+
+    
     
     [Test]
     public async Task GetAllProjectsTest()
@@ -56,7 +59,15 @@ public class ProjectsControllerTest
         // prepare
         var projectsResponseContent = new List<Project>
         {
-            new (23,"Regen", "Nasa", "BuWeather", 42, "Homelandsecurity")
+            new ()
+            {
+               Id= 23,
+               ProjectName= "Regen", 
+               ClientName="Nasa", 
+               BusinessUnit="BuWeather", 
+               TeamNumber=42, 
+               Department="Homelandsecurity"
+            }
         };
         _mediator.Setup(m => m.Send(It.IsAny<GetAllProjectsQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(projectsResponseContent);
         
@@ -82,4 +93,6 @@ public class ProjectsControllerTest
         Assert.That(project.BusinessUnit, Is.EqualTo("BuWeather"));
         Assert.That(project.TeamNumber, Is.EqualTo(42));
     }
+    
+    
 }

@@ -1,4 +1,4 @@
-using System.Runtime.InteropServices;
+
 
 namespace ProjectMetadataPlatform.Domain.Projects;
 
@@ -11,7 +11,7 @@ public class Project()
     /// <summary>
     /// Project properties.
     /// </summary>
-    /// <param name="Id">Internal ID of the project</param>
+    /// <param name="id">Internal ID of the project</param>
     /// <param name="projectName">The name of the project.</param>
     /// <param name="clientName">The name of the client.</param>
     /// <param name="businessUnit">The Business Units id.</param>
@@ -19,55 +19,43 @@ public class Project()
     /// <param name="department">The departments id.</param>
     public Project(int id, string projectName, string clientName, string businessUnit, int teamNumber, string department) : this()
     {
-        _id = Id;
-        _projectName = projectName;
-        _clientName = clientName;
-        _businessUnit = businessUnit;
-        _teamNumber = teamNumber;
-        _department = department;
+        Id = id;
+        ProjectName = projectName;
+        ClientName = clientName;
+        BusinessUnit = businessUnit;
+        TeamNumber = teamNumber;
+        Department = department;
     }
+    /// <summary>
+    /// Gets or sets the internal ID of the project. This property is required.
+    /// </summary>
+    public required int Id { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the name of the project. This property is required.
+    /// </summary>
+    public required string ProjectName { get; set; }
+
+    /// <summary>
+    /// Gets or sets the name of the client associated with the project. This property is nullable.
+    /// </summary>
+    public required string ClientName { get; set; }
+
+    /// <summary>
+    /// Gets or sets the business unit associated with the project. This property is nullable.
+    /// </summary>
+    public required string BusinessUnit { get; set; }
+
+    /// <summary>
+    /// Gets or sets the team number associated with the project. This property is required.
+    /// </summary>
+    public required int TeamNumber { get; set; }
+
+    /// <summary>
+    /// Gets or sets the department associated with the project. This property is nullable.
+    /// </summary>
+    public required string Department { get; set; }
 
 
-    private string _projectName;
-    public string ProjectName
-    {
-        get => _projectName;
-        set => _projectName = value;
-    }
     
-    private string _clientName;
-    public string ClientName
-    {
-        get => _clientName;
-        set => _clientName = value;
-    }
-    
-    private string _businessUnit;
-    public string BusinessUnit 
-    {
-        get => _businessUnit;
-        set => _businessUnit = value;
-    }
-    
-    private int _teamNumber;
-    public int TeamNumber
-    {
-        get => _teamNumber;
-        set => _teamNumber = value;
-    }
-    
-    private int _id;
-    public int Id
-    {
-        get => _id;
-        set => _id = value;
-    }
-    
-    
-    private string _department;
-    public string Department
-    {
-        get => _department;
-        set => _department = value;
-    }
 }
