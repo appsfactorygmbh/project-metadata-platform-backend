@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using ProjectMetadataPlatform.Domain.Projects;
 
 namespace ProjectMetadataPlatform.Infrastructure.DataAccess;
 
@@ -18,4 +19,9 @@ public sealed class ProjectMetadataPlatformDbContext : DbContext
     {
         Database.Migrate();
     }
+    
+    /// <summary>
+    /// Represents the table for project entities.
+    /// </summary>
+    public DbSet<Project> Projects { get; set; }
 }

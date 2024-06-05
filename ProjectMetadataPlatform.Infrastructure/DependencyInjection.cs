@@ -21,7 +21,7 @@ public static class DependencyInjection
         serviceCollection.AddDbContext<ProjectMetadataPlatformDbContext>(options =>
             options.UseSqlite("Data Source = Database.db"));
 
-        serviceCollection.AddScoped<IWeatherForecastRepository, WeatherForecastRepository>();
+        serviceCollection.AddScoped<IProjectsRepository, ProjectsRepository>();
         
         return serviceCollection;
     }
