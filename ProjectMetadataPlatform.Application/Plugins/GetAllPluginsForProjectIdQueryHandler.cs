@@ -11,7 +11,7 @@ namespace ProjectMetadataPlatform.Application.Plugins;
 /// </summary>
 public class GetAllPluginsForProjectIdQueryHandler : IRequestHandler<GetAllPluginsForProjectIdQuery, IEnumerable<Plugin>>
 {
-    IPluginRepository _pluginRepository;
+    private readonly IPluginRepository _pluginRepository;
     /// <summary>
     /// Creates a new instance of<see cref="GetAllPluginsForProjectIdQueryHandler"/>.
     /// </summary>
