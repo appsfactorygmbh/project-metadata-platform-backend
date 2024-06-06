@@ -1,0 +1,10 @@
+services:
+  backend:
+    extends:
+      file: docker-compose-common.yml
+      service: backend    
+    image: gitlab.dit.htwk-leipzig.de:5050/projekt2024_a_appsfactory_project_metadata_platform/backend/production:latest
+
+networks:
+  backend-network:
+    name: backend-network
