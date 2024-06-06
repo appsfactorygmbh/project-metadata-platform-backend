@@ -18,7 +18,7 @@ public class ProjectInitializationTests
         string expectedDepartment = "ABC";
 
         // Act
-        var project = new Project
+        var project = new Project()
         {
             Id = expectedId,
             ProjectName = expectedProjectName,
