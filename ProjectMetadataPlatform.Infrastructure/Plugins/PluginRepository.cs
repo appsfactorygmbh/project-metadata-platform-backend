@@ -30,11 +30,11 @@ public class PluginRepository : IPluginRepository
     /// </summary>
     /// <param name="id">selects the project</param>
     /// <returns>The data received by the database.</returns>
-    public List<ProjectPlugins> GetAllPluginsForProjectIdAsync(int id)
+    public async Task<List<ProjectPlugins>> GetAllPluginsForProjectIdAsync(int id)
     {
         
         //implement database with EF core and send request to it from here
-
+        
         return _context.ProjectPluginsRelation.Where(rel => rel.ProjectId == id).Include(rel => rel.Plugin).ToList();
     }
 }
