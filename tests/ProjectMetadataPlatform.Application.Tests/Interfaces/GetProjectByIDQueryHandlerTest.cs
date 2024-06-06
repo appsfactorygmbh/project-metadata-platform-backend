@@ -11,7 +11,7 @@ using ProjectMetadataPlatform.Domain.Projects;
 namespace ProjectMetadataPlatform.Application.Tests.Interfaces;
 
 [TestFixture]
-public class ProjectByIDQueryHandlerTest
+public class GetProjectByIDQueryHandlerTest
 {
     private GetProjectQueryHandler _handler;
     private Mock<IProjectsRepository> _mockProjectRepo;
@@ -23,7 +23,7 @@ public class ProjectByIDQueryHandlerTest
     }
 
     [Test]
-    public async Task HandleGetAllProjectsRequest_NonexistentProject_Test()
+    public async Task HandleGetProjectRequest_NonexistentProject_Test()
     {
         _mockProjectRepo.Setup(m => m.GetProjectAsync(2)).ReturnsAsync((Project)null);
         var query= new GetProjectQuery(2);
@@ -34,7 +34,7 @@ public class ProjectByIDQueryHandlerTest
     
 
     [Test]
-    public async Task HandleGetAllProjectsRequest_Test()
+    public async Task HandleGetProjectRequest_Test()
     {
         var projectsResponseContent = new Project
         {
