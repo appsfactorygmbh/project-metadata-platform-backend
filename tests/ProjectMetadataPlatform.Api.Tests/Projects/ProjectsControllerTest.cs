@@ -58,6 +58,7 @@ public class ProjectsControllerTest
         {
             new()
             {
+                Id = 0,
                 ProjectName = "Regen",
                 ClientName = "Nasa",
                 BusinessUnit = "BuWeather",
