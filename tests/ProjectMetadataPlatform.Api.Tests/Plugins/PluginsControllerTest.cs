@@ -40,8 +40,8 @@ public class Tests
         var responseContent = new List<Plugin>
         
         {
-            new Plugin{ Id = 1, PluginName = "TestPlugin", Url = "http://test.com"},
-            new Plugin{ Id = 2, PluginName = "TestPlugin2", Url = "http://test2.com"}
+            new Plugin{ Id = 1, PluginName = "TestPlugin" },
+            new Plugin{ Id = 2, PluginName = "TestPlugin2"}
         };
         _mediator.Setup(m => m.Send(It.IsAny<GetAllPluginsForProjectIdQuery>(),It.IsAny<CancellationToken>())).ReturnsAsync(responseContent);
         var result =  await _controller.Get(0);

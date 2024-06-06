@@ -6,4 +6,4 @@ namespace ProjectMetadataPlatform.Api.Plugins.Models;
 /// </summary>
 /// <param name="PluginName">Name of the plugin.</param>
 /// <param name="Url">Url of the plugin.</param>
-public record GetPluginResponse(string PluginName, string Url);
+public record GetPluginResponse(string PluginName, string Url, string DisplayName);

@@ -16,8 +16,5 @@ public class Plugin
     /// </summary>
     public required string PluginName { get; set;}
     
-    /// <summary>
-    /// The url associated with the plugin. 
-    /// </summary>
-    public required string Url { get; set; }
+    
 }

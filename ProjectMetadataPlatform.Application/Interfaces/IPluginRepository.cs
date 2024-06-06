@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Linq;
 using ProjectMetadataPlatform.Domain.Plugins;
 
 namespace ProjectMetadataPlatform.Application.Interfaces;
@@ -15,5 +16,5 @@ public interface IPluginRepository
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    Task<IEnumerable<Plugin>> GetAllPluginsForProjectIdAsync(int id);
+    List<ProjectPlugins> GetAllPluginsForProjectIdAsync(int id);
 }

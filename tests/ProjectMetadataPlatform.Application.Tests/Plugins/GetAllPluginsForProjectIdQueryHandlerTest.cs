@@ -27,20 +27,15 @@ public class GetAllPluginsForProjectIdQueryHandlerTest
     public async Task HandleGetAllProjectsForProjectIdQueryHandlerTest()
     {
         // Arrange
-        var plugins = new List<Plugin>
+        var plugins = new List<ProjectPlugins>
         {
-            new Plugin
+            new ProjectPlugins
             {
-                Id = 1,
-                PluginName = "Plugin 1",
-                Url = "http://plugin1.com",
+                PluginId = 1,
+                Plugin = null,
+                
             },
-            new Plugin
-            {
-                Id = 1,
-                PluginName = "Plugin 2",
-                Url = "http://plugin2.com",
-            }
+            
         };
 
         _pluginRepositoryMock.Setup(r => r.GetAllPluginsForProjectIdAsync(It.IsAny<int>())).ReturnsAsync(plugins);
@@ -53,10 +48,8 @@ public class GetAllPluginsForProjectIdQueryHandlerTest
         Assert.That(result.Count, Is.EqualTo(2));
         Assert.Multiple(() =>
         {
-            Assert.That(result[0].PluginName, Is.EqualTo("Plugin 1"));
-            Assert.That(result[0].Url, Is.EqualTo("http://plugin1.com"));
-            Assert.That(result[1].PluginName, Is.EqualTo("Plugin 2"));
-            Assert.That(result[1].Url, Is.EqualTo("http://plugin2.com"));
+            Assert.That(result[0].Plugin.PluginName, Is.EqualTo("Plugin 1"));
+            Assert.That(result[1].Plugin.PluginName, Is.EqualTo("Plugin 2"));
         });
 
     }

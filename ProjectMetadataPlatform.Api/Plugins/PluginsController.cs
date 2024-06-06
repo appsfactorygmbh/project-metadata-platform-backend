@@ -33,11 +33,11 @@ public class PluginsController : ControllerBase
     /// <param name="id">selects the project</param>
     /// <returns>An HTML ok response with List of Plugins.</returns>
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Plugin>>> Get([FromQuery] int id)
+    public async Task<ActionResult<IEnumerable<ProjectPlugins>>> Get([FromQuery] int id)
     {
        var query = new GetAllPluginsForProjectIdQuery(id);
-       var plugins = await _mediator.Send(query);
-       var response = plugins.Select(plugin => new GetPluginResponse(plugin.PluginName, plugin.Url));
+       var projectPlugins = await _mediator.Send(query);
+       var response = projectPlugins.Select(plugin => new GetPluginResponse(plugin.Plugin.PluginName, plugin.Url,plugin.DisplayName));
        return Ok(response);
     }
 }

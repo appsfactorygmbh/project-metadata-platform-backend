@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using ProjectMetadataPlatform.Domain.Plugins;
 
 namespace ProjectMetadataPlatform.Infrastructure.DataAccess;
 
@@ -7,6 +8,10 @@ namespace ProjectMetadataPlatform.Infrastructure.DataAccess;
 /// </summary>
 public sealed class ProjectMetadataPlatformDbContext : DbContext
 {
+    
+    public DbSet<ProjectPlugins> ProjectPluginsRelation { get; set; }
+    public DbSet<ProjectPlugins> Plugins { get; set; }
+
     /// <inheritdoc />
     public ProjectMetadataPlatformDbContext()
     {
@@ -17,5 +22,10 @@ public sealed class ProjectMetadataPlatformDbContext : DbContext
     public ProjectMetadataPlatformDbContext(DbContextOptions<ProjectMetadataPlatformDbContext> options) : base(options)
     {
         Database.Migrate();
+    }
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(ProjectMetadataPlatformDbContext).Assembly);
     }
 }
