@@ -16,5 +16,5 @@ public interface IPluginRepository
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    List<ProjectPlugins> GetAllPluginsForProjectIdAsync(int id);
+    Task<List<ProjectPlugins>> GetAllPluginsForProjectIdAsync(int id);
 }

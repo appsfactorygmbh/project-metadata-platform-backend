@@ -9,7 +9,7 @@ namespace ProjectMetadataPlatform.Application.Plugins;
 /// <summary>
 /// Handler for the <see cref="GetAllPluginsForProjectIdQuery"/>
 /// </summary>
-public class GetAllPluginsForProjectIdQueryHandler : IRequestHandler<GetAllPluginsForProjectIdQuery, IEnumerable<ProjectPlugins>>
+public class GetAllPluginsForProjectIdQueryHandler : IRequestHandler<GetAllPluginsForProjectIdQuery, List<ProjectPlugins>>
 {
     private readonly IPluginRepository _pluginRepository;
     /// <summary>
@@ -26,8 +26,9 @@ public class GetAllPluginsForProjectIdQueryHandler : IRequestHandler<GetAllPlugi
     /// <param name="request">the request that needs to be handled</param>
     /// <param name="cancellationToken"></param>
     /// <returns>the response of the request</returns>
-    public async Task<IEnumerable<ProjectPlugins>> Handle(GetAllPluginsForProjectIdQuery request, CancellationToken cancellationToken)
+    public Task<List<ProjectPlugins>> Handle(GetAllPluginsForProjectIdQuery request, CancellationToken cancellationToken)
+    
     {
-        return _pluginRepository.GetAllPluginsForProjectIdAsync(request.Id);
+        return  _pluginRepository.GetAllPluginsForProjectIdAsync(request.Id);
     }
 }

@@ -4,18 +4,26 @@ using ProjectMetadataPlatform.Domain.Plugins;
 
 namespace ProjectMetadataPlatform.Infrastructure.DataAccess.ModelConfigs;
 
+/// <summary>
+/// Data Base Configuration for the relation between Project and Plugin.
+/// </summary>
 public class ProjectPluginRelationConfig : IEntityTypeConfiguration<ProjectPlugins>
 {
+    /// <summary>
+    /// Configures the ProjectPlugins entity.
+    /// </summary>
+    /// <param name="builder"></param>
     public void Configure(EntityTypeBuilder<ProjectPlugins> builder)
     {
-        builder.Property(e => e.)
-            .IsRequired();
-        builder.Property(u => u.PluginName)
-            .IsRequired();
-       
-       
+        builder.HasKey(pp => new { pp.PluginId, pp.ProjectId });
         
-        
+        builder.HasOne(pp => pp.Project)
+            .WithMany(p => p.ProjectPlugins)
+            .HasForeignKey(pp => pp.ProjectId);
+
+        builder.HasOne(pp => pp.Plugin)
+            .WithMany(p => p.ProjectPlugins)
+            .HasForeignKey(pp => pp.PluginId);
     }
     
 }

@@ -7,6 +7,7 @@ using NUnit.Framework;
 using ProjectMetadataPlatform.Application.Plugins;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Domain.Plugins;
+using ProjectMetadataPlatform.Domain.Projects;
 
 namespace ProjectMetadataPlatform.Application.Tests.Plugins;
 
@@ -32,20 +33,28 @@ public class GetAllPluginsForProjectIdQueryHandlerTest
             new ProjectPlugins
             {
                 PluginId = 1,
-                Plugin = null,
-                
+                Plugin = new Plugin { Id = 1, PluginName = "Plugin 1" },
+                ProjectId = 1,
+                Project = new Project { Id = 1, ProjectName = "Project 1", ClientName = "Client 1", BusinessUnit = "Bu 1", TeamNumber = 1, Department = "Department 1"}
             },
-            
+            new ProjectPlugins
+            {
+                PluginId = 2,
+                Plugin = new Plugin { Id = 2, PluginName = "Plugin 2" },
+                ProjectId = 1,
+                Project = new Project { Id = 1, ProjectName = "Project 1", ClientName = "Client 1", BusinessUnit = "Bu 1", TeamNumber = 1, Department = "Department 1"}
+                
+            }
         };
-
-        _pluginRepositoryMock.Setup(r => r.GetAllPluginsForProjectIdAsync(It.IsAny<int>())).ReturnsAsync(plugins);
-
-        var query = new GetAllPluginsForProjectIdQuery(It.IsAny<int>());
+        _pluginRepositoryMock.Setup(r => r.GetAllPluginsForProjectIdAsync(It.IsAny<int>()))
+            .ReturnsAsync(plugins);
+        
+        var query = new GetAllPluginsForProjectIdQuery(0);
         var result = (await _handler.Handle(query, It.IsAny<CancellationToken>())).ToList();
 
         Assert.That(result, Is.Not.Null);
-        Assert.That(result, Is.TypeOf<List<Plugin>>());
-        Assert.That(result.Count, Is.EqualTo(2));
+        Assert.That(result, Is.TypeOf<List<ProjectPlugins>>());
+        Assert.That(result, Has.Count.EqualTo(2));
         Assert.Multiple(() =>
         {
             Assert.That(result[0].Plugin.PluginName, Is.EqualTo("Plugin 1"));

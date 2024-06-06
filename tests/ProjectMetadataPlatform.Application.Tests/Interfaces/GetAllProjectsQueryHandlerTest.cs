@@ -43,6 +43,7 @@ public class GetAllProjectsQueryHandlerTest
         {
             new()
             {
+                Id = 0,
                 ProjectName = "Regen",
                 ClientName = "Nasa",
                 BusinessUnit = "BuWeather",
@@ -52,18 +53,19 @@ public class GetAllProjectsQueryHandlerTest
         };
         _mockProjectRepo.Setup(m => m.GetAllProjectsAsync()).ReturnsAsync(projectsResponseContent);
         
-        var result = await _handler.Handle(It.IsAny<GetAllProjectsQuery>(), It.IsAny<CancellationToken>());
+        var result = (await _handler.Handle(It.IsAny<GetAllProjectsQuery>(), It.IsAny<CancellationToken>())).ToList();
         
         Assert.That(result, Is.Not.Null);
         Assert.That(result, Is.InstanceOf<IEnumerable<Project>>());
 
-        var resultArray = result.ToArray();
+        Project[] resultArray = result.ToArray();
         Assert.That(resultArray, Has.Length.EqualTo(1));
         
         
         var project = resultArray.First();
         Assert.Multiple(() =>
         {
+            Assert.That(project.Id, Is.EqualTo(0));
             Assert.That(project.ProjectName, Is.EqualTo("Regen"));
             Assert.That(project.ClientName, Is.EqualTo("Nasa"));
             Assert.That(project.BusinessUnit, Is.EqualTo("BuWeather"));

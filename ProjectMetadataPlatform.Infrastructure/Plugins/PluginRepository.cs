@@ -13,7 +13,11 @@ namespace ProjectMetadataPlatform.Infrastructure.Plugins;
 /// The repository for plugins that handles the data access.
 /// </summary>
 public class PluginRepository : IPluginRepository
-{
+{   
+    /// <summary>
+    /// Constructor for the PluginRepository.
+    /// </summary>
+    /// <param name="context"></param>
     public PluginRepository(ProjectMetadataPlatformDbContext context)
     {
         _context = context;

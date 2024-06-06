@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using ProjectMetadataPlatform.Domain.Plugins;
+
 namespace ProjectMetadataPlatform.Domain.Projects;
 
 /// <summary>
@@ -22,6 +25,11 @@ public class Project()
         TeamNumber = teamNumber;
         Department = department;
     }
+    
+    /// <summary>
+    /// ets or sets the id of the project. This property is required.
+    /// </summary>
+    public required int Id { get; set; }
 
     /// <summary>
     /// Gets or sets the name of the project. This property is required.
@@ -47,4 +55,7 @@ public class Project()
     /// Gets or sets the department associated with the project. This property is nullable.
     /// </summary>
     public required string Department { get; set; }
+    
+    public ICollection<ProjectPlugins>? ProjectPlugins { get; set; }
+    
 }
