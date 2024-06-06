@@ -7,9 +7,7 @@ namespace ProjectMetadataPlatform.Api.Projects.Models;
 /// <param name="ClientName">The name of the client associated with the project.</param>
 /// <param name="BusinessUnit">The business unit the project belongs to.</param>
 /// <param name="TeamNumber">The number of the team working on the project.</param>
-
 public record GetProjectsResponse(string ProjectName, string ClientName, string BusinessUnit, int TeamNumber)
 {
     
 }
-
