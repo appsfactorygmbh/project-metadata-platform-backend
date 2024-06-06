@@ -15,8 +15,7 @@ test:
   stage: test
   image: mcr.microsoft.com/dotnet/sdk:8.0
   script:
-    - dotnet restore
-    - dotnet test --configuration Release --no-restore --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose"
+    - dotnet test --configuration Release --test-adapter-path:. --logger:"junit;LogFilePath=..\artifacts\{assembly}-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose"
   artifacts:
     when: always
     paths:
@@ -32,7 +31,7 @@ code-quality:
     DOTNET_ROLL_FORWARD: Major
   script: 
     - 'dotnet tool restore'
-    - 'dotnet build'
+    - 'dotnet build --configuration Release'
     - 'export DIR=file://$(pwd)'
     - 'dotnet tool run cq sarif ProjectMetadataPlatform.Domain/bin/codeanalysis.sarif.json gl-code-quality-report1.json $DIR'
     - 'dotnet tool run cq sarif ProjectMetadataPlatform.Application/bin/codeanalysis.sarif.json gl-code-quality-report2.json $DIR'
