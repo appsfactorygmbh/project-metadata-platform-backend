@@ -43,6 +43,7 @@ public class GetAllProjectsQueryHandlerTest
         {
             new()
             {
+                Id = 2,
                 ProjectName = "Regen",
                 ClientName = "Nasa",
                 BusinessUnit = "BuWeather",

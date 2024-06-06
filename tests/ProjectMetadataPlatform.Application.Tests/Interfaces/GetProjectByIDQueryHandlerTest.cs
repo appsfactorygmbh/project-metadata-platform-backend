@@ -11,7 +11,7 @@ using ProjectMetadataPlatform.Domain.Projects;
 namespace ProjectMetadataPlatform.Application.Tests.Interfaces;
 
 [TestFixture]
-public class GetAllProjectsQueryHandlerTest
+public class ProjectByIDQueryHandlerTest
 {
     private GetProjectQueryHandler _handler;
     private Mock<IProjectsRepository> _mockProjectRepo;
