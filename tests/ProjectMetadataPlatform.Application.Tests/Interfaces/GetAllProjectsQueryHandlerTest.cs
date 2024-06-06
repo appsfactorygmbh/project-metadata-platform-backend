@@ -43,6 +43,7 @@ public class GetAllProjectsQueryHandlerTest
         {
             new()
             {
+                Id = 1,
                 ProjectName = "Regen",
                 ClientName = "Nasa",
                 BusinessUnit = "BuWeather",
@@ -64,6 +65,7 @@ public class GetAllProjectsQueryHandlerTest
         var project = resultArray.First();
         Assert.Multiple(() =>
         {
+            Assert.That(project.Id, Is.EqualTo(1));
             Assert.That(project.ProjectName, Is.EqualTo("Regen"));
             Assert.That(project.ClientName, Is.EqualTo("Nasa"));
             Assert.That(project.BusinessUnit, Is.EqualTo("BuWeather"));
