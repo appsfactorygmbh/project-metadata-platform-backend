@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.Projects;
 
 namespace ProjectMetadataPlatform.Infrastructure.DataAccess;
@@ -11,6 +12,7 @@ public sealed class ProjectMetadataPlatformDbContext : DbContext
     
     public DbSet<ProjectPlugins> ProjectPluginsRelation { get; set; }
     public DbSet<Plugin> Plugins { get; set; }
+    
     /// <summary>
     /// Represents the table for project entities.
     /// </summary>

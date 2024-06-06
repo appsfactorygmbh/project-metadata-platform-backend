@@ -27,11 +27,6 @@ public class Project()
         TeamNumber = teamNumber;
         Department = department;
     }
-    
-    /// <summary>
-    /// ets or sets the id of the project. This property is required.
-    /// </summary>
-    public required int Id { get; set; }
 
     /// <summary>
     /// Gets or sets the id of the project. This property is required.
