@@ -27,7 +27,7 @@ public class ProjectInitializationTests
             TeamNumber = expectedTeamNumber,
             Department = expectedDepartment
         };
-        
+
         // Assert
         Assert.AreEqual(expectedId, project.Id);
         Assert.AreEqual(expectedProjectName, project.ProjectName);
