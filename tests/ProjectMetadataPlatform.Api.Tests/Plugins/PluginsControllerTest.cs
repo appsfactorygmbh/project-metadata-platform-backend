@@ -37,11 +37,10 @@ public class Tests
     [Test]
     public async Task GetAllPluginsToId()
     {
-        var responseContent = new List<Plugin>
+        var responseContent = new List<ProjectPlugins>
         
         {
-            new Plugin{ Id = 1, PluginName = "TestPlugin" },
-            new Plugin{ Id = 2, PluginName = "TestPlugin2"}
+            new ProjectPlugins{ ProjectId = 1, PluginId = 1,DisplayName = "Gitlab"},
         };
         _mediator.Setup(m => m.Send(It.IsAny<GetAllPluginsForProjectIdQuery>(),It.IsAny<CancellationToken>())).ReturnsAsync(responseContent);
         var result =  await _controller.Get(0);
