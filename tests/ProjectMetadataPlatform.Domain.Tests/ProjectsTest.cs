@@ -18,7 +18,7 @@ public class ProjectInitializationTests
         string expectedDepartment = "ABC";
 
         // Act
-        var project = new Project()
+        var project = new Project
         {
             Id = expectedId,
             ProjectName = expectedProjectName,
@@ -27,7 +27,7 @@ public class ProjectInitializationTests
             TeamNumber = expectedTeamNumber,
             Department = expectedDepartment
         };
-
+        
         // Assert
         Assert.AreEqual(expectedId, project.Id);
         Assert.AreEqual(expectedProjectName, project.ProjectName);
