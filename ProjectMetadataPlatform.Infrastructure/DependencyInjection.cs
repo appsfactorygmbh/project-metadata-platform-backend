@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Infrastructure.DataAccess;
@@ -22,6 +22,7 @@ public static class DependencyInjection
             options.UseSqlite("Data Source = Database.db"));
 
         serviceCollection.AddScoped<IPluginRepository, PluginRepository>();
+        serviceCollection.AddScoped<IProjectsRepository, ProjectsRepository>();
         
         return serviceCollection;
     }
