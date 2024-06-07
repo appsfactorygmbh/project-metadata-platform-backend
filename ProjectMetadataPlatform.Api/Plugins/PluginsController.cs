@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ProjectMetadataPlatform.Api.Plugins.Models;
 using ProjectMetadataPlatform.Application.Plugins;
@@ -36,8 +37,21 @@ public class PluginsController : ControllerBase
     public async Task<ActionResult<IEnumerable<ProjectPlugins>>> Get([FromQuery] int id)
     {
        var query = new GetAllPluginsForProjectIdQuery(id);
-       var projectPlugins = await _mediator.Send(query);
-       var response = projectPlugins.Select(plugin => new GetPluginResponse(plugin.Plugin.PluginName, plugin.Url,plugin.DisplayName));
+       IEnumerable<ProjectPlugins> projectPlugins;
+       try
+       {
+           projectPlugins = await _mediator.Send(query);
+       }
+       catch 
+       {
+           return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+       }
+       
+       var response = projectPlugins.Select(plugin => new GetPluginResponse(
+           plugin.Plugin.PluginName, 
+           plugin.Url,
+           plugin.DisplayName));
+       
        return Ok(response);
     }
 }
