@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -16,13 +17,13 @@ namespace ProjectMetadataPlatform.Api.Tests.Projects;
 public class GetProjectsBySearchControllerTest
 {
     private ProjectsController _controller;
-    private Mock<IMediator> _mediator;
+    private  IMediator _mediator;
 
     [SetUp]
-    public void Setup()
+    public void Setup(IMediator mediator)
     {
-        _mediator = new Mock<IMediator>();
-        _controller = new ProjectsController(_mediator.Object);
+        _mediator = mediator;
+        _controller = new ProjectsController(_mediator);
     }
 
 
@@ -31,18 +32,31 @@ public class GetProjectsBySearchControllerTest
     public async Task GetProjectTest()
     {
         // prepare
-        var projectsResponseContent = new Project
+        var projectsResponseContent = new List<Project>()
         {
-            Id = 50,
-            ProjectName = "MetaDataPlatform",
-            ClientName = "Appsfactory",
-            BusinessUnit = "BusinessUnit",
-            TeamNumber = 200,
-            Department = "Security"
+            new Project
+            {
+                Id = 50,
+                ProjectName = "MetaDataPlatform",
+                ClientName = "Appsfactory",
+                BusinessUnit = "BusinessUnit",
+                TeamNumber = 200,
+                Department = "Security"
+            },
+            new Project
+            {
+                Id = 50,
+                ProjectName = "DataPlatform",
+                ClientName = "Appsfactory",
+                BusinessUnit = "BusinessUnit",
+                TeamNumber = 200,
+                Department = "Security"
+            }
         };
-        _mediator.Setup(m => m.Send(It.IsAny<GetProjectQuery>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(projectsResponseContent);
-
+         
+        /*_mediator.Setup(m => m.Send(It.IsAny<GetAllProjectsQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(projectsResponseContent);*/
+        await _mediator.Send(It.IsAny<GetAllProjectsQuery>(), It.IsAny<CancellationToken>());
         // act
         var result = await _controller.Get("M");
 
