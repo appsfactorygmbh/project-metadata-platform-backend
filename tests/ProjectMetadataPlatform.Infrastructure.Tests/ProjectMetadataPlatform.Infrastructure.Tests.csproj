@@ -18,6 +18,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\ProjectMetadataPlatform.Api\ProjectMetadataPlatform.Api.csproj" />
       <ProjectReference Include="..\..\ProjectMetadataPlatform.Infrastructure\ProjectMetadataPlatform.Infrastructure.csproj" />
     </ItemGroup>
 
