@@ -9,8 +9,14 @@ namespace ProjectMetadataPlatform.Infrastructure.DataAccess;
 /// </summary>
 public sealed class ProjectMetadataPlatformDbContext : DbContext
 {
+    /// <summary>
+    /// Represents the table for the relation between Project and Plugin entities.
+    /// </summary>
     
     public DbSet<ProjectPlugins> ProjectPluginsRelation { get; set; }
+    /// <summary>
+    /// Represents the table for plugin entities.
+    /// </summary>
     public DbSet<Plugin> Plugins { get; set; }
     
     /// <summary>

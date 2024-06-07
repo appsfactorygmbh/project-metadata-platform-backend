@@ -18,11 +18,11 @@ public static class DependencyInjection
     /// <returns>The service collection with the add dependencies.</returns>
     public static IServiceCollection AddInfrastructureDependencies(this IServiceCollection serviceCollection)
     {
-        serviceCollection.AddDbContext<ProjectMetadataPlatformDbContext>(options =>
+        _ = serviceCollection.AddDbContext<ProjectMetadataPlatformDbContext>(options =>
             options.UseSqlite("Data Source = Database.db"));
 
-        serviceCollection.AddScoped<IPluginRepository, PluginRepository>();
-        serviceCollection.AddScoped<IProjectsRepository, ProjectsRepository>();
+        _ = serviceCollection.AddScoped<IPluginRepository, PluginRepository>();
+        _ = serviceCollection.AddScoped<IProjectsRepository, ProjectsRepository>();
         
         return serviceCollection;
     }

@@ -20,7 +20,7 @@ public class PluginModelConfig : IEntityTypeConfiguration<Plugin>
         builder.Property(u => u.PluginName)
             .IsRequired();
 
-        builder.HasMany<ProjectPlugins>(p => p.ProjectPlugins)
+        builder.HasMany(p => p.ProjectPlugins)
             .WithOne(pp => pp.Plugin)
             .HasForeignKey(pp => pp.PluginId);
 

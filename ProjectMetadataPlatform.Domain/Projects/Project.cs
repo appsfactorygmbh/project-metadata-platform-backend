@@ -39,6 +39,9 @@ public class Project
     /// </summary>
     public required string Department { get; set; }
     
+    /// <summary>
+    /// Is used for the many-to-many relation in EF core.
+    /// </summary>
     public ICollection<ProjectPlugins>? ProjectPlugins { get; set; }
     
 }
