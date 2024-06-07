@@ -27,9 +27,9 @@ public class ProjectModelConfig : IEntityTypeConfiguration<Project>
 
         // Set the BusinessUnit property as required (non-nullable)
         _ = builder.Property(e => e.BusinessUnit).IsRequired();
-            
+
         // Set the TeamNumber property as required  (non-nullable)
-        builder.Property(e => e.TeamNumber).IsRequired();
+        _ = builder.Property(e => e.TeamNumber).IsRequired();
 
         // Set the Department property as required (non-nullable)
         _ = builder.Property(e => e.Department).IsRequired();
