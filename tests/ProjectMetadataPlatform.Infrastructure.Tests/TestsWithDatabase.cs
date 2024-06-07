@@ -18,7 +18,7 @@ namespace ProjectMetadataPlatform.Infrastructure.Tests
             using var context = DbContext();
 
             context.Database.EnsureDeleted();
-            context.Database.Migrate();
+            context.Database.EnsureCreated();
         }
 
         [TearDown]
