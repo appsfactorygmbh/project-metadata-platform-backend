@@ -58,12 +58,12 @@ public class ProjectsControllerTest
         {
             new()
             {
-               Id= 23,
-               ProjectName= "Regen", 
-               ClientName="Nasa", 
-               BusinessUnit="BuWeather", 
-               TeamNumber=42, 
-               Department="Homelandsecurity"
+                Id = 1,
+                ProjectName = "Regen",
+                ClientName = "Nasa",
+                BusinessUnit = "BuWeather",
+                TeamNumber = 42,
+                Department = "Homelandsecurity"
             }
         };
         _mediator.Setup(m => m.Send(It.IsAny<GetAllProjectsQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(projectsResponseContent);
