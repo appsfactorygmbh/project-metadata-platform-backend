@@ -46,16 +46,10 @@ public class PluginsController : ControllerBase
        {
            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
        }
-       
-       IEnumerable<GetPluginResponse> response = projectPlugins.Select(plugin => plugin.DisplayName != null
-           ? new GetPluginResponse(
-               plugin.Plugin.PluginName,
-               plugin.Url,
-               plugin.DisplayName)
-           : new GetPluginResponse(
-               plugin.Plugin.PluginName,
-               plugin.Url,
-               plugin.Plugin.PluginName));
+
+       IEnumerable<GetPluginResponse> response = projectPlugins.Select(plugin
+           => new GetPluginResponse(plugin.Plugin.PluginName, plugin.Url,
+               plugin.DisplayName ?? plugin.Plugin.PluginName));
        
        return Ok(response);
     }

@@ -21,6 +21,7 @@ public class ProjectPlugins
     /// The id for a plugin used as a foreign key for the plugin.
     /// </summary>
     public required int PluginId { get; set; }
+    
     /// <summary>
     /// The id for a project used as a foreign key for the project.
     /// </summary>
