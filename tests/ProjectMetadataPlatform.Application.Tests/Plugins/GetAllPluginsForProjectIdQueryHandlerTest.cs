@@ -67,6 +67,6 @@ public class GetAllPluginsForProjectIdQueryHandlerTest
         //test for no plugins
         var queryFail = new GetAllPluginsForProjectIdQuery(0);
         var resultFail = await _handler.Handle(queryFail, It.IsAny<CancellationToken>());
-        Assert.That(queryFail, Is.Null);
+        Assert.That(resultFail, Is.Null);
     }
 }
