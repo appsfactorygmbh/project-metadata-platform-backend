@@ -17,20 +17,5 @@ public class ProjectnModelConfig : IEntityTypeConfiguration<Project>
     {
         // Sets the primary key for the Project entity to be the Id property.
         builder.HasKey(e => e.Id);
-
-        // Sets the ProjectName property as required (non-nullable).
-        builder.Property(e => e.ProjectName).IsRequired();
-
-        // Sets the ClientName property as required (non-nullable).
-        builder.Property(e => e.ClientName).IsRequired();
-
-        // Sets the BusinessUnit property as required (non-nullable).
-        builder.Property(e => e.BusinessUnit).IsRequired();
-
-        // Sets the TeamNumber property as required (non-nullable).
-        builder.Property(e => e.TeamNumber).IsRequired();
-
-        // Sets the Department property as required (non-nullable).
-        builder.Property(e => e.Department).IsRequired();
     }
 }

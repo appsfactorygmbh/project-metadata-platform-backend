@@ -11,12 +11,12 @@ namespace ProjectMetadataPlatform.Infrastructure.DataAccess;
 /// Base repository class providing common data access methods for entities.
 /// </summary>
 /// <typeparam name="T">The type of entity being managed.</typeparam>
-public class RepositoryBase<T> : IRepositoryBase<T> where T : class
+public abstract class RepositoryBase<T> where T : class
 {
     /// <summary>
     /// The database context used for data access.
     /// </summary>
-    private readonly ProjectMetadataPlatformDbContext ProjectMetadataPlatformDbContext;
+    protected readonly ProjectMetadataPlatformDbContext ProjectMetadataPlatformDbContext;
     
     /// <summary>
     /// Initializes a new instance of the <see cref="RepositoryBase{T}"/> class.
