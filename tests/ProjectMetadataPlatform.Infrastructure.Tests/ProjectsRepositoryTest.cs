@@ -1,5 +1,4 @@
 using NUnit.Framework;
-using Microsoft.EntityFrameworkCore;
 using ProjectMetadataPlatform.Infrastructure.DataAccess;
 using ProjectMetadataPlatform.Domain.Projects;
 using System.Threading.Tasks;

@@ -10,7 +10,7 @@ using ProjectMetadataPlatform.Infrastructure.Plugins;
 
 namespace ProjectMetadataPlatform.Infrastructure.Tests;
 
-public class PluginsRepositoryTest
+public class PluginsRepositoryTest : TestsWithDatabase
 {
     
     protected ProjectMetadataPlatformDbContext _context;
@@ -18,12 +18,7 @@ public class PluginsRepositoryTest
     [SetUp]
     public void Setup()
     {
-        _context = new(
-            new DbContextOptionsBuilder<ProjectMetadataPlatformDbContext>()
-                .UseSqlite("Datasource=test-db.db").Options);
-        // ensure fresh start and proper creation 
-        _context.Database.EnsureDeleted();
-        _context.Database.EnsureCreated();
+        _context = DbContext();
         _repository = new PluginRepository(_context);
     }
     
