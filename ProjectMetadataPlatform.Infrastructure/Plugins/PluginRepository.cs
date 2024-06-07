@@ -35,6 +35,6 @@ public class PluginRepository : IPluginRepository
         
         //implement database with EF core and send request to it from here
         
-        return _context.ProjectPluginsRelation.Where(rel => rel.ProjectId == id).Include(rel => rel.Plugin).ToList();
+        return [.. _context.ProjectPluginsRelation.Where(rel => rel.ProjectId == id).Include(rel => rel.Plugin)];
     }
 }

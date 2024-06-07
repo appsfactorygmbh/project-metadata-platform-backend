@@ -28,7 +28,7 @@ public sealed class ProjectMetadataPlatformDbContext : DbContext
     /// <inheritdoc />
     public ProjectMetadataPlatformDbContext(DbContextOptions<ProjectMetadataPlatformDbContext> options) : base(options)
     {
-        Database.EnsureCreated();
+        _ = Database.EnsureCreated();
     }
     
   
