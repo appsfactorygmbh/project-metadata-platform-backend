@@ -2,7 +2,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Infrastructure.DataAccess;
-using ProjectMetadataPlatform.Infrastructure.WeatherForecasts;
 
 namespace ProjectMetadataPlatform.Infrastructure;
 

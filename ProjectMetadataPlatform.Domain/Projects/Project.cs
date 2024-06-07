@@ -4,10 +4,6 @@ namespace ProjectMetadataPlatform.Domain.Projects;
 /// The representation of a project in the Database.
 /// </summary>
 // TODO Add list of plugins as property.
-/// <summary>
-/// The representation of a project in the Database.
-/// </summary>
-// TODO Add list of plugins as property.
 public class Project
 {
     /// <summary>

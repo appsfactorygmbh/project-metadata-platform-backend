@@ -16,15 +16,15 @@ public class RepositoryBase<T> : IRepositoryBase<T> where T : class
     /// <summary>
     /// The database context used for data access.
     /// </summary>
-    private ProjectMetadataPlatformDbContext ProjectMetadataPlatformDbContext;
+    private readonly ProjectMetadataPlatformDbContext ProjectMetadataPlatformDbContext;
     
     /// <summary>
     /// Initializes a new instance of the <see cref="RepositoryBase{T}"/> class.
     /// </summary>
-    /// <param name="_ProjectMetadataPlatformDbContext">The database context.</param>
-    public RepositoryBase(ProjectMetadataPlatformDbContext _ProjectMetadataPlatformDbContext)
+    /// <param name="projectMetadataPlatformDbContext">The database context.</param>
+    public RepositoryBase(ProjectMetadataPlatformDbContext projectMetadataPlatformDbContext)
     {
-        ProjectMetadataPlatformDbContext = _ProjectMetadataPlatformDbContext;
+        ProjectMetadataPlatformDbContext = projectMetadataPlatformDbContext;
     }
 
     /// <summary>
