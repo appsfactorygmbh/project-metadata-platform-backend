@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using System.Linq.Expressions;
-using ProjectMetadataPlatform.Application.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -11,20 +10,20 @@ namespace ProjectMetadataPlatform.Infrastructure.DataAccess;
 /// Base repository class providing common data access methods for entities.
 /// </summary>
 /// <typeparam name="T">The type of entity being managed.</typeparam>
-public class RepositoryBase<T> : IRepositoryBase<T> where T : class
+public abstract class RepositoryBase<T> where T : class
 {
     /// <summary>
     /// The database context used for data access.
     /// </summary>
-    private ProjectMetadataPlatformDbContext ProjectMetadataPlatformDbContext;
+    protected ProjectMetadataPlatformDbContext ProjectMetadataPlatformDbContext { get; set; }
     
     /// <summary>
     /// Initializes a new instance of the <see cref="RepositoryBase{T}"/> class.
     /// </summary>
-    /// <param name="_ProjectMetadataPlatformDbContext">The database context.</param>
-    public RepositoryBase(ProjectMetadataPlatformDbContext _ProjectMetadataPlatformDbContext)
+    /// <param name="projectMetadataPlatformDbContext">The database context.</param>
+    public RepositoryBase(ProjectMetadataPlatformDbContext projectMetadataPlatformDbContext)
     {
-        ProjectMetadataPlatformDbContext = _ProjectMetadataPlatformDbContext;
+        ProjectMetadataPlatformDbContext = projectMetadataPlatformDbContext;
     }
 
     /// <summary>

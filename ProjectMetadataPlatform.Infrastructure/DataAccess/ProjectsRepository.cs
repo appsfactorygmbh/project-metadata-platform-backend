@@ -1,7 +1,6 @@
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Domain.Projects;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,4 +25,12 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     /// <returns>A task representing the asynchronous operation. When this task completes, it returns a collection of projects.</returns>
     public async Task<IEnumerable<Project>> GetAllProjectsAsync() =>
         await GetEverything().ToListAsync();
+   
+    /// <summary>
+    /// Asynchronously retrieves a project from the database by its identifier.
+    /// </summary>
+    /// <param name="id">Identification number for a project</param>
+    /// <returns>A task representing the asynchronous operation. When this task completes, it returns one project.</returns>
+    public async Task<Project?> GetProjectAsync(int id) =>
+        await GetIf(p => p.Id == id).FirstOrDefaultAsync();
 }

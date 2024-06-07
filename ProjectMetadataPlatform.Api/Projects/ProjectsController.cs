@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -40,8 +41,9 @@ public class ProjectsController : ControllerBase
         {
             projects = await _mediator.Send(query);
         }
-        catch 
+        catch (Exception e)
         {
+            Console.WriteLine(e.StackTrace);
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
 
@@ -52,5 +54,42 @@ public class ProjectsController : ControllerBase
             project.TeamNumber));
 
         return Ok(response);
+    }
+    
+    /// <summary>
+    /// Retrieves a project by id.
+    /// </summary>
+    /// <param name="id">Identifiacation number for the project</param>
+    /// <returns>A project.</returns>
+    [HttpGet("{id:int}")]
+    public async Task<ActionResult<GetProjectsResponse>> Get(int id)
+    {
+        var query = new GetProjectQuery(id);
+        Project? project;
+        try
+        {
+            project = await _mediator.Send(query);
+        }
+        catch (Exception e)
+        {
+            Console.Write(e.StackTrace);
+            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+        }
+        
+        if(project == null)
+        {
+            return NotFound(project);
+        }
+        
+        var response =  new GetProjectResponse(
+            
+            project.Id,
+            project.ProjectName,
+            project.ClientName,
+            project.BusinessUnit,
+            project.TeamNumber,
+            project.Department);
+
+        return  Ok(response);
     }
 }

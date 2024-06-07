@@ -4,9 +4,10 @@ using ProjectMetadataPlatform.Infrastructure.DataAccess;
 using ProjectMetadataPlatform.Domain.Projects;
 using System.Threading.Tasks;
 using System.Linq;
+using ProjectMetadataPlatform.Infrastructure.Tests;
 
 [TestFixture]
-public class ProjectsRepositoryTests
+public class ProjectsRepositoryTests : TestsWithDatabase
 {
     protected ProjectMetadataPlatformDbContext _context;
     private ProjectsRepository _repository;
@@ -14,21 +15,8 @@ public class ProjectsRepositoryTests
     [SetUp]
     public void Setup()
     {
-        _context = new(
-            new DbContextOptionsBuilder<ProjectMetadataPlatformDbContext>()
-                .UseSqlite("Datasource=test-db.db").Options);
-        // ensure fresh start and proper creation 
-        _context.Database.EnsureDeleted();
-        _context.Database.EnsureCreated();
+        _context = DbContext();
         _repository = new ProjectsRepository(_context);
-    }
-
-    [TearDown]
-    public void TearDown()
-    {
-        // Clean up the database after each test
-        _context.Database.EnsureDeleted();
-        _context.Dispose();
     }
     
     [Test]

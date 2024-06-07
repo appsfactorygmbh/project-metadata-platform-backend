@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Infrastructure.DataAccess;
 
@@ -20,10 +20,9 @@ public class TestsWithDatabase
         context.Database.Migrate();
     }
 
-    [TearDown]
-    public void TearDown()
-    {
-        using var context = DbContext();
+            context.Database.EnsureDeleted();
+            context.Database.EnsureCreated();
+        }
 
         context.Database.EnsureDeleted();
     }
