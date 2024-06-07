@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using System.Linq.Expressions;
-using ProjectMetadataPlatform.Application.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -16,7 +15,7 @@ public abstract class RepositoryBase<T> where T : class
     /// <summary>
     /// The database context used for data access.
     /// </summary>
-    protected readonly ProjectMetadataPlatformDbContext ProjectMetadataPlatformDbContext;
+    protected ProjectMetadataPlatformDbContext ProjectMetadataPlatformDbContext { get; set; }
     
     /// <summary>
     /// Initializes a new instance of the <see cref="RepositoryBase{T}"/> class.
