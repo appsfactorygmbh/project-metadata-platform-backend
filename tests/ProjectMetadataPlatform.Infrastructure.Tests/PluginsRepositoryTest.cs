@@ -75,9 +75,9 @@ public class PluginsRepositoryTest : TestsWithDatabase
         
         Assert.Multiple(() =>
         {
-            Assert.That(pluginRes.Url, Is.EqualTo("gitlab.com"));
-            Assert.That(pluginRes.DisplayName, Is.EqualTo("gitlab"));
-            Assert.That(pluginRes.PluginName, Is.EqualTo("Gitlab"));
+            Assert.That(rep[0].Url, Is.EqualTo("gitlab.com"));
+            Assert.That(rep[0].DisplayName, Is.EqualTo("gitlab"));
+            Assert.That(rep[0].Plugin.PluginName, Is.EqualTo("Gitlab"));
         });
     }
     

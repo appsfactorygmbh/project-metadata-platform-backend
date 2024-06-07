@@ -78,4 +78,12 @@ public class GetAllPluginsForProjectIdQueryHandlerTest
         var resultFail = await _handler.Handle(queryFail, It.IsAny<CancellationToken>());
         Assert.That(resultFail, Is.Null);
     }
+    
+    [Test]
+    public async Task HandleGetAllProjectsForProjectIdQueryHandler_WhenZeroPlugins_Test()
+    {
+        var queryFail = new GetAllPluginsForProjectIdQuery(0);
+        var resultFail = await _handler.Handle(queryFail, It.IsAny<CancellationToken>()); 
+        Assert.That(resultFail, Is.Null);
+    }
 }
