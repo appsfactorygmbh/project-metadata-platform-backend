@@ -29,7 +29,7 @@ public class GetAllProjectsQueryHandler : IRequestHandler<GetAllProjectsQuery, I
     }
     
     public Task<IEnumerable<Project>> Handle(GetAllProjectsQuery request, CancellationToken cancellationToken,string search)
-         {
-             return _projectRepository.GetProjectsAsync(search);
-         }
+     {
+         return _projectRepository.GetProjectsAsync(search);
+     }
 }
