@@ -33,6 +33,7 @@ public class Tests
         
         
         Assert.IsNull(result.Value);
+        Assert.IsNotEmpty(result.Value);
     }
 
     [Test]
