@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -28,15 +29,13 @@ public class Tests
     [Test]
     public async Task GetAllPlugins_EmptyResponseList_Test()
     {
-        _mediator.Setup(m => m.Send(It.IsAny<GetAllPluginsForProjectIdQuery>(),It.IsAny<CancellationToken>())).ReturnsAsync([]);
+        _mediator.Setup(m => m.Send(It.IsAny<GetAllPluginsForProjectIdQuery>(),It.IsAny<CancellationToken>())).ReturnsAsync(new List<ProjectPlugins>());
         var result =  await _controller.Get(0);
         
         
-        Assert.IsNull(result.Value);
-        if (result.Value != null)
-        {
-            Assert.IsNotEmpty(result.Value);
-        }
+        Assert.IsNotNull(result);
+        var value = result.Result as OkObjectResult;
+        Assert.IsEmpty((IEnumerable)value.Value);
         
     }
 
@@ -47,10 +46,10 @@ public class Tests
         var plugin = new Plugin { Id = 1, PluginName = "plugin 1" };
         var projcet = new Project {Id = 1, Department = "department 1", BusinessUnit = "business unit 1", ClientName = "client name 1", ProjectName = "project 1", TeamNumber = 1};
         var responseContent = new List<ProjectPlugins>
-        
         {
             new ProjectPlugins{ ProjectId = 1, PluginId = 1, Plugin = plugin,Project = projcet,DisplayName = "Gitlab", Url ="Plugin1.com"},
         };
+        
         _mediator.Setup(m => m.Send(It.IsAny<GetAllPluginsForProjectIdQuery>(),It.IsAny<CancellationToken>())).ReturnsAsync(responseContent);
         var result =  await _controller.Get(0);
         
@@ -62,8 +61,43 @@ public class Tests
             Assert.That(okResult!.Value, Is.Not.Null);
             Assert.That(okResult.Value, Is.InstanceOf<IEnumerable<GetPluginResponse>>());
         });
+        
         var resultValue = (okResult?.Value as IEnumerable<GetPluginResponse>)!.ToList();
         Assert.That(resultValue, Has.Count.EqualTo(1));
+
+        var resultObj = resultValue[0];
+        Assert.Multiple(() =>
+        {
+            Assert.That(resultObj.Url ,Is.EqualTo("Plugin1.com"));
+            Assert.That(resultObj.PluginName ,Is.EqualTo("plugin 1"));
+            Assert.That(resultObj.DisplayName, Is.EqualTo("Gitlab"));
+        });
+        
+    }
+    
+    [Test]
+    public async Task DisplayNameNullCheckTest()
+    {
+
+        var plugin = new Plugin { Id = 1, PluginName = "plugin 1" };
+        var projcet = new Project {Id = 1, Department = "department 1", BusinessUnit = "business unit 1", ClientName = "client name 1", ProjectName = "project 1", TeamNumber = 1};
+        var responseContent = new List<ProjectPlugins>
+        {
+            new ProjectPlugins{ ProjectId = 1, PluginId = 1, Plugin = plugin,Project = projcet, Url ="Plugin1.com"},
+        };
+        
+        _mediator.Setup(m => m.Send(It.IsAny<GetAllPluginsForProjectIdQuery>(),It.IsAny<CancellationToken>())).ReturnsAsync(responseContent);
+        var result =  await _controller.Get(0);
+        var okResult = result.Result as OkObjectResult;
+        var resultValue = (okResult?.Value as IEnumerable<GetPluginResponse>)!.ToList();
+
+        var resultObj = resultValue[0];
+        Assert.Multiple(() =>
+        {
+            Assert.That(resultObj.Url ,Is.EqualTo("Plugin1.com"));
+            Assert.That(resultObj.PluginName ,Is.EqualTo("plugin 1"));
+            Assert.That(resultObj.DisplayName, Is.EqualTo("plugin 1"));
+        });
         
     }
 }

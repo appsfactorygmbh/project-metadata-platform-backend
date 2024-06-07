@@ -64,20 +64,12 @@ public class PluginsRepositoryTest : TestsWithDatabase
         var rep = await _repository.GetAllPluginsForProjectIdAsync(1);
         
         Assert.That(rep, Is.Not.Empty);
-        List<GetPluginResponse> responses = new List<GetPluginResponse>();
-        for (int i = 0; i < rep.Count; i++)
-        {
-            var obj = rep[i];
-            GetPluginResponse pluginRep = new(obj.Plugin?.PluginName, obj.Url, obj.DisplayName);
-            responses.Add(pluginRep);
-        }
-        GetPluginResponse pluginRes = responses[0];
         
         Assert.Multiple(() =>
         {
-            Assert.That(pluginRes.Url, Is.EqualTo("gitlab.com"));
-            Assert.That(pluginRes.DisplayName, Is.EqualTo("gitlab"));
-            Assert.That(pluginRes.PluginName, Is.EqualTo("Gitlab"));
+            Assert.That(rep[0].Url, Is.EqualTo("gitlab.com"));
+            Assert.That(rep[0].DisplayName, Is.EqualTo("gitlab"));
+            Assert.That(rep[0].Plugin.PluginName, Is.EqualTo("Gitlab"));
         });
     }
     
