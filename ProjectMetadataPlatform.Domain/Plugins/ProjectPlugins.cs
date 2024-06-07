@@ -1,19 +1,38 @@
-using System.Collections.Generic;
 using ProjectMetadataPlatform.Domain.Projects;
 
 namespace ProjectMetadataPlatform.Domain.Plugins;
 
+/// <summary>
+/// The representation of a relation between a Project and a Plugin in the Database.
+/// </summary>
 public class ProjectPlugins
 {
-    public Project? Project { get; set; }
+    /// <summary>
+    /// The project stored in the relation.
+    /// </summary>
+    public required Project Project { get; set; }
+   
+    /// <summary>
+    /// The plugin stored in the relation.
+    /// </summary>
+    public required Plugin Plugin { get; set; }
 
-    public Plugin? Plugin { get; set; }
+    /// <summary>
+    /// The id for a plugin used as a foreign key for the plugin.
+    /// </summary>
+    public required int PluginId { get; set; }
+    /// <summary>
+    /// The id for a project used as a foreign key for the project.
+    /// </summary>
+    public required int ProjectId { get; set; }
 
-    public int PluginId { get; set; }
+    /// <summary>
+    /// The display name for the plugin.
+    /// </summary>
+    public string? DisplayName { get; set; }
 
-    public int ProjectId { get; set; }
-
-    public string DisplayName { get; set; }
-
-    public string Url { get; set; }
+    /// <summary>
+    /// Url for the plugin.
+    /// </summary>
+    public required string Url { get; set; }
 }
