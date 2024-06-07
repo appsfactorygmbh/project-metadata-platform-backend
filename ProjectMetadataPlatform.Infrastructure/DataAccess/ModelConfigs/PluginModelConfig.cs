@@ -15,12 +15,12 @@ public class PluginModelConfig : IEntityTypeConfiguration<Plugin>
     /// <param name="builder"></param>
     public void Configure(EntityTypeBuilder<Plugin> builder)
     {
-        builder.Property(e => e.Id)
+        _ = builder.Property(e => e.Id)
             .IsRequired();
-        builder.Property(u => u.PluginName)
+        _ = builder.Property(u => u.PluginName)
             .IsRequired();
 
-        builder.HasMany(p => p.ProjectPlugins)
+        _ = builder.HasMany(p => p.ProjectPlugins)
             .WithOne(pp => pp.Plugin)
             .HasForeignKey(pp => pp.PluginId);
 

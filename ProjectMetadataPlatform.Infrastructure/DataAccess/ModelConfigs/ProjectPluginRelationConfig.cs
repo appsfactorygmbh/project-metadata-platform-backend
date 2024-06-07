@@ -15,13 +15,13 @@ public class ProjectPluginRelationConfig : IEntityTypeConfiguration<ProjectPlugi
     /// <param name="builder"></param>
     public void Configure(EntityTypeBuilder<ProjectPlugins> builder)
     {
-        builder.HasKey(pp => new { pp.PluginId, pp.ProjectId });
-        
-        builder.HasOne(pp => pp.Project)
+        _ = builder.HasKey(pp => new { pp.PluginId, pp.ProjectId });
+
+        _ = builder.HasOne(pp => pp.Project)
             .WithMany(p => p.ProjectPlugins)
             .HasForeignKey(pp => pp.ProjectId);
 
-        builder.HasOne(pp => pp.Plugin)
+        _ = builder.HasOne(pp => pp.Plugin)
             .WithMany(p => p.ProjectPlugins)
             .HasForeignKey(pp => pp.PluginId);
     }
