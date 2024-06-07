@@ -46,20 +46,27 @@ public class GetAllPluginsForProjectIdQueryHandlerTest
                 
             }
         };
-        _pluginRepositoryMock.Setup(r => r.GetAllPluginsForProjectIdAsync(It.IsAny<int>()))
+        _pluginRepositoryMock.Setup(r => r.GetAllPluginsForProjectIdAsync(1))
             .ReturnsAsync(plugins);
         
-        var query = new GetAllPluginsForProjectIdQuery(0);
+        var query = new GetAllPluginsForProjectIdQuery(1);
         var result = (await _handler.Handle(query, It.IsAny<CancellationToken>())).ToList();
+
+        var res1 = result[0].Plugin?.PluginName;
+        var res2 = result[1].Plugin?.PluginName;
 
         Assert.That(result, Is.Not.Null);
         Assert.That(result, Is.TypeOf<List<ProjectPlugins>>());
         Assert.That(result, Has.Count.EqualTo(2));
         Assert.Multiple(() =>
         {
-            Assert.That(result[0].Plugin.PluginName, Is.EqualTo("Plugin 1"));
-            Assert.That(result[1].Plugin.PluginName, Is.EqualTo("Plugin 2"));
+            Assert.That(res1, Is.EqualTo("Plugin 1"));
+            Assert.That(res2, Is.EqualTo("Plugin 2"));
         });
-
+        
+        //test for no plugins
+        var queryFail = new GetAllPluginsForProjectIdQuery(0);
+        var resultFail = await _handler.Handle(queryFail, It.IsAny<CancellationToken>());
+        Assert.That(queryFail, Is.Null);
     }
 }
