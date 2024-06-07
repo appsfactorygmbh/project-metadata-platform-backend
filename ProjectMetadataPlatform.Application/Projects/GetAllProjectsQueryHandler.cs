@@ -7,9 +7,8 @@ using ProjectMetadataPlatform.Domain.Projects;
 
 namespace ProjectMetadataPlatform.Application.Projects;
 
-/// <summary>
+
 ///  <inheritdoc />
-/// </summary>
 public class GetAllProjectsQueryHandler : IRequestHandler<GetAllProjectsQuery, IEnumerable<Project>>
 {
     private readonly IProjectsRepository _projectRepository;

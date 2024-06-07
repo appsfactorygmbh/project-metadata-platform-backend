@@ -30,9 +30,7 @@ public class GetProjectByIDQueryHandlerTest
         var result = await _handler.Handle(query, It.IsAny<CancellationToken>());
         Assert.That(result, Is.Null);
     }
-       
     
-
     [Test]
     public async Task HandleGetProjectRequest_Test()
     {
@@ -53,21 +51,7 @@ public class GetProjectByIDQueryHandlerTest
         
         Assert.That(result, Is.Not.Null);
         Assert.That(result, Is.InstanceOf<Project>());
-
-        
-        
-        
-        
-        Assert.Multiple(() =>
-        {
-            Assert.That(result.ProjectName, Is.EqualTo("Regen"));
-            Assert.That(result.ClientName, Is.EqualTo("Nasa"));
-            Assert.That(result.BusinessUnit, Is.EqualTo("BuWeather"));
-            Assert.That(result.Department, Is.EqualTo("Homelandsecurity"));
-            Assert.That(result.TeamNumber, Is.EqualTo(42));
-            Assert.That(result.Id, Is.EqualTo(2));
-        });
+        Assert.That(result, Is.EqualTo(projectsResponseContent));
     }
     
- 
 }

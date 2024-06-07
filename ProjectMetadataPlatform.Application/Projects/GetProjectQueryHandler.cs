@@ -6,10 +6,8 @@ using ProjectMetadataPlatform.Domain.Projects;
 
 namespace ProjectMetadataPlatform.Application.Projects;
 
-/// <summary>
 ///  <inheritdoc />
-/// </summary>
-public class GetProjectQueryHandler : IRequestHandler<GetProjectQuery,Project>
+public class GetProjectQueryHandler : IRequestHandler<GetProjectQuery,Project?>
 {
     private readonly IProjectsRepository _projectsRepository;
     
@@ -22,7 +20,7 @@ public class GetProjectQueryHandler : IRequestHandler<GetProjectQuery,Project>
     }
     
     /// <inheritdoc />
-    public Task<Project> Handle(GetProjectQuery request, CancellationToken cancellationToken)
+    public Task<Project?> Handle(GetProjectQuery request, CancellationToken cancellationToken)
     {
         return _projectsRepository.GetProjectAsync(request.Id);
     }

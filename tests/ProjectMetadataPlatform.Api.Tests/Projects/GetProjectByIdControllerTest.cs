@@ -30,7 +30,6 @@ public class GetProjectByIdControllerTest
     }
     
     [Test]
-
     public async Task GetProjectbyId_NonexistentProject_Test()
     {
         _mediator.Setup(m => m.Send(It.Is<GetProjectQuery>(q => q.Id == 1), It.IsAny<CancellationToken>())).ReturnsAsync((Project) null);
@@ -38,9 +37,6 @@ public class GetProjectByIdControllerTest
         Assert.IsNotNull(result);
         
         Assert.IsInstanceOf<NotFoundObjectResult>(result.Result);
-        
-        
-        
     }
     
     [Test]
@@ -72,11 +68,9 @@ public class GetProjectByIdControllerTest
 
         var getProjectsResponse = okResult.Value as GetProjectResponse;
         Assert.IsNotNull(getProjectsResponse);
-
-
-
-
+        
         var project = getProjectsResponse;
+        Assert.That(project.Id, Is.EqualTo(50));
         Assert.That(project.ProjectName, Is.EqualTo("MetaDataPlatform"));
         Assert.That(project.ClientName, Is.EqualTo("Appsfactory"));
         Assert.That(project.BusinessUnit, Is.EqualTo("BusinessUnit"));

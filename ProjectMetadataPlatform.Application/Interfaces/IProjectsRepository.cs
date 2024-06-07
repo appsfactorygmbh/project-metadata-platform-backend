@@ -5,7 +5,7 @@ using ProjectMetadataPlatform.Domain.Projects;
 namespace ProjectMetadataPlatform.Application.Interfaces;
 
 /// <summary>
-/// Repository for all projects or one specific project with a id.
+/// Repository for all projects or one specific project with an id.
 /// </summary>
 
 public interface IProjectsRepository
@@ -19,6 +19,6 @@ public interface IProjectsRepository
     /// <summary>
     /// Returns a project.
     /// </summary>
-    /// <returns>One project.</returns>
-    Task<Project> GetProjectAsync(int id);
+    /// <returns>One project or null.</returns>
+    Task<Project?> GetProjectAsync(int id);
 }

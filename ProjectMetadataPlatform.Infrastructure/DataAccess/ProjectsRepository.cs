@@ -31,6 +31,6 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     /// </summary>
     /// <param name="id">Identification number for a project</param>
     /// <returns>A task representing the asynchronous operation. When this task completes, it returns one project.</returns>
-    public async Task<Project> GetProjectAsync(int id) =>
+    public async Task<Project?> GetProjectAsync(int id) =>
         await GetIf(p => p.Id == id).FirstOrDefaultAsync();
 }
