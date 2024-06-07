@@ -37,7 +37,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
         await _context.SaveChangesAsync();
 
         // Act
-        var result = await _repository.GetAllProjectsAsync();
+        var result = await _repository.GetProjectsAsync();
 
         // Assert
         Assert.AreEqual(1, result.Count());

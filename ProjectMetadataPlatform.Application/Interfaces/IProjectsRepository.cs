@@ -14,8 +14,14 @@ public interface IProjectsRepository
     /// Returns a collection of all projects.
     /// </summary>
     /// <returns>An Enumeration of projects.</returns>
-    Task<IEnumerable<Project>> GetAllProjectsAsync();
-   
+    Task<IEnumerable<Project>> GetProjectsAsync(string search);
+    
+    /// <summary>
+    /// Returns a collection of all projects.
+    /// </summary>
+    /// <returns>An Enumeration of projects.</returns>
+    Task<IEnumerable<Project>> GetProjectsAsync();
+    
     /// <summary>
     /// Returns a project.
     /// </summary>

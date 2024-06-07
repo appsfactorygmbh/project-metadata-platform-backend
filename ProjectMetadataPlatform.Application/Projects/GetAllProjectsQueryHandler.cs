@@ -12,7 +12,8 @@ namespace ProjectMetadataPlatform.Application.Projects;
 public class GetAllProjectsQueryHandler : IRequestHandler<GetAllProjectsQuery, IEnumerable<Project>>
 {
     private readonly IProjectsRepository _projectRepository;
-    
+    private IRequestHandler<GetAllProjectsQuery, IEnumerable<Project>> _requestHandlerImplementation;
+
     /// <summary>
     /// Creates a new instance of <see cref="GetAllProjectsQueryHandler"/>.
     /// </summary>
@@ -24,6 +25,11 @@ public class GetAllProjectsQueryHandler : IRequestHandler<GetAllProjectsQuery, I
     /// <inheritdoc />
     public Task<IEnumerable<Project>> Handle(GetAllProjectsQuery request, CancellationToken cancellationToken)
     {
-        return _projectRepository.GetAllProjectsAsync();
+        return _projectRepository.GetProjectsAsync();
     }
+    
+    public Task<IEnumerable<Project>> Handle(GetAllProjectsQuery request, CancellationToken cancellationToken,string search)
+         {
+             return _projectRepository.GetProjectsAsync(search);
+         }
 }

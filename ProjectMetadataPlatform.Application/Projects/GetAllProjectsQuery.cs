@@ -7,4 +7,4 @@ namespace ProjectMetadataPlatform.Application.Projects;
 /// <summary>
 /// Query to get all projects.
 /// </summary>
-public record GetAllProjectsQuery(): IRequest<IEnumerable<Project>>;
+public record GetAllProjectsQuery(string? search): IRequest<IEnumerable<Project>>;

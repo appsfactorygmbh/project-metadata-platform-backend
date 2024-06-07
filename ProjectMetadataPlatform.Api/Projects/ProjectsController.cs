@@ -32,10 +32,10 @@ public class ProjectsController : ControllerBase
     /// Retrieves all projects.
     /// </summary>
     /// <returns>All projects.</returns>
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<GetProjectsResponse>>> Get()
+    [HttpGet("{search?}")]
+    public async Task<ActionResult<IEnumerable<GetProjectsResponse>>> Get(string? search = null)
     {
-        var query = new GetAllProjectsQuery();
+        var query = new GetAllProjectsQuery(search);
         IEnumerable<Project> projects;
         try
         {

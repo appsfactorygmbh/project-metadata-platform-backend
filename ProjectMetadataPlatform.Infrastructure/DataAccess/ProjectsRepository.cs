@@ -1,6 +1,7 @@
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Domain.Projects;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,14 +18,29 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     /// <param name="dbContext">The database context for accessing project data.</param>
     public ProjectsRepository(ProjectMetadataPlatformDbContext dbContext) : base(dbContext)
     {
+        _context = dbContext;
+    }
+    private readonly ProjectMetadataPlatformDbContext _context;
+    
+    /// <summary>
+    /// Asynchronously retrieves all projects from the database.
+    /// </summary>
+    /// <returns>A task representing the asynchronous operation. When this task completes, it returns a collection of projects.</returns>
+    public async Task<IEnumerable<Project>> GetProjectsAsync(string search)
+    {
+        
+            return [.. _context.Projects.Where(project => project.ProjectName.StartsWith(search))];
     }
     
     /// <summary>
     /// Asynchronously retrieves all projects from the database.
     /// </summary>
     /// <returns>A task representing the asynchronous operation. When this task completes, it returns a collection of projects.</returns>
-    public async Task<IEnumerable<Project>> GetAllProjectsAsync() =>
-        await GetEverything().ToListAsync();
+    public async Task<IEnumerable<Project>> GetProjectsAsync()
+    {
+        return await GetEverything().ToListAsync();
+    }
+       
    
     /// <summary>
     /// Asynchronously retrieves a project from the database by its identifier.
