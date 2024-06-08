@@ -20,6 +20,8 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\ProjectMetadataPlatform.Api\ProjectMetadataPlatform.Api.csproj" />
+      <ProjectReference Include="..\..\ProjectMetadataPlatform.Domain\ProjectMetadataPlatform.Domain.csproj" />
+      <ProjectReference Include="..\ProjectMetadataPlatform.Domain.Tests\ProjectMetadataPlatform.Domain.Tests.csproj" />
     </ItemGroup>
 
 </Project>

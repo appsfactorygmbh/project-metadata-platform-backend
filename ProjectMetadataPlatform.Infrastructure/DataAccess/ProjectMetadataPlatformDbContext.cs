@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.Projects;
 
 namespace ProjectMetadataPlatform.Infrastructure.DataAccess;
@@ -8,6 +9,22 @@ namespace ProjectMetadataPlatform.Infrastructure.DataAccess;
 /// </summary>
 public sealed class ProjectMetadataPlatformDbContext : DbContext
 {
+    /// <summary>
+    /// Represents the table for the relation between Project and Plugin entities.
+    /// </summary>
+    
+    public DbSet<ProjectPlugins> ProjectPluginsRelation { get; set; }
+    /// <summary>
+    /// Represents the table for plugin entities.
+    /// </summary>
+    public DbSet<Plugin> Plugins { get; set; }
+    
+    /// <summary>
+    /// Represents the table for project entities.
+    /// </summary>
+    public DbSet<Project> Projects { get; set; }
+    
+    
     /// <inheritdoc />
     public ProjectMetadataPlatformDbContext()
     {
@@ -17,13 +34,10 @@ public sealed class ProjectMetadataPlatformDbContext : DbContext
     /// <inheritdoc />
     public ProjectMetadataPlatformDbContext(DbContextOptions<ProjectMetadataPlatformDbContext> options) : base(options)
     {
-        Database.EnsureCreated();
+        _ = Database.EnsureCreated();
     }
     
-    /// <summary>
-    /// Represents the table for project entities.
-    /// </summary>
-    public DbSet<Project> Projects { get; set; }
+  
     
     /// <summary>
     /// Configures the model that was discovered by convention from the entity types
@@ -34,6 +48,6 @@ public sealed class ProjectMetadataPlatformDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(ProjectMetadataPlatformDbContext).Assembly);
+        _ = modelBuilder.ApplyConfigurationsFromAssembly(typeof(ProjectMetadataPlatformDbContext).Assembly);
     }
 }
