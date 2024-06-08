@@ -27,4 +27,7 @@ RUN dotnet publish "ProjectMetadataPlatform.Api.csproj" -c $BUILD_CONFIGURATION 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+
+RUN chmod a+rwx /app
+
 ENTRYPOINT ["dotnet", "ProjectMetadataPlatform.Api.dll"]
