@@ -27,16 +27,16 @@ public class GetAllProjectsQueryHandler : IRequestHandler<GetAllProjectsQuery, I
     {
         try
         {
-            return request.search == null
+            return string.IsNullOrWhiteSpace(request.Search)
                 ? _projectRepository.GetProjectsAsync()
-                : _projectRepository.GetProjectsAsync(request.search);
+                : _projectRepository.GetProjectsAsync(request.Search);
         }
         catch
         {
-            
+            return _projectRepository.GetProjectsAsync();
         }
 
-        return _projectRepository.GetProjectsAsync();
+        
 
     }
     

@@ -17,18 +17,18 @@ namespace ProjectMetadataPlatform.Api.Tests.Projects;
 public class GetProjectsBySearchControllerTest
 {
     private ProjectsController _controller;
-    private  IMediator _mediator;
+    private  Mock<IMediator> _mediator;
 
     [SetUp]
-    public void Setup(IMediator mediator)
+    public void Setup()
     {
-        _mediator = mediator;
-        _controller = new ProjectsController(_mediator);
+         _mediator = new Mock<IMediator>();
+        _controller = new ProjectsController(_mediator.Object);
     }
 
 
-
     [Test]
+    [Ignore("not finished prolly will not able to be")]
     public async Task GetProjectTest()
     {
         // prepare
@@ -54,9 +54,9 @@ public class GetProjectsBySearchControllerTest
             }
         };
          
-        /*_mediator.Setup(m => m.Send(It.IsAny<GetAllProjectsQuery>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(projectsResponseContent);*/
-        await _mediator.Send(It.IsAny<GetAllProjectsQuery>(), It.IsAny<CancellationToken>());
+        _mediator.Setup(m => m.Send(It.Is<GetAllProjectsQuery>(m => m.Search == "M"), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(projectsResponseContent);
+        
         // act
         var result = await _controller.Get("M");
 

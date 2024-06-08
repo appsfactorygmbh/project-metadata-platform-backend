@@ -1,7 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using MediatR;
+using Moq;
 using NUnit.Framework;
+using ProjectMetadataPlatform.Api.Projects;
+using ProjectMetadataPlatform.Application.Projects;
 using ProjectMetadataPlatform.Domain.Projects;
 using ProjectMetadataPlatform.Infrastructure.DataAccess;
 
@@ -12,12 +17,14 @@ public class ProjectsBySearchTest : TestsWithDatabase
 {
     protected ProjectMetadataPlatformDbContext _context;
     private ProjectsRepository _repository;
+    
 
     [SetUp]
     public void Setup()
     {
         _context = DbContext();
         _repository = new ProjectsRepository(_context);
+        
     }
     
     [Test]
@@ -36,10 +43,10 @@ public class ProjectsBySearchTest : TestsWithDatabase
         
         _context.Projects.Add(project);
         await _context.SaveChangesAsync();
-
+        
         // Act
         var result = await _repository.GetProjectsAsync();
-
+       
         // Assert
         Assert.AreEqual(1, result.Count());
         Assert.That(project.Id, Is.EqualTo(1));
