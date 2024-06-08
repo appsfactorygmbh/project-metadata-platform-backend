@@ -1,7 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Infrastructure.DataAccess;
+using ProjectMetadataPlatform.Infrastructure.Plugins;
 
 namespace ProjectMetadataPlatform.Infrastructure;
 
@@ -17,11 +18,13 @@ public static class DependencyInjection
     /// <returns>The service collection with the add dependencies.</returns>
     public static IServiceCollection AddInfrastructureDependencies(this IServiceCollection serviceCollection)
     {
-        serviceCollection.AddDbContext<ProjectMetadataPlatformDbContext>(options =>
+        _ = serviceCollection.AddDbContext<ProjectMetadataPlatformDbContext>(options =>
             options.UseSqlite("Data Source = Database.db"));
 
-        serviceCollection.AddScoped<IProjectsRepository, ProjectsRepository>();
+        _ = serviceCollection.AddScoped<IPluginRepository, PluginRepository>();
+        _ = serviceCollection.AddScoped<IProjectsRepository, ProjectsRepository>();
         
         return serviceCollection;
     }
+
 }

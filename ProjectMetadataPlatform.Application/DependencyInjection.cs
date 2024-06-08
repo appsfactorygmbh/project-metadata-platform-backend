@@ -14,9 +14,7 @@ public static class DependencyInjection
     /// <returns>The service collection with the add dependencies.</returns>
     public static IServiceCollection AddApplicationDependencies(this IServiceCollection serviceCollection)
     {
-        serviceCollection.AddMediatR(configuration =>
+        return serviceCollection.AddMediatR(configuration =>
             configuration.RegisterServicesFromAssemblyContaining(typeof(DependencyInjection)));
-        
-        return serviceCollection;
     }
 }

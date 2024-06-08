@@ -23,7 +23,7 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     private readonly ProjectMetadataPlatformDbContext _context;
     
     /// <summary>
-    /// Asynchronously retrieves all projects from the database.
+    /// Asynchronously retrieves all projects with specific search pattern from the database.
     /// </summary>
     /// <returns>A task representing the asynchronous operation. When this task completes, it returns a collection of projects.</returns>
     public async Task<IEnumerable<Project>> GetProjectsAsync(string? search)

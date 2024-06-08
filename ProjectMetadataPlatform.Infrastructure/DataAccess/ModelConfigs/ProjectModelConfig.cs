@@ -5,17 +5,22 @@ using ProjectMetadataPlatform.Domain.Projects;
 namespace ProjectMetadataPlatform.Infrastructure.DataAccess.ModelConfigs;
 
 /// <summary>
-/// Configuration class for the Project entity model.
+/// Data Base Configuration for the Projects.
 /// </summary>
-public class ProjectnModelConfig : IEntityTypeConfiguration<Project>
+public class ProjectModelConfig : IEntityTypeConfiguration<Project>
 {
+    
     /// <summary>
-    /// Configures the entity of type Project.
+    /// Configures the Project entity.
     /// </summary>
-    /// <param name="builder">Provides a simple API surface for configuring a Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder that defines the shape of your entities, the relationships between them, and how they map to the database.</param>
+    /// <param name="builder"></param>
     public void Configure(EntityTypeBuilder<Project> builder)
     {
-        // Sets the primary key for the Project entity to be the Id property.
-        builder.HasKey(e => e.Id);
+        // Set the primary key for the Project entity
+        _ = builder.HasKey(e => e.Id);
+
+        _ = builder.HasMany(p => p.ProjectPlugins)
+            .WithOne(pp => pp.Project)
+            .HasForeignKey(pp => pp.ProjectId);
     }
 }

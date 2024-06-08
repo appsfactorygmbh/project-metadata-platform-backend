@@ -27,6 +27,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\ProjectMetadataPlatform.Application\ProjectMetadataPlatform.Application.csproj" />
+      <ProjectReference Include="..\..\ProjectMetadataPlatform.Domain\ProjectMetadataPlatform.Domain.csproj" />
     </ItemGroup>
 
 </Project>

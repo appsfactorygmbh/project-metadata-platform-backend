@@ -11,7 +11,7 @@ namespace ProjectMetadataPlatform.Application.Interfaces;
 public interface IProjectsRepository
 {
     /// <summary>
-    /// Returns a collection of all projects.
+    /// Returns a collection of all projects with specific search pattern.
     /// </summary>
     /// <returns>An Enumeration of projects.</returns>
     Task<IEnumerable<Project>> GetProjectsAsync(string? search);
@@ -21,7 +21,6 @@ public interface IProjectsRepository
     /// </summary>
     /// <returns>An Enumeration of projects.</returns>
     Task<IEnumerable<Project>> GetProjectsAsync();
-    
     
     /// <summary>
     /// Returns a project.

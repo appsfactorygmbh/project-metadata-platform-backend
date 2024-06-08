@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using ProjectMetadataPlatform.Domain.Plugins;
+
 namespace ProjectMetadataPlatform.Domain.Projects;
 
 /// <summary>
@@ -35,4 +38,10 @@ public class Project
     /// Gets or sets the department associated with the project. This property is required.
     /// </summary>
     public required string Department { get; set; }
+    
+    /// <summary>
+    /// Is used for the many-to-many relation in EF core.
+    /// </summary>
+    public ICollection<ProjectPlugins>? ProjectPlugins { get; set; }
+    
 }
