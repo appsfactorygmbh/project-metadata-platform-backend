@@ -7,16 +7,16 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["ProjectMetadataPlatform.Api/ProjectMetadataPlatform.Api.csproj", "ProjectMetadataPlatform.Api/"]
-COPY ["ProjectMetadataPlatform.Application/ProjectMetadataPlatform.Application.csproj", "ProjectMetadataPlatform.Application/"]
-COPY ["ProjectMetadataPlatform.Domain/ProjectMetadataPlatform.Domain.csproj", "ProjectMetadataPlatform.Domain/"]
-COPY ["ProjectMetadataPlatform.Infrastructure/ProjectMetadataPlatform.Infrastructure.csproj", "ProjectMetadataPlatform.Infrastructure/"]
-RUN mkdir "ProjectMetadataPlatform.Api/bin" -p
+COPY --chown=app ["ProjectMetadataPlatform.Api/ProjectMetadataPlatform.Api.csproj", "ProjectMetadataPlatform.Api/"]
+COPY --chown=app ["ProjectMetadataPlatform.Application/ProjectMetadataPlatform.Application.csproj", "ProjectMetadataPlatform.Application/"]
+COPY --chown=app ["ProjectMetadataPlatform.Domain/ProjectMetadataPlatform.Domain.csproj", "ProjectMetadataPlatform.Domain/"]
+COPY --chown=app ["ProjectMetadataPlatform.Infrastructure/ProjectMetadataPlatform.Infrastructure.csproj", "ProjectMetadataPlatform.Infrastructure/"]
+RUN mkdir "ProjectMetadataPlatform.Api/bin" -p --
 RUN mkdir "ProjectMetadataPlatform.Application/bin" -p
 RUN mkdir "ProjectMetadataPlatform.Domain/bin" -p
 RUN mkdir "ProjectMetadataPlatform.Infrastructure/bin" -p
 RUN dotnet restore "ProjectMetadataPlatform.Api/ProjectMetadataPlatform.Api.csproj"
-COPY . .
+COPY --chown=app . .
 WORKDIR "/src/ProjectMetadataPlatform.Api"
 RUN dotnet build "ProjectMetadataPlatform.Api.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
@@ -26,8 +26,6 @@ RUN dotnet publish "ProjectMetadataPlatform.Api.csproj" -c $BUILD_CONFIGURATION 
 
 FROM base AS final
 WORKDIR /app
-COPY --from=publish /app/publish .
-
-RUN chmod a+rwx /app
+COPY --chown=app --from=publish /app/publish .
 
 ENTRYPOINT ["dotnet", "ProjectMetadataPlatform.Api.dll"]
