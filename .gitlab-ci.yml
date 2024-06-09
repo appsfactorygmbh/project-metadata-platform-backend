@@ -7,9 +7,9 @@ variables:
   DEVELOP_BRANCH: develop
 
 include:
-  - project: 'projekt2024_A_Appsfactory_Project_Metadata_Platform/templates'
+  - project: "projekt2024_A_Appsfactory_Project_Metadata_Platform/templates"
     ref: main
-    file: 'pipeline/all.yml'
+    file: "pipeline/all.yml"
 
 test:
   stage: test
@@ -29,19 +29,19 @@ code-quality:
   image: mcr.microsoft.com/dotnet/sdk:8.0
   variables:
     DOTNET_ROLL_FORWARD: Major
-  script: 
-    - 'dotnet tool restore'
-    - 'dotnet build --configuration Release'
-    - 'export DIR=file://$(pwd)'
-    - 'dotnet tool run cq sarif ProjectMetadataPlatform.Domain/bin/codeanalysis.sarif.json gl-code-quality-report1.json $DIR'
-    - 'dotnet tool run cq sarif ProjectMetadataPlatform.Application/bin/codeanalysis.sarif.json gl-code-quality-report2.json $DIR'
-    - 'dotnet tool run cq sarif ProjectMetadataPlatform.Infrastructure/bin/codeanalysis.sarif.json gl-code-quality-report3.json $DIR'
-    - 'dotnet tool run cq sarif ProjectMetadataPlatform.Api/bin/codeanalysis.sarif.json gl-code-quality-report4.json $DIR'
-    - 'dotnet tool run cq merge gl-code-quality-report.json gl-code-quality-report1.json gl-code-quality-report2.json gl-code-quality-report3.json gl-code-quality-report4.json'
+  script:
+    - "dotnet tool restore"
+    - "dotnet build --configuration Release"
+    - "export DIR=file://$(pwd)"
+    - "dotnet tool run cq sarif ProjectMetadataPlatform.Domain/bin/codeanalysis.sarif.json gl-code-quality-report1.json $DIR"
+    - "dotnet tool run cq sarif ProjectMetadataPlatform.Application/bin/codeanalysis.sarif.json gl-code-quality-report2.json $DIR"
+    - "dotnet tool run cq sarif ProjectMetadataPlatform.Infrastructure/bin/codeanalysis.sarif.json gl-code-quality-report3.json $DIR"
+    - "dotnet tool run cq sarif ProjectMetadataPlatform.Api/bin/codeanalysis.sarif.json gl-code-quality-report4.json $DIR"
+    - "dotnet tool run cq merge gl-code-quality-report.json gl-code-quality-report1.json gl-code-quality-report2.json gl-code-quality-report3.json gl-code-quality-report4.json"
   artifacts:
     paths:
       - gl-code-quality-report.json
-    expose_as: 'code_quality_reports'
+    expose_as: "code_quality_reports"
     reports:
       codequality: gl-code-quality-report.json
   rules:
