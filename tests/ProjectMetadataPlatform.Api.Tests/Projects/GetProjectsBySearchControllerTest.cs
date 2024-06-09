@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -28,33 +29,25 @@ public class GetProjectsBySearchControllerTest
 
 
     [Test]
-    [Ignore("not finished prolly will not able to be")]
+    //[Ignore("not finished prolly will not able to be")]
     public async Task GetProjectTest()
     {
         // prepare
         var projectsResponseContent = new List<Project>()
         {
-            new Project
+            new()
             {
-                Id = 50,
-                ProjectName = "MetaDataPlatform",
-                ClientName = "Appsfactory",
-                BusinessUnit = "BusinessUnit",
-                TeamNumber = 200,
-                Department = "Security"
-            },
-            new Project
-            {
-                Id = 50,
-                ProjectName = "DataPlatform",
-                ClientName = "Appsfactory",
-                BusinessUnit = "BusinessUnit",
-                TeamNumber = 200,
-                Department = "Security"
+                Id = 0,
+                ProjectName = "Regen",
+                ClientName = "Nasa",
+                BusinessUnit = "BuWeather",
+                TeamNumber = 42,
+                Department = "Homelandsecurity"
             }
+            
         };
          
-        _mediator.Setup(m => m.Send(It.Is<GetAllProjectsQuery>(m => m.Search == "M"), It.IsAny<CancellationToken>()))
+        _mediator.Setup(m => m.Send(It.Is<GetAllProjectsQuery>(x => x.Search == "M"), It.IsAny<CancellationToken>()))
             .ReturnsAsync(projectsResponseContent);
         
         // act
@@ -65,11 +58,19 @@ public class GetProjectsBySearchControllerTest
 
         var okResult = result.Result as OkObjectResult;
         Assert.IsNotNull(okResult);
-        Assert.IsInstanceOf<GetProjectResponse>(okResult.Value);
+        Assert.IsInstanceOf<IEnumerable<GetProjectsResponse>>(okResult.Value);
 
-        var getProjectsResponse = okResult.Value as GetProjectResponse;
-        Assert.IsNotNull(getProjectsResponse);
+        var getProjectsResponseEnumeration = okResult.Value as IEnumerable<GetProjectsResponse>;
+        Assert.IsNotNull(getProjectsResponseEnumeration);
+        
+        var getProjectsResponseArray = getProjectsResponseEnumeration as GetProjectsResponse[] ?? getProjectsResponseEnumeration.ToArray();
+        Assert.That(getProjectsResponseArray, Has.Length.EqualTo(1));
 
+        var project = getProjectsResponseArray.First();
+        Assert.That(project.ProjectName, Is.EqualTo("Regen"));
+        Assert.That(project.ClientName, Is.EqualTo("Nasa"));
+        Assert.That(project.BusinessUnit, Is.EqualTo("BuWeather"));
+        Assert.That(project.TeamNumber, Is.EqualTo(42));
         
     }
 }

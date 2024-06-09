@@ -31,13 +31,10 @@ public class GetAllProjectsQueryHandler : IRequestHandler<GetAllProjectsQuery, I
                 ? _projectRepository.GetProjectsAsync()
                 : _projectRepository.GetProjectsAsync(request.Search);
         }
-        catch
+        catch 
         {
             return _projectRepository.GetProjectsAsync();
         }
-
-        
-
     }
     
     
