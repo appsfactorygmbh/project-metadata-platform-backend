@@ -15,7 +15,7 @@ namespace ProjectMetadataPlatform.Infrastructure.Tests;
 [TestFixture]
 public class ProjectsBySearchTest : TestsWithDatabase
 {
-    protected ProjectMetadataPlatformDbContext _context;
+    private ProjectMetadataPlatformDbContext _context;
     private ProjectsRepository _repository;
     
 
@@ -31,7 +31,7 @@ public class ProjectsBySearchTest : TestsWithDatabase
     public async Task GetProjectsWithSearchTest()
     {
         // Arrange
-        var project = new Project()
+        var exampleProject = new Project()
         {
             Id = 1,
             ProjectName = "Regen",
@@ -41,12 +41,13 @@ public class ProjectsBySearchTest : TestsWithDatabase
             Department = "Homelandsecurity"
         };
         
-        _context.Projects.Add(project);
+        _context.Projects.Add(exampleProject);
         await _context.SaveChangesAsync();
         
         // Act
-        var result = await _repository.GetProjectsAsync();
-       
+        var result = await _repository.GetProjectsAsync("ege");
+        Assert.IsNotEmpty(result);
+        var project = result.First();
         // Assert
         Assert.AreEqual(1, result.Count());
         Assert.That(project.Id, Is.EqualTo(1));
@@ -57,9 +58,9 @@ public class ProjectsBySearchTest : TestsWithDatabase
         Assert.That(project.Department, Is.EqualTo("Homelandsecurity"));
     }
 
-    [Test] public async Task GetProjectsWithSearch_WithoutMatch_Test()
+    [Test] 
+    public async Task GetProjectsWithSearch_WithoutMatch_Test()
     {
-        // Arrange
         var project = new Project()
         {
             Id = 1,
@@ -73,15 +74,12 @@ public class ProjectsBySearchTest : TestsWithDatabase
         _context.Projects.Add(project);
         await _context.SaveChangesAsync();
 
-        // Act
         var result = await _repository.GetProjectsAsync("T");
-
-        // Assert
-        Assert.AreEqual(0, result.Count());
-        
+        Assert.IsEmpty(result);
     }
     
-    [Test] public async Task GetProjectsWithSearch_MultipleMatches_Test()
+    [Test] 
+    public async Task GetProjectsWithSearch_MultipleMatches_Test()
     {
         // Arrange
         var projects = new List<Project>()

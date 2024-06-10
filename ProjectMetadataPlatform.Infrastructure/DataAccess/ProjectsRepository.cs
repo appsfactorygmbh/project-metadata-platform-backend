@@ -25,10 +25,11 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     /// <summary>
     /// Asynchronously retrieves all projects with specific search pattern from the database.
     /// </summary>
+    /// /// <param name="search">Search pattern to look for in ProjectName</param>
     /// <returns>A task representing the asynchronous operation. When this task completes, it returns a collection of projects.</returns>
     public async Task<IEnumerable<Project>> GetProjectsAsync(string? search)
     {
-            return search == null? await GetEverything().ToListAsync() :[.. _context.Projects.Where(project => project.ProjectName.StartsWith(search))];
+            return search == null? await GetEverything().ToListAsync() :[.. _context.Projects.Where(project => project.ProjectName.Contains(search))];
     }
     
     /// <summary>

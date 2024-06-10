@@ -24,10 +24,12 @@ public class GetProjectsBySearchingHandlerTest
     [Test]
     public async Task HandleGetProjectBySearchRequest_NonexistentProject_Test()
     {
-        _mockProjectRepo.Setup(m => m.GetProjectsAsync("M")).ReturnsAsync((List<Project>)null);
+        var emptyProjectList = System.Array.Empty<Project>();
+        
+        _mockProjectRepo.Setup(m => m.GetProjectsAsync("M")).ReturnsAsync(emptyProjectList);
         var query= new GetAllProjectsQuery("M");
         var result = await _handler.Handle(query, It.IsAny<CancellationToken>());
-        Assert.That(result, Is.Null);
+        Assert.IsEmpty(result);
     }
     
     [Test]

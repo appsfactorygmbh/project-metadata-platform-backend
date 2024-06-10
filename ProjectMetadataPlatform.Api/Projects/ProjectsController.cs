@@ -29,15 +29,16 @@ public class ProjectsController : ControllerBase
     }
 
     /// <summary>
-    /// Retrieves all projects.
+    /// Retrieves all projects or projects with search pattern.
     /// </summary>
-    /// <returns>All projects.</returns>
+    /// <param name="search">Search pattern to look for in ProjectName</param>
+    /// <returns>All projects. When search is used all Projects, which are fitting in pattern</returns>
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<GetProjectsResponse>>> Get(string search="")
+    public async Task<ActionResult<IEnumerable<GetProjectsResponse>>> Get(string search = " ")
     {
         var query = new GetAllProjectsQuery(search);
         IEnumerable<Project> projects;
-        try
+        try 
         {
             projects = await _mediator.Send(query);
         }
