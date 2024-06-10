@@ -29,7 +29,13 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     /// <returns>A task representing the asynchronous operation. When this task completes, it returns a collection of projects.</returns>
     public async Task<IEnumerable<Project>> GetProjectsAsync(string? search)
     {
-            return search == null? await GetEverything().ToListAsync() :[.. _context.Projects.Where(project => project.ProjectName.Contains(search))];
+            return search == null? await GetEverything().ToListAsync() 
+                : [.. _context.Projects.Where(project => project.ProjectName.Contains(search) 
+                                 || project.ClientName.Contains(search)
+                                 || project.BusinessUnit.Contains(search)
+                                 || project.Department.Contains(search)
+                                 )];
+           
     }
     
     /// <summary>

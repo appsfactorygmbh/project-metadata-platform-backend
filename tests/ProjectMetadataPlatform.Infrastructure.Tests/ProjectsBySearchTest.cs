@@ -74,7 +74,7 @@ public class ProjectsBySearchTest : TestsWithDatabase
         _context.Projects.Add(project);
         await _context.SaveChangesAsync();
 
-        var result = await _repository.GetProjectsAsync("T");
+        var result = await _repository.GetProjectsAsync("x");
         Assert.IsEmpty(result);
     }
     
@@ -105,8 +105,8 @@ public class ProjectsBySearchTest : TestsWithDatabase
             new Project()
             {
                 Id = 3,
-                ProjectName = "Regenbogen",
-                ClientName = "Nasa",
+                ProjectName = "Turbo",
+                ClientName = "Regen",
                 BusinessUnit = "BuWeather",
                 TeamNumber = 42,
                 Department = "Homelandsecurity"
