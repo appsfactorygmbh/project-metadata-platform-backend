@@ -114,10 +114,7 @@ public class ProjectsBySearchTest : TestsWithDatabase
             
         };
 
-        foreach (Project proj in projects)
-        {
-            _context.Projects.Add(proj);
-        }
+        _context.Projects.AddRange(projects);
         
         await _context.SaveChangesAsync();
 

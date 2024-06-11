@@ -58,5 +58,40 @@ public class GetProjectsBySearchingHandlerTest
         Assert.That(result, Is.InstanceOf<List<Project>>());
         Assert.That(result, Is.EqualTo(projectsResponseContent));
     }
+    [Test]
+    public async Task HandleGetProjectRequestBySearchingWithNullSearch_Test()
+    {
+        var projectsResponseContent = new List<Project>()
+        {
+            new Project
+            {
+                Id = 2,
+                ProjectName = "Regen",
+                ClientName = "Nasa",
+                BusinessUnit = "BuWeather",
+                TeamNumber = 42,
+                Department = "Homelandsecurity"
+            },
+            new Project
+            {
+                Id = 3,
+                ProjectName = "Sonne",
+                ClientName = "Nasa",
+                BusinessUnit = "BuWeather",
+                TeamNumber = 42,
+                Department = "Homelandsecurity"
+            },
+            
+            
+        };
+         _mockProjectRepo.Setup(m => m.GetProjectsAsync()).ReturnsAsync(projectsResponseContent);
+        var query= new GetAllProjectsQuery("");
+        var result = await _handler.Handle(query, It.IsAny<CancellationToken>());
+        
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result, Is.InstanceOf<List<Project>>());
+        Assert.That(result, Is.EqualTo(projectsResponseContent));
+    }
+    
     
 }
