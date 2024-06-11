@@ -15,7 +15,7 @@ public interface IProjectsRepository
     /// </summary>
     /// <param name="search">Search pattern to look for in ProjectName</param>
     /// <returns>An Enumeration of projects.</returns>
-    Task<IEnumerable<Project>> GetProjectsAsync(string? search);
+    Task<IEnumerable<Project>> GetProjectsAsync(string search);
     
     /// <summary>
     /// Returns a collection of all projects.
