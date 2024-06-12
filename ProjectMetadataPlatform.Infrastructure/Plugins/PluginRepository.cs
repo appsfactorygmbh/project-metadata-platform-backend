@@ -44,12 +44,10 @@ public class PluginRepository : IPluginRepository
     {
         var plugin = new Plugin { PluginName = name, ProjectPlugins = []};
         var savedPlugin = _context.Plugins.Add(plugin).Entity;
-        int savedEntries = await _context.SaveChangesAsync();
+        var savedEntries = await _context.SaveChangesAsync();
 
         if (savedEntries == 0)
-        {
             throw new IOException("Plugin could not be saved");
-        }
 
         return savedPlugin;
     }
