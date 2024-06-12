@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -72,5 +73,28 @@ public class PluginsRepositoryTest : TestsWithDatabase
             Assert.That(rep[0].Plugin.PluginName, Is.EqualTo("Gitlab"));
         });
     }
-    
+
+    [Test]
+    public async Task CreatePlugin_Test()
+    {
+        var plugin = await _repository.CreatePlugin("Warp-Drive");
+        
+        Assert.That(plugin, Is.Not.Null);
+        Assert.That(plugin.PluginName, Is.EqualTo("Warp-Drive"));
+    }
+
+    [Test]
+    public async Task CreatePlugins_IdsDifferent_Test()
+    {
+        var pluginOne = await _repository.CreatePlugin("Methane");
+        var pluginTwo = await _repository.CreatePlugin("Oxygen");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(pluginOne, Is.Not.Null);
+            Assert.That(pluginTwo, Is.Not.Null);
+        });
+        
+        Assert.That(pluginOne.Id, Is.Not.EqualTo(pluginTwo.Id));
+    }
 }

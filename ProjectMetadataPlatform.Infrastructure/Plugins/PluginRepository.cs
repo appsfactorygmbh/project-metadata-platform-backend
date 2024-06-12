@@ -1,6 +1,7 @@
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Domain.Plugins;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -41,7 +42,15 @@ public class PluginRepository : IPluginRepository
     /// <returns></returns>
     public async Task<Plugin> CreatePlugin(string name)
     {
-        var plugin = new Plugin { PluginName = name };
-        return _context.Plugins.Add(plugin).Entity;
+        var plugin = new Plugin { PluginName = name, ProjectPlugins = []};
+        var savedPlugin = _context.Plugins.Add(plugin).Entity;
+        int savedEntries = await _context.SaveChangesAsync();
+
+        if (savedEntries == 0)
+        {
+            throw new IOException("Plugin could not be saved");
+        }
+
+        return savedPlugin;
     }
 }
