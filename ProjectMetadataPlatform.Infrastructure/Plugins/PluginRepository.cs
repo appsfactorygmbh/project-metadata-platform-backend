@@ -41,6 +41,7 @@ public class PluginRepository : IPluginRepository
     /// <returns></returns>
     public async Task<Plugin> CreatePlugin(string name)
     {
-        throw new System.NotImplementedException();
+        var plugin = new Plugin { PluginName = name };
+        return _context.Plugins.Add(plugin).Entity;
     }
 }

@@ -3,7 +3,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using ProjectMetadataPlatform.Api.Plugins.Models;
 using ProjectMetadataPlatform.Application.Plugins;
 using ProjectMetadataPlatform.Domain.Plugins;
@@ -75,6 +77,7 @@ public class PluginsController : ControllerBase
        }
         
         var response = new CreatePluginResponse(plugin.Id);
-        return Created("", response);
+        var uri = Request.GetDisplayUrl() + "/" + plugin.Id;
+        return Created(uri, response);
     }
 }
