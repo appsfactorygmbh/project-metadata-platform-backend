@@ -77,7 +77,7 @@ public class PluginsController : ControllerBase
        }
         
         var response = new CreatePluginResponse(plugin.Id);
-        var uri = Request.GetDisplayUrl() + "/" + plugin.Id;
+        var uri =  "/Plugins/" + plugin.Id;
         return Created(uri, response);
     }
 }

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -99,5 +100,46 @@ public class Tests
             Assert.That(resultObj.DisplayName, Is.EqualTo("plugin 1"));
         });
         
+    }
+
+    [Test]
+    public async Task CreatePlugin_Test()
+    {
+        var examplePlugin = new Plugin { PluginName = "Solid Rocket Booster", Id = 42, ProjectPlugins = [] };
+        _mediator.Setup(m => m.Send(It.IsAny<CreatePluginCommand>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(examplePlugin);
+
+        var request = new CreatePluginRequest("Solid Rocket Booster");
+
+        ActionResult<Plugin> result = await _controller.Put(request);
+
+        Assert.That(result.Result, Is.InstanceOf<CreatedResult>());
+        var createdResult = result.Result as CreatedResult;
+
+        Assert.That(createdResult, Is.Not.Null);
+        Assert.That(createdResult.Value, Is.InstanceOf<CreatePluginResponse>());
+
+        var pluginResponse = createdResult.Value as CreatePluginResponse;
+        Assert.That(pluginResponse, Is.Not.Null);
+
+        Assert.That(pluginResponse.Id, Is.EqualTo(42));
+    }
+
+    [Test]
+    public async Task CreatePlugin_WithError_Test()
+    {
+        _mediator.Setup(m => m.Send(It.IsAny<CreatePluginCommand>(), It.IsAny<CancellationToken>()))
+            .Throws(new IOException());
+        
+        var request = new CreatePluginRequest("Drogue chute");
+
+        ActionResult<Plugin> result = await _controller.Put(request);
+        
+        Assert.That(result.Result, Is.InstanceOf<StatusCodeResult>());
+        var statusResult = result.Result as StatusCodeResult;
+        
+        Assert.That(statusResult, Is.Not.Null);
+        
+        Assert.That(statusResult.StatusCode, Is.EqualTo(500));
     }
 }
