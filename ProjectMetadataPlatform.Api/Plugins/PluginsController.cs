@@ -64,6 +64,11 @@ public class PluginsController : ControllerBase
     [HttpPut]
     public async Task<ActionResult<Plugin>> Put([FromBody] CreatePluginRequest request)
     {
+        if (request.PluginName.Trim() == "")
+        {
+            return new StatusCodeResult(StatusCodes.Status400BadRequest);
+        }
+        
         var command = new CreatePluginCommand(request.PluginName);
         
        Plugin plugin;

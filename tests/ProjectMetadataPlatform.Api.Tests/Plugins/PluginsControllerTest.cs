@@ -142,4 +142,40 @@ public class Tests
         
         Assert.That(statusResult.StatusCode, Is.EqualTo(500));
     }
+
+    [Test]
+    public async Task CreatePlugin_EmptyName_Test()
+    {
+        _mediator.Setup(m => m.Send(It.IsAny<CreatePluginCommand>(), It.IsAny<CancellationToken>()))
+            .Throws(new IOException());
+        
+        var request = new CreatePluginRequest("");
+
+        ActionResult<Plugin> result = await _controller.Put(request);
+        
+        Assert.That(result.Result, Is.InstanceOf<StatusCodeResult>());
+        var statusResult = result.Result as StatusCodeResult;
+        
+        Assert.That(statusResult, Is.Not.Null);
+        
+        Assert.That(statusResult.StatusCode, Is.EqualTo(400));
+    }
+    
+    [Test]
+    public async Task CreatePlugin_WhiteSpacesName_Test()
+    {
+        _mediator.Setup(m => m.Send(It.IsAny<CreatePluginCommand>(), It.IsAny<CancellationToken>()))
+            .Throws(new IOException());
+        
+        var request = new CreatePluginRequest("         ");
+
+        ActionResult<Plugin> result = await _controller.Put(request);
+        
+        Assert.That(result.Result, Is.InstanceOf<StatusCodeResult>());
+        var statusResult = result.Result as StatusCodeResult;
+        
+        Assert.That(statusResult, Is.Not.Null);
+        
+        Assert.That(statusResult.StatusCode, Is.EqualTo(400));
+    }
 }
