@@ -64,7 +64,7 @@ public class ProjectsController : ControllerBase
     /// <param name="id">Identifiacation number for the project</param>
     /// <returns>A project.</returns>
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<GetProjectsResponse>> Get(int id)
+    public async Task<ActionResult<GetProjectResponse>> Get(int id)
     {
         var query = new GetProjectQuery(id);
         Project? project;

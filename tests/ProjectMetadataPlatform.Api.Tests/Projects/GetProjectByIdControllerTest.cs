@@ -66,10 +66,10 @@ public class GetProjectByIdControllerTest
         Assert.IsNotNull(okResult);
         Assert.IsInstanceOf<GetProjectResponse>(okResult.Value);
 
-        var getProjectsResponse = okResult.Value as GetProjectResponse;
-        Assert.IsNotNull(getProjectsResponse);
+        var getProjectResponse = okResult.Value as GetProjectResponse;
+        Assert.IsNotNull(getProjectResponse);
         
-        var project = getProjectsResponse;
+        var project = getProjectResponse;
         Assert.That(project.Id, Is.EqualTo(50));
         Assert.That(project.ProjectName, Is.EqualTo("MetaDataPlatform"));
         Assert.That(project.ClientName, Is.EqualTo("Appsfactory"));
