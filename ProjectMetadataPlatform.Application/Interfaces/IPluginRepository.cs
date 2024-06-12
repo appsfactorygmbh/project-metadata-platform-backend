@@ -16,4 +16,11 @@ public interface IPluginRepository
     /// <param name="id"></param>
     /// <returns></returns>
     Task<List<ProjectPlugins>> GetAllPluginsForProjectIdAsync(int id);
+    
+    /// <summary>
+    /// Creates a new Plugin with the given name
+    /// </summary>
+    /// <param name="name">The name of the new Plugin</param>
+    /// <returns></returns>
+    Task<Plugin> CreatePlugin(string name);
 }

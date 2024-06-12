@@ -54,6 +54,11 @@ public class PluginsController : ControllerBase
         return Ok(response);
     }
 
+    /// <summary>
+    /// Creates a new plugin with the given name
+    /// </summary>
+    /// <param name="request">The request body.</param>
+    /// <returns>A HTTP Created Response and the Id of the new Plugin</returns>
     [HttpPut]
     public async Task<CreatedResult> Put([FromBody] CreatePluginRequest request)
     {

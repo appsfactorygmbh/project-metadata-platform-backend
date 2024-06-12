@@ -33,4 +33,14 @@ public class PluginRepository : IPluginRepository
     {
         return [.. _context.ProjectPluginsRelation.Where(rel => rel.ProjectId == id).Include(rel => rel.Plugin)];
     }
+    
+    /// <summary>
+    /// Creates a new Plugin with the given name
+    /// </summary>
+    /// <param name="name">The name of the new Plugin</param>
+    /// <returns></returns>
+    public async Task<Plugin> CreatePlugin(string name)
+    {
+        throw new System.NotImplementedException();
+    }
 }
