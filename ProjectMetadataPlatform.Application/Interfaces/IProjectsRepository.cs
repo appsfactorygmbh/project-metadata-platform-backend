@@ -21,4 +21,11 @@ public interface IProjectsRepository
     /// </summary>
     /// <returns>One project or null.</returns>
     Task<Project?> GetProjectAsync(int id);
+    
+    /// <summary>
+    /// Creates a new project or replaces an existing one.
+    /// </summary>
+    /// <param name="project">Project to be created.</param>
+    /// <returns>TODO</returns>
+    Task<Project> AddProjectAsync(Project project);
 }

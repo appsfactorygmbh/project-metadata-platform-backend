@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using ProjectMetadataPlatform.Api.Projects.Models;
 using ProjectMetadataPlatform.Application.Projects;
 using ProjectMetadataPlatform.Domain.Projects;
+using ProjectMetadataPlatform.Infrastructure.DataAccess;
 
 namespace ProjectMetadataPlatform.Api.Projects;
 
@@ -59,10 +60,10 @@ public class ProjectsController : ControllerBase
     /// <summary>
     /// Retrieves a project by id.
     /// </summary>
-    /// <param name="id">Identifiacation number for the project</param>
+    /// <param name="id">Identification number for the project</param>
     /// <returns>A project.</returns>
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<GetProjectsResponse>> Get(int id)
+    public async Task<ActionResult<GetProjectResponse>> Get(int id)
     {
         var query = new GetProjectQuery(id);
         Project? project;
@@ -91,5 +92,32 @@ public class ProjectsController : ControllerBase
             project.Department);
 
         return  Ok(response);
+    }
+    /// <summary>
+    /// Creates a new project or replaces an existing project.
+    /// </summary>
+    /// <param name="project">New Project that has to be added.</param>
+    /// <returns>Id of the created project</returns>
+    [HttpPut]
+    public async Task<ActionResult<int>> Put([FromBody] Project project)
+    {
+        var command = new CreateProjectCommand(project);
+        Project? createdProject;
+        try
+        {
+            if (project==null)
+            {
+                return BadRequest();
+            }
+
+            createdProject = await _mediator.Send(command);
+
+            return CreatedAtAction(nameof(Get), new { id = createdProject.Id }, createdProject.Id);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.StackTrace);
+            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+        }
     }
 }
