@@ -121,8 +121,11 @@ public class Tests
 
         var pluginResponse = createdResult.Value as CreatePluginResponse;
         Assert.That(pluginResponse, Is.Not.Null);
-
-        Assert.That(pluginResponse.Id, Is.EqualTo(42));
+        Assert.Multiple(() =>
+        {
+            Assert.That(pluginResponse.Id, Is.EqualTo(42));
+            Assert.That(createdResult.Location, Is.EqualTo("/Plugin/42"));
+        });
     }
 
     [Test]
