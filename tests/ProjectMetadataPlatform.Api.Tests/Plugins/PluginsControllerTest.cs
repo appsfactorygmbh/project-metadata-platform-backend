@@ -124,7 +124,7 @@ public class Tests
         Assert.Multiple(() =>
         {
             Assert.That(pluginResponse.Id, Is.EqualTo(42));
-            Assert.That(createdResult.Location, Is.EqualTo("/Plugin/42"));
+            Assert.That(createdResult.Location, Is.EqualTo("/Plugins/42"));
         });
     }
 
