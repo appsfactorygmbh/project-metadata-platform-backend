@@ -53,4 +53,11 @@ public class PluginsController : ControllerBase
 
         return Ok(response);
     }
+
+    [HttpPut]
+    public async Task<CreatedResult> Put([FromBody] CreatePluginRequest request)
+    {
+        var response = new CreatePluginResponse(0);
+        return Created("", response);
+    }
 }
