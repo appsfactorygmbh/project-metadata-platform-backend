@@ -60,9 +60,21 @@ public class PluginsController : ControllerBase
     /// <param name="request">The request body.</param>
     /// <returns>A HTTP Created Response and the Id of the new Plugin</returns>
     [HttpPut]
-    public async Task<CreatedResult> Put([FromBody] CreatePluginRequest request)
+    public async Task<ActionResult<Plugin>> Put([FromBody] CreatePluginRequest request)
     {
-        var response = new CreatePluginResponse(0);
+        var command = new CreatePluginCommand(request.PluginName);
+        
+       Plugin plugin;
+       try
+       {
+           plugin = await _mediator.Send(command);
+       }
+       catch 
+       {
+           return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+       }
+        
+        var response = new CreatePluginResponse(plugin.Id);
         return Created("", response);
     }
 }

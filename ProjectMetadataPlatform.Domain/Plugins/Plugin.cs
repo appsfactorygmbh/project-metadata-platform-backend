@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ProjectMetadataPlatform.Domain.Plugins;
 
@@ -11,6 +12,7 @@ public class Plugin
     /// <summary>
     /// The id of the plugin.
     /// </summary>
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
 
     /// <summary>
