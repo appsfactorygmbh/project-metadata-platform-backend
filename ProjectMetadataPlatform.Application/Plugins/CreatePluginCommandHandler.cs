@@ -30,6 +30,6 @@ public class CreatePluginCommandHandler : IRequestHandler<CreatePluginCommand, P
     /// <returns>the response of the request</returns>
     public Task<Plugin> Handle(CreatePluginCommand request, CancellationToken cancellationToken)
     {
-        return  _pluginRepository.CreatePlugin(request.name);
+        return  _pluginRepository.CreatePlugin(request.Name);
     }
 }
