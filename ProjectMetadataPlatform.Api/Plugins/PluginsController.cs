@@ -84,7 +84,7 @@ public class PluginsController : ControllerBase
         }
 
         var response = new CreatePluginResponse(pluginId);
-        string uri = "/Plugins/" + pluginId;
+        var uri = "/Plugins/" + pluginId;
         return Created(uri, response);
     }
 }
