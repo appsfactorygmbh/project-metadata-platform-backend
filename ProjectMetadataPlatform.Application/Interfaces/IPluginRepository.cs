@@ -22,5 +22,5 @@ public interface IPluginRepository
     /// </summary>
     /// <param name="plugin">The Plugin to save</param>
     /// <returns></returns>
-    Task<Plugin> Update(Plugin plugin);
+    Task<Plugin> StorePlugin(Plugin plugin);
 }

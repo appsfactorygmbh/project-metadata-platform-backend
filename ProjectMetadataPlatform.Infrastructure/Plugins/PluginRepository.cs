@@ -39,7 +39,7 @@ public class PluginRepository : IPluginRepository
     /// </summary>
     /// <param name="plugin">The Plugin to save</param>
     /// <returns>The saved Plugin</returns>
-    public async Task<Plugin> Update(Plugin plugin)
+    public async Task<Plugin> StorePlugin(Plugin plugin)
     {
         _context.Plugins.Add(plugin);
         await _context.SaveChangesAsync();

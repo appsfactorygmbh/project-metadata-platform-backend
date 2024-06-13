@@ -25,7 +25,7 @@ public class CreatePluginCommandHandlerTest
     public async Task CreatePlugin_Test()
     {
         var examplePlugin = new Plugin { PluginName = "Airlock", Id = 13, ProjectPlugins = [] };
-        _mockPluginRepo.Setup(m => m.Update(It.IsAny<Plugin>())).ReturnsAsync(examplePlugin);
+        _mockPluginRepo.Setup(m => m.StorePlugin(It.IsAny<Plugin>())).ReturnsAsync(examplePlugin);
 
         var result = await _handler.Handle(new CreatePluginCommand("Airlock"), It.IsAny<CancellationToken>());
 

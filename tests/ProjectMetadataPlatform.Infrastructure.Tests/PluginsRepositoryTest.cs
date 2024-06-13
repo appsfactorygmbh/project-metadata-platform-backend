@@ -79,7 +79,7 @@ public class PluginsRepositoryTest : TestsWithDatabase
     {
         var examplePlugin = new Plugin { PluginName = "Warp-Drive", ProjectPlugins = [] };
 
-        var plugin = await _repository.Update(examplePlugin);
+        var plugin = await _repository.StorePlugin(examplePlugin);
         
         Assert.That(plugin, Is.Not.Null);
         Assert.That(plugin.PluginName, Is.EqualTo("Warp-Drive"));
@@ -91,8 +91,8 @@ public class PluginsRepositoryTest : TestsWithDatabase
         var pluginMethane = new Plugin { PluginName = "Methane", ProjectPlugins = [] };
         var pluginOxygen = new Plugin { PluginName = "Oxygen", ProjectPlugins = [] };
         
-        var pluginOne = await _repository.Update(pluginMethane);
-        var pluginTwo = await _repository.Update(pluginOxygen);
+        var pluginOne = await _repository.StorePlugin(pluginMethane);
+        var pluginTwo = await _repository.StorePlugin(pluginOxygen);
 
         Assert.Multiple(() =>
         {
@@ -108,7 +108,7 @@ public class PluginsRepositoryTest : TestsWithDatabase
     {
         var examplePlugin = new Plugin { PluginName = "Warp-Drive", ProjectPlugins = [], Id = 42 };
 
-        var plugin = await _repository.Update(examplePlugin);
+        var plugin = await _repository.StorePlugin(examplePlugin);
         
         Assert.That(plugin, Is.Not.Null);
         Assert.Multiple(() =>

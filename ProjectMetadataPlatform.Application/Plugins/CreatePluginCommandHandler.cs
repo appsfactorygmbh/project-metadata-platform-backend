@@ -31,7 +31,7 @@ public class CreatePluginCommandHandler : IRequestHandler<CreatePluginCommand, i
     public async Task<int> Handle(CreatePluginCommand request, CancellationToken cancellationToken)
     {
         var plugin = new Plugin { PluginName = request.Name, ProjectPlugins = []};
-        var storedPlugin = await _pluginRepository.Update(plugin);
+        var storedPlugin = await _pluginRepository.StorePlugin(plugin);
 
         return storedPlugin.Id;
     }
