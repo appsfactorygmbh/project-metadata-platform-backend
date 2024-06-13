@@ -22,7 +22,7 @@ public class ProjectsController : ControllerBase
     /// <summary>
     /// Creates a new instance of the <see cref="ProjectsController"/> class.
     /// </summary>
-    
+
     public ProjectsController(IMediator mediator)
     {
         _mediator = mediator;
@@ -38,7 +38,7 @@ public class ProjectsController : ControllerBase
     {
         var query = new GetAllProjectsQuery(search);
         IEnumerable<Project> projects;
-        try 
+        try
         {
             projects = await _mediator.Send(query);
         }
@@ -49,6 +49,7 @@ public class ProjectsController : ControllerBase
         }
 
         var response = projects.Select(project => new GetProjectsResponse(
+            project.Id,
             project.ProjectName,
             project.ClientName,
             project.BusinessUnit,
@@ -56,7 +57,7 @@ public class ProjectsController : ControllerBase
 
         return Ok(response);
     }
-    
+
     /// <summary>
     /// Retrieves a project by id.
     /// </summary>
@@ -76,14 +77,14 @@ public class ProjectsController : ControllerBase
             Console.Write(e.StackTrace);
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
-        
-        if(project == null)
+
+        if (project == null)
         {
             return NotFound(project);
         }
-        
-        var response =  new GetProjectResponse(
-            
+
+        var response = new GetProjectResponse(
+
             project.Id,
             project.ProjectName,
             project.ClientName,
@@ -91,6 +92,6 @@ public class ProjectsController : ControllerBase
             project.TeamNumber,
             project.Department);
 
-        return  Ok(response);
+        return Ok(response);
     }
 }

@@ -14,6 +14,9 @@
 *.user
 *.sln.docstates
 
+# SqLite Database files
+*.db
+
 # Build results
 [Dd]ebug/
 [Rr]elease/
