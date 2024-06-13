@@ -33,7 +33,9 @@ public class CreateProjectCommandHandlerTest
             Department = "Example Department",
             ClientName = "Example Client"
         };
-        _mockProjectRepo.Setup(m => m.CreateProject(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(exampleProject);
+        _mockProjectRepo.Setup(m => m.Updatewithreturnvalue(It.IsAny<Project>())).ReturnsAsync(exampleProject);
+        
+        // act
         
         var result = await _handler.Handle(new CreateProjectCommand("Example Project", "Example Business Unit", 1, "Example Department", "Example Client"), It.IsAny<CancellationToken>());
         Assert.That(result, Is.Not.Null);

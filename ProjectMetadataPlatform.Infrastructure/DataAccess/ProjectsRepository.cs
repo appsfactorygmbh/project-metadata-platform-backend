@@ -66,4 +66,10 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
 
         return project;
     }
+    public async Task<Project> Updatewithreturnvalue(Project project)
+    {
+        Update(project);
+        await _context.SaveChangesAsync();
+        return project;
+    }
 }

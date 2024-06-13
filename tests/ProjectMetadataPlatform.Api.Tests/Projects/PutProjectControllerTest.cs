@@ -61,7 +61,7 @@ public class PutProjectControllerTest
      _mediator.Setup(m => m.Send(It.IsAny<CreateProjectCommand>(), It.IsAny<CancellationToken>())).ThrowsAsync(new IOException());
      var request = new CreateProjectRequest( "", " ", 1, "", "");
      ActionResult<Project> result = await _controller.Put(request);
-     Assert.That(result.Result, Is.InstanceOf<BadRequestResult>());
+     Assert.That(result.Result, Is.InstanceOf<BadRequestObjectResult>());
     }
     
 }   

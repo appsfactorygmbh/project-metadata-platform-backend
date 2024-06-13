@@ -32,4 +32,11 @@ public interface IProjectsRepository
     /// <param name="clientName">Name of the client</param>
     /// <returns>creates Project</returns>
     Task<Project> CreateProject(string projectName, string businessUnit, int teamNumber, string department, string clientName);
+    
+    /// <summary>
+    /// Saves a project to the database and returns it.
+    /// </summary>
+    /// <param name="project"></param>
+    /// <returns></returns>
+    Task<Project> Updatewithreturnvalue(Project project);
 }
