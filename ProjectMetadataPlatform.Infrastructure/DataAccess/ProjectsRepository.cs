@@ -57,13 +57,13 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
             Department = department,
             ClientName = clientName
         };
-        var savedProject= _context.Projects.Add(project).Entity;
+        Create(project);
         var savedEntries = await _context.SaveChangesAsync();
         if (savedEntries == 0)
         {
             throw new IOException("Project could not be saved.");
         }
 
-        return savedProject;
+        return project;
     }
 }

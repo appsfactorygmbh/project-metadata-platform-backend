@@ -103,9 +103,9 @@ public class ProjectsController : ControllerBase
     {
         try
         {
-            if (project == null || project.ProjectName.Trim() == "" || project.BusinessUnit.Trim() == "" || project.Department.Trim() == "" || project.ClientName.Trim() == "")
+            if (project == null || string.IsNullOrWhiteSpace(project.ProjectName) || string.IsNullOrWhiteSpace(project.BusinessUnit) || string.IsNullOrWhiteSpace(project.Department) || string.IsNullOrWhiteSpace(project.ClientName))
             {
-                return BadRequest();
+                return BadRequest("ProjectName, BusinessUnit, Department and ClientName must not be empty.");
             }
 
             var command = new CreateProjectCommand(project.ProjectName, project.BusinessUnit, project.TeamNumber,
