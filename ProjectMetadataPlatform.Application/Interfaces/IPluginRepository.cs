@@ -18,9 +18,9 @@ public interface IPluginRepository
     Task<List<ProjectPlugins>> GetAllPluginsForProjectIdAsync(int id);
     
     /// <summary>
-    /// Creates a new Plugin with the given name
+    /// Saves a given Plugin to the database.
     /// </summary>
-    /// <param name="name">The name of the new Plugin</param>
+    /// <param name="plugin">The Plugin to save</param>
     /// <returns></returns>
-    Task<Plugin> CreatePlugin(string name);
+    Task<Plugin> Update(Plugin plugin);
 }

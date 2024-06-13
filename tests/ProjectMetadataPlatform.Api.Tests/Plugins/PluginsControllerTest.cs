@@ -105,9 +105,8 @@ public class Tests
     [Test]
     public async Task CreatePlugin_Test()
     {
-        var examplePlugin = new Plugin { PluginName = "Solid Rocket Booster", Id = 42, ProjectPlugins = [] };
         _mediator.Setup(m => m.Send(It.IsAny<CreatePluginCommand>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(examplePlugin);
+            .ReturnsAsync(42);
 
         var request = new CreatePluginRequest("Solid Rocket Booster");
 
@@ -156,8 +155,8 @@ public class Tests
 
         ActionResult<Plugin> result = await _controller.Put(request);
         
-        Assert.That(result.Result, Is.InstanceOf<StatusCodeResult>());
-        var statusResult = result.Result as StatusCodeResult;
+        Assert.That(result.Result, Is.InstanceOf<ObjectResult>());
+        var statusResult = result.Result as ObjectResult;
         
         Assert.That(statusResult, Is.Not.Null);
         
@@ -174,8 +173,8 @@ public class Tests
 
         ActionResult<Plugin> result = await _controller.Put(request);
         
-        Assert.That(result.Result, Is.InstanceOf<StatusCodeResult>());
-        var statusResult = result.Result as StatusCodeResult;
+        Assert.That(result.Result, Is.InstanceOf<ObjectResult>());
+        var statusResult = result.Result as ObjectResult;
         
         Assert.That(statusResult, Is.Not.Null);
         

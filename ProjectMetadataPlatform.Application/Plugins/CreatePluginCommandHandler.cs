@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using ProjectMetadataPlatform.Domain.Plugins;
@@ -9,7 +10,7 @@ namespace ProjectMetadataPlatform.Application.Plugins;
 /// <summary>
 /// Handler for the <see cref="CreatePluginCommand"/>
 /// </summary>
-public class CreatePluginCommandHandler : IRequestHandler<CreatePluginCommand, Plugin>
+public class CreatePluginCommandHandler : IRequestHandler<CreatePluginCommand, int>
 {
     private readonly IPluginRepository _pluginRepository;
     
@@ -23,13 +24,16 @@ public class CreatePluginCommandHandler : IRequestHandler<CreatePluginCommand, P
     }
     
     /// <summary>
-    /// Handles the request to get all plugins for a given project id.
+    /// Creates a new Plugin with the given name
     /// </summary>
     /// <param name="request">the request that needs to be handled</param>
     /// <param name="cancellationToken"></param>
     /// <returns>the response of the request</returns>
-    public Task<Plugin> Handle(CreatePluginCommand request, CancellationToken cancellationToken)
+    public async Task<int> Handle(CreatePluginCommand request, CancellationToken cancellationToken)
     {
-        return  _pluginRepository.CreatePlugin(request.Name);
+        var plugin = new Plugin { PluginName = request.Name, ProjectPlugins = []};
+        var storedPlugin = await _pluginRepository.Update(plugin);
+
+        return storedPlugin.Id;
     }
 }

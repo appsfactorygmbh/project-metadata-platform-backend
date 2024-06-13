@@ -36,19 +36,15 @@ public class PluginRepository : IPluginRepository
     }
     
     /// <summary>
-    /// Creates a new Plugin with the given name
+    /// Saves a given Plugin to the database.
     /// </summary>
-    /// <param name="name">The name of the new Plugin</param>
-    /// <returns></returns>
-    public async Task<Plugin> CreatePlugin(string name)
+    /// <param name="plugin">The Plugin to save</param>
+    /// <returns>The saved Plugin</returns>
+    public async Task<Plugin> Update(Plugin plugin)
     {
-        var plugin = new Plugin { PluginName = name, ProjectPlugins = []};
-        var savedPlugin = _context.Plugins.Add(plugin).Entity;
-        var savedEntries = await _context.SaveChangesAsync();
+        _context.Plugins.Add(plugin);
+        await _context.SaveChangesAsync();
 
-        if (savedEntries == 0)
-            throw new IOException("Plugin could not be saved");
-
-        return savedPlugin;
+        return plugin;
     }
 }

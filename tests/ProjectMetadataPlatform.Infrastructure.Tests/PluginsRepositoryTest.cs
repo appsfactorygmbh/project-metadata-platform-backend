@@ -77,7 +77,9 @@ public class PluginsRepositoryTest : TestsWithDatabase
     [Test]
     public async Task CreatePlugin_Test()
     {
-        var plugin = await _repository.CreatePlugin("Warp-Drive");
+        var examplePlugin = new Plugin { PluginName = "Warp-Drive", ProjectPlugins = [] };
+
+        var plugin = await _repository.Update(examplePlugin);
         
         Assert.That(plugin, Is.Not.Null);
         Assert.That(plugin.PluginName, Is.EqualTo("Warp-Drive"));
@@ -86,8 +88,11 @@ public class PluginsRepositoryTest : TestsWithDatabase
     [Test]
     public async Task CreatePlugins_IdsDifferent_Test()
     {
-        var pluginOne = await _repository.CreatePlugin("Methane");
-        var pluginTwo = await _repository.CreatePlugin("Oxygen");
+        var pluginMethane = new Plugin { PluginName = "Methane", ProjectPlugins = [] };
+        var pluginOxygen = new Plugin { PluginName = "Oxygen", ProjectPlugins = [] };
+        
+        var pluginOne = await _repository.Update(pluginMethane);
+        var pluginTwo = await _repository.Update(pluginOxygen);
 
         Assert.Multiple(() =>
         {
@@ -96,5 +101,20 @@ public class PluginsRepositoryTest : TestsWithDatabase
         });
         
         Assert.That(pluginOne.Id, Is.Not.EqualTo(pluginTwo.Id));
+    }
+
+    [Test]
+    public async Task UpdatePlugin_noIdIncrementWhenIdExists_Test()
+    {
+        var examplePlugin = new Plugin { PluginName = "Warp-Drive", ProjectPlugins = [], Id = 42 };
+
+        var plugin = await _repository.Update(examplePlugin);
+        
+        Assert.That(plugin, Is.Not.Null);
+        Assert.Multiple(() =>
+        {
+            Assert.That(plugin.PluginName, Is.EqualTo("Warp-Drive"));
+            Assert.That(plugin.Id, Is.EqualTo(42));
+        });
     }
 }

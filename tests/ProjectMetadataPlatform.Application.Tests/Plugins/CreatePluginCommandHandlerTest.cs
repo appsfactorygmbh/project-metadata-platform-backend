@@ -25,11 +25,10 @@ public class CreatePluginCommandHandlerTest
     public async Task CreatePlugin_Test()
     {
         var examplePlugin = new Plugin { PluginName = "Airlock", Id = 13, ProjectPlugins = [] };
-        _mockPluginRepo.Setup(m => m.CreatePlugin(It.IsAny<string>())).ReturnsAsync(examplePlugin);
+        _mockPluginRepo.Setup(m => m.Update(It.IsAny<Plugin>())).ReturnsAsync(examplePlugin);
 
         var result = await _handler.Handle(new CreatePluginCommand("Airlock"), It.IsAny<CancellationToken>());
 
-        Assert.That(result, Is.Not.Null);
-        Assert.That(result.PluginName, Is.EqualTo("Airlock"));
+        Assert.That(result, Is.EqualTo(13));
     }
 }
