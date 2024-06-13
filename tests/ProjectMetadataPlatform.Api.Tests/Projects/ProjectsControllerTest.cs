@@ -19,7 +19,7 @@ public class ProjectsControllerTest
 {
     private ProjectsController _controller;
     private Mock<IMediator> _mediator;
-    
+
     [SetUp]
     public void Setup()
     {
@@ -32,10 +32,10 @@ public class ProjectsControllerTest
     {
         // prepare
         _mediator.Setup(m => m.Send(It.IsAny<GetAllProjectsQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync([]);
-        
+
         // act
         var result = await _controller.Get();
-        
+
         // assert
         Assert.IsInstanceOf<OkObjectResult>(result.Result);
 
@@ -45,16 +45,58 @@ public class ProjectsControllerTest
 
         var getProjectsResponseEnumeration = okResult.Value as IEnumerable<GetProjectsResponse>;
         Assert.IsNotNull(getProjectsResponseEnumeration);
-        
+
         var getProjectsResponseArray = getProjectsResponseEnumeration as GetProjectsResponse[] ?? getProjectsResponseEnumeration.ToArray();
         Assert.That(getProjectsResponseArray, Has.Length.EqualTo(0));
     }
-    
+
     [Test]
     public async Task GetAllProjectsTest()
     {
         // prepare
         var projectsResponseContent = new List<Project>
+        {
+            new()
+            {
+                Id = 1,
+                ProjectName = "Regen",
+                ClientName = "Nasa",
+                BusinessUnit = "BuWeather",
+                TeamNumber = 42,
+                Department = "Homelandsecurity"
+            }
+        };
+        _mediator.Setup(m => m.Send(It.IsAny<GetAllProjectsQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(projectsResponseContent);
+
+        // act
+        var result = await _controller.Get();
+
+        // assert
+        Assert.IsInstanceOf<OkObjectResult>(result.Result);
+
+        var okResult = result.Result as OkObjectResult;
+        Assert.IsNotNull(okResult);
+        Assert.IsInstanceOf<IEnumerable<GetProjectsResponse>>(okResult.Value);
+
+        var getProjectsResponseEnumeration = okResult.Value as IEnumerable<GetProjectsResponse>;
+        Assert.IsNotNull(getProjectsResponseEnumeration);
+
+        var getProjectsResponseArray = getProjectsResponseEnumeration as GetProjectsResponse[] ?? getProjectsResponseEnumeration.ToArray();
+        Assert.That(getProjectsResponseArray, Has.Length.EqualTo(1));
+
+        var project = getProjectsResponseArray.First();
+        Assert.That(project.Id, Is.EqualTo(1));
+        Assert.That(project.ProjectName, Is.EqualTo("Regen"));
+        Assert.That(project.ClientName, Is.EqualTo("Nasa"));
+        Assert.That(project.BusinessUnit, Is.EqualTo("BuWeather"));
+        Assert.That(project.TeamNumber, Is.EqualTo(42));
+    }
+
+    [Test]
+    public async Task GetProjectBySearchControllerTest()
+    {
+        // prepare
+        var projectsResponseContent = new List<Project>()
         {
             new()
             {
@@ -65,12 +107,15 @@ public class ProjectsControllerTest
                 TeamNumber = 42,
                 Department = "Homelandsecurity"
             }
+
         };
-        _mediator.Setup(m => m.Send(It.IsAny<GetAllProjectsQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(projectsResponseContent);
-        
+
+        _mediator.Setup(m => m.Send(It.Is<GetAllProjectsQuery>(x => x.Search == "R"), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(projectsResponseContent);
+
         // act
-        var result = await _controller.Get();
-        
+        var result = await _controller.Get("R");
+
         // assert
         Assert.IsInstanceOf<OkObjectResult>(result.Result);
 
@@ -80,7 +125,7 @@ public class ProjectsControllerTest
 
         var getProjectsResponseEnumeration = okResult.Value as IEnumerable<GetProjectsResponse>;
         Assert.IsNotNull(getProjectsResponseEnumeration);
-        
+
         var getProjectsResponseArray = getProjectsResponseEnumeration as GetProjectsResponse[] ?? getProjectsResponseEnumeration.ToArray();
         Assert.That(getProjectsResponseArray, Has.Length.EqualTo(1));
 
@@ -89,5 +134,6 @@ public class ProjectsControllerTest
         Assert.That(project.ClientName, Is.EqualTo("Nasa"));
         Assert.That(project.BusinessUnit, Is.EqualTo("BuWeather"));
         Assert.That(project.TeamNumber, Is.EqualTo(42));
+
     }
 }

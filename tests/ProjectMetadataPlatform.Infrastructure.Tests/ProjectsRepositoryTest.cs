@@ -17,7 +17,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
         _context = DbContext();
         _repository = new ProjectsRepository(_context);
     }
-    
+
     [Test]
     public async Task GetAllProjectsAsync_ShouldReturnAllProjects()
     {
@@ -31,12 +31,13 @@ public class ProjectsRepositoryTests : TestsWithDatabase
             TeamNumber = 42,
             Department = "Homelandsecurity"
         };
-        
+
+        _context.Projects.RemoveRange(_context.Projects);
         _context.Projects.Add(project);
         await _context.SaveChangesAsync();
 
         // Act
-        var result = await _repository.GetAllProjectsAsync();
+        var result = await _repository.GetProjectsAsync();
 
         // Assert
         Assert.AreEqual(1, result.Count());

@@ -13,6 +13,7 @@ public class GetAllProjectsQueryHandler : IRequestHandler<GetAllProjectsQuery, I
 {
     private readonly IProjectsRepository _projectRepository;
     
+
     /// <summary>
     /// Creates a new instance of <see cref="GetAllProjectsQueryHandler"/>.
     /// </summary>
@@ -24,6 +25,13 @@ public class GetAllProjectsQueryHandler : IRequestHandler<GetAllProjectsQuery, I
     /// <inheritdoc />
     public Task<IEnumerable<Project>> Handle(GetAllProjectsQuery request, CancellationToken cancellationToken)
     {
-        return _projectRepository.GetAllProjectsAsync();
+        
+            return string.IsNullOrWhiteSpace(request.Search)
+                ? _projectRepository.GetProjectsAsync()
+                : _projectRepository.GetProjectsAsync(request.Search);
+       
+          
     }
+    
+    
 }

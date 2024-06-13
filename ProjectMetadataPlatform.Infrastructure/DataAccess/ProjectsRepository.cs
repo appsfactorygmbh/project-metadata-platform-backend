@@ -1,10 +1,10 @@
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Domain.Projects;
 using System.Collections.Generic;
+using System.Linq;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-
 
 namespace ProjectMetadataPlatform.Infrastructure.DataAccess;
 
@@ -22,12 +22,31 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
         _context = dbContext;
     }
     private readonly ProjectMetadataPlatformDbContext _context;
+    
+    /// <summary>
+    /// Asynchronously retrieves all projects with specific search pattern from the database.
+    /// </summary>
+    /// /// <param name="search">Search pattern to look for in ProjectName</param>
+    /// <returns>A task representing the asynchronous operation. When this task completes, it returns a collection of projects.</returns>
+    public async Task<IEnumerable<Project>> GetProjectsAsync(string search)
+    {
+            return [.. _context.Projects.Where(project => project.ProjectName.Contains(search) 
+                                                          || project.ClientName.Contains(search)
+                                                          || project.BusinessUnit.Contains(search)
+                                                          || project.Department.Contains(search)
+            )];
+           
+    }
+    
     /// <summary>
     /// Asynchronously retrieves all projects from the database.
     /// </summary>
     /// <returns>A task representing the asynchronous operation. When this task completes, it returns a collection of projects.</returns>
-    public async Task<IEnumerable<Project>> GetAllProjectsAsync() =>
-        await GetEverything().ToListAsync();
+    public async Task<IEnumerable<Project>> GetProjectsAsync()
+    {
+        return await GetEverything().ToListAsync();
+    }
+       
    
     /// <summary>
     /// Asynchronously retrieves a project from the database by its identifier.

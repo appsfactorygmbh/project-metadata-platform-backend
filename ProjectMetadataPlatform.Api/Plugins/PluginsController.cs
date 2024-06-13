@@ -19,10 +19,10 @@ public class PluginsController : ControllerBase
 {
     private readonly IMediator _mediator;
 
-   /// <summary>
-   /// Creates a new instance of the <see cref="PluginsController"/>.
-   /// </summary>
-   /// <param name="mediator"></param>
+    /// <summary>
+    /// Creates a new instance of the <see cref="PluginsController"/>.
+    /// </summary>
+    /// <param name="mediator"></param>
     public PluginsController(IMediator mediator)
     {
         _mediator = mediator;
@@ -34,23 +34,23 @@ public class PluginsController : ControllerBase
     /// <param name="id">selects the project</param>
     /// <returns>An HTML ok response with List of Plugins.</returns>
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<ProjectPlugins>>> Get([FromQuery] int id)
+    public async Task<ActionResult<IEnumerable<GetPluginResponse>>> Get([FromQuery] int id)
     {
-       var query = new GetAllPluginsForProjectIdQuery(id);
-       IEnumerable<ProjectPlugins> projectPlugins;
-       try
-       {
-           projectPlugins = await _mediator.Send(query);
-       }
-       catch 
-       {
-           return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-       }
+        var query = new GetAllPluginsForProjectIdQuery(id);
+        IEnumerable<ProjectPlugins> projectPlugins;
+        try
+        {
+            projectPlugins = await _mediator.Send(query);
+        }
+        catch
+        {
+            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+        }
 
-       IEnumerable<GetPluginResponse> response = projectPlugins.Select(plugin
-           => new GetPluginResponse(plugin.Plugin.PluginName, plugin.Url,
-               plugin.DisplayName ?? plugin.Plugin.PluginName));
-       
-       return Ok(response);
+        IEnumerable<GetPluginResponse> response = projectPlugins.Select(plugin
+            => new GetPluginResponse(plugin.Plugin.PluginName, plugin.Url,
+                plugin.DisplayName ?? plugin.Plugin.PluginName));
+
+        return Ok(response);
     }
 }
