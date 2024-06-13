@@ -78,13 +78,15 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
         };
         Create(project);
         var savedEntries = await _context.SaveChangesAsync();
-        if (savedEntries == 0)
-        {
-            throw new IOException("Project could not be saved.");
-        }
+        return savedEntries == 0 ? throw new IOException("Project could not be saved.") : project;
 
-        return project;
     }
+    
+    /// <summary>
+    /// Saves project to the database and returns it.
+    /// </summary>
+    /// <param name="project">Project to be saved in the database</param>
+    /// <returns>Project is returned</returns>
     public async Task<Project> Updatewithreturnvalue(Project project)
     {
         Update(project);
