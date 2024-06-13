@@ -25,11 +25,11 @@ public interface IProjectsRepository
     /// <summary>
     /// Creates a new Project with the given attributes.
     /// </summary>
-    /// <param name="ProjectName">Name of the project</param>
-    /// <param name="BusinessUnit">Name of the business unit</param>
-    /// <param name="TeamNumber">Number of the team</param>
-    /// <param name="Department">Name of the department</param>
-    /// <param name="ClientName">Name of the client</param>
+    /// <param name="projectName">Name of the project</param>
+    /// <param name="businessUnit">Name of the business unit</param>
+    /// <param name="teamNumber">Number of the team</param>
+    /// <param name="department">Name of the department</param>
+    /// <param name="clientName">Name of the client</param>
     /// <returns>creates Project</returns>
-    Task<Project> CreateProject(string ProjectName, string BusinessUnit, int TeamNumber, string Department, string ClientName);
+    Task<Project> CreateProject(string projectName, string businessUnit, int teamNumber, string department, string clientName);
 }

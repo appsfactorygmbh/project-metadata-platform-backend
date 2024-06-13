@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using ProjectMetadataPlatform.Api.Projects.Models;
 using ProjectMetadataPlatform.Application.Projects;
 using ProjectMetadataPlatform.Domain.Projects;
-using ProjectMetadataPlatform.Infrastructure.DataAccess;
+
 
 namespace ProjectMetadataPlatform.Api.Projects;
 
@@ -99,11 +99,11 @@ public class ProjectsController : ControllerBase
     /// <param name="project">New Project that has to be added.</param>
     /// <returns>Id of the created project</returns>
     [HttpPut]
-    public async Task<ActionResult<int>> Put([FromBody] CreateProjectRequest project)
+    public async Task<ActionResult<Project>> Put([FromBody] CreateProjectRequest? project)
     {
         try
         {
-            if (project==null)
+            if (project == null || project.ProjectName.Trim() == "" || project.BusinessUnit.Trim() == "" || project.Department.Trim() == "" || project.ClientName.Trim() == "")
             {
                 return BadRequest();
             }
@@ -113,7 +113,7 @@ public class ProjectsController : ControllerBase
            Project createdProject = await _mediator.Send(command);
             
            var response = new CreateProjectResponse(createdProject.Id);
-           return CreatedAtAction(nameof(Get), new {id = createdProject.Id}, response);
+           return Created("/Projects/" + createdProject.Id, response);
         }
         catch (Exception e)
         {
