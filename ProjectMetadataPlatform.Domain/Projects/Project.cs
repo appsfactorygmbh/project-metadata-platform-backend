@@ -10,9 +10,9 @@ namespace ProjectMetadataPlatform.Domain.Projects;
 public class Project
 {
     /// <summary>
-    /// Gets or sets the id of the project. This property is required.
+    /// Gets or sets the id of the project.
     /// </summary>
-    public required int Id { get; set; }
+    public  int Id { get; set; }
     
     /// <summary>
     /// Gets or sets the name of the project. This property is required.

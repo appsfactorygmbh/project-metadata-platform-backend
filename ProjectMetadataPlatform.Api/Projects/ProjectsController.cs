@@ -99,10 +99,8 @@ public class ProjectsController : ControllerBase
     /// <param name="project">New Project that has to be added.</param>
     /// <returns>Id of the created project</returns>
     [HttpPut]
-    public async Task<ActionResult<int>> Put([FromBody] Project project)
+    public async Task<ActionResult<int>> Put([FromBody] CreateProjectRequest project)
     {
-        var command = new CreateProjectCommand(project);
-        Project? createdProject;
         try
         {
             if (project==null)
@@ -110,9 +108,12 @@ public class ProjectsController : ControllerBase
                 return BadRequest();
             }
 
-            createdProject = await _mediator.Send(command);
-
-            return CreatedAtAction(nameof(Get), new { id = createdProject.Id }, createdProject.Id);
+            var command = new CreateProjectCommand(project.ProjectName, project.BusinessUnit, project.TeamNumber,
+                project.Department, project.ClientName);
+           Project createdProject = await _mediator.Send(command);
+            
+           var response = new CreateProjectResponse(createdProject.Id);
+           return CreatedAtAction(nameof(Get), new {id = createdProject.Id}, response);
         }
         catch (Exception e)
         {

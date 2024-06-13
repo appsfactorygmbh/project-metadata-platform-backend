@@ -23,9 +23,13 @@ public interface IProjectsRepository
     Task<Project?> GetProjectAsync(int id);
     
     /// <summary>
-    /// Creates a new project or replaces an existing one.
+    /// Creates a new Project with the given attributes.
     /// </summary>
-    /// <param name="project">Project to be created.</param>
-    /// <returns>TODO</returns>
-    Task<Project> AddProjectAsync(Project project);
+    /// <param name="ProjectName">Name of the project</param>
+    /// <param name="BusinessUnit">Name of the business unit</param>
+    /// <param name="TeamNumber">Number of the team</param>
+    /// <param name="Department">Name of the department</param>
+    /// <param name="ClientName">Name of the client</param>
+    /// <returns>creates Project</returns>
+    Task<Project> CreateProject(string ProjectName, string BusinessUnit, int TeamNumber, string Department, string ClientName);
 }
