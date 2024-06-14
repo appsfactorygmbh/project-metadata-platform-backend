@@ -34,5 +34,5 @@ public interface IProjectsRepository
     /// </summary>
     /// <param name="project"></param>
     /// <returns></returns>
-    Task<Project> UpdateWithReturnValue(Project project);
+    Task AddOrUpdate(Project project);
 }

@@ -59,7 +59,7 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     /// </summary>
     /// <param name="project">Project to be saved in the database</param>
     /// <returns>Project is returned</returns>
-    public async Task<Project> UpdateWithReturnValue(Project project)
+    public async Task AddOrUpdate(Project project)
     {
         if(GetIf(p => p.Id == project.Id).FirstOrDefault() == null)
         {
@@ -71,6 +71,6 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
             Update(project);
         }
         await _context.SaveChangesAsync();
-        return project;
+        
     }
 }

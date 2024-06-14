@@ -28,7 +28,7 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
     public async Task<int> Handle(CreateProjectCommand request, CancellationToken cancellationToken)
     {
         var project = new Project{ProjectName=request.ProjectName, BusinessUnit=request.BusinessUnit, TeamNumber=request.TeamNumber, Department=request.Department, ClientName=request.ClientName};
-        var storedProject = await _projectsRepository.UpdateWithReturnValue(project);
-        return storedProject.Id;
+        await _projectsRepository.AddOrUpdate(project);
+        return project.Id;
     }
 }

@@ -100,11 +100,11 @@ public class ProjectsController : ControllerBase
     /// <param name="project">New Project that has to be added.</param>
     /// <returns>Id of the created project</returns>
     [HttpPut]
-    public async Task<ActionResult<Project>> Put([FromBody] CreateProjectRequest? project)
+    public async Task<ActionResult<Project>> Put([FromBody] CreateProjectRequest project)
     {
         try
         {
-            if (project == null || string.IsNullOrWhiteSpace(project.ProjectName) || string.IsNullOrWhiteSpace(project.BusinessUnit) || string.IsNullOrWhiteSpace(project.Department) || string.IsNullOrWhiteSpace(project.ClientName))
+            if (string.IsNullOrWhiteSpace(project.ProjectName) || string.IsNullOrWhiteSpace(project.BusinessUnit) || string.IsNullOrWhiteSpace(project.Department) || string.IsNullOrWhiteSpace(project.ClientName))
             {
                 return BadRequest("ProjectName, BusinessUnit, Department and ClientName must not be empty.");
             }

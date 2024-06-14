@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Infrastructure.DataAccess;
@@ -29,19 +30,20 @@ public class CreateProjectRepositoryTest : TestsWithDatabase
             Department = "Example Department",
             ClientName = "Example Client"
         };
-        var project = await _repository.UpdateWithReturnValue(exampleProject);
-        Assert.That(project, Is.Not.Null);
-        Assert.That(project.ProjectName, Is.EqualTo("Example Project"));
-        Assert.That(project.BusinessUnit, Is.EqualTo("Example Business Unit"));
-        Assert.That(project.TeamNumber, Is.EqualTo(1));
-        Assert.That(project.ClientName, Is.EqualTo("Example Client"));
-        Assert.That(project.Department, Is.EqualTo("Example Department"));
-        Assert.That(project.Id, Is.GreaterThan(0));
+        await _repository.AddOrUpdate(exampleProject);
+        Assert.That(exampleProject, Is.Not.Null);
+        Assert.That(exampleProject.ProjectName, Is.EqualTo("Example Project"));
+        Assert.That(exampleProject.BusinessUnit, Is.EqualTo("Example Business Unit"));
+        Assert.That(exampleProject.TeamNumber, Is.EqualTo(1));
+        Assert.That(exampleProject.ClientName, Is.EqualTo("Example Client"));
+        Assert.That(exampleProject.Department, Is.EqualTo("Example Department"));
+        Assert.That(exampleProject.Id, Is.GreaterThan(0));
     }
     
     [Test]
     public async Task CreateProject_ProjectAlreadyExists_Test()
     {
+        
         var exampleProject = new Project
         {
             Id=1,
@@ -51,13 +53,19 @@ public class CreateProjectRepositoryTest : TestsWithDatabase
             Department = "Example Department",
             ClientName = "Example Client"
         };
-        var project = await _repository.UpdateWithReturnValue(exampleProject);
-        Assert.That(project, Is.Not.Null);
-        Assert.That(project.ProjectName, Is.EqualTo("Example Project"));
-        Assert.That(project.BusinessUnit, Is.EqualTo("Example Business Unit"));
-        Assert.That(project.TeamNumber, Is.EqualTo(1));
-        Assert.That(project.ClientName, Is.EqualTo("Example Client"));
-        Assert.That(project.Department, Is.EqualTo("Example Department"));
-        Assert.That(project.Id, Is.EqualTo(1));
+        await _repository.AddOrUpdate(exampleProject);
+        var firstresult = await _repository.GetProjectsAsync();
+        await _repository.AddOrUpdate(exampleProject);
+        Assert.That(exampleProject, Is.Not.Null);
+        Assert.That(exampleProject.ProjectName, Is.EqualTo("Example Project"));
+        Assert.That(exampleProject.BusinessUnit, Is.EqualTo("Example Business Unit"));
+        Assert.That(exampleProject.TeamNumber, Is.EqualTo(1));
+        Assert.That(exampleProject.ClientName, Is.EqualTo("Example Client"));
+        Assert.That(exampleProject.Department, Is.EqualTo("Example Department"));
+        Assert.That(exampleProject.Id, Is.GreaterThan(0));
+        var result = await _repository.GetProjectsAsync();
+        Assert.AreEqual(result.Count(), firstresult.Count());
+
+        
     }
 }

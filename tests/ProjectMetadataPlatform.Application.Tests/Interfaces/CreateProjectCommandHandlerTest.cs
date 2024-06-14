@@ -27,14 +27,14 @@ public class CreateProjectCommandHandlerTest
         // prepare
         var exampleProject = new Project
         {
-            Id=1,
+            
             ProjectName = "Example Project",
             BusinessUnit = "Example Business Unit",
             TeamNumber = 1,
             Department = "Example Department",
             ClientName = "Example Client"
         };
-        _mockProjectRepo.Setup(m => m.UpdateWithReturnValue(It.IsAny<Project>())).ReturnsAsync(exampleProject);
+        _mockProjectRepo.Setup(m => m.AddOrUpdate(It.IsAny<Project>())).Callback<Project>(p => p.Id = 1).Returns(Task.CompletedTask);
         
         // act
         
