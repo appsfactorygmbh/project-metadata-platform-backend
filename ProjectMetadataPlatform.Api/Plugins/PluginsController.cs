@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -52,5 +53,38 @@ public class PluginsController : ControllerBase
                 plugin.DisplayName ?? plugin.Plugin.PluginName));
 
         return Ok(response);
+    }
+
+    /// <summary>
+    /// Creates a new plugin with the given name
+    /// </summary>
+    /// <param name="request">The request body.</param>
+    /// <returns>A HTTP Created Response and the Id of the new Plugin</returns>
+    [HttpPut]
+    public async Task<ActionResult<Plugin>> Put([FromBody] CreatePluginRequest request)
+    {
+        if (string.IsNullOrWhiteSpace(request.PluginName))
+        {
+            return StatusCode(StatusCodes.Status400BadRequest, "PluginName can't be empty or whitespaces");
+        }
+
+        var command = new CreatePluginCommand(request.PluginName);
+
+        int pluginId;
+        try
+        {
+            pluginId = await _mediator.Send(command);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            Console.WriteLine(e.StackTrace);
+
+            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+        }
+
+        var response = new CreatePluginResponse(pluginId);
+        var uri = "/Plugins/" + pluginId;
+        return Created(uri, response);
     }
 }

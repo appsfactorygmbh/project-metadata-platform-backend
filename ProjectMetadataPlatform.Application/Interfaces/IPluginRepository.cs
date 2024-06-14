@@ -16,4 +16,11 @@ public interface IPluginRepository
     /// <param name="id"></param>
     /// <returns></returns>
     Task<List<ProjectPlugins>> GetAllPluginsForProjectIdAsync(int id);
+    
+    /// <summary>
+    /// Saves a given Plugin to the database.
+    /// </summary>
+    /// <param name="plugin">The Plugin to save</param>
+    /// <returns></returns>
+    Task<Plugin> StorePlugin(Plugin plugin);
 }

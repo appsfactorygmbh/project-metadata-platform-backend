@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -72,5 +73,48 @@ public class PluginsRepositoryTest : TestsWithDatabase
             Assert.That(rep[0].Plugin.PluginName, Is.EqualTo("Gitlab"));
         });
     }
-    
+
+    [Test]
+    public async Task CreatePlugin_Test()
+    {
+        var examplePlugin = new Plugin { PluginName = "Warp-Drive", ProjectPlugins = [] };
+
+        var plugin = await _repository.StorePlugin(examplePlugin);
+        
+        Assert.That(plugin, Is.Not.Null);
+        Assert.That(plugin.PluginName, Is.EqualTo("Warp-Drive"));
+    }
+
+    [Test]
+    public async Task CreatePlugins_IdsDifferent_Test()
+    {
+        var pluginMethane = new Plugin { PluginName = "Methane", ProjectPlugins = [] };
+        var pluginOxygen = new Plugin { PluginName = "Oxygen", ProjectPlugins = [] };
+        
+        var pluginOne = await _repository.StorePlugin(pluginMethane);
+        var pluginTwo = await _repository.StorePlugin(pluginOxygen);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(pluginOne, Is.Not.Null);
+            Assert.That(pluginTwo, Is.Not.Null);
+        });
+        
+        Assert.That(pluginOne.Id, Is.Not.EqualTo(pluginTwo.Id));
+    }
+
+    [Test]
+    public async Task UpdatePlugin_noIdIncrementWhenIdExists_Test()
+    {
+        var examplePlugin = new Plugin { PluginName = "Warp-Drive", ProjectPlugins = [], Id = 42 };
+
+        var plugin = await _repository.StorePlugin(examplePlugin);
+        
+        Assert.That(plugin, Is.Not.Null);
+        Assert.Multiple(() =>
+        {
+            Assert.That(plugin.PluginName, Is.EqualTo("Warp-Drive"));
+            Assert.That(plugin.Id, Is.EqualTo(42));
+        });
+    }
 }

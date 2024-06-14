@@ -33,4 +33,17 @@ public class PluginRepository : IPluginRepository
     {
         return [.. _context.ProjectPluginsRelation.Where(rel => rel.ProjectId == id).Include(rel => rel.Plugin)];
     }
+    
+    /// <summary>
+    /// Saves a given Plugin to the database.
+    /// </summary>
+    /// <param name="plugin">The Plugin to save</param>
+    /// <returns>The saved Plugin</returns>
+    public async Task<Plugin> StorePlugin(Plugin plugin)
+    {
+        _context.Plugins.Add(plugin);
+        await _context.SaveChangesAsync();
+
+        return plugin;
+    }
 }
