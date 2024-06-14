@@ -1,5 +1,5 @@
 using MediatR;
-using ProjectMetadataPlatform.Domain.Projects;
+
 
 namespace ProjectMetadataPlatform.Application.Projects;
 /// <summary>
@@ -10,4 +10,4 @@ namespace ProjectMetadataPlatform.Application.Projects;
 /// <param name="TeamNumber">Number of the team</param>
 /// <param name="Department">Name of the department</param>
 /// <param name="ClientName">Name of the client</param>
-public record CreateProjectCommand(string ProjectName, string BusinessUnit, int TeamNumber, string Department, string ClientName): IRequest<Project>;
+public record CreateProjectCommand(string ProjectName, string BusinessUnit, int TeamNumber, string Department, string ClientName): IRequest<int>;

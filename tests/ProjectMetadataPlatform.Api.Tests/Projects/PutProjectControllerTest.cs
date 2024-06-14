@@ -1,4 +1,4 @@
-using System;
+
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -31,16 +31,7 @@ public class PutProjectControllerTest
     public async Task CreateProject_Test()
     {
         //prepare
-        var exampleProject = new Project
-        {
-            
-            ProjectName = "Example Project",
-            BusinessUnit = "Example Business Unit",
-            TeamNumber = 1,
-            Department = "Example Department",
-            ClientName = "Example Client"
-        };
-        _mediator.Setup(m => m.Send(It.IsAny<CreateProjectCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(exampleProject);
+        _mediator.Setup(m => m.Send(It.IsAny<CreateProjectCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(1);
         var request = new CreateProjectRequest( "Example Project", "Example Business Unit", 1, "Example Department", "Example Client");
         ActionResult<Project> result = await _controller.Put(request);
         Assert.That(result.Result, Is.InstanceOf<CreatedResult>());
@@ -51,8 +42,9 @@ public class PutProjectControllerTest
         
         var projectResponse = createdResult.Value as CreateProjectResponse;
         Assert.That(projectResponse, Is.Not.Null);
+        Assert.That(projectResponse.Id, Is.EqualTo(1));
         
-        Assert.That(createdResult.Location, Is.Not.Null);
+        Assert.That(createdResult.Location, Is.EqualTo("/Projects/1"));
     }
 
     [Test]

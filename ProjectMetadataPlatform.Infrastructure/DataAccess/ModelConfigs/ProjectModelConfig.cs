@@ -18,7 +18,6 @@ public class ProjectModelConfig : IEntityTypeConfiguration<Project>
     {
         // Set the primary key for the Project entity
         _ = builder.HasKey(e => e.Id);
-        _ = builder.Property(e => e.Id).ValueGeneratedOnAdd();
 
         _ = builder.HasMany(p => p.ProjectPlugins)
             .WithOne(pp => pp.Project)

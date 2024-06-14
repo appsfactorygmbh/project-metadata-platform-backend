@@ -55,41 +55,23 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     /// <returns>A task representing the asynchronous operation. When this task completes, it returns one project.</returns>
     public async Task<Project?> GetProjectAsync(int id) =>
         await GetIf(p => p.Id == id).FirstOrDefaultAsync(); 
-   
-    /// <summary>
-    /// Creates a new Project in the database.
-    /// </summary>
-    /// <param name="projectName">Name of the project</param>
-    /// <param name="businessUnit">Name of the business unit</param>
-    /// <param name="teamNumber">Number of the team</param>
-    /// <param name="department">Name of the department</param>
-    /// <param name="clientName">Name of the client</param>
-    /// <returns>created project</returns>
-    /// <exception cref="IOException"></exception>
-    public async Task<Project> CreateProject(string projectName, string businessUnit, int teamNumber, string department, string clientName)
-    {
-        var project = new Project
-        {
-            ProjectName = projectName,
-            BusinessUnit = businessUnit,
-            TeamNumber = teamNumber,
-            Department = department,
-            ClientName = clientName
-        };
-        Create(project);
-        var savedEntries = await _context.SaveChangesAsync();
-        return savedEntries == 0 ? throw new IOException("Project could not be saved.") : project;
-
-    }
     
     /// <summary>
     /// Saves project to the database and returns it.
     /// </summary>
     /// <param name="project">Project to be saved in the database</param>
     /// <returns>Project is returned</returns>
-    public async Task<Project> Updatewithreturnvalue(Project project)
+    public async Task<Project> UpdateWithReturnValue(Project project)
     {
-        Update(project);
+        if(GetIf(p => p.Id == project.Id).FirstOrDefault() == null)
+        {
+            Create(project);
+            
+        }
+        else
+        {
+            Update(project);
+        }
         await _context.SaveChangesAsync();
         return project;
     }

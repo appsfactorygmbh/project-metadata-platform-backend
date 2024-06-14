@@ -8,7 +8,7 @@ namespace ProjectMetadataPlatform.Application.Projects;
 /// <summary>
 /// Handler for the <see cref="CreateProjectCommand"/>.
 /// </summary>
-public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand, Project>
+public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand, int>
 {
     private readonly IProjectsRepository _projectsRepository;
     /// <summary>
@@ -25,10 +25,10 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
     /// <param name="request">Request to be handled</param>
     /// <param name="cancellationToken"></param>
     /// <returns>Response to the request</returns>
-    public async Task<Project> Handle(CreateProjectCommand request, CancellationToken cancellationToken)
+    public async Task<int> Handle(CreateProjectCommand request, CancellationToken cancellationToken)
     {
         var project = new Project{ProjectName=request.ProjectName, BusinessUnit=request.BusinessUnit, TeamNumber=request.TeamNumber, Department=request.Department, ClientName=request.ClientName};
-        var storedProject = await _projectsRepository.Updatewithreturnvalue(project);
-        return storedProject;
+        var storedProject = await _projectsRepository.UpdateWithReturnValue(project);
+        return storedProject.Id;
     }
 }
