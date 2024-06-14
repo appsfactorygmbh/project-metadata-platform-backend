@@ -111,7 +111,7 @@ public class ProjectsController : ControllerBase
 
             var command = new CreateProjectCommand(project.ProjectName, project.BusinessUnit, project.TeamNumber,
                 project.Department, project.ClientName);
-           int id = await _mediator.Send(command);
+           var id = await _mediator.Send(command);
             
            var response = new CreateProjectResponse(id);
            return Created("/Projects/" + id, response);
