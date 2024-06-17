@@ -12,7 +12,7 @@ using ProjectMetadataPlatform.Domain.Projects;
 namespace ProjectMetadataPlatform.Api.Projects;
 
 /// <summary>
-/// Endpoints for managing projects.
+///     Endpoints for managing projects.
 /// </summary>
 [ApiController]
 [Route("[controller]")]
@@ -20,16 +20,15 @@ public class ProjectsController : ControllerBase
 {
     private readonly IMediator _mediator;
     /// <summary>
-    /// Creates a new instance of the <see cref="ProjectsController"/> class.
+    ///     Creates a new instance of the <see cref="ProjectsController" /> class.
     /// </summary>
-
     public ProjectsController(IMediator mediator)
     {
         _mediator = mediator;
     }
 
     /// <summary>
-    /// Gets all projects or all projects that match the given search string.
+    ///     Gets all projects or all projects that match the given search string.
     /// </summary>
     /// <param name="search">Search string to filter the projects by.</param>
     /// <returns>All projects or all projects that match the given search string.</returns>
@@ -50,7 +49,7 @@ public class ProjectsController : ControllerBase
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
 
-        var response = projects.Select(project => new GetProjectsResponse(
+        IEnumerable<GetProjectsResponse> response = projects.Select(project => new GetProjectsResponse(
             project.Id,
             project.ProjectName,
             project.ClientName,
@@ -61,7 +60,7 @@ public class ProjectsController : ControllerBase
     }
 
     /// <summary>
-    /// Gets the project with the given id.
+    ///     Gets the project with the given id.
     /// </summary>
     /// <param name="id">The id of the project.</param>
     /// <returns>The project.</returns>
@@ -89,7 +88,6 @@ public class ProjectsController : ControllerBase
         }
 
         var response = new GetProjectResponse(
-
             project.Id,
             project.ProjectName,
             project.ClientName,
@@ -100,7 +98,7 @@ public class ProjectsController : ControllerBase
         return Ok(response);
     }
     /// <summary>
-    /// Creates a new project.
+    ///     Creates a new project.
     /// </summary>
     /// <param name="project">The data of the new project.</param>
     /// <returns>An response containing the id of the created project.</returns>
@@ -112,14 +110,16 @@ public class ProjectsController : ControllerBase
     {
         try
         {
-            if (string.IsNullOrWhiteSpace(project.ProjectName) || string.IsNullOrWhiteSpace(project.BusinessUnit) || string.IsNullOrWhiteSpace(project.Department) || string.IsNullOrWhiteSpace(project.ClientName))
+            if (string.IsNullOrWhiteSpace(project.ProjectName) || string.IsNullOrWhiteSpace(project.BusinessUnit)
+                                                               || string.IsNullOrWhiteSpace(project.Department)
+                                                               || string.IsNullOrWhiteSpace(project.ClientName))
             {
                 return BadRequest("ProjectName, BusinessUnit, Department and ClientName must not be empty.");
             }
 
             var command = new CreateProjectCommand(project.ProjectName, project.BusinessUnit, project.TeamNumber,
                 project.Department, project.ClientName);
-            var id = await _mediator.Send(command);
+            int id = await _mediator.Send(command);
 
             var response = new CreateProjectResponse(id);
             return Created("/Projects/" + id, response);

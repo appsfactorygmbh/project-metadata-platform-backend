@@ -11,8 +11,6 @@ namespace ProjectMetadataPlatform.Application.Tests.Plugins;
 [TestFixture]
 public class CreatePluginCommandHandlerTest
 {
-    private CreatePluginCommandHandler _handler;
-    private Mock<IPluginRepository> _mockPluginRepo;
 
     [SetUp]
     public void Setup()
@@ -20,14 +18,16 @@ public class CreatePluginCommandHandlerTest
         _mockPluginRepo = new Mock<IPluginRepository>();
         _handler = new CreatePluginCommandHandler(_mockPluginRepo.Object);
     }
-    
+    private CreatePluginCommandHandler _handler;
+    private Mock<IPluginRepository> _mockPluginRepo;
+
     [Test]
     public async Task CreatePlugin_Test()
     {
         var examplePlugin = new Plugin { PluginName = "Airlock", Id = 13, ProjectPlugins = [] };
         _mockPluginRepo.Setup(m => m.StorePlugin(It.IsAny<Plugin>())).ReturnsAsync(examplePlugin);
 
-        var result = await _handler.Handle(new CreatePluginCommand("Airlock"), It.IsAny<CancellationToken>());
+        int result = await _handler.Handle(new CreatePluginCommand("Airlock"), It.IsAny<CancellationToken>());
 
         Assert.That(result, Is.EqualTo(13));
     }

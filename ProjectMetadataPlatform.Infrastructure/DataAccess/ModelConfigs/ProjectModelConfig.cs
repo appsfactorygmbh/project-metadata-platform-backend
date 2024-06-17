@@ -5,13 +5,13 @@ using ProjectMetadataPlatform.Domain.Projects;
 namespace ProjectMetadataPlatform.Infrastructure.DataAccess.ModelConfigs;
 
 /// <summary>
-/// Data Base Configuration for the Projects.
+///     Data Base Configuration for the Projects.
 /// </summary>
 public class ProjectModelConfig : IEntityTypeConfiguration<Project>
 {
-    
+
     /// <summary>
-    /// Configures the Project entity.
+    ///     Configures the Project entity.
     /// </summary>
     /// <param name="builder"></param>
     public void Configure(EntityTypeBuilder<Project> builder)

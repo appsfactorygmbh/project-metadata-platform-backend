@@ -12,7 +12,7 @@ using ProjectMetadataPlatform.Domain.Plugins;
 namespace ProjectMetadataPlatform.Api.Plugins;
 
 /// <summary>
-/// Endpoints for managing plugins.
+///     Endpoints for managing plugins.
 /// </summary>
 [ApiController]
 [Route("[controller]")]
@@ -21,7 +21,7 @@ public class PluginsController : ControllerBase
     private readonly IMediator _mediator;
 
     /// <summary>
-    /// Creates a new instance of the <see cref="PluginsController"/>.
+    ///     Creates a new instance of the <see cref="PluginsController" />.
     /// </summary>
     /// <param name="mediator"></param>
     public PluginsController(IMediator mediator)
@@ -30,7 +30,7 @@ public class PluginsController : ControllerBase
     }
 
     /// <summary>
-    /// Gets all the plugins of the project with the given id.
+    ///     Gets all the plugins of the project with the given id.
     /// </summary>
     /// <param name="id">The id of the project.</param>
     /// <returns>The plugins of the project.</returns>
@@ -58,7 +58,7 @@ public class PluginsController : ControllerBase
     }
 
     /// <summary>
-    /// Creates a new plugin with the given name.
+    ///     Creates a new plugin with the given name.
     /// </summary>
     /// <param name="request">The request body.</param>
     /// <returns>A HTTP Created Response and the Id of the new Plugin.</returns>
@@ -89,7 +89,7 @@ public class PluginsController : ControllerBase
         }
 
         var response = new CreatePluginResponse(pluginId);
-        var uri = "/Plugins/" + pluginId;
+        string uri = "/Plugins/" + pluginId;
         return Created(uri, response);
     }
 }

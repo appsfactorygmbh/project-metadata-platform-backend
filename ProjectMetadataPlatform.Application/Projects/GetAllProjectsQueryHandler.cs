@@ -7,15 +7,14 @@ using ProjectMetadataPlatform.Domain.Projects;
 
 namespace ProjectMetadataPlatform.Application.Projects;
 
-
-///  <inheritdoc />
+/// <inheritdoc />
 public class GetAllProjectsQueryHandler : IRequestHandler<GetAllProjectsQuery, IEnumerable<Project>>
 {
     private readonly IProjectsRepository _projectRepository;
-    
+
 
     /// <summary>
-    /// Creates a new instance of <see cref="GetAllProjectsQueryHandler"/>.
+    ///     Creates a new instance of <see cref="GetAllProjectsQueryHandler" />.
     /// </summary>
     public GetAllProjectsQueryHandler(IProjectsRepository projectsRepository)
     {
@@ -25,13 +24,11 @@ public class GetAllProjectsQueryHandler : IRequestHandler<GetAllProjectsQuery, I
     /// <inheritdoc />
     public Task<IEnumerable<Project>> Handle(GetAllProjectsQuery request, CancellationToken cancellationToken)
     {
-        
-            return string.IsNullOrWhiteSpace(request.Search)
-                ? _projectRepository.GetProjectsAsync()
-                : _projectRepository.GetProjectsAsync(request.Search);
-       
-          
+
+        return string.IsNullOrWhiteSpace(request.Search)
+            ? _projectRepository.GetProjectsAsync()
+            : _projectRepository.GetProjectsAsync(request.Search);
+
+
     }
-    
-    
 }

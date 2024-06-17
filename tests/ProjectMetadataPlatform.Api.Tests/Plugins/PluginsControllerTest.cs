@@ -6,8 +6,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using NUnit.Framework;
 using Moq;
+using NUnit.Framework;
 using ProjectMetadataPlatform.Api.Plugins;
 using ProjectMetadataPlatform.Api.Plugins.Models;
 using ProjectMetadataPlatform.Application.Plugins;
@@ -30,8 +30,9 @@ public class Tests
     [Test]
     public async Task GetAllPlugins_EmptyResponseList_Test()
     {
-        _mediator.Setup(m => m.Send(It.IsAny<GetAllPluginsForProjectIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new List<ProjectPlugins>());
-        var result = await _controller.Get(0);
+        _mediator.Setup(m => m.Send(It.IsAny<GetAllPluginsForProjectIdQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<ProjectPlugins>());
+        ActionResult<IEnumerable<GetPluginResponse>> result = await _controller.Get(0);
 
 
         Assert.IsNotNull(result);
@@ -45,14 +46,31 @@ public class Tests
     {
 
         var plugin = new Plugin { Id = 1, PluginName = "plugin 1" };
-        var projcet = new Project { Id = 1, Department = "department 1", BusinessUnit = "business unit 1", ClientName = "client name 1", ProjectName = "project 1", TeamNumber = 1 };
+        var projcet = new Project
+        {
+            Id = 1,
+            Department = "department 1",
+            BusinessUnit = "business unit 1",
+            ClientName = "client name 1",
+            ProjectName = "project 1",
+            TeamNumber = 1
+        };
         var responseContent = new List<ProjectPlugins>
         {
-            new ProjectPlugins{ ProjectId = 1, PluginId = 1, Plugin = plugin,Project = projcet,DisplayName = "Gitlab", Url ="Plugin1.com"},
+            new()
+            {
+                ProjectId = 1,
+                PluginId = 1,
+                Plugin = plugin,
+                Project = projcet,
+                DisplayName = "Gitlab",
+                Url = "Plugin1.com"
+            }
         };
 
-        _mediator.Setup(m => m.Send(It.IsAny<GetAllPluginsForProjectIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(responseContent);
-        var result = await _controller.Get(0);
+        _mediator.Setup(m => m.Send(It.IsAny<GetAllPluginsForProjectIdQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(responseContent);
+        ActionResult<IEnumerable<GetPluginResponse>> result = await _controller.Get(0);
 
         Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
 
@@ -66,7 +84,7 @@ public class Tests
         var resultValue = (okResult?.Value as IEnumerable<GetPluginResponse>)!.ToList();
         Assert.That(resultValue, Has.Count.EqualTo(1));
 
-        var resultObj = resultValue[0];
+        GetPluginResponse resultObj = resultValue[0];
         Assert.Multiple(() =>
         {
             Assert.That(resultObj.Url, Is.EqualTo("Plugin1.com"));
@@ -81,18 +99,34 @@ public class Tests
     {
 
         var plugin = new Plugin { Id = 1, PluginName = "plugin 1" };
-        var projcet = new Project { Id = 1, Department = "department 1", BusinessUnit = "business unit 1", ClientName = "client name 1", ProjectName = "project 1", TeamNumber = 1 };
+        var projcet = new Project
+        {
+            Id = 1,
+            Department = "department 1",
+            BusinessUnit = "business unit 1",
+            ClientName = "client name 1",
+            ProjectName = "project 1",
+            TeamNumber = 1
+        };
         var responseContent = new List<ProjectPlugins>
         {
-            new ProjectPlugins{ ProjectId = 1, PluginId = 1, Plugin = plugin,Project = projcet, Url ="Plugin1.com"},
+            new()
+            {
+                ProjectId = 1,
+                PluginId = 1,
+                Plugin = plugin,
+                Project = projcet,
+                Url = "Plugin1.com"
+            }
         };
 
-        _mediator.Setup(m => m.Send(It.IsAny<GetAllPluginsForProjectIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(responseContent);
-        var result = await _controller.Get(0);
+        _mediator.Setup(m => m.Send(It.IsAny<GetAllPluginsForProjectIdQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(responseContent);
+        ActionResult<IEnumerable<GetPluginResponse>> result = await _controller.Get(0);
         var okResult = result.Result as OkObjectResult;
         var resultValue = (okResult?.Value as IEnumerable<GetPluginResponse>)!.ToList();
 
-        var resultObj = resultValue[0];
+        GetPluginResponse resultObj = resultValue[0];
         Assert.Multiple(() =>
         {
             Assert.That(resultObj.Url, Is.EqualTo("Plugin1.com"));

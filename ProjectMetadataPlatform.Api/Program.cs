@@ -1,14 +1,12 @@
-
 using System;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using ProjectMetadataPlatform.Application;
 using ProjectMetadataPlatform.Infrastructure;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -23,11 +21,12 @@ builder.Services
     .AddApplicationDependencies()
     .AddInfrastructureDependencies();
 
-builder.Services.AddCors(options => options.AddDefaultPolicy(policyBuilder => policyBuilder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
+builder.Services.AddCors(options
+    => options.AddDefaultPolicy(policyBuilder => policyBuilder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
 builder.Services.AddControllers();
 
 
-var app = builder.Build();
+WebApplication app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 

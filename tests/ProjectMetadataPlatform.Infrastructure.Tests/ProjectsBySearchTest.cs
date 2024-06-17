@@ -1,12 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
-using Moq;
 using NUnit.Framework;
-using ProjectMetadataPlatform.Api.Projects;
-using ProjectMetadataPlatform.Application.Projects;
 using ProjectMetadataPlatform.Domain.Projects;
 using ProjectMetadataPlatform.Infrastructure.DataAccess;
 
@@ -15,23 +10,23 @@ namespace ProjectMetadataPlatform.Infrastructure.Tests;
 [TestFixture]
 public class ProjectsBySearchTest : TestsWithDatabase
 {
-    private ProjectMetadataPlatformDbContext _context;
-    private ProjectsRepository _repository;
-    
+
 
     [SetUp]
     public void Setup()
     {
         _context = DbContext();
         _repository = new ProjectsRepository(_context);
-        
+        DeleteContext(_context);
     }
-    
+    private ProjectMetadataPlatformDbContext _context;
+    private ProjectsRepository _repository;
+
     [Test]
     public async Task GetProjectsWithSearchTest()
     {
         // Arrange
-        var exampleProject = new Project()
+        var exampleProject = new Project
         {
             Id = 1,
             ProjectName = "Regen",
@@ -40,14 +35,14 @@ public class ProjectsBySearchTest : TestsWithDatabase
             TeamNumber = 42,
             Department = "Homelandsecurity"
         };
-        
+
         _context.Projects.Add(exampleProject);
         await _context.SaveChangesAsync();
-        
+
         // Act
-        var result = await _repository.GetProjectsAsync("ege");
+        IEnumerable<Project> result = await _repository.GetProjectsAsync("ege");
         Assert.IsNotEmpty(result);
-        var project = result.First();
+        Project project = result.First();
         // Assert
         Assert.AreEqual(1, result.Count());
         Assert.That(project.Id, Is.EqualTo(1));
@@ -58,10 +53,10 @@ public class ProjectsBySearchTest : TestsWithDatabase
         Assert.That(project.Department, Is.EqualTo("Homelandsecurity"));
     }
 
-    [Test] 
+    [Test]
     public async Task GetProjectsWithSearch_WithoutMatch_Test()
     {
-        var project = new Project()
+        var project = new Project
         {
             Id = 1,
             ProjectName = "Regen",
@@ -70,21 +65,21 @@ public class ProjectsBySearchTest : TestsWithDatabase
             TeamNumber = 42,
             Department = "Homelandsecurity"
         };
-        
+
         _context.Projects.Add(project);
         await _context.SaveChangesAsync();
 
-        var result = await _repository.GetProjectsAsync("x");
+        IEnumerable<Project> result = await _repository.GetProjectsAsync("x");
         Assert.IsEmpty(result);
     }
-    
-    [Test] 
+
+    [Test]
     public async Task GetProjectsWithSearch_MultipleMatches_Test()
     {
         // Arrange
-        var projects = new List<Project>()
+        var projects = new List<Project>
         {
-            new Project()
+            new()
             {
                 Id = 1,
                 ProjectName = "Wasserfall",
@@ -93,7 +88,7 @@ public class ProjectsBySearchTest : TestsWithDatabase
                 TeamNumber = 42,
                 Department = "Homelandsecurity"
             },
-            new Project()
+            new()
             {
                 Id = 2,
                 ProjectName = "Regen",
@@ -102,7 +97,7 @@ public class ProjectsBySearchTest : TestsWithDatabase
                 TeamNumber = 42,
                 Department = "Homelandsecurity"
             },
-            new Project()
+            new()
             {
                 Id = 3,
                 ProjectName = "Turbo",
@@ -110,19 +105,126 @@ public class ProjectsBySearchTest : TestsWithDatabase
                 BusinessUnit = "BuWeather",
                 TeamNumber = 42,
                 Department = "Homelandsecurity"
-            },
-            
+            }
         };
 
         _context.Projects.AddRange(projects);
-        
+
         await _context.SaveChangesAsync();
 
         // Act
-        var result = await _repository.GetProjectsAsync("Reg");
+        IEnumerable<Project> result = await _repository.GetProjectsAsync("Reg");
 
         // Assert
         Assert.AreEqual(2, result.Count());
-        
+
+    }
+
+    [Test]
+    public async Task GetProjectsWithSearch_Ignorecase_Test()
+    {
+        // Arrange
+        var projects = new List<Project>
+        {
+            new()
+            {
+                Id = 1,
+                ProjectName = "Wasserfall",
+                ClientName = "whatever_taucht_nicht_auf",
+                BusinessUnit = "BuWeather",
+                TeamNumber = 42,
+                Department = "Homelandsecurity"
+            },
+            new()
+            {
+                Id = 2,
+                ProjectName = "Regen",
+                ClientName = "ESA",
+                BusinessUnit = "BuWeather",
+                TeamNumber = 42,
+                Department = "Homelandsecurity"
+            },
+            new()
+            {
+                Id = 3,
+                ProjectName = "Turbo",
+                ClientName = "Regen",
+                BusinessUnit = "BuWeather",
+                TeamNumber = 42,
+                Department = "Homelandsecurity"
+            }
+        };
+
+        _context.Projects.AddRange(projects);
+
+        await _context.SaveChangesAsync();
+
+        // Act
+        IEnumerable<Project> result = await _repository.GetProjectsAsync("Reg");
+
+        // Assert
+        Assert.AreEqual(2, result.Count());
+
+        IEnumerable<Project> resultIgnoreCase = await _repository.GetProjectsAsync("EGen");
+
+        // Assert
+        Assert.AreEqual(2, resultIgnoreCase.Count());
+    }
+
+    [Test]
+    public async Task GetProjectsWithTeamNumber_Test()
+    {
+        // Arrange
+        var projects = new List<Project>
+        {
+            new()
+            {
+                Id = 1,
+                ProjectName = "Wasserfall",
+                ClientName = "whatever_taucht_nicht_auf",
+                BusinessUnit = "BuWeather",
+                TeamNumber = 42,
+                Department = "Homelandsecurity"
+            },
+            new()
+            {
+                Id = 2,
+                ProjectName = "Regen",
+                ClientName = "ESA",
+                BusinessUnit = "BuWeather",
+                TeamNumber = 42,
+                Department = "Homelandsecurity"
+            },
+            new()
+            {
+                Id = 3,
+                ProjectName = "Turbo",
+                ClientName = "Regen",
+                BusinessUnit = "BuWeather",
+                TeamNumber = 41,
+                Department = "Homelandsecurity"
+            }
+        };
+        _context.Projects.AddRange(projects);
+
+        await _context.SaveChangesAsync();
+
+        // Act
+        IEnumerable<Project> resultExactDouble = await _repository.GetProjectsAsync("42");
+
+        // Assert
+        Assert.AreEqual(2, resultExactDouble.Count());
+
+        IEnumerable<Project> resultExactSingle = await _repository.GetProjectsAsync("41");
+        // Assert
+        Assert.AreEqual(1, resultExactSingle.Count());
+
+        IEnumerable<Project> resultOnlyFirstNumber = await _repository.GetProjectsAsync("4");
+        // Assert
+        Assert.AreEqual(3, resultOnlyFirstNumber.Count());
+
+        IEnumerable<Project> resultOnlySecondNumberNumber = await _repository.GetProjectsAsync("2");
+        // Assert
+        Assert.AreEqual(2, resultOnlySecondNumberNumber.Count());
     }
 }
