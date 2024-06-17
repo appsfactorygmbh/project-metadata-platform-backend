@@ -2,6 +2,7 @@ stages:
   - test
   - build
   - deploy
+  - release
 
 variables:
   DEVELOP_BRANCH: develop
