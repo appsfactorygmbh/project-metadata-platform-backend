@@ -63,7 +63,7 @@ public class ProjectsController : ControllerBase
     /// <summary>
     /// Retrieves a project by id.
     /// </summary>
-    /// <param name="id">Identifiacation number for the project</param>
+    /// <param name="id">Identification number for the project</param>
     /// <returns>A project.</returns>
     /// <response code="200">Project is returned successfully</response>
     /// <response code="404">Project not found</response>
