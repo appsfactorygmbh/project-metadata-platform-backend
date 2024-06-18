@@ -33,6 +33,8 @@ public class ProjectsController : ControllerBase
     /// </summary>
     /// <param name="search">Search pattern to look for in ProjectName</param>
     /// <returns>All projects. When search is used all Projects, which are fitting in pattern</returns>
+    /// <response code="200">Projects are returned successfully</response>
+    /// <response code="500">Internal Server Error</response>
     [HttpGet]
     public async Task<ActionResult<IEnumerable<GetProjectsResponse>>> Get(string search = " ")
     {
@@ -63,6 +65,9 @@ public class ProjectsController : ControllerBase
     /// </summary>
     /// <param name="id">Identifiacation number for the project</param>
     /// <returns>A project.</returns>
+    /// <response code="200">Project is returned successfully</response>
+    /// <response code="404">Project not found</response>
+    /// <response code="500">Internal Server Error</response>
     [HttpGet("{id:int}")]
     public async Task<ActionResult<GetProjectResponse>> Get(int id)
     {
@@ -99,6 +104,9 @@ public class ProjectsController : ControllerBase
     /// </summary>
     /// <param name="project">New Project that has to be added.</param>
     /// <returns>Id of the created project</returns>
+    /// <response code="201">Project is created successfully</response>
+    /// <response code="400">Bad Request</response>
+    /// <response code="500">Internal Server Error</response>
     [HttpPut]
     public async Task<ActionResult<Project>> Put([FromBody] CreateProjectRequest project)
     {

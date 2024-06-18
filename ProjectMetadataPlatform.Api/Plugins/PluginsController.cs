@@ -34,6 +34,8 @@ public class PluginsController : ControllerBase
     /// </summary>
     /// <param name="id">selects the project</param>
     /// <returns>An HTML ok response with List of Plugins.</returns>
+    /// <response code="200">Plugins are returned successfully</response>
+    /// <response code="500">Internal Server Error</response>
     [HttpGet]
     public async Task<ActionResult<IEnumerable<GetPluginResponse>>> Get([FromQuery] int id)
     {
@@ -60,6 +62,9 @@ public class PluginsController : ControllerBase
     /// </summary>
     /// <param name="request">The request body.</param>
     /// <returns>A HTTP Created Response and the Id of the new Plugin</returns>
+    /// <response code="201">Plugin is created successfully</response>
+    /// <response code="400">Bad Request</response>
+    /// <response code="500">Internal Server Error</response>
     [HttpPut]
     public async Task<ActionResult<Plugin>> Put([FromBody] CreatePluginRequest request)
     {
