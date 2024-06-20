@@ -1,6 +1,6 @@
 services:
   backend:
     image: gitlab.dit.htwk-leipzig.de:5050/projekt2024_a_appsfactory_project_metadata_platform/backend/production:latest
-    container_name: backend
+    container_name: backend-production
     ports:
       - 8080:8080
