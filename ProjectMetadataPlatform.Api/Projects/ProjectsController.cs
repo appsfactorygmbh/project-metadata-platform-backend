@@ -12,7 +12,7 @@ using ProjectMetadataPlatform.Domain.Projects;
 namespace ProjectMetadataPlatform.Api.Projects;
 
 /// <summary>
-/// Controller for projects.
+/// Endpoints for managing projects.
 /// </summary>
 [ApiController]
 [Route("[controller]")]
@@ -29,12 +29,12 @@ public class ProjectsController : ControllerBase
     }
 
     /// <summary>
-    /// Retrieves all projects or projects with search pattern.
+    /// Gets all projects or all projects that match the given search string.
     /// </summary>
-    /// <param name="search">Search pattern to look for in ProjectName</param>
-    /// <returns>All projects. When search is used all Projects, which are fitting in pattern</returns>
-    /// <response code="200">Projects are returned successfully</response>
-    /// <response code="500">Internal Server Error</response>
+    /// <param name="search">Search string to filter the projects by.</param>
+    /// <returns>All projects or all projects that match the given search string.</returns>
+    /// <response code="200">The projects are returned successfully.</response>
+    /// <response code="500">An internal error occurred.</response>
     [HttpGet]
     public async Task<ActionResult<IEnumerable<GetProjectsResponse>>> Get(string search = " ")
     {
@@ -61,13 +61,13 @@ public class ProjectsController : ControllerBase
     }
 
     /// <summary>
-    /// Retrieves a project by id.
+    /// Gets the project with the given id.
     /// </summary>
-    /// <param name="id">Identification number for the project</param>
-    /// <returns>A project.</returns>
-    /// <response code="200">Project is returned successfully</response>
-    /// <response code="404">Project not found</response>
-    /// <response code="500">Internal Server Error</response>
+    /// <param name="id">The id of the project.</param>
+    /// <returns>The project.</returns>
+    /// <response code="200">The Project is returned successfully.</response>
+    /// <response code="404">The project could not be found.</response>
+    /// <response code="500">An internal error occurred.</response>
     [HttpGet("{id:int}")]
     public async Task<ActionResult<GetProjectResponse>> Get(int id)
     {
@@ -100,15 +100,15 @@ public class ProjectsController : ControllerBase
         return Ok(response);
     }
     /// <summary>
-    /// Creates a new project or replaces an existing project.
+    /// Creates a new project.
     /// </summary>
-    /// <param name="project">New Project that has to be added.</param>
-    /// <returns>Id of the created project</returns>
-    /// <response code="201">Project is created successfully</response>
-    /// <response code="400">Bad Request</response>
-    /// <response code="500">Internal Server Error</response>
+    /// <param name="project">The data of the new project.</param>
+    /// <returns>An response containing the id of the created project.</returns>
+    /// <response code="201">The Project has been created successfully.</response>
+    /// <response code="400">The request data is invalid.</response>
+    /// <response code="500">An internal error occurred.</response>
     [HttpPut]
-    public async Task<ActionResult<Project>> Put([FromBody] CreateProjectRequest project)
+    public async Task<ActionResult<CreateProjectResponse>> Put([FromBody] CreateProjectRequest project)
     {
         try
         {
@@ -119,10 +119,10 @@ public class ProjectsController : ControllerBase
 
             var command = new CreateProjectCommand(project.ProjectName, project.BusinessUnit, project.TeamNumber,
                 project.Department, project.ClientName);
-           var id = await _mediator.Send(command);
-            
-           var response = new CreateProjectResponse(id);
-           return Created("/Projects/" + id, response);
+            var id = await _mediator.Send(command);
+
+            var response = new CreateProjectResponse(id);
+            return Created("/Projects/" + id, response);
         }
         catch (Exception e)
         {

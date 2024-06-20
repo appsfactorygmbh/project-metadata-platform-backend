@@ -2,9 +2,9 @@ namespace ProjectMetadataPlatform.Api.Plugins.Models;
 
 
 /// <summary>
-/// Response for getting a Plugin.
+/// Response model representing a Plugin of a project.
 /// </summary>
-/// <param name="PluginName"></param>
-/// <param name="Url"></param>
-/// <param name="DisplayName"></param>
+/// <param name="PluginName">The name of the plugin.</param>
+/// <param name="Url">The URL of this plugin instance in the project.</param>
+/// <param name="DisplayName">The name of this plugin instance in the project.</param>
 public record GetPluginResponse(string PluginName, string Url, string DisplayName);

@@ -12,7 +12,7 @@ using ProjectMetadataPlatform.Domain.Plugins;
 namespace ProjectMetadataPlatform.Api.Plugins;
 
 /// <summary>
-/// Controller to get Plugins for given Project.
+/// Endpoints for managing plugins.
 /// </summary>
 [ApiController]
 [Route("[controller]")]
@@ -30,12 +30,12 @@ public class PluginsController : ControllerBase
     }
 
     /// <summary>
-    /// Get all the plugins for a given project id.
+    /// Gets all the plugins of the project with the given id.
     /// </summary>
-    /// <param name="id">selects the project</param>
-    /// <returns>An HTML ok response with List of Plugins.</returns>
-    /// <response code="200">Plugins are returned successfully</response>
-    /// <response code="500">Internal Server Error</response>
+    /// <param name="id">The id of the project.</param>
+    /// <returns>The plugins of the project.</returns>
+    /// <response code="200">All Plugins of the project are returned successfully.</response>
+    /// <response code="500">An internal error occurred.</response>
     [HttpGet]
     public async Task<ActionResult<IEnumerable<GetPluginResponse>>> Get([FromQuery] int id)
     {
@@ -58,15 +58,15 @@ public class PluginsController : ControllerBase
     }
 
     /// <summary>
-    /// Creates a new plugin with the given name
+    /// Creates a new plugin with the given name.
     /// </summary>
     /// <param name="request">The request body.</param>
-    /// <returns>A HTTP Created Response and the Id of the new Plugin</returns>
-    /// <response code="201">Plugin is created successfully</response>
-    /// <response code="400">Bad Request</response>
-    /// <response code="500">Internal Server Error</response>
+    /// <returns>A HTTP Created Response and the Id of the new Plugin.</returns>
+    /// <response code="201">The Plugin was created successfully.</response>
+    /// <response code="400">The request data is invalid.</response>
+    /// <response code="500">An internal error occurred.</response>
     [HttpPut]
-    public async Task<ActionResult<Plugin>> Put([FromBody] CreatePluginRequest request)
+    public async Task<ActionResult<CreatePluginResponse>> Put([FromBody] CreatePluginRequest request)
     {
         if (string.IsNullOrWhiteSpace(request.PluginName))
         {

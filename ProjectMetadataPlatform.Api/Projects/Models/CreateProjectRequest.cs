@@ -1,10 +1,11 @@
 namespace ProjectMetadataPlatform.Api.Projects.Models;
+
 /// <summary>
-/// Represents the request for the CreateProject API call.
+/// Represents a request to create a new project.
 /// </summary>
-/// <param name="ProjectName">Name of the project</param>
-/// <param name="ClientName">Name of the client for the project</param>
-/// <param name="BusinessUnit">Name of the Business Unit associated with the project</param>
-/// <param name="TeamNumber">Number of the team working on the project</param>
-/// <param name="Department">Name of the department associated with the project</param>
+/// <param name="ProjectName">The name of the project.</param>
+/// <param name="ClientName">The name of the client for the project.</param>
+/// <param name="BusinessUnit">The name of the Business Unit associated with the project.</param>
+/// <param name="TeamNumber">The number of the team working on the project.</param>
+/// <param name="Department">The name of the department associated with the project.</param>
 public record CreateProjectRequest(string ProjectName, string BusinessUnit, int TeamNumber, string Department, string ClientName);

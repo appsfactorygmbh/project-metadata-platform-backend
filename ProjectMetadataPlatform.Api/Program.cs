@@ -13,10 +13,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
+    options.SupportNonNullableReferenceTypes();
+
     var xmlDocFiles = Directory.GetFiles(Path.Combine(AppContext.BaseDirectory), "*.xml").ToList();
-    xmlDocFiles.Add(Path.Combine(AppContext.BaseDirectory, Assembly.GetExecutingAssembly()?.GetName().Name + ".xml"));
-    
-    xmlDocFiles.ForEach(path => options.IncludeXmlComments(path,true));
+
+    xmlDocFiles.ForEach(path => options.IncludeXmlComments(path, true));
 });
 builder.Services
     .AddApplicationDependencies()
