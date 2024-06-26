@@ -73,4 +73,16 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
         await _context.SaveChangesAsync();
         
     }
+    
+    /// <summary>
+    /// Checks if a project exists.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns>True, if the project with the given id exists</returns>
+    public Task<bool> CheckProjectExists(int id)
+    {
+        return GetIf(p => p.Id == id).AnyAsync();
+    }
+
+
 }

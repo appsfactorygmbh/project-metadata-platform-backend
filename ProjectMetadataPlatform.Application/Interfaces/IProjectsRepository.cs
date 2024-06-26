@@ -35,4 +35,12 @@ public interface IProjectsRepository
     /// <param name="project"></param>
     /// <returns></returns>
     Task AddOrUpdate(Project project);
+
+
+    /// <summary>
+    /// Checks if a project exists.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns>True, if the project with the given id exists</returns>
+    Task<bool> CheckProjectExists(int id);
 }
