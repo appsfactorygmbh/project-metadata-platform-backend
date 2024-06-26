@@ -23,4 +23,11 @@ public interface IPluginRepository
     /// <param name="plugin">The Plugin to save</param>
     /// <returns></returns>
     Task<Plugin> StorePlugin(Plugin plugin);
+    
+    /// <summary>
+    /// Gets a specific Plugin by its id.
+    /// </summary>
+    /// <param name="id">The id of the plugin</param>
+    /// <returns></returns>
+    Task<Plugin> GetPluginByIdAsync(int id);
 }

@@ -96,11 +96,27 @@ public class PluginsController : ControllerBase
     /// <summary>
     /// Updates a global plugin.
     /// </summary>
+    /// <param name="pluginId">The id of the plugin to update.</param>
     /// <param name="request">The request body containing the details of the global plugin to be updated.</param>
     /// <returns>The updated version of the Plugin.</returns>
-    [HttpPatch]
-    public async Task<ActionResult<GetGlobalPluginResponse>> Patch([FromBody] PatchGlobalPluginRequest request)
+    [HttpPatch("{pluginId:int}")]
+    public async Task<ActionResult<GetGlobalPluginResponse>> Patch(int pluginId, [FromBody] PatchGlobalPluginRequest request)
     {
-        return StatusCode(StatusCodes.Status501NotImplemented);
+        var command = new PatchGlobalPluginCommand(pluginId, request.PluginName, request.IsArchived);
+
+        Plugin plugin;
+        try
+        {
+            plugin = await _mediator.Send(command);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            Console.WriteLine(e.StackTrace);
+
+            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+        }
+        var response = new GetGlobalPluginResponse(plugin.Id, plugin.PluginName, plugin.IsArchived);
+        return Ok(response);
     }
 }
