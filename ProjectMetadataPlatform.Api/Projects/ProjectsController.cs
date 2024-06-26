@@ -103,12 +103,13 @@ public class ProjectsController : ControllerBase
     /// Creates a new project.
     /// </summary>
     /// <param name="project">The data of the new project.</param>
-    /// <returns>An response containing the id of the created project.</returns>
+    /// <param name="projectId">The id, if an existing project should be overwritten.</param>
+    /// <returns>A response containing the id of the created project.</returns>
     /// <response code="201">The Project has been created successfully.</response>
     /// <response code="400">The request data is invalid.</response>
     /// <response code="500">An internal error occurred.</response>
     [HttpPut]
-    public async Task<ActionResult<CreateProjectResponse>> Put([FromBody] CreateProjectRequest project)
+    public async Task<ActionResult<CreateProjectResponse>> Put([FromBody] CreateProjectRequest project, int? projectId = null )
     {
         try
         {
