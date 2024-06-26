@@ -92,4 +92,15 @@ public class PluginsController : ControllerBase
         var uri = "/Plugins/" + pluginId;
         return Created(uri, response);
     }
+
+    /// <summary>
+    /// Updates a global plugin.
+    /// </summary>
+    /// <param name="request">The request body containing the details of the global plugin to be updated.</param>
+    /// <returns>The updated version of the Plugin.</returns>
+    [HttpPatch]
+    public async Task<ActionResult<GetGlobalPluginResponse>> Patch([FromBody] PatchGlobalPluginRequest request)
+    {
+        return StatusCode(StatusCodes.Status501NotImplemented);
+    }
 }
