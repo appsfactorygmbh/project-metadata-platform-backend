@@ -12,7 +12,7 @@ public class Project
     /// <summary>
     /// Gets or sets the id of the project.
     /// </summary>
-    public  int Id { get; set; }
+    public int Id { get; set; }
     
     /// <summary>
     /// Gets or sets the name of the project. This property is required.

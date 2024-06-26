@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.Projects;
 
 namespace ProjectMetadataPlatform.Application.Interfaces;
@@ -34,9 +35,29 @@ public interface IProjectsRepository
     /// </summary>
     /// <param name="project"></param>
     /// <returns></returns>
-    Task AddOrUpdate(Project project);
+    Task Add(Project project);
 
-
+    /// <summary>
+    /// Updates a project in the database and returns it.
+    /// </summary>
+    /// <param name="project">Project to be updated</param>
+    /// <returns></returns>
+    Task UpdateProject(Project project);
+    
+    /// <summary>
+    /// Deletes all plugins associated with a project.
+    /// </summary>
+    /// <param name="id">The id of the project from which all associated plugins will be deleted</param>
+    Task DeletePluginAssociation(int id);
+    
+    /// <summary>
+    /// Adds a list of plugins to a project.
+    /// </summary>
+    /// <param name="plugins">The list of plugins, that should be added</param>
+    /// <returns></returns>
+    Task AddPluginAssociation(List<ProjectPlugins> plugins);
+    
+    
     /// <summary>
     /// Checks if a project exists.
     /// </summary>

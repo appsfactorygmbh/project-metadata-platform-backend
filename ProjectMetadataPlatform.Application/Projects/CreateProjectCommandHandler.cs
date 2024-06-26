@@ -1,4 +1,3 @@
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -28,21 +27,8 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
     /// <returns>Response to the request</returns>
     public async Task<int> Handle(CreateProjectCommand request, CancellationToken cancellationToken)
     {
-        Project project;
-        if (request.ProjectId == null)
-        {
-            project = new Project{ProjectName=request.ProjectName, BusinessUnit=request.BusinessUnit, TeamNumber=request.TeamNumber, Department=request.Department, ClientName=request.ClientName};
-        }
-        else if (await _projectsRepository.CheckProjectExists(request.ProjectId.Value))
-        {
-            project = new Project{Id = request.ProjectId.Value, ProjectName=request.ProjectName, BusinessUnit=request.BusinessUnit, TeamNumber=request.TeamNumber, Department=request.Department, ClientName=request.ClientName};
-        }
-        else
-        {
-            throw new InvalidOperationException("Project does not exist.");
-        }
-
-        await _projectsRepository.AddOrUpdate(project);
+        var project = new Project{ProjectName=request.ProjectName, BusinessUnit=request.BusinessUnit, TeamNumber=request.TeamNumber, Department=request.Department, ClientName=request.ClientName};
+        await _projectsRepository.Add(project);
         return project.Id;
     }
 }

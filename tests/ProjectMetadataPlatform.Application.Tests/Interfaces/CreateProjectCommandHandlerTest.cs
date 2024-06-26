@@ -34,7 +34,7 @@ public class CreateProjectCommandHandlerTest
             Department = "Example Department",
             ClientName = "Example Client"
         };
-        _mockProjectRepo.Setup(m => m.AddOrUpdate(It.IsAny<Project>())).Callback<Project>(p => p.Id = 1).Returns(Task.CompletedTask);
+        _mockProjectRepo.Setup(m => m.Add(It.IsAny<Project>())).Callback<Project>(p => p.Id = 1).Returns(Task.CompletedTask);
         
         // act
         

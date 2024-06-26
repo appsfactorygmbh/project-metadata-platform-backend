@@ -1,0 +1,47 @@
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using MediatR;
+using ProjectMetadataPlatform.Application.Interfaces;
+using ProjectMetadataPlatform.Domain.Projects;
+
+namespace ProjectMetadataPlatform.Application.Projects;
+/// <summary>
+/// Handler for the <see cref="CreateProjectCommand"/>.
+/// </summary>
+public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand, int>
+{
+    private readonly IProjectsRepository _projectsRepository;
+    /// <summary>
+    /// Creates a new instance of <see cref="CreateProjectCommandHandler"/>.
+    /// </summary>
+    /// <param name="projectsRepository"></param>
+    public UpdateProjectCommandHandler(IProjectsRepository projectsRepository)
+    {
+        _projectsRepository = projectsRepository;
+    }
+    /// <summary>
+    /// Handles the request to create a project.
+    /// </summary>
+    /// <param name="request">Request to be handled</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>Response to the request</returns>
+    
+    // TODO: look into the AddPluginAssociation method (not working)
+    public async Task<int> Handle(UpdateProjectCommand request, CancellationToken cancellationToken)
+    {
+        var project = new Project{ProjectName=request.ProjectName, BusinessUnit=request.BusinessUnit, TeamNumber=request.TeamNumber, Department=request.Department, ClientName=request.ClientName, Id = request.Id};
+        
+        if (await _projectsRepository.CheckProjectExists(project.Id))
+        {
+            await _projectsRepository.UpdateProject(project);
+            await _projectsRepository.DeletePluginAssociation(project.Id);
+            //await _projectsRepository.AddPluginAssociation(request.Plugins);
+        }
+        else
+        {
+            throw new InvalidOperationException("Project does not exist.");
+        }
+        return project.Id;
+    }
+}

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ProjectMetadataPlatform.Api.Projects.Models;
 using ProjectMetadataPlatform.Application.Projects;
+using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.Projects;
 
 namespace ProjectMetadataPlatform.Api.Projects;
@@ -113,17 +114,48 @@ public class ProjectsController : ControllerBase
     {
         try
         {
-            if (string.IsNullOrWhiteSpace(project.ProjectName) || string.IsNullOrWhiteSpace(project.BusinessUnit) || string.IsNullOrWhiteSpace(project.Department) || string.IsNullOrWhiteSpace(project.ClientName))
+            if (string.IsNullOrWhiteSpace(project.ProjectName) || string.IsNullOrWhiteSpace(project.BusinessUnit)
+                                                               || string.IsNullOrWhiteSpace(project.Department)
+                                                               || string.IsNullOrWhiteSpace(project.ClientName))
             {
                 return BadRequest("ProjectName, BusinessUnit, Department and ClientName must not be empty.");
             }
+            
+            IRequest<int> command = projectId == null
+                ? command = new CreateProjectCommand(project.ProjectName, project.BusinessUnit, project.TeamNumber,
+                    project.Department, project.ClientName)
+                : command = new UpdateProjectCommand(project.ProjectName, project.BusinessUnit, project.TeamNumber,
+                    project.Department, project.ClientName, projectId.Value, project.PluginList!.Select(p => new ProjectPlugins
+                    {
+                        ProjectId = projectId.Value,
+                        PluginId = 0,
+                        DisplayName = p.DisplayName,
+                        Url = p.Url,
+                        Plugin = new Plugin
+                        {
+                            Id = p.Id,
+                            IsArchived = false,
+                            PluginName = p.PluginName,
+                        },
+                        Project = new Project
+                        {
+                            Id = projectId.Value,
+                            ProjectName = project.ProjectName,
+                            BusinessUnit = project.BusinessUnit,
+                            TeamNumber = project.TeamNumber,
+                            Department = project.Department,
+                            ClientName = project.ClientName
+                        }
+                    }).ToList());
 
-            var command = new CreateProjectCommand(project.ProjectName, project.BusinessUnit, project.TeamNumber,
-                project.Department, project.ClientName, projectId);
-            var id  = await _mediator.Send(command);
+            var id = await _mediator.Send(command);
 
             var response = new CreateProjectResponse(id);
             return Created("/Projects/" + id, response);
+        }
+        catch (InvalidOperationException e)
+        {
+            return BadRequest("Project for given Id does not exist.");
         }
         catch (Exception e)
         {

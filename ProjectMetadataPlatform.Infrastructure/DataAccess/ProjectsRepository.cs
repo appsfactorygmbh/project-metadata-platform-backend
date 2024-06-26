@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using ProjectMetadataPlatform.Domain.Plugins;
+
 namespace ProjectMetadataPlatform.Infrastructure.DataAccess;
 
 /// <summary>
@@ -33,7 +35,6 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
                                                           || project.BusinessUnit.Contains(search)
                                                           || project.Department.Contains(search)
             )];
-           
     }
     
     /// <summary>
@@ -59,21 +60,50 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     /// </summary>
     /// <param name="project">Project to be saved in the database</param>
     /// <returns>Project is returned</returns>
-    public async Task AddOrUpdate(Project project)
+    public async Task Add(Project project)
     {
         if(GetIf(p => p.Id == project.Id).FirstOrDefault() == null)
         {
             Create(project);
-            
         }
-        else
+        await _context.SaveChangesAsync();
+    }
+    
+    /// <summary>
+    /// Updates a project in the database and returns it.
+    /// </summary>
+    /// <param name="project">Project to be updated</param>
+    /// <returns></returns>
+    public async Task UpdateProject(Project project)
+    {
+        if(GetIf(p => p.Id == project.Id).FirstOrDefault() != null)
         {
             Update(project);
         }
         await _context.SaveChangesAsync();
-        
     }
     
+    /// <summary>
+    /// Deletes all plugins associated with a project.
+    /// </summary>
+    /// <param name="id">The id of the project from which all associated plugins will be deleted</param>
+    public async Task DeletePluginAssociation(int id)
+    {
+        _context.ProjectPluginsRelation.RemoveRange(_context.ProjectPluginsRelation.Where(p => p.ProjectId == id));
+        await _context.SaveChangesAsync();
+    }
+
+    /// <summary>
+    /// Adds a list of plugins to a project.
+    /// </summary>
+    /// <param name="plugins">The list of plugins, that should be added</param>
+    /// <returns></returns>
+    public async Task AddPluginAssociation(List<ProjectPlugins> plugins)
+    {
+        _context.ProjectPluginsRelation.AddRange(plugins);
+        await _context.SaveChangesAsync();
+    }
+
     /// <summary>
     /// Checks if a project exists.
     /// </summary>

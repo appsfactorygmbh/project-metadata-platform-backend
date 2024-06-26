@@ -52,7 +52,7 @@ public class PluginsController : ControllerBase
 
         IEnumerable<GetPluginResponse> response = projectPlugins.Select(plugin
             => new GetPluginResponse(plugin.Plugin.PluginName, plugin.Url,
-                plugin.DisplayName ?? plugin.Plugin.PluginName));
+                plugin.DisplayName ?? plugin.Plugin.PluginName, plugin.PluginId));
 
         return Ok(response);
     }
