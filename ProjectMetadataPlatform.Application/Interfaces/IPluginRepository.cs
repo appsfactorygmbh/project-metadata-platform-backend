@@ -23,4 +23,6 @@ public interface IPluginRepository
     /// <param name="plugin">The Plugin to save</param>
     /// <returns></returns>
     Task<Plugin> StorePlugin(Plugin plugin);
+
+    Task<List<Plugin>> GetGlobalPlugins();
 }
