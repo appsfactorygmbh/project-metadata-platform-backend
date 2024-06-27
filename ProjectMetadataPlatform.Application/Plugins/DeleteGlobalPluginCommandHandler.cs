@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using ProjectMetadataPlatform.Domain.Plugins;
@@ -33,7 +34,7 @@ public class DeleteGlobalPluginCommandHandler : IRequestHandler<DeleteGlobalPlug
         var plugin = await _pluginRepository.GetPluginByIdAsync(request.Id);
         if (request.Id == 0)
         {
-            return StatusCode(StatusCodes.Status400BadRequest, "PluginId can't be 0");
+            throw new ArgumentException("Plugin not found");
         }
         plugin.IsArchived = true;
         await _pluginRepository.StorePlugin(plugin);
