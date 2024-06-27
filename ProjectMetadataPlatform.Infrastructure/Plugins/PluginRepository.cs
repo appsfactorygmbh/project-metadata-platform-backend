@@ -11,13 +11,13 @@ namespace ProjectMetadataPlatform.Infrastructure.Plugins;
 /// <summary>
 /// The repository for plugins that handles the data access.
 /// </summary>
-public class PluginRepository : IPluginRepository
+public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
 {   
     /// <summary>
     /// Constructor for the PluginRepository.
     /// </summary>
     /// <param name="context"></param>
-    public PluginRepository(ProjectMetadataPlatformDbContext context)
+    public PluginRepository(ProjectMetadataPlatformDbContext context): base(context)
     {
         _context = context;
     }
@@ -45,5 +45,11 @@ public class PluginRepository : IPluginRepository
         await _context.SaveChangesAsync();
 
         return plugin;
+    }
+    
+    public Task<Plugin> GetPluginByIdAsync(int id)
+    {
+        var queryResult = GetIf(plugin => plugin.Id == id);
+        return queryResult.FirstAsync();
     }
 }
