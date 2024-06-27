@@ -34,7 +34,7 @@ public class Tests
         _mediator.Setup(m => m.Send(It.IsAny<CreatePluginCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(42);
 
-        var request = new CreatePluginRequest("Solid Rocket Booster");
+        var request = new CreatePluginRequest("Solid Rocket Booster", true, new List<string>());
 
         ActionResult<CreatePluginResponse> result = await _controller.Put(request);
 
@@ -59,7 +59,7 @@ public class Tests
         _mediator.Setup(m => m.Send(It.IsAny<CreatePluginCommand>(), It.IsAny<CancellationToken>()))
             .Throws(new IOException());
 
-        var request = new CreatePluginRequest("Drogue chute");
+        var request = new CreatePluginRequest("Drogue chute", false, new List<string>());
 
         ActionResult<CreatePluginResponse> result = await _controller.Put(request);
 
@@ -77,7 +77,7 @@ public class Tests
         _mediator.Setup(m => m.Send(It.IsAny<CreatePluginCommand>(), It.IsAny<CancellationToken>()))
             .Throws(new IOException());
 
-        var request = new CreatePluginRequest("");
+        var request = new CreatePluginRequest("", false, new List<string>());
 
         ActionResult<CreatePluginResponse> result = await _controller.Put(request);
 
@@ -95,7 +95,7 @@ public class Tests
         _mediator.Setup(m => m.Send(It.IsAny<CreatePluginCommand>(), It.IsAny<CancellationToken>()))
             .Throws(new IOException());
 
-        var request = new CreatePluginRequest("         ");
+        var request = new CreatePluginRequest("         ", false, new List<string>());
 
         ActionResult<CreatePluginResponse> result = await _controller.Put(request);
 
