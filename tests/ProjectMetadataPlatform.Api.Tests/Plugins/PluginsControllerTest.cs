@@ -180,4 +180,50 @@ public class Tests
 
         Assert.That(statusResult.StatusCode, Is.EqualTo(400));
     }
+
+    [Test]
+    public async Task GetGlobalPlugins_EmptyResponseList_Test()
+    {
+        _mediator.Setup(m => m.Send(It.IsAny<GetGlobalPluginsQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new List<Plugin>());
+        var result = await _controller.Get();
+
+
+        Assert.IsNotNull(result);
+        var value = result.Result as OkObjectResult;
+        
+        Assert.That((IEnumerable) value.Value, Is.Empty);
+
+    }
+
+    [Test]
+    public async Task GetGlobalPlugins_Test()
+    {
+        
+        var plugin = new Plugin { Id = 1, PluginName = "plugin 1", IsArchived = false };
+        List<Plugin> pluginlist = new List<Plugin> { plugin };
+
+        _mediator.Setup(m => m.Send(It.IsAny<GetGlobalPluginsQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(pluginlist);
+        var result = await _controller.Get();
+
+        Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
+
+        var okResult = result.Result as OkObjectResult;
+        Assert.Multiple(() =>
+        {
+            Assert.That(okResult!.Value, Is.Not.Null);
+            Assert.That(okResult.Value, Is.InstanceOf<IEnumerable<GetGlobalPluginsResponse>>());
+        });
+
+        var resultValue = (okResult?.Value as IEnumerable<GetGlobalPluginsResponse>)!.ToList();
+        Assert.That(resultValue, Has.Count.EqualTo(1));
+
+        var resultObj = resultValue[0];
+        Assert.Multiple(() =>
+        {
+            Assert.That(resultObj.pluginName, Is.EqualTo("plugin 1"));
+            Assert.That(resultObj.Id, Is.EqualTo(1));
+            Assert.That(resultObj.isArchived, Is.False);
+            Assert.That(resultObj.keys, Is.EqualTo(new string[] { }));
+        });
+    }
 }
