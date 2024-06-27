@@ -24,5 +24,5 @@ public interface IPluginRepository
     /// <returns></returns>
     Task<Plugin> StorePlugin(Plugin plugin);
 
-    Task<List<Plugin>> GetGlobalPlugins();
+    Task<IEnumerable<Plugin>> GetGlobalPluginsAsync();
 }

@@ -94,9 +94,9 @@ public class PluginsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<GetGlobalPluginsResponse>> Get()
+    public async Task<ActionResult<IEnumerable<GetGlobalPluginsResponse>>> Get()
     {
-        var query = new GetAllGlobalPluginsQuery();
+        var query = new GetGlobalPluginsQuery();
         IEnumerable<Plugin> plugins;
         try
         {
