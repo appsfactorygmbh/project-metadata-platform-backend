@@ -92,4 +92,30 @@ public class PluginsController : ControllerBase
         var uri = "/Plugins/" + pluginId;
         return Created(uri, response);
     }
+    
+    [HttpDelete]
+    
+    public async Task<ActionResult <CreatePluginResponse>> Delete([FromBody] DeleteGlobalPluginRequest request)
+    {
+        if (request.PluginId == 0)
+        {
+            return StatusCode(StatusCodes.Status400BadRequest, "PluginId can't be 0");
+        }
+
+        var command = new DeleteGlobalPluginCommand(request.PluginId);
+
+        try
+        {
+            await _mediator.Send(command);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            Console.WriteLine(e.StackTrace);
+
+            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+        }
+
+        return Ok();
+    }
 }
