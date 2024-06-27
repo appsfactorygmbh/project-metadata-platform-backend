@@ -45,7 +45,7 @@ public class PluginsController : ControllerBase
             return StatusCode(StatusCodes.Status400BadRequest, "PluginName can't be empty or whitespaces");
         }
 
-        var command = new CreatePluginCommand(request.PluginName);
+        var command = new CreatePluginCommand(request.PluginName, request.IsArchived, request.Keys);
 
         int pluginId;
         try
