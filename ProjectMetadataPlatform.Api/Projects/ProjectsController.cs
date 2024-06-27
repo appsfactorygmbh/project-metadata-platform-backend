@@ -128,7 +128,7 @@ public class ProjectsController : ControllerBase
                     project.Department, project.ClientName, projectId.Value, project.PluginList!.Select(p => new ProjectPlugins
                     {
                         ProjectId = projectId.Value,
-                        PluginId = 0,
+                        PluginId = p.Id,
                         DisplayName = p.DisplayName,
                         Url = p.Url,
                         Plugin = new Plugin

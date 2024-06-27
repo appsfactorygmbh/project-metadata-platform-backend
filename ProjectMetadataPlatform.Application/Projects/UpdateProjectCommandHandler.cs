@@ -36,7 +36,7 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
         {
             await _projectsRepository.UpdateProject(project);
             await _projectsRepository.DeletePluginAssociation(project.Id);
-            //await _projectsRepository.AddPluginAssociation(request.Plugins);
+            await _projectsRepository.AddPluginAssociation(request.Plugins);
         }
         else
         {
