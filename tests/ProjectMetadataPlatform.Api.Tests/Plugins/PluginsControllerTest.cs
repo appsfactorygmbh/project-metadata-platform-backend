@@ -207,9 +207,8 @@ public class Tests
     [Test]
     public async Task UpdateGlobalPlugin_PluginNotFound_Test()
     {
-        // FIXME
         _mediator.Setup(m => m.Send(It.IsAny<PatchGlobalPluginCommand>(), It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new Exception("...."));
+            .ThrowsAsync(new InvalidOperationException());
 
         var request = new PatchGlobalPluginRequest(null, true);
 

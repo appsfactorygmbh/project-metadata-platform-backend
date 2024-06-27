@@ -7,7 +7,7 @@ using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Application.Plugins;
 using ProjectMetadataPlatform.Domain.Plugins;
 
-namespace ProjectMetadataPlatform.Application.Tests.Interfaces;
+namespace ProjectMetadataPlatform.Application.Tests.Plugins;
 
 [TestFixture]
 public class PatchGlobalPluginCommandHandlerTest
@@ -61,13 +61,12 @@ public class PatchGlobalPluginCommandHandlerTest
     [Test]
     public async Task PatchGlobalPlugin_NotFound_Test()
     {
-        Assert.ThrowsAsync<Exception>(PatchGlobalPlugin_NotFound_TestBody);
+        Assert.ThrowsAsync<InvalidOperationException>(PatchGlobalPlugin_NotFound_TestBody);
     }
 
     private async Task PatchGlobalPlugin_NotFound_TestBody()
     {
-        // FIXME
-        _mockPluginRepo.Setup(repo => repo.GetPluginByIdAsync(43)).ThrowsAsync(new Exception("..."));
+        _mockPluginRepo.Setup(repo => repo.GetPluginByIdAsync(43)).ThrowsAsync(new InvalidOperationException());
 
         await _handler.Handle(new PatchGlobalPluginCommand(43, "Mercury Atlas"), It.IsAny<CancellationToken>());
     }
