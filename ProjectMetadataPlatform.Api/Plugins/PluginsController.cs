@@ -61,7 +61,7 @@ public class PluginsController : ControllerBase
     /// Creates a new plugin with the given name.
     /// </summary>
     /// <param name="request">The request body.</param>
-    /// <returns>A HTTP Created Response and the Id of the new Plugin.</returns>
+    /// <returns>An HTTP Created Response and the Id of the new Plugin.</returns>
     /// <response code="201">The Plugin was created successfully.</response>
     /// <response code="400">The request data is invalid.</response>
     /// <response code="500">An internal error occurred.</response>
@@ -93,6 +93,12 @@ public class PluginsController : ControllerBase
         return Created(uri, response);
     }
 
+    /// <summary>
+    /// Gets all global plugins.
+    /// </summary>
+    /// <returns>All global plugins</returns>
+    /// <response code="200">All global plugins are returned successfully.</response>
+    /// <response code="500">An internal error occurred.</response>
     [HttpGet]
     public async Task<ActionResult<IEnumerable<GetGlobalPluginsResponse>>> Get()
     {

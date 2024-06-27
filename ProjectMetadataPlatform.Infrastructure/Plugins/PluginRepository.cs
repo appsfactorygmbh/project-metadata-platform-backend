@@ -47,6 +47,10 @@ public class PluginRepository : IPluginRepository
         return plugin;
     }
     
+    /// <summary>
+    /// Gets all global plugins from the database.
+    /// </summary>
+    /// <returns>All global plugins</returns>
     public async Task<IEnumerable<Plugin>> GetGlobalPluginsAsync()
     {
         return await _context.Plugins.ToListAsync();

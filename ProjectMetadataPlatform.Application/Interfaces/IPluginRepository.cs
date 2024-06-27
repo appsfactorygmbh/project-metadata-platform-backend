@@ -24,5 +24,9 @@ public interface IPluginRepository
     /// <returns></returns>
     Task<Plugin> StorePlugin(Plugin plugin);
 
+    /// <summary>
+    /// Returns all global plugins
+    /// </summary>
+    /// <returns>Collection of all global plugins</returns>
     Task<IEnumerable<Plugin>> GetGlobalPluginsAsync();
 }

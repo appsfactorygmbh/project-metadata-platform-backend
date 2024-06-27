@@ -1,3 +1,9 @@
 namespace ProjectMetadataPlatform.Api.Plugins.Models;
-
-public record GetGlobalPluginsResponse(string pluginName, int Id, bool isArchived, string[] keys);
+/// <summary>
+/// Response Model representing a Plugin.
+/// </summary>
+/// <param name="PluginName">Name of the plugin</param>
+/// <param name="Id">Id of the plugin</param>
+/// <param name="IsArchived">If the plugin is archived or not</param>
+/// <param name="Keys">empty array keys</param>
+public record GetGlobalPluginsResponse(string PluginName, int Id, bool IsArchived, string[] Keys);
