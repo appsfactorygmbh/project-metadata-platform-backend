@@ -100,7 +100,7 @@ public class PluginsController : ControllerBase
     /// <response code="200">All global plugins are returned successfully.</response>
     /// <response code="500">An internal error occurred.</response>
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<GetGlobalPluginsResponse>>> Get()
+    public async Task<ActionResult<IEnumerable<GetGlobalPluginResponse>>> GetGlobal()
     {
         var query = new GetGlobalPluginsQuery();
         IEnumerable<Plugin> plugins;
@@ -114,8 +114,8 @@ public class PluginsController : ControllerBase
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
 
-        string[] keys={};
-        var response = plugins.Select(plugin => new GetGlobalPluginsResponse(
+        string[] keys= [];
+        var response = plugins.Select(plugin => new GetGlobalPluginResponse(
             plugin.PluginName,
             plugin.Id,
             plugin.IsArchived,

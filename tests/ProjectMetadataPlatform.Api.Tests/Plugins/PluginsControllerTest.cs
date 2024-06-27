@@ -34,7 +34,7 @@ public class Tests
         var result = await _controller.Get(0);
 
 
-        Assert.IsNotNull(result);
+        Assert.That(result, Is.Not.Null);
         var value = result.Result as OkObjectResult;
         Assert.IsEmpty((IEnumerable)value.Value);
 
@@ -185,7 +185,7 @@ public class Tests
     public async Task GetGlobalPlugins_EmptyResponseList_Test()
     {
         _mediator.Setup(m => m.Send(It.IsAny<GetGlobalPluginsQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new List<Plugin>());
-        var result = await _controller.Get();
+        var result = await _controller.GetGlobal();
 
 
         Assert.IsNotNull(result);
@@ -203,7 +203,7 @@ public class Tests
         List<Plugin> pluginlist = new List<Plugin> { plugin };
 
         _mediator.Setup(m => m.Send(It.IsAny<GetGlobalPluginsQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(pluginlist);
-        var result = await _controller.Get();
+        var result = await _controller.GetGlobal();
 
         Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
 
@@ -211,10 +211,10 @@ public class Tests
         Assert.Multiple(() =>
         {
             Assert.That(okResult!.Value, Is.Not.Null);
-            Assert.That(okResult.Value, Is.InstanceOf<IEnumerable<GetGlobalPluginsResponse>>());
+            Assert.That(okResult.Value, Is.InstanceOf<IEnumerable<GetGlobalPluginResponse>>());
         });
 
-        var resultValue = (okResult?.Value as IEnumerable<GetGlobalPluginsResponse>)!.ToList();
+        var resultValue = (okResult?.Value as IEnumerable<GetGlobalPluginResponse>)!.ToList();
         Assert.That(resultValue, Has.Count.EqualTo(1));
 
         var resultObj = resultValue[0];
@@ -223,7 +223,7 @@ public class Tests
             Assert.That(resultObj.PluginName, Is.EqualTo("plugin 1"));
             Assert.That(resultObj.Id, Is.EqualTo(1));
             Assert.That(resultObj.IsArchived, Is.False);
-            Assert.That(resultObj.Keys, Is.EqualTo(new string[] { }));
+            Assert.That(resultObj.Keys, Is.EqualTo(System.Array.Empty<string>()));
         });
     }
 }
