@@ -10,12 +10,12 @@ public class ProjectPlugins
     /// <summary>
     /// The project stored in the relation.
     /// </summary>
-    public required Project Project { get; set; }
+    public Project? Project { get; set; }
    
     /// <summary>
     /// The plugin stored in the relation.
     /// </summary>
-    public required Plugin Plugin { get; set; }
+    public Plugin? Plugin { get; set; }
 
     /// <summary>
     /// The id for a plugin used as a foreign key for the plugin.

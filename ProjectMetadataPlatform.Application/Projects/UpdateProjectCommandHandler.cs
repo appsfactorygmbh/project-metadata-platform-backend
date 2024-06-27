@@ -30,13 +30,12 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
     // TODO: look into the AddPluginAssociation method (not working)
     public async Task<int> Handle(UpdateProjectCommand request, CancellationToken cancellationToken)
     {
-        var project = new Project{ProjectName=request.ProjectName, BusinessUnit=request.BusinessUnit, TeamNumber=request.TeamNumber, Department=request.Department, ClientName=request.ClientName, Id = request.Id};
+        var project = new Project{ProjectName=request.ProjectName, BusinessUnit=request.BusinessUnit, TeamNumber=request.TeamNumber, Department=request.Department, ClientName=request.ClientName, Id = request.Id, ProjectPlugins = request.Plugins};
         
         if (await _projectsRepository.CheckProjectExists(project.Id))
         {
-            await _projectsRepository.UpdateProject(project);
             await _projectsRepository.DeletePluginAssociation(project.Id);
-            await _projectsRepository.AddPluginAssociation(request.Plugins);
+            await _projectsRepository.UpdateProject(project,request.Plugins);
         }
         else
         {

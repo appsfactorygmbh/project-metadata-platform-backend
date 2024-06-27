@@ -130,22 +130,7 @@ public class ProjectsController : ControllerBase
                         ProjectId = projectId.Value,
                         PluginId = p.Id,
                         DisplayName = p.DisplayName,
-                        Url = p.Url,
-                        Plugin = new Plugin
-                        {
-                            Id = p.Id,
-                            IsArchived = false,
-                            PluginName = p.PluginName,
-                        },
-                        Project = new Project
-                        {
-                            Id = projectId.Value,
-                            ProjectName = project.ProjectName,
-                            BusinessUnit = project.BusinessUnit,
-                            TeamNumber = project.TeamNumber,
-                            Department = project.Department,
-                            ClientName = project.ClientName
-                        }
+                        Url = p.Url
                     }).ToList());
 
             var id = await _mediator.Send(command);
@@ -155,11 +140,11 @@ public class ProjectsController : ControllerBase
         }
         catch (InvalidOperationException e)
         {
-            return BadRequest("Project for given Id does not exist.");
+            return BadRequest(e.Message);
         }
         catch (Exception e)
         {
-            Console.WriteLine(e.StackTrace);
+            Console.WriteLine(e.Message);
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
     }

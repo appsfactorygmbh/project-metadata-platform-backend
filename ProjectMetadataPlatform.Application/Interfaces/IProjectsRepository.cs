@@ -42,21 +42,13 @@ public interface IProjectsRepository
     /// </summary>
     /// <param name="project">Project to be updated</param>
     /// <returns></returns>
-    Task UpdateProject(Project project);
+    Task UpdateProject(Project project,List<ProjectPlugins> plugins);
     
     /// <summary>
     /// Deletes all plugins associated with a project.
     /// </summary>
     /// <param name="id">The id of the project from which all associated plugins will be deleted</param>
     Task DeletePluginAssociation(int id);
-    
-    /// <summary>
-    /// Adds a list of plugins to a project.
-    /// </summary>
-    /// <param name="plugins">The list of plugins, that should be added</param>
-    /// <returns></returns>
-    Task AddPluginAssociation(List<ProjectPlugins> plugins);
-    
     
     /// <summary>
     /// Checks if a project exists.

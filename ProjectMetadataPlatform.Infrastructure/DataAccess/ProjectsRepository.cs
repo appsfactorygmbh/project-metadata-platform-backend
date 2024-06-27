@@ -74,13 +74,22 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     /// </summary>
     /// <param name="project">Project to be updated</param>
     /// <returns></returns>
-    public async Task UpdateProject(Project project)
+    public async Task UpdateProject(Project project,List<ProjectPlugins> plugins)
     {
+       
+        _context.ProjectPluginsRelation.AddRange(plugins);
         if(GetIf(p => p.Id == project.Id).FirstOrDefault() != null)
         {
-            Update(project);
+            var existingProject = await _context.Projects.Include(p => p.ProjectPlugins)
+                .FirstOrDefaultAsync(p => p.Id == project.Id);
+            existingProject!.ProjectName = project.ProjectName;
+            existingProject.Department = project.Department;
+            existingProject.BusinessUnit = project.BusinessUnit;
+            existingProject.TeamNumber = project.TeamNumber;
+            existingProject.ClientName = project.ClientName;
+            await _context.SaveChangesAsync();
         }
-        await _context.SaveChangesAsync();
+        
     }
     
     /// <summary>
@@ -90,17 +99,6 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     public async Task DeletePluginAssociation(int id)
     {
         _context.ProjectPluginsRelation.RemoveRange(_context.ProjectPluginsRelation.Where(p => p.ProjectId == id));
-        await _context.SaveChangesAsync();
-    }
-
-    /// <summary>
-    /// Adds a list of plugins to a project.
-    /// </summary>
-    /// <param name="plugins">The list of plugins, that should be added</param>
-    /// <returns></returns>
-    public async Task AddPluginAssociation(List<ProjectPlugins> plugins)
-    {
-        _context.ProjectPluginsRelation.AddRange(plugins);
         await _context.SaveChangesAsync();
     }
 
