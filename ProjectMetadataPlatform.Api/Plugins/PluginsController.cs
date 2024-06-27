@@ -37,7 +37,7 @@ public class PluginsController : ControllerBase
     /// <response code="200">All Plugins of the project are returned successfully.</response>
     /// <response code="500">An internal error occurred.</response>
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<IEnumerable<GetPluginResponse>>> Get([FromQuery] int id)
+    public async Task<ActionResult<IEnumerable<GetPluginResponse>>> Get( int id)
     {
         var query = new GetAllPluginsForProjectIdQuery(id);
         IEnumerable<ProjectPlugins> projectPlugins;
