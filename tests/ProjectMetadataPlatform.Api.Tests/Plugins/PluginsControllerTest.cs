@@ -220,10 +220,10 @@ public class Tests
         var resultObj = resultValue[0];
         Assert.Multiple(() =>
         {
-            Assert.That(resultObj.pluginName, Is.EqualTo("plugin 1"));
+            Assert.That(resultObj.PluginName, Is.EqualTo("plugin 1"));
             Assert.That(resultObj.Id, Is.EqualTo(1));
-            Assert.That(resultObj.isArchived, Is.False);
-            Assert.That(resultObj.keys, Is.EqualTo(new string[] { }));
+            Assert.That(resultObj.IsArchived, Is.False);
+            Assert.That(resultObj.Keys, Is.EqualTo(new string[] { }));
         });
     }
 }
