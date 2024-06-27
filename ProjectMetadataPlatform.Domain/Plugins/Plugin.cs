@@ -13,7 +13,12 @@ public class Plugin
     public int Id { get; set; }
 
     /// <summary>
-    ///     The name of the plugin.
+    /// A boolean indicating if a plugin is archived/deleted.
+    /// </summary>
+    public bool IsArchived { get; set; }
+    
+    /// <summary>
+    /// The name of the plugin.
     /// </summary>
     public required string PluginName { get; set; }
 
