@@ -92,4 +92,29 @@ public class PluginsController : ControllerBase
         var uri = "/Plugins/" + pluginId;
         return Created(uri, response);
     }
+
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<GetGlobalPluginsResponse>> Get()
+    {
+        var query = new GetAllGlobalPluginsQuery();
+        IEnumerable<Plugin> plugins;
+        try
+        {
+            plugins = await _mediator.Send(query);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.StackTrace);
+            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+        }
+
+        string[] keys={};
+        var response = plugins.Select(plugin => new GetGlobalPluginsResponse(
+            plugin.PluginName,
+            plugin.Id,
+            plugin.IsArchived,
+            keys));
+
+        return Ok(response);
+    }
 }
