@@ -140,12 +140,8 @@ public class PluginsRepositoryTest : TestsWithDatabase
     [Test]
     public async Task GetGlobalPluginById_NotFound_Test()
     {
-        Assert.ThrowsAsync<InvalidOperationException>(GetGlobalPluginById_NotFound_TestBody);
-    }
+        var plugin = await _repository.GetPluginByIdAsync(42);
 
-
-    private async Task GetGlobalPluginById_NotFound_TestBody()
-    {
-        await _repository.GetPluginByIdAsync(42);
+        Assert.That(plugin, Is.Null);
     }
 }

@@ -208,11 +208,16 @@ public class Tests
     public async Task UpdateGlobalPlugin_PluginNotFound_Test()
     {
         _mediator.Setup(m => m.Send(It.IsAny<PatchGlobalPluginCommand>(), It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new InvalidOperationException());
+            .ReturnsAsync((Plugin) null!);
 
         var request = new PatchGlobalPluginRequest(null, true);
 
         ActionResult<GetGlobalPluginResponse> result = await _controller.Patch(1, request);
-        Assert.That(result.Result, Is.InstanceOf<StatusCodeResult>());
+        
+        Assert.That(result.Result, Is.InstanceOf<NotFoundObjectResult>());
+        
+        var notFoundResult = result.Result as NotFoundObjectResult;
+        Assert.That(notFoundResult, Is.Not.Null);
+        Assert.That(notFoundResult.Value, Is.EqualTo("No Plugin with id 1 was found."));
     }
 }
