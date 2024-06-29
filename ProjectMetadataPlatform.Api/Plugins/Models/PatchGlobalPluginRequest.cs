@@ -5,4 +5,5 @@ namespace ProjectMetadataPlatform.Api.Plugins.Models;
 /// </summary>
 /// <param name="PluginName">The name of the plugin. Null if not being updated.</param>
 /// <param name="IsArchived">The archived status of the plugin. Null if not being updated.</param>
-public record PatchGlobalPluginRequest(string? PluginName = null, bool? IsArchived = null);
+/// <param name="Keys">An array of keys associated with the plugin.</param>
+public record PatchGlobalPluginRequest(string? PluginName = null, bool? IsArchived = null, string[]? Keys = null);
