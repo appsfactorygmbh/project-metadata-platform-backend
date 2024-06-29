@@ -110,6 +110,7 @@ public class PluginsController : ControllerBase
         }
         catch (Exception e)
         {
+            Console.WriteLine(e.Message);
             Console.WriteLine(e.StackTrace);
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
