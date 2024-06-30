@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -179,6 +180,45 @@ public class Tests
         Assert.That(statusResult, Is.Not.Null);
 
         Assert.That(statusResult.StatusCode, Is.EqualTo(400));
+    }
+
+    [Test]
+    public async Task UpdateGlobalPlugin_Test()
+    {
+        var plugin = new Plugin { Id = 1, PluginName = "horn ox", IsArchived = true };
+        _mediator.Setup(m => m.Send(It.IsAny<PatchGlobalPluginCommand>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(plugin);
+
+        var request = new PatchGlobalPluginRequest(null, true);
+
+        ActionResult<GetGlobalPluginResponse> result = await _controller.Patch(1, request);
+        var okResult = result.Result as OkObjectResult;
+        var resultValue = okResult?.Value as GetGlobalPluginResponse;
+        
+        Assert.Multiple(() =>
+        {
+            Assert.That(resultValue, Is.Not.Null);
+            Assert.That(resultValue!.Name, Is.EqualTo("horn ox"));
+            Assert.That(resultValue.IsArchived, Is.EqualTo(true));
+            Assert.That(resultValue.Id, Is.EqualTo(1));
+        });
+    }
+    
+    [Test]
+    public async Task UpdateGlobalPlugin_PluginNotFound_Test()
+    {
+        _mediator.Setup(m => m.Send(It.IsAny<PatchGlobalPluginCommand>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Plugin) null!);
+
+        var request = new PatchGlobalPluginRequest(null, true);
+
+        ActionResult<GetGlobalPluginResponse> result = await _controller.Patch(1, request);
+        
+        Assert.That(result.Result, Is.InstanceOf<NotFoundObjectResult>());
+        
+        var notFoundResult = result.Result as NotFoundObjectResult;
+        Assert.That(notFoundResult, Is.Not.Null);
+        Assert.That(notFoundResult.Value, Is.EqualTo("No Plugin with id 1 was found."));
     }
 
     [Test]

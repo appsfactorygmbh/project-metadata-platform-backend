@@ -1,9 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
-using ProjectMetadataPlatform.Api.Plugins.Models;
 using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.Projects;
 using ProjectMetadataPlatform.Infrastructure.DataAccess;
@@ -104,17 +101,47 @@ public class PluginsRepositoryTest : TestsWithDatabase
     }
 
     [Test]
-    public async Task UpdatePlugin_noIdIncrementWhenIdExists_Test()
+    public async Task StorePlugin_noIdIncrementWhenIdExists_Test()
     {
         var examplePlugin = new Plugin { PluginName = "Warp-Drive", ProjectPlugins = [], Id = 42 };
+        _context.Add(examplePlugin);
+        _context.SaveChanges();
+        
+        examplePlugin.PluginName = "Hall Effect Thruster";
 
         var plugin = await _repository.StorePlugin(examplePlugin);
         
         Assert.That(plugin, Is.Not.Null);
         Assert.Multiple(() =>
         {
+            Assert.That(plugin.PluginName, Is.EqualTo("Hall Effect Thruster"));
+            Assert.That(plugin.Id, Is.EqualTo(42));
+        });
+    }
+
+    [Test]
+    public async Task GetGlobalPluginById_Test()
+    {
+        var examplePlugin = new Plugin { PluginName = "Warp-Drive", ProjectPlugins = [], Id = 42 };
+        _context.Add(examplePlugin);
+        _context.SaveChanges();
+        
+        var plugin = await _repository.GetPluginByIdAsync(42);
+        
+        Assert.That(plugin, Is.Not.Null);
+        
+        Assert.Multiple(() =>
+        {
             Assert.That(plugin.PluginName, Is.EqualTo("Warp-Drive"));
             Assert.That(plugin.Id, Is.EqualTo(42));
         });
+    }
+    
+    [Test]
+    public async Task GetGlobalPluginById_NotFound_Test()
+    {
+        var plugin = await _repository.GetPluginByIdAsync(42);
+
+        Assert.That(plugin, Is.Null);
     }
 }

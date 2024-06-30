@@ -14,7 +14,7 @@ public class CreatePluginCommandHandler : IRequestHandler<CreatePluginCommand, i
     private readonly IPluginRepository _pluginRepository;
     
     /// <summary>
-    /// Creates a new instance of<see cref="GetAllPluginsForProjectIdQueryHandler"/>.
+    /// Creates a new instance of<see cref="CreatePluginCommandHandler"/>.
     /// </summary>
     /// <param name="pluginRepository"></param>
     public CreatePluginCommandHandler(IPluginRepository pluginRepository)
