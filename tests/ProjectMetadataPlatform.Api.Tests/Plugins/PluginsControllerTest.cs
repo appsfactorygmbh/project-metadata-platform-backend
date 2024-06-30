@@ -198,7 +198,7 @@ public class Tests
         Assert.Multiple(() =>
         {
             Assert.That(resultValue, Is.Not.Null);
-            Assert.That(resultValue!.Name, Is.EqualTo("horn ox"));
+            Assert.That(resultValue!.PluginName, Is.EqualTo("horn ox"));
             Assert.That(resultValue.IsArchived, Is.EqualTo(true));
             Assert.That(resultValue.Id, Is.EqualTo(1));
         });

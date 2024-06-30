@@ -125,7 +125,7 @@ public class PluginsController : ControllerBase
             return NotFound("No Plugin with id " + pluginId + " was found.");
         }
 
-        var response = new GetGlobalPluginResponse(plugin.Id, plugin.PluginName, plugin.IsArchived, []);
+        var response = new GetGlobalPluginResponse(plugin.PluginName, plugin.Id, plugin.IsArchived, []);
         return Ok(response);
     }
 
