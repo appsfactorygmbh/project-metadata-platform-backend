@@ -27,7 +27,6 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
     /// <param name="cancellationToken"></param>
     /// <returns>Response to the request</returns>
     
-    // TODO: look into the AddPluginAssociation method (not working)
     public async Task<int> Handle(UpdateProjectCommand request, CancellationToken cancellationToken)
     {
         var project = new Project{ProjectName=request.ProjectName, BusinessUnit=request.BusinessUnit, TeamNumber=request.TeamNumber, Department=request.Department, ClientName=request.ClientName, Id = request.Id, ProjectPlugins = request.Plugins};

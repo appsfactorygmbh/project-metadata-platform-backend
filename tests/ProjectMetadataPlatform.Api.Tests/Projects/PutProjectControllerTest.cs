@@ -56,4 +56,12 @@ public class PutProjectControllerTest
         Assert.That(result.Result, Is.InstanceOf<BadRequestObjectResult>());
     }
 
+    [Test]
+    public async Task ChangeProjectDataControllerTest()
+    {
+        _mediator.Setup(m => m.Send(It.IsAny<UpdateProjectCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(1);
+        var request = new CreateProjectRequest("Example Project", "Example Business Unit", 1, "Example Department", "Example Client",[]);
+        ActionResult<CreateProjectResponse> result = await _controller.Put(request, 100);
+        Assert.That(result.Result, Is.InstanceOf<CreatedResult>());
+    }
 }

@@ -68,19 +68,20 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
         }
         await _context.SaveChangesAsync();
     }
-    
+
     /// <summary>
     /// Updates a project in the database and returns it.
     /// </summary>
     /// <param name="project">Project to be updated</param>
+    /// <param name="plugins">Plugins of the project</param>
     /// <returns></returns>
     public async Task UpdateProject(Project project,List<ProjectPlugins> plugins)
     {
-       
         _context.ProjectPluginsRelation.AddRange(plugins);
         if(GetIf(p => p.Id == project.Id).FirstOrDefault() != null)
         {
-            var existingProject = await _context.Projects.Include(p => p.ProjectPlugins)
+            var existingProject = await _context.Projects
+                .Include(p => p.ProjectPlugins)
                 .FirstOrDefaultAsync(p => p.Id == project.Id);
             existingProject!.ProjectName = project.ProjectName;
             existingProject.Department = project.Department;
@@ -89,7 +90,6 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
             existingProject.ClientName = project.ClientName;
             await _context.SaveChangesAsync();
         }
-        
     }
     
     /// <summary>
