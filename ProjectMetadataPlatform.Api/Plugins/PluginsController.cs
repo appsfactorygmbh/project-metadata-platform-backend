@@ -28,35 +28,7 @@ public class PluginsController : ControllerBase
     {
         _mediator = mediator;
     }
-
-    /// <summary>
-    /// Gets all the plugins of the project with the given id.
-    /// </summary>
-    /// <param name="id">The id of the project.</param>
-    /// <returns>The plugins of the project.</returns>
-    /// <response code="200">All Plugins of the project are returned successfully.</response>
-    /// <response code="500">An internal error occurred.</response>
-    [HttpGet("{id:int}")]
-    public async Task<ActionResult<IEnumerable<GetPluginResponse>>> Get( int id)
-    {
-        var query = new GetAllPluginsForProjectIdQuery(id);
-        IEnumerable<ProjectPlugins> projectPlugins;
-        try
-        {
-            projectPlugins = await _mediator.Send(query);
-        }
-        catch
-        {
-            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-        }
-
-        IEnumerable<GetPluginResponse> response = projectPlugins.Select(plugin
-            => new GetPluginResponse(plugin.Plugin.PluginName, plugin.Url,
-                plugin.DisplayName ?? plugin.Plugin.PluginName));
-
-        return Ok(response);
-    }
-
+    
     /// <summary>
     /// Creates a new plugin with the given name.
     /// </summary>

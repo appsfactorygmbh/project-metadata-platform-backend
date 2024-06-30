@@ -29,81 +29,6 @@ public class Tests
     }
 
     [Test]
-    public async Task GetAllPlugins_EmptyResponseList_Test()
-    {
-        _mediator.Setup(m => m.Send(It.IsAny<GetAllPluginsForProjectIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new List<ProjectPlugins>());
-        var result = await _controller.Get(0);
-
-
-        Assert.That(result, Is.Not.Null);
-        var value = result.Result as OkObjectResult;
-        Assert.IsEmpty((IEnumerable)value.Value);
-
-    }
-
-    [Test]
-    public async Task GetAllPluginsToId()
-    {
-
-        var plugin = new Plugin { Id = 1, PluginName = "plugin 1" };
-        var projcet = new Project { Id = 1, Department = "department 1", BusinessUnit = "business unit 1", ClientName = "client name 1", ProjectName = "project 1", TeamNumber = 1 };
-        var responseContent = new List<ProjectPlugins>
-        {
-            new ProjectPlugins{ ProjectId = 1, PluginId = 1, Plugin = plugin,Project = projcet,DisplayName = "Gitlab", Url ="Plugin1.com"},
-        };
-
-        _mediator.Setup(m => m.Send(It.IsAny<GetAllPluginsForProjectIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(responseContent);
-        var result = await _controller.Get(0);
-
-        Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
-
-        var okResult = result.Result as OkObjectResult;
-        Assert.Multiple(() =>
-        {
-            Assert.That(okResult!.Value, Is.Not.Null);
-            Assert.That(okResult.Value, Is.InstanceOf<IEnumerable<GetPluginResponse>>());
-        });
-
-        var resultValue = (okResult?.Value as IEnumerable<GetPluginResponse>)!.ToList();
-        Assert.That(resultValue, Has.Count.EqualTo(1));
-
-        var resultObj = resultValue[0];
-        Assert.Multiple(() =>
-        {
-            Assert.That(resultObj.Url, Is.EqualTo("Plugin1.com"));
-            Assert.That(resultObj.PluginName, Is.EqualTo("plugin 1"));
-            Assert.That(resultObj.DisplayName, Is.EqualTo("Gitlab"));
-        });
-
-    }
-
-    [Test]
-    public async Task DisplayNameNullCheckTest()
-    {
-
-        var plugin = new Plugin { Id = 1, PluginName = "plugin 1" };
-        var projcet = new Project { Id = 1, Department = "department 1", BusinessUnit = "business unit 1", ClientName = "client name 1", ProjectName = "project 1", TeamNumber = 1 };
-        var responseContent = new List<ProjectPlugins>
-        {
-            new ProjectPlugins{ ProjectId = 1, PluginId = 1, Plugin = plugin,Project = projcet, Url ="Plugin1.com"},
-        };
-
-        _mediator.Setup(m => m.Send(It.IsAny<GetAllPluginsForProjectIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(responseContent);
-        var result = await _controller.Get(0);
-        var okResult = result.Result as OkObjectResult;
-        var resultValue = (okResult?.Value as IEnumerable<GetPluginResponse>)!.ToList();
-
-        var resultObj = resultValue[0];
-        Assert.Multiple(() =>
-        {
-            Assert.That(resultObj.Url, Is.EqualTo("Plugin1.com"));
-            Assert.That(resultObj.PluginName, Is.EqualTo("plugin 1"));
-            Assert.That(resultObj.DisplayName, Is.EqualTo("plugin 1"));
-        });
-
-    }
-
-    [Test]
     public async Task CreatePlugin_Test()
     {
         _mediator.Setup(m => m.Send(It.IsAny<CreatePluginCommand>(), It.IsAny<CancellationToken>()))
@@ -198,8 +123,8 @@ public class Tests
         Assert.Multiple(() =>
         {
             Assert.That(resultValue, Is.Not.Null);
-            Assert.That(resultValue!.PluginName, Is.EqualTo("horn ox"));
-            Assert.That(resultValue.IsArchived, Is.EqualTo(true));
+            Assert.That(resultValue!.Name, Is.EqualTo("horn ox"));
+            Assert.That(resultValue.Archived, Is.EqualTo(true));
             Assert.That(resultValue.Id, Is.EqualTo(1));
         });
     }
@@ -260,9 +185,9 @@ public class Tests
         var resultObj = resultValue[0];
         Assert.Multiple(() =>
         {
-            Assert.That(resultObj.PluginName, Is.EqualTo("plugin 1"));
+            Assert.That(resultObj.Name, Is.EqualTo("plugin 1"));
             Assert.That(resultObj.Id, Is.EqualTo(1));
-            Assert.That(resultObj.IsArchived, Is.False);
+            Assert.That(resultObj.Archived, Is.False);
             Assert.That(resultObj.Keys, Is.EqualTo(System.Array.Empty<string>()));
         });
     }
