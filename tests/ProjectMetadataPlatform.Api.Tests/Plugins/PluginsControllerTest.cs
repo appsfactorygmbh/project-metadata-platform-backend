@@ -219,36 +219,27 @@ public class Tests
         Assert.That(notFoundResult, Is.Not.Null);
         Assert.That(notFoundResult.Value, Is.EqualTo("No Plugin with id 1 was found."));
     }
-    /*
+    
     [Test]
     public async Task DeleteGlobalPlugin_Test()
     {
-        _mediator.Setup(m => m.Send(It.IsAny<CreatePluginCommand>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(42);
-            
-        var createRequest = new CreatePluginRequest("Solid Rocket Booster");
-            
-        ActionResult<CreatePluginResponse> createResult = await _controller.Put(createRequest);
-            
-        Assert.That(createResult.Result, Is.InstanceOf<CreatedResult>());
-        var createdResult = createResult.Result as CreatedResult;
-        Assert.That(createdResult, Is.Not.Null);
-        Assert.That(createdResult.Value, Is.InstanceOf<CreatePluginResponse>());
-
-        var pluginResponse = createdResult.Value as CreatePluginResponse;
-        Assert.That(pluginResponse, Is.Not.Null);
-        Assert.That(pluginResponse.Id, Is.EqualTo(42));
-            
+        var plugin = new Plugin { Id = 42, PluginName = "Gilgamesch", IsArchived = false };
         _mediator.Setup(m => m.Send(It.IsAny<DeleteGlobalPluginCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(42);
+        
+        var request = new DeleteGlobalPluginRequest(42);
             
-        var deleteRequest = new DeleteGlobalPluginRequest(42);
+        ActionResult<DeleteGlobalPluginResponse> result = await _controller.Delete(request);
             
-        ActionResult<DeleteGlobalPluginResponse> deleteResult = await _controller.Delete(deleteRequest);
-            
-        Assert.That(deleteResult.Result, Is.InstanceOf<OkResult>());
-        var okResult = deleteResult.Result as OkResult;
-        Assert.That(okResult, Is.Not.Null);
+        var okResult = result.Result as OkObjectResult;
+        var resultValue = okResult?.Value as DeleteGlobalPluginResponse;
+        
+        Assert.Multiple(() =>
+        {
+            Assert.That(resultValue, Is.Not.Null);
+            Assert.That(resultValue!.IsArchived, Is.EqualTo(true));
+            Assert.That(resultValue!.PluginId, Is.EqualTo(42));
+        });
     }
-    */
+    
 }

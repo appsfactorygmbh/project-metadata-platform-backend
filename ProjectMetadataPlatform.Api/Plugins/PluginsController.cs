@@ -130,7 +130,7 @@ public class PluginsController : ControllerBase
     }
     
     [HttpDelete]
-    public async Task<ActionResult <CreatePluginResponse>> Delete([FromBody] DeleteGlobalPluginRequest request)
+    public async Task<ActionResult <DeleteGlobalPluginResponse>> Delete([FromBody] DeleteGlobalPluginRequest request)
     {
         if (request.PluginId == 0)
         {
@@ -151,6 +151,8 @@ public class PluginsController : ControllerBase
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
 
-        return Ok();
+        var response = new DeleteGlobalPluginResponse(request.PluginId, true);
+
+        return Ok(response);
     }
 }
