@@ -40,8 +40,6 @@ public class UpdateProjectRepositoryTest : TestsWithDatabase
         };
         var projectPlugin = new ProjectPlugins
         {
-            Plugin = examplePlugin,
-            Project = exampleProject,
             PluginId = 1,
             ProjectId = 1,
             Url = "dummy",
@@ -53,8 +51,26 @@ public class UpdateProjectRepositoryTest : TestsWithDatabase
         await _context.SaveChangesAsync();
         await _repository.DeletePluginAssociation(exampleProject.Id);
         await _repository.UpdateProject(exampleProject,projectPluginList);
-        var result = _context.Projects.Where(p => p.Id == exampleProject.Id);
-        Assert.NotNull(result);
-
+        var projectResult = _context.Projects.FirstOrDefault(p => p.Id == exampleProject.Id);
+        Assert.That(projectResult, Is.Not.Null);
+        Assert.Multiple(() =>
+        {
+            Assert.That(projectResult.Id, Is.EqualTo(1));
+            Assert.That(projectResult.ProjectName, Is.EqualTo("Example Project"));
+            Assert.That(projectResult.BusinessUnit, Is.EqualTo("Example Business Unit"));
+            Assert.That(projectResult.TeamNumber, Is.EqualTo(1));
+            Assert.That(projectResult.Department, Is.EqualTo("Example Department"));
+            Assert.That(projectResult.ClientName, Is.EqualTo("Example Client"));
+        });
+        var pluginResult = _context.ProjectPluginsRelation.Where(p => p.ProjectId == exampleProject.Id).ToList();
+        Assert.That(pluginResult, Is.Not.Null);
+        Assert.That(pluginResult, Has.Count.EqualTo(1));
+        Assert.Multiple(() =>
+        {
+            Assert.That(pluginResult[0].PluginId, Is.EqualTo(1));
+            Assert.That(pluginResult[0].ProjectId, Is.EqualTo(1));
+            Assert.That(pluginResult[0].Url, Is.EqualTo("dummy"));
+            Assert.That(pluginResult[0].DisplayName, Is.EqualTo("Dummy"));
+        });
     }
 }

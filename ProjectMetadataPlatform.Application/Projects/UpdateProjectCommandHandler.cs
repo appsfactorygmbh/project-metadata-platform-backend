@@ -13,7 +13,7 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
 {
     private readonly IProjectsRepository _projectsRepository;
     /// <summary>
-    /// Creates a new instance of <see cref="CreateProjectCommandHandler"/>.
+    /// Creates a new instance of <see cref="UpdateProjectCommand"/>.
     /// </summary>
     /// <param name="projectsRepository"></param>
     public UpdateProjectCommandHandler(IProjectsRepository projectsRepository)
@@ -21,7 +21,7 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
         _projectsRepository = projectsRepository;
     }
     /// <summary>
-    /// Handles the request to create a project.
+    /// Handles the request to update a project.
     /// </summary>
     /// <param name="request">Request to be handled</param>
     /// <param name="cancellationToken"></param>
