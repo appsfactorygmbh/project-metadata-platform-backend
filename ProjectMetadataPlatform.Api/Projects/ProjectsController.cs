@@ -5,8 +5,11 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ProjectMetadataPlatform.Api.Plugins.Models;
 using ProjectMetadataPlatform.Api.Projects.Models;
+using ProjectMetadataPlatform.Application.Plugins;
 using ProjectMetadataPlatform.Application.Projects;
+using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.Projects;
 
 namespace ProjectMetadataPlatform.Api.Projects;
@@ -59,6 +62,7 @@ public class ProjectsController : ControllerBase
 
         return Ok(response);
     }
+    
 
     /// <summary>
     /// Gets the project with the given id.
@@ -99,11 +103,40 @@ public class ProjectsController : ControllerBase
 
         return Ok(response);
     }
+    
+    /// <summary>
+    /// Gets all the plugins of the project with the given id.
+    /// </summary>
+    /// <param name="id">The id of the project.</param>
+    /// <returns>The plugins of the project.</returns>
+    /// <response code="200">All Plugins of the project are returned successfully.</response>
+    /// <response code="500">An internal error occurred.</response>
+    [HttpGet("{id:int}/plugins")]
+    public async Task<ActionResult<IEnumerable<GetPluginResponse>>> GetPlugins( int id)
+    {
+        var query = new GetAllPluginsForProjectIdQuery(id);
+        IEnumerable<ProjectPlugins> projectPlugins;
+        try
+        {
+            projectPlugins = await _mediator.Send(query);
+        }
+        catch
+        {
+            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+        }
+
+        IEnumerable<GetPluginResponse> response = projectPlugins.Select(plugin
+            => new GetPluginResponse(plugin.Plugin.PluginName, plugin.Url,
+                plugin.DisplayName ?? plugin.Plugin.PluginName));
+
+        return Ok(response);
+    }
+
     /// <summary>
     /// Creates a new project.
     /// </summary>
     /// <param name="project">The data of the new project.</param>
-    /// <returns>An response containing the id of the created project.</returns>
+    /// <returns>A response containing the id of the created project.</returns>
     /// <response code="201">The Project has been created successfully.</response>
     /// <response code="400">The request data is invalid.</response>
     /// <response code="500">An internal error occurred.</response>

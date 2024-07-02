@@ -65,4 +65,13 @@ public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
         var queryResult = GetIf(plugin => plugin.Id == id);
         return queryResult.FirstOrDefaultAsync();
     }
+    
+    /// <summary>
+    /// Gets all global plugins from the database.
+    /// </summary>
+    /// <returns>All global plugins</returns>
+    public async Task<IEnumerable<Plugin>> GetGlobalPluginsAsync()
+    {
+        return await _context.Plugins.ToListAsync();
+    }
 }

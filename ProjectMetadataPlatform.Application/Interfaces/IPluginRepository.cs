@@ -30,4 +30,10 @@ public interface IPluginRepository
     /// <param name="id">The id of the plugin</param>
     /// <returns></returns>
     Task<Plugin?> GetPluginByIdAsync(int id);
+
+    /// <summary>
+    /// Returns all global plugins
+    /// </summary>
+    /// <returns>Collection of all global plugins</returns>
+    Task<IEnumerable<Plugin>> GetGlobalPluginsAsync();
 }
