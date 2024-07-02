@@ -229,6 +229,7 @@ public class Tests
             .ReturnsAsync(plugin);
             
         ActionResult<DeleteGlobalPluginResponse> result = await _controller.Delete(37);
+
             
         var okResult = result.Result as OkObjectResult;
         var resultValue = okResult?.Value as DeleteGlobalPluginResponse;
