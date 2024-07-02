@@ -14,6 +14,8 @@ default:
   cache:
     paths:
       - ./.nuget/
+      - ./*/obj/
+      - ./*/bin/
 
 include:
   - project: "projekt2024_A_Appsfactory_Project_Metadata_Platform/templates"
@@ -40,7 +42,7 @@ code-quality:
     DOTNET_ROLL_FORWARD: Major
   script:
     - "dotnet tool restore"
-    - "dotnet build --configuration Release --packages ./.nuget/"
+    - "dotnet build --no-incremental --configuration Release --packages ./.nuget/"
     - "export DIR=file://$(pwd)"
     - "dotnet tool run cq sarif ProjectMetadataPlatform.Domain/bin/codeanalysis.sarif.json gl-code-quality-report1.json $DIR"
     - "dotnet tool run cq sarif ProjectMetadataPlatform.Application/bin/codeanalysis.sarif.json gl-code-quality-report2.json $DIR"
@@ -67,8 +69,10 @@ sonarqube:
     paths:
       - .sonar/cache
   script:
-    - '/root/.dotnet/tools/dotnet-sonarscanner begin /k:"Project-Metadata-Platform-Backend" /d:sonar.token="$SONAR_TOKEN" /d:"sonar.host.url=$SONAR_HOST_URL" '
-    - "dotnet build --no-incremental --configuration Release --packages ./.nuget/"
+    - 'dotnet tool restore'
+    - '/root/.dotnet/tools/dotnet-sonarscanner begin /k:"Project-Metadata-Platform-Backend" /d:sonar.token="$SONAR_TOKEN" /d:"sonar.host.url=$SONAR_HOST_URL" /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml /d:sonar.tests=/tests/ '
+    - 'dotnet build --no-incremental --configuration Release --packages ./.nuget/'
+    - 'dotnet tool run dotnet-coverage collect "dotnet test --configuration Release" -f xml -o "coverage.xml"'
     - '/root/.dotnet/tools/dotnet-sonarscanner end /d:sonar.token="$SONAR_TOKEN"'
   allow_failure: true
   # Only run on develop branch since we have analyzers for MRs and the HTWK SonarQube instance does not support MR analysis

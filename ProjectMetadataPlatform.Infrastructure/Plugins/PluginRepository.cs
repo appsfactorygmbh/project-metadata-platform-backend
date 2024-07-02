@@ -11,15 +11,13 @@ namespace ProjectMetadataPlatform.Infrastructure.Plugins;
 /// <summary>
 ///     The repository for plugins that handles the data access.
 /// </summary>
-public class PluginRepository : IPluginRepository
-{
-
-    private readonly ProjectMetadataPlatformDbContext _context;
+public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
+{   
     /// <summary>
     ///     Constructor for the PluginRepository.
     /// </summary>
     /// <param name="context"></param>
-    public PluginRepository(ProjectMetadataPlatformDbContext context)
+    public PluginRepository(ProjectMetadataPlatformDbContext context): base(context)
     {
         _context = context;
     }
@@ -41,9 +39,37 @@ public class PluginRepository : IPluginRepository
     /// <returns>The saved Plugin</returns>
     public async Task<Plugin> StorePlugin(Plugin plugin)
     {
-        _context.Plugins.Add(plugin);
-        await _context.SaveChangesAsync();
+        if (plugin.Id == 0) // the plugin is new/has no id
+        {
+            _context.Plugins.Add(plugin);
+            await _context.SaveChangesAsync();
+        }
+        else
+        {
+            Update(plugin);
+            await _context.SaveChangesAsync();
+        }
 
         return plugin;
+    }
+    
+    /// <summary>
+    /// Asynchronously retrieves a plugin by its unique identifier.
+    /// </summary>
+    /// <param name="id">The unique identifier of the plugin to retrieve.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the Plugin that matches the provided id.</returns>
+    public Task<Plugin?> GetPluginByIdAsync(int id)
+    {
+        var queryResult = GetIf(plugin => plugin.Id == id);
+        return queryResult.FirstOrDefaultAsync();
+    }
+    
+    /// <summary>
+    /// Gets all global plugins from the database.
+    /// </summary>
+    /// <returns>All global plugins</returns>
+    public async Task<IEnumerable<Plugin>> GetGlobalPluginsAsync()
+    {
+        return await _context.Plugins.ToListAsync();
     }
 }

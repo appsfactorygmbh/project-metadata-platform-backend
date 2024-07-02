@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Moq;
@@ -27,7 +28,7 @@ public class CreatePluginCommandHandlerTest
         var examplePlugin = new Plugin { PluginName = "Airlock", Id = 13, ProjectPlugins = [] };
         _mockPluginRepo.Setup(m => m.StorePlugin(It.IsAny<Plugin>())).ReturnsAsync(examplePlugin);
 
-        int result = await _handler.Handle(new CreatePluginCommand("Airlock"), It.IsAny<CancellationToken>());
+        var result = await _handler.Handle(new CreatePluginCommand("Airlock", true, new List<string>()), It.IsAny<CancellationToken>());
 
         Assert.That(result, Is.EqualTo(13));
     }
