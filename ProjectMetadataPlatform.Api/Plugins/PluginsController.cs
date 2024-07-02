@@ -128,16 +128,16 @@ public class PluginsController : ControllerBase
         var response = new GetGlobalPluginResponse(plugin.Id, plugin.PluginName, plugin.IsArchived, []);
         return Ok(response);
     }
-    
-    [HttpDelete]
-    public async Task<ActionResult <DeleteGlobalPluginResponse>> Delete([FromBody] DeleteGlobalPluginRequest request)
+
+    [HttpDelete( "{pluginId:int}" )]
+    public async Task<ActionResult <DeleteGlobalPluginResponse>> Delete(int pluginId)
     {
-        if (request.PluginId == 0)
+        if (pluginId == 0)
         {
             return StatusCode(StatusCodes.Status400BadRequest, "PluginId can't be 0");
         }
 
-        var command = new DeleteGlobalPluginCommand(request.PluginId);
+        var command = new DeleteGlobalPluginCommand(pluginId);
 
         try
         {
@@ -151,7 +151,7 @@ public class PluginsController : ControllerBase
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
 
-        var response = new DeleteGlobalPluginResponse(request.PluginId, true);
+        var response = new DeleteGlobalPluginResponse(pluginId, true);
 
         return Ok(response);
     }
