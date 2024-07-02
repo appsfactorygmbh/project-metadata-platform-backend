@@ -26,14 +26,11 @@ public class DeletePluginCommandHandlerTest
     [Test]
     public async Task DeleteGlobalPlugin_Test()
     {
-        
-
         var plugin = new Plugin { Id = 42, PluginName = "Flat-Earth", IsArchived = false };
         _mockPluginRepo.Setup(m => m.StorePlugin(It.IsAny<Plugin>())).ReturnsAsync(plugin);
         _mockPluginRepo.Setup(m => m.GetPluginByIdAsync(42)).ReturnsAsync(plugin);
         
-        await _handler.Handle(new DeleteGlobalPluginCommand(42), It.IsAny<CancellationToken>());
-        var result = await _mockPluginRepo.Object.GetPluginByIdAsync(42);
+        var result = await _handler.Handle(new DeleteGlobalPluginCommand(42), It.IsAny<CancellationToken>());
         Assert.That(result.IsArchived, Is.EqualTo(true));
     }
 

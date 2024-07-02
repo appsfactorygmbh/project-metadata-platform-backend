@@ -195,7 +195,7 @@ public class Tests
     [Test]
     public async Task DeleteGlobalPlugin_Test()
     {
-        var plugin = new Plugin { Id = 37, PluginName = "Three-Body-Problem", IsArchived = false };
+        var plugin = new Plugin { Id = 37, PluginName = "Three-Body-Problem", IsArchived = true };
         _mediator.Setup(m => m.Send(It.IsAny<DeleteGlobalPluginCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(plugin);
             
@@ -226,6 +226,21 @@ public class Tests
         var notFoundResult = result.Result as NotFoundObjectResult;
         Assert.That(notFoundResult, Is.Not.Null);
         Assert.That(notFoundResult.Value, Is.EqualTo("No Plugin with id 37 was found."));
+    }
+    
+    [Test]
+    public async Task DeleteGlobalPlugin_InvalidId_Test()
+    {
+        _mediator.Setup(m => m.Send(It.IsAny<DeleteGlobalPluginCommand>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new ArgumentException());
+            
+        ActionResult<DeleteGlobalPluginResponse> result = await _controller.Delete(0);
+        
+        Assert.That(result.Result, Is.InstanceOf<ObjectResult>());
+        
+        var badRequestResult = result.Result as ObjectResult;
+        Assert.That(badRequestResult, Is.Not.Null);
+        Assert.That(badRequestResult.Value, Is.EqualTo("PluginId can't be 0"));
     }
     
 }
