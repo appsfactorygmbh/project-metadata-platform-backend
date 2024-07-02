@@ -1,9 +1,8 @@
+using System;
 using NUnit.Framework;
 using Moq;
 using System.Threading;
 using System.Threading.Tasks;
-using Moq;
-using NUnit.Framework;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Application.Plugins;
 using ProjectMetadataPlatform.Domain.Plugins;
@@ -36,7 +35,20 @@ public class DeletePluginCommandHandlerTest
         await _handler.Handle(new DeleteGlobalPluginCommand(42), It.IsAny<CancellationToken>());
         var result = await _mockPluginRepo.Object.GetPluginByIdAsync(42);
         Assert.That(result.IsArchived, Is.EqualTo(true));
-        
+    }
+
+    [Test]
+    public async Task DeleteGlobalPluginNull_Test()
+    {
+       Assert.ThrowsAsync<ArgumentException>(async () => await _handler.Handle(new DeleteGlobalPluginCommand(0), It.IsAny<CancellationToken>()));
         
     }
+    [Test]
+    public async Task DeleteGlobalPluginNullPointerException_Test()
+    {
+        _mockPluginRepo.Setup(m => m.GetPluginByIdAsync(42)).ReturnsAsync((Plugin)null!);
+        Assert.ThrowsAsync<NullReferenceException>(async ()=> await _handler.Handle(new DeleteGlobalPluginCommand(42), It.IsAny<CancellationToken>()));
+    }
+    
+    
 }

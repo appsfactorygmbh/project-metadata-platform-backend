@@ -92,7 +92,7 @@ public class PluginsController : ControllerBase
         var uri = "/Plugins/" + pluginId;
         return Created(uri, response);
     }
-    
+
     /// <summary>
     /// Updates a global plugin.
     /// </summary>
@@ -103,7 +103,9 @@ public class PluginsController : ControllerBase
     /// <response code="404">No Plugin with the requested id was found.</response>
     /// <response code="500">An internal error occurred.</response>
     [HttpPatch("{pluginId:int}")]
-    public async Task<ActionResult<GetGlobalPluginResponse>> Patch(int pluginId, [FromBody] PatchGlobalPluginRequest request)
+    public async Task<ActionResult<GetGlobalPluginResponse>> Patch(
+        int pluginId,
+        [FromBody] PatchGlobalPluginRequest request)
     {
         var command = new PatchGlobalPluginCommand(pluginId, request.PluginName, request.IsArchived);
 
@@ -129,8 +131,21 @@ public class PluginsController : ControllerBase
         return Ok(response);
     }
 
-    [HttpDelete( "{pluginId:int}" )]
-    public async Task<ActionResult <DeleteGlobalPluginResponse>> Delete(int pluginId)
+    /// <summary>
+    /// Deletes a plugin by its ID.
+    /// </summary>
+    /// <param name="pluginId">The unique identifier of the plugin to delete.</param>
+    /// <returns>
+    /// A <see cref="Task"/> representing the asynchronous operation, with an <see cref="ActionResult"/> that
+    /// contains a <see cref="DeleteGlobalPluginResponse"/> on success, or an error message on failure.
+    /// </returns>
+    /// <remarks>
+    /// - Returns a 400 Bad Request if the pluginId is 0, indicating an invalid ID.
+    /// - Returns a 404 Not Found if no plugin with the specified ID was found.
+    /// - Returns a 500 Internal Server Error if an unexpected exception occurs.
+    /// </remarks>
+    [HttpDelete("{pluginId:int}")]
+    public async Task<ActionResult<DeleteGlobalPluginResponse>> Delete(int pluginId)
     {
         if (pluginId == 0)
         {
