@@ -143,6 +143,7 @@ public class PluginsController : ControllerBase
     /// A <see cref="Task"/> representing the asynchronous operation, with an <see cref="ActionResult"/> that
     /// contains a <see cref="DeleteGlobalPluginResponse"/> on success, or an error message on failure.
     /// </returns>
+    /// <response code="200">OK if the plugin was successfully deleted.</response>
     /// <response code="400">Bad Request if the pluginId is 0, indicating an invalid ID.</response>
     /// <response code="404">Not Found if no plugin with the specified ID was found.</response>
     /// <response code="500">Internal Server Error if an unexpected exception occurs.</response>
@@ -154,14 +155,14 @@ public class PluginsController : ControllerBase
         try
         {
             var plugin = await _mediator.Send(command);
+            if (plugin == null)
+            {
+                return NotFound("No Plugin with id " + pluginId + " was found.");
+            }
         }
         catch (ArgumentException)
         {
             return StatusCode(StatusCodes.Status400BadRequest, "PluginId can't be 0");
-        }
-        catch (NullReferenceException)
-        {
-            return NotFound("No Plugin with id " + pluginId + " was found.");
         }
         catch (Exception e)
         {

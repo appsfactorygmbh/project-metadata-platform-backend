@@ -217,7 +217,7 @@ public class Tests
     public async Task DeleteGlobalPlugin_PluginNotFound_Test()
     {
         _mediator.Setup(m => m.Send(It.IsAny<DeleteGlobalPluginCommand>(), It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new NullReferenceException());
+            .ReturnsAsync((Plugin)null!);
             
         ActionResult<DeleteGlobalPluginResponse> result = await _controller.Delete(37);
         
