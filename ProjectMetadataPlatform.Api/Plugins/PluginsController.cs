@@ -138,10 +138,14 @@ public class PluginsController : ControllerBase
         }
 
         var command = new DeleteGlobalPluginCommand(pluginId);
-
+        
         try
         {
-            await _mediator.Send(command);
+            var result = await _mediator.Send(command);
+            if (result == 0)
+            {
+                return NotFound("No Plugin with id " + pluginId + " was found.");
+            }
         }
         catch (Exception e)
         {
