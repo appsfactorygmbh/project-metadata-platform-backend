@@ -180,4 +180,66 @@ public class Tests
 
         Assert.That(statusResult.StatusCode, Is.EqualTo(400));
     }
+    
+    [Test]
+    public async Task UpdateGlobalPlugin_Test()
+    {
+        var plugin = new Plugin { Id = 1, PluginName = "horn ox", IsArchived = true };
+        _mediator.Setup(m => m.Send(It.IsAny<PatchGlobalPluginCommand>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(plugin);
+
+        var request = new PatchGlobalPluginRequest(null, true);
+
+        ActionResult<GetGlobalPluginResponse> result = await _controller.Patch(1, request);
+        var okResult = result.Result as OkObjectResult;
+        var resultValue = okResult?.Value as GetGlobalPluginResponse;
+        
+        Assert.Multiple(() =>
+        {
+            Assert.That(resultValue, Is.Not.Null);
+            Assert.That(resultValue!.Name, Is.EqualTo("horn ox"));
+            Assert.That(resultValue.IsArchived, Is.EqualTo(true));
+            Assert.That(resultValue.Id, Is.EqualTo(1));
+        });
+    }
+    
+    [Test]
+    public async Task UpdateGlobalPlugin_PluginNotFound_Test()
+    {
+        _mediator.Setup(m => m.Send(It.IsAny<PatchGlobalPluginCommand>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Plugin) null!);
+
+        var request = new PatchGlobalPluginRequest(null, true);
+
+        ActionResult<GetGlobalPluginResponse> result = await _controller.Patch(1, request);
+        
+        Assert.That(result.Result, Is.InstanceOf<NotFoundObjectResult>());
+        
+        var notFoundResult = result.Result as NotFoundObjectResult;
+        Assert.That(notFoundResult, Is.Not.Null);
+        Assert.That(notFoundResult.Value, Is.EqualTo("No Plugin with id 1 was found."));
+    }
+    
+    [Test]
+    public async Task DeleteGlobalPlugin_Test()
+    {
+        var plugin = new Plugin { Id = 42, PluginName = "Gilgamesch", IsArchived = false };
+        _mediator.Setup(m => m.Send(It.IsAny<DeleteGlobalPluginCommand>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(42);
+        
+        var request = new DeleteGlobalPluginRequest(42);
+            
+        ActionResult<DeleteGlobalPluginResponse> result = await _controller.Delete(request);
+            
+        var okResult = result.Result as OkObjectResult;
+        var resultValue = okResult?.Value as DeleteGlobalPluginResponse;
+        
+        Assert.Multiple(() =>
+        {
+            Assert.That(resultValue, Is.Not.Null);
+            Assert.That(resultValue!.IsArchived, Is.EqualTo(true));
+            Assert.That(resultValue!.PluginId, Is.EqualTo(42));
+        });
+    }
+    
 }

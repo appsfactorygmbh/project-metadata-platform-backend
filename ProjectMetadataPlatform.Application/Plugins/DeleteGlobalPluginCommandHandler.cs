@@ -8,14 +8,14 @@ using ProjectMetadataPlatform.Application.Interfaces;
 namespace ProjectMetadataPlatform.Application.Plugins;
 
 /// <summary>
-/// Handler for the <see cref="CreatePluginCommand"/>
+/// Handler for the <see cref="DeleteGlobalPluginCommand"/>
 /// </summary>
 public class DeleteGlobalPluginCommandHandler : IRequestHandler<DeleteGlobalPluginCommand, int>
 {
     private readonly IPluginRepository _pluginRepository;
     
     /// <summary>
-    /// Creates a new instance of<see cref="GetAllPluginsForProjectIdQueryHandler"/>.
+    /// Creates a new instance of<see cref="DeleteGlobalPluginCommandHandler"/>.
     /// </summary>
     /// <param name="pluginRepository"></param>
     public DeleteGlobalPluginCommandHandler(IPluginRepository pluginRepository)
@@ -24,7 +24,7 @@ public class DeleteGlobalPluginCommandHandler : IRequestHandler<DeleteGlobalPlug
     }
     
     /// <summary>
-    /// Creates a new Plugin with the given name
+    /// Delete Plugin with the given id
     /// </summary>
     /// <param name="request">the request that needs to be handled</param>
     /// <param name="cancellationToken"></param>
