@@ -17,7 +17,7 @@ public class ProjectsBySearchTest : TestsWithDatabase
     {
         _context = DbContext();
         _repository = new ProjectsRepository(_context);
-        DeleteContext(_context);
+        ClearData(_context);
     }
     private ProjectMetadataPlatformDbContext _context;
     private ProjectsRepository _repository;

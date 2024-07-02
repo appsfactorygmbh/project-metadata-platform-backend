@@ -15,7 +15,7 @@ public class ProjectByIDRepositoryTest : TestsWithDatabase
     {
         _context = DbContext();
         _repository = new ProjectsRepository(_context);
-        DeleteContext(_context);
+        ClearData(_context);
     }
 
     [Test]

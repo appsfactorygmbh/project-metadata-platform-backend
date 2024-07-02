@@ -19,7 +19,7 @@ public class PluginsRepositoryTest : TestsWithDatabase
     {
         _context = DbContext();
         _repository = new PluginRepository(_context);
-        DeleteContext(_context);
+        ClearData(_context);
     }
 
     [TearDown]

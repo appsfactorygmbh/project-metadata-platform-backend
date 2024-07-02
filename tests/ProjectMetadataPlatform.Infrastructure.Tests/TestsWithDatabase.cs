@@ -34,7 +34,7 @@ public class TestsWithDatabase
     /// </summary>
     /// <param name="context"></param>
     /// <returns>Database context</returns>
-    protected void DeleteContext(ProjectMetadataPlatformDbContext context)
+    protected void ClearData(ProjectMetadataPlatformDbContext context)
     {
         var allEntitiesPlugins = context.Plugins.ToList();
         var allEntitiesProjects = context.Projects.ToList();
