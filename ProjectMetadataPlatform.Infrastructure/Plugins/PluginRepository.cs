@@ -12,7 +12,7 @@ namespace ProjectMetadataPlatform.Infrastructure.Plugins;
 ///     The repository for plugins that handles the data access.
 /// </summary>
 public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
-{   
+{
     /// <summary>
     ///     Constructor for the PluginRepository.
     /// </summary>
@@ -21,6 +21,7 @@ public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
     {
         _context = context;
     }
+    private readonly ProjectMetadataPlatformDbContext _context;
 
     /// <summary>
     ///     Gets all plugins for a given project id from database.
@@ -52,7 +53,7 @@ public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
 
         return plugin;
     }
-    
+
     /// <summary>
     /// Asynchronously retrieves a plugin by its unique identifier.
     /// </summary>
@@ -63,7 +64,7 @@ public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
         var queryResult = GetIf(plugin => plugin.Id == id);
         return queryResult.FirstOrDefaultAsync();
     }
-    
+
     /// <summary>
     /// Gets all global plugins from the database.
     /// </summary>
