@@ -227,7 +227,7 @@ public class Tests
         _mediator.Setup(m => m.Send(It.IsAny<DeleteGlobalPluginCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(42);
         
-        var request = new DeleteGlobalPluginRequest(42);
+        var request = new DeleteGlobalPluginRequest();
             
         ActionResult<DeleteGlobalPluginResponse> result = await _controller.Delete(request);
             
