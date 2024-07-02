@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -225,7 +226,7 @@ public class Tests
     {
         var plugin = new Plugin { Id = 37, PluginName = "Three-Body-Problem", IsArchived = false };
         _mediator.Setup(m => m.Send(It.IsAny<DeleteGlobalPluginCommand>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(37);
+            .ReturnsAsync(plugin);
             
         ActionResult<DeleteGlobalPluginResponse> result = await _controller.Delete(37);
             
@@ -244,7 +245,7 @@ public class Tests
     public async Task DeleteGlobalPlugin_PluginNotFound_Test()
     {
         _mediator.Setup(m => m.Send(It.IsAny<DeleteGlobalPluginCommand>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(0);
+            .ThrowsAsync(new NullReferenceException());
             
         ActionResult<DeleteGlobalPluginResponse> result = await _controller.Delete(37);
         
