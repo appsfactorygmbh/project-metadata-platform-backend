@@ -36,9 +36,12 @@ public class DeleteGlobalPluginCommandHandler : IRequestHandler<DeleteGlobalPlug
             throw new ArgumentException("Plugin not found");
         }
         var plugin = await _pluginRepository.GetPluginByIdAsync(request.Id);
+        if (plugin == null)
+        {
+            return null;
+        }
         plugin.IsArchived = true;
-        await _pluginRepository.StorePlugin(plugin);
         
-        return plugin;
+        return await _pluginRepository.StorePlugin(plugin);
     }
 }

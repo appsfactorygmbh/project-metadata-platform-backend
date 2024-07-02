@@ -38,13 +38,13 @@ public class DeletePluginCommandHandlerTest
     public async Task DeleteGlobalPluginNull_Test()
     {
        Assert.ThrowsAsync<ArgumentException>(async () => await _handler.Handle(new DeleteGlobalPluginCommand(0), It.IsAny<CancellationToken>()));
-        
     }
     [Test]
     public async Task DeleteGlobalPluginNullPointerException_Test()
     {
         _mockPluginRepo.Setup(m => m.GetPluginByIdAsync(42)).ReturnsAsync((Plugin)null!);
-        Assert.ThrowsAsync<NullReferenceException>(async ()=> await _handler.Handle(new DeleteGlobalPluginCommand(42), It.IsAny<CancellationToken>()));
+        var result = await _handler.Handle(new DeleteGlobalPluginCommand(42), CancellationToken.None);
+        Assert.That(result, Is.Null);
     }
     
     

@@ -153,13 +153,13 @@ public class PluginsController : ControllerBase
 
         try
         {
-            await _mediator.Send(command);
+            var plugin = await _mediator.Send(command);
         }
-        catch (ArgumentException e)
+        catch (ArgumentException)
         {
             return StatusCode(StatusCodes.Status400BadRequest, "PluginId can't be 0");
         }
-        catch (NullReferenceException e)
+        catch (NullReferenceException)
         {
             return NotFound("No Plugin with id " + pluginId + " was found.");
         }
