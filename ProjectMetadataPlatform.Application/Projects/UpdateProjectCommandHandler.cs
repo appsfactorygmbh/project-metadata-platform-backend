@@ -13,7 +13,7 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
 {
     private readonly IProjectsRepository _projectsRepository;
     /// <summary>
-    /// Creates a new instance of <see cref="CreateProjectCommandHandler"/>.
+    /// Creates a new instance of <see cref="UpdateProjectCommand"/>.
     /// </summary>
     /// <param name="projectsRepository"></param>
     public UpdateProjectCommandHandler(IProjectsRepository projectsRepository)
@@ -21,13 +21,12 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
         _projectsRepository = projectsRepository;
     }
     /// <summary>
-    /// Handles the request to create a project.
+    /// Handles the request to update a project.
     /// </summary>
     /// <param name="request">Request to be handled</param>
     /// <param name="cancellationToken"></param>
     /// <returns>Response to the request</returns>
     
-    // TODO: look into the AddPluginAssociation method (not working)
     public async Task<int> Handle(UpdateProjectCommand request, CancellationToken cancellationToken)
     {
         var project = new Project{ProjectName=request.ProjectName, BusinessUnit=request.BusinessUnit, TeamNumber=request.TeamNumber, Department=request.Department, ClientName=request.ClientName, Id = request.Id, ProjectPlugins = request.Plugins};

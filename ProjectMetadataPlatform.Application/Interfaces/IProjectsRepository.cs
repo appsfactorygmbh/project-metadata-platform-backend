@@ -40,6 +40,7 @@ public interface IProjectsRepository
     /// Updates a project in the database and returns it.
     /// </summary>
     /// <param name="project">Project to be updated</param>
+    /// <param name="plugins">plugins of project</param>
     /// <returns></returns>
     Task UpdateProject(Project project,List<ProjectPlugins> plugins);
     
