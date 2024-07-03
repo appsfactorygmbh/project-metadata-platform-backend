@@ -150,6 +150,10 @@ public class PluginsController : ControllerBase
     [HttpDelete("{pluginId:int}")]
     public async Task<ActionResult<DeleteGlobalPluginResponse>> Delete(int pluginId)
     {
+        if (pluginId <= 0)
+        {
+            return StatusCode(StatusCodes.Status400BadRequest, "PluginId can't be 0");
+        }
         var command = new DeleteGlobalPluginCommand(pluginId);
 
         try
@@ -159,10 +163,6 @@ public class PluginsController : ControllerBase
             {
                 return NotFound("No Plugin with id " + pluginId + " was found.");
             }
-        }
-        catch (ArgumentException)
-        {
-            return StatusCode(StatusCodes.Status400BadRequest, "PluginId can't be 0");
         }
         catch (Exception e)
         {

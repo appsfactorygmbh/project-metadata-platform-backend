@@ -33,12 +33,7 @@ public class DeletePluginCommandHandlerTest
         var result = await _handler.Handle(new DeleteGlobalPluginCommand(42), It.IsAny<CancellationToken>());
         Assert.That(result.IsArchived, Is.EqualTo(true));
     }
-
-    [Test]
-    public async Task DeleteGlobalPluginNull_Test()
-    {
-       Assert.ThrowsAsync<ArgumentException>(async () => await _handler.Handle(new DeleteGlobalPluginCommand(0), It.IsAny<CancellationToken>()));
-    }
+    
     [Test]
     public async Task DeleteGlobalPluginNullPointerException_Test()
     {
