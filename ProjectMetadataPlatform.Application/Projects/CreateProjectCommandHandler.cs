@@ -5,14 +5,15 @@ using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Domain.Projects;
 
 namespace ProjectMetadataPlatform.Application.Projects;
+
 /// <summary>
-/// Handler for the <see cref="CreateProjectCommand"/>.
+///     Handler for the <see cref="CreateProjectCommand" />.
 /// </summary>
 public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand, int>
 {
     private readonly IProjectsRepository _projectsRepository;
     /// <summary>
-    /// Creates a new instance of <see cref="CreateProjectCommandHandler"/>.
+    ///     Creates a new instance of <see cref="CreateProjectCommandHandler" />.
     /// </summary>
     /// <param name="projectsRepository"></param>
     public CreateProjectCommandHandler(IProjectsRepository projectsRepository)
@@ -20,7 +21,7 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
         _projectsRepository = projectsRepository;
     }
     /// <summary>
-    /// Handles the request to create a project.
+    ///     Handles the request to create a project.
     /// </summary>
     /// <param name="request">Request to be handled</param>
     /// <param name="cancellationToken"></param>

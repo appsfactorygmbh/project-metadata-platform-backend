@@ -1,7 +1,7 @@
-using NUnit.Framework;
-using ProjectMetadataPlatform.Infrastructure.DataAccess;
-using ProjectMetadataPlatform.Domain.Projects;
 using System.Threading.Tasks;
+using NUnit.Framework;
+using ProjectMetadataPlatform.Domain.Projects;
+using ProjectMetadataPlatform.Infrastructure.DataAccess;
 
 namespace ProjectMetadataPlatform.Infrastructure.Tests;
 
@@ -15,23 +15,24 @@ public class ProjectByIDRepositoryTest : TestsWithDatabase
     {
         _context = DbContext();
         _repository = new ProjectsRepository(_context);
+        ClearData(_context);
     }
-    
+
     [Test]
     public async Task GetProjectByIDAsync_NonexistentProject()
     {
         // Act
-        var result = await _repository.GetProjectAsync(1);
+        Project? result = await _repository.GetProjectAsync(1);
 
         // Assert
         Assert.That(result, Is.Null);
     }
-    
+
     [Test]
     public async Task GetProjectByIDAsync_ReturnProject()
     {
         // Arrange
-        var project = new Project()
+        var project = new Project
         {
             Id = 1,
             ProjectName = "Regen",
@@ -40,12 +41,12 @@ public class ProjectByIDRepositoryTest : TestsWithDatabase
             TeamNumber = 42,
             Department = "Homelandsecurity"
         };
-        
+
         _context.Projects.Add(project);
         await _context.SaveChangesAsync();
 
         // Act
-        var result = await _repository.GetProjectAsync(1);
+        Project? result = await _repository.GetProjectAsync(1);
 
         // Assert
         Assert.That(result.Id, Is.EqualTo(1));
@@ -54,7 +55,6 @@ public class ProjectByIDRepositoryTest : TestsWithDatabase
         Assert.That(result.BusinessUnit, Is.EqualTo("BuWeather"));
         Assert.That(result.TeamNumber, Is.EqualTo(42));
         Assert.That(result.Department, Is.EqualTo("Homelandsecurity"));
-        
+
     }
-    
 }

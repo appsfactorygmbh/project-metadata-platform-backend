@@ -1,28 +1,30 @@
-using NUnit.Framework;
-using ProjectMetadataPlatform.Infrastructure.DataAccess;
-using ProjectMetadataPlatform.Domain.Projects;
-using System.Threading.Tasks;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using NUnit.Framework;
+using ProjectMetadataPlatform.Domain.Projects;
+using ProjectMetadataPlatform.Infrastructure.DataAccess;
 using ProjectMetadataPlatform.Infrastructure.Tests;
 
 [TestFixture]
 public class ProjectsRepositoryTests : TestsWithDatabase
 {
-    protected ProjectMetadataPlatformDbContext _context;
-    private ProjectsRepository _repository;
 
     [SetUp]
     public void Setup()
     {
         _context = DbContext();
         _repository = new ProjectsRepository(_context);
+        ClearData(_context);
     }
+    private ProjectMetadataPlatformDbContext _context;
+    private ProjectsRepository _repository;
 
     [Test]
     public async Task GetAllProjectsAsync_ShouldReturnAllProjects()
     {
         // Arrange
-        var project = new Project()
+        var project = new Project
         {
             Id = 1,
             ProjectName = "Regen",
@@ -37,7 +39,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
         await _context.SaveChangesAsync();
 
         // Act
-        var result = await _repository.GetProjectsAsync();
+        IEnumerable<Project> result = await _repository.GetProjectsAsync();
 
         // Assert
         Assert.AreEqual(1, result.Count());

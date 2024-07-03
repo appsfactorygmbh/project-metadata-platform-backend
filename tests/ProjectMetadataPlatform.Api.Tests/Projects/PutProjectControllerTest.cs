@@ -1,4 +1,3 @@
-
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,16 +8,12 @@ using NUnit.Framework;
 using ProjectMetadataPlatform.Api.Projects;
 using ProjectMetadataPlatform.Api.Projects.Models;
 using ProjectMetadataPlatform.Application.Projects;
-using ProjectMetadataPlatform.Domain.Projects;
 
 namespace ProjectMetadataPlatform.Api.Tests.Projects;
-
 
 [TestFixture]
 public class PutProjectControllerTest
 {
-    private ProjectsController _controller;
-    private Mock<IMediator> _mediator;
 
     [SetUp]
     public void Setup()
@@ -26,13 +21,16 @@ public class PutProjectControllerTest
         _mediator = new Mock<IMediator>();
         _controller = new ProjectsController(_mediator.Object);
     }
+    private ProjectsController _controller;
+    private Mock<IMediator> _mediator;
 
     [Test]
     public async Task CreateProject_Test()
     {
         //prepare
         _mediator.Setup(m => m.Send(It.IsAny<CreateProjectCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(1);
-        var request = new CreateProjectRequest("Example Project", "Example Business Unit", 1, "Example Department", "Example Client");
+        var request = new CreateProjectRequest("Example Project", "Example Business Unit", 1, "Example Department",
+            "Example Client");
         ActionResult<CreateProjectResponse> result = await _controller.Put(request);
         Assert.That(result.Result, Is.InstanceOf<CreatedResult>());
         var createdResult = result.Result as CreatedResult;
@@ -50,10 +48,10 @@ public class PutProjectControllerTest
     [Test]
     public async Task CreateProject_BadRequestTest()
     {
-        _mediator.Setup(m => m.Send(It.IsAny<CreateProjectCommand>(), It.IsAny<CancellationToken>())).ThrowsAsync(new IOException());
+        _mediator.Setup(m => m.Send(It.IsAny<CreateProjectCommand>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new IOException());
         var request = new CreateProjectRequest("", " ", 1, "", "");
         ActionResult<CreateProjectResponse> result = await _controller.Put(request);
         Assert.That(result.Result, Is.InstanceOf<BadRequestObjectResult>());
     }
-
 }

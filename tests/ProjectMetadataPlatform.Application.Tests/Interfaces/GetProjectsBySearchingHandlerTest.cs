@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,32 +13,32 @@ namespace ProjectMetadataPlatform.Application.Tests.Interfaces;
 [TestFixture]
 public class GetProjectsBySearchingHandlerTest
 {
-    private GetAllProjectsQueryHandler _handler;
-    private Mock<IProjectsRepository> _mockProjectRepo;
     [SetUp]
     public void Setup()
     {
         _mockProjectRepo = new Mock<IProjectsRepository>();
         _handler = new GetAllProjectsQueryHandler(_mockProjectRepo.Object);
     }
+    private GetAllProjectsQueryHandler _handler;
+    private Mock<IProjectsRepository> _mockProjectRepo;
 
     [Test]
     public async Task HandleGetProjectBySearchRequest_NonexistentProject_Test()
     {
-        var emptyProjectList = System.Array.Empty<Project>();
-        
+        Project[] emptyProjectList = Array.Empty<Project>();
+
         _mockProjectRepo.Setup(m => m.GetProjectsAsync("M")).ReturnsAsync(emptyProjectList);
-        var query= new GetAllProjectsQuery("M");
-        var result = await _handler.Handle(query, It.IsAny<CancellationToken>());
+        var query = new GetAllProjectsQuery("M");
+        IEnumerable<Project> result = await _handler.Handle(query, It.IsAny<CancellationToken>());
         Assert.IsEmpty(result);
     }
-    
+
     [Test]
     public async Task HandleGetProjectRequestBySearching_Test()
     {
-        var projectsResponseContent = new List<Project>()
+        var projectsResponseContent = new List<Project>
         {
-            new Project
+            new()
             {
                 Id = 2,
                 ProjectName = "Regen",
@@ -45,15 +46,13 @@ public class GetProjectsBySearchingHandlerTest
                 BusinessUnit = "BuWeather",
                 TeamNumber = 42,
                 Department = "Homelandsecurity"
-            },
-            
-            
+            }
         };
-         
+
         _mockProjectRepo.Setup(m => m.GetProjectsAsync("R")).ReturnsAsync(projectsResponseContent);
-        var query= new GetAllProjectsQuery("R");
-        var result = await _handler.Handle(query, It.IsAny<CancellationToken>());
-        
+        var query = new GetAllProjectsQuery("R");
+        IEnumerable<Project> result = await _handler.Handle(query, It.IsAny<CancellationToken>());
+
         Assert.That(result, Is.Not.Null);
         Assert.That(result, Is.InstanceOf<List<Project>>());
         Assert.That(result, Is.EqualTo(projectsResponseContent));
@@ -61,9 +60,9 @@ public class GetProjectsBySearchingHandlerTest
     [Test]
     public async Task HandleGetProjectRequestBySearchingWithNullSearch_Test()
     {
-        var projectsResponseContent = new List<Project>()
+        var projectsResponseContent = new List<Project>
         {
-            new Project
+            new()
             {
                 Id = 2,
                 ProjectName = "Regen",
@@ -72,7 +71,7 @@ public class GetProjectsBySearchingHandlerTest
                 TeamNumber = 42,
                 Department = "Homelandsecurity"
             },
-            new Project
+            new()
             {
                 Id = 3,
                 ProjectName = "Sonne",
@@ -80,18 +79,14 @@ public class GetProjectsBySearchingHandlerTest
                 BusinessUnit = "BuWeather",
                 TeamNumber = 42,
                 Department = "Homelandsecurity"
-            },
-            
-            
+            }
         };
-         _mockProjectRepo.Setup(m => m.GetProjectsAsync()).ReturnsAsync(projectsResponseContent);
-        var query= new GetAllProjectsQuery("");
-        var result = await _handler.Handle(query, It.IsAny<CancellationToken>());
-        
+        _mockProjectRepo.Setup(m => m.GetProjectsAsync()).ReturnsAsync(projectsResponseContent);
+        var query = new GetAllProjectsQuery("");
+        IEnumerable<Project> result = await _handler.Handle(query, It.IsAny<CancellationToken>());
+
         Assert.That(result, Is.Not.Null);
         Assert.That(result, Is.InstanceOf<List<Project>>());
         Assert.That(result, Is.EqualTo(projectsResponseContent));
     }
-    
-    
 }

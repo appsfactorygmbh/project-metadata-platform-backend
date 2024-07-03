@@ -5,7 +5,9 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ProjectMetadataPlatform.Api.Plugins.Models;
 using ProjectMetadataPlatform.Api.Projects.Models;
+using ProjectMetadataPlatform.Application.Plugins;
 using ProjectMetadataPlatform.Application.Projects;
 using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.Projects;
@@ -13,7 +15,7 @@ using ProjectMetadataPlatform.Domain.Projects;
 namespace ProjectMetadataPlatform.Api.Projects;
 
 /// <summary>
-/// Endpoints for managing projects.
+///     Endpoints for managing projects.
 /// </summary>
 [ApiController]
 [Route("[controller]")]
@@ -21,16 +23,15 @@ public class ProjectsController : ControllerBase
 {
     private readonly IMediator _mediator;
     /// <summary>
-    /// Creates a new instance of the <see cref="ProjectsController"/> class.
+    ///     Creates a new instance of the <see cref="ProjectsController" /> class.
     /// </summary>
-
     public ProjectsController(IMediator mediator)
     {
         _mediator = mediator;
     }
 
     /// <summary>
-    /// Gets all projects or all projects that match the given search string.
+    ///     Gets all projects or all projects that match the given search string.
     /// </summary>
     /// <param name="search">Search string to filter the projects by.</param>
     /// <returns>All projects or all projects that match the given search string.</returns>
@@ -51,7 +52,7 @@ public class ProjectsController : ControllerBase
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
 
-        var response = projects.Select(project => new GetProjectsResponse(
+        IEnumerable<GetProjectsResponse> response = projects.Select(project => new GetProjectsResponse(
             project.Id,
             project.ProjectName,
             project.ClientName,
@@ -60,9 +61,10 @@ public class ProjectsController : ControllerBase
 
         return Ok(response);
     }
+    
 
     /// <summary>
-    /// Gets the project with the given id.
+    ///     Gets the project with the given id.
     /// </summary>
     /// <param name="id">The id of the project.</param>
     /// <returns>The project.</returns>
@@ -90,7 +92,6 @@ public class ProjectsController : ControllerBase
         }
 
         var response = new GetProjectResponse(
-
             project.Id,
             project.ProjectName,
             project.ClientName,
@@ -100,8 +101,37 @@ public class ProjectsController : ControllerBase
 
         return Ok(response);
     }
+    
     /// <summary>
-    /// Creates a new project.
+    /// Gets all the plugins of the project with the given id.
+    /// </summary>
+    /// <param name="id">The id of the project.</param>
+    /// <returns>The plugins of the project.</returns>
+    /// <response code="200">All Plugins of the project are returned successfully.</response>
+    /// <response code="500">An internal error occurred.</response>
+    [HttpGet("{id:int}/plugins")]
+    public async Task<ActionResult<IEnumerable<GetPluginResponse>>> GetPlugins( int id)
+    {
+        var query = new GetAllPluginsForProjectIdQuery(id);
+        IEnumerable<ProjectPlugins> projectPlugins;
+        try
+        {
+            projectPlugins = await _mediator.Send(query);
+        }
+        catch
+        {
+            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+        }
+
+        IEnumerable<GetPluginResponse> response = projectPlugins.Select(plugin
+            => new GetPluginResponse(plugin.Plugin.PluginName, plugin.Url,
+                plugin.DisplayName ?? plugin.Plugin.PluginName));
+
+        return Ok(response);
+    }
+
+    /// <summary>
+    ///     Creates a new project.
     /// </summary>
     /// <param name="project">The data of the new project.</param>
     /// <param name="projectId">The id, if an existing project should be overwritten.</param>

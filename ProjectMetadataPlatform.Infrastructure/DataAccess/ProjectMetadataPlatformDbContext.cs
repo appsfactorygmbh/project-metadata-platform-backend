@@ -5,24 +5,10 @@ using ProjectMetadataPlatform.Domain.Projects;
 namespace ProjectMetadataPlatform.Infrastructure.DataAccess;
 
 /// <summary>
-/// DbContext for the project metadata platform database.
+///     DbContext for the project metadata platform database.
 /// </summary>
 public sealed class ProjectMetadataPlatformDbContext : DbContext
 {
-    /// <summary>
-    /// Represents the table for the relation between Project and Plugin entities.
-    /// </summary>
-
-    public DbSet<ProjectPlugins> ProjectPluginsRelation { get; set; }
-    /// <summary>
-    /// Represents the table for plugin entities.
-    /// </summary>
-    public DbSet<Plugin> Plugins { get; set; }
-
-    /// <summary>
-    /// Represents the table for project entities.
-    /// </summary>
-    public DbSet<Project> Projects { get; set; }
 
 
     /// <inheritdoc />
@@ -37,14 +23,33 @@ public sealed class ProjectMetadataPlatformDbContext : DbContext
         _ = Database.EnsureCreated();
     }
 
+    /// <summary>
+    ///     Represents the table for the relation between Project and Plugin entities.
+    /// </summary>
+
+    public DbSet<ProjectPlugins> ProjectPluginsRelation { get; set; }
+
+    /// <summary>
+    ///     Represents the table for plugin entities.
+    /// </summary>
+    public DbSet<Plugin> Plugins { get; set; }
+
+    /// <summary>
+    ///     Represents the table for project entities.
+    /// </summary>
+    public DbSet<Project> Projects { get; set; }
 
 
     /// <summary>
-    /// Configures the model that was discovered by convention from the entity types
-    /// exposed in DbSet properties on your derived context. The resulting model may be cached
-    /// and re-used for subsequent instances of your derived context.
+    ///     Configures the model that was discovered by convention from the entity types
+    ///     exposed in DbSet properties on your derived context. The resulting model may be cached
+    ///     and re-used for subsequent instances of your derived context.
     /// </summary>
-    /// <param name="modelBuilder">Provides a simple API surface for configuring a Microsoft.EntityFrameworkCore.Metadata.IMutableModel that defines the shape of your entities, the relationships between them, and how they map to the database.</param>
+    /// <param name="modelBuilder">
+    ///     Provides a simple API surface for configuring a
+    ///     Microsoft.EntityFrameworkCore.Metadata.IMutableModel that defines the shape of your entities, the relationships
+    ///     between them, and how they map to the database.
+    /// </param>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -85,23 +90,11 @@ public sealed class ProjectMetadataPlatformDbContext : DbContext
             Department = "Department 3"
         };
 
-        var plugin1 = new Plugin
-        {
-            Id = 100,
-            PluginName = "Gitlab",
-        };
+        var plugin1 = new Plugin { Id = 100, PluginName = "Gitlab" };
 
-        var plugin2 = new Plugin
-        {
-            Id = 200,
-            PluginName = "SonarQube",
-        };
+        var plugin2 = new Plugin { Id = 200, PluginName = "SonarQube" };
 
-        var plugin3 = new Plugin
-        {
-            Id = 300,
-            PluginName = "Jira",
-        };
+        var plugin3 = new Plugin { Id = 300, PluginName = "Jira" };
 
         modelBuilder.Entity<Project>().HasData(project1, project2, project3);
         modelBuilder.Entity<Plugin>().HasData(plugin1, plugin2, plugin3);
@@ -188,6 +181,6 @@ public sealed class ProjectMetadataPlatformDbContext : DbContext
                 Project = null!,
                 Plugin = null!
             }
-            );
+        );
     }
 }
