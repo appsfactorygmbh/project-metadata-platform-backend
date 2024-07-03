@@ -61,7 +61,7 @@ public class ProjectsController : ControllerBase
 
         return Ok(response);
     }
-    
+
 
     /// <summary>
     ///     Gets the project with the given id.
@@ -101,7 +101,7 @@ public class ProjectsController : ControllerBase
 
         return Ok(response);
     }
-    
+
     /// <summary>
     /// Gets all the plugins of the project with the given id.
     /// </summary>
@@ -125,7 +125,7 @@ public class ProjectsController : ControllerBase
 
         IEnumerable<GetPluginResponse> response = projectPlugins.Select(plugin
             => new GetPluginResponse(plugin.Plugin.PluginName, plugin.Url,
-                plugin.DisplayName ?? plugin.Plugin.PluginName));
+                plugin.DisplayName ?? plugin.Plugin.PluginName, plugin.Plugin.Id));
 
         return Ok(response);
     }
@@ -150,7 +150,7 @@ public class ProjectsController : ControllerBase
             {
                 return BadRequest("ProjectName, BusinessUnit, Department and ClientName must not be empty.");
             }
-            
+
             IRequest<int> command = projectId == null
                 ? command = new CreateProjectCommand(project.ProjectName, project.BusinessUnit, project.TeamNumber,
                     project.Department, project.ClientName)

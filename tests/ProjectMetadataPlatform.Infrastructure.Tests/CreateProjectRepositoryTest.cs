@@ -58,9 +58,9 @@ public class CreateProjectRepositoryTest : TestsWithDatabase
             Department = "Example Department",
             ClientName = "Example Client"
         };
-        await _repository.AddOrUpdate(exampleProject);
+        await _repository.Add(exampleProject);
         IEnumerable<Project> firstresult = await _repository.GetProjectsAsync();
-        await _repository.AddOrUpdate(exampleProject);
+        await _repository.Add(exampleProject);
         Assert.That(exampleProject, Is.Not.Null);
         Assert.That(exampleProject.ProjectName, Is.EqualTo("Example Project"));
         Assert.That(exampleProject.BusinessUnit, Is.EqualTo("Example Business Unit"));
