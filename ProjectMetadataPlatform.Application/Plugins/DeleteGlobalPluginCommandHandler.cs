@@ -1,4 +1,3 @@
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 using ProjectMetadataPlatform.Domain.Plugins;
@@ -13,7 +12,7 @@ namespace ProjectMetadataPlatform.Application.Plugins;
 public class DeleteGlobalPluginCommandHandler : IRequestHandler<DeleteGlobalPluginCommand, Plugin?>
 {
     private readonly IPluginRepository _pluginRepository;
-    
+
     /// <summary>
     /// Creates a new instance of<see cref="DeleteGlobalPluginCommandHandler"/>.
     /// </summary>
@@ -22,7 +21,7 @@ public class DeleteGlobalPluginCommandHandler : IRequestHandler<DeleteGlobalPlug
     {
         _pluginRepository = pluginRepository;
     }
-    
+
     /// <summary>
     /// Delete Plugin with the given id
     /// </summary>
@@ -37,7 +36,7 @@ public class DeleteGlobalPluginCommandHandler : IRequestHandler<DeleteGlobalPlug
             return null;
         }
         plugin.IsArchived = true;
-        
+
         return await _pluginRepository.StorePlugin(plugin);
     }
 }
