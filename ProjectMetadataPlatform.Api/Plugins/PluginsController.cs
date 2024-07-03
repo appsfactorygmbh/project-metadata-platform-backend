@@ -28,7 +28,7 @@ public class PluginsController : ControllerBase
     {
         _mediator = mediator;
     }
-    
+
     /// <summary>
     /// Gets all the plugins of the project with the given id.
     /// </summary>
@@ -51,7 +51,7 @@ public class PluginsController : ControllerBase
         }
 
         IEnumerable<GetPluginResponse> response = projectPlugins.Select(plugin
-            => new GetPluginResponse(plugin.Plugin.PluginName, plugin.Url,
+            => new GetPluginResponse(plugin.Plugin!.PluginName, plugin.Url,
                 plugin.DisplayName ?? plugin.Plugin.PluginName, plugin.PluginId));
 
         return Ok(response);

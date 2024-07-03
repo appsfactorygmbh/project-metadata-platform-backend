@@ -124,7 +124,7 @@ public class ProjectsController : ControllerBase
         }
 
         IEnumerable<GetPluginResponse> response = projectPlugins.Select(plugin
-            => new GetPluginResponse(plugin.Plugin.PluginName, plugin.Url,
+            => new GetPluginResponse(plugin.Plugin!.PluginName, plugin.Url,
                 plugin.DisplayName ?? plugin.Plugin.PluginName, plugin.Plugin.Id));
 
         return Ok(response);

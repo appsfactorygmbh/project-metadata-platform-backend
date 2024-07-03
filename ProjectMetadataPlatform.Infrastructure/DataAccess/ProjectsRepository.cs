@@ -1,9 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.Projects;
@@ -76,7 +74,7 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
         {
             Create(project);
         }
-        await _context.SaveChangesAsync();
+        _ = await _context.SaveChangesAsync();
     }
 
     /// <summary>
@@ -98,7 +96,7 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
             existingProject.BusinessUnit = project.BusinessUnit;
             existingProject.TeamNumber = project.TeamNumber;
             existingProject.ClientName = project.ClientName;
-            await _context.SaveChangesAsync();
+            _ = await _context.SaveChangesAsync();
         }
     }
 
@@ -109,7 +107,7 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     public async Task DeletePluginAssociation(int id)
     {
         _context.ProjectPluginsRelation.RemoveRange(_context.ProjectPluginsRelation.Where(p => p.ProjectId == id));
-        await _context.SaveChangesAsync();
+        _ = await _context.SaveChangesAsync();
     }
 
     /// <summary>
