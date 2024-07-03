@@ -1,7 +1,7 @@
 namespace ProjectMetadataPlatform.Api.Projects.Models;
 
 /// <summary>
-/// Represents a response to the GetProject API call.
+///     Represents a response to the GetProject API call.
 /// </summary>
 /// <param name="Id">The identification number for the project.</param>
 /// <param name="ProjectName">The name of the project.</param>
@@ -9,4 +9,10 @@ namespace ProjectMetadataPlatform.Api.Projects.Models;
 /// <param name="BusinessUnit">The name of the Business Unit associated with the project.</param>
 /// <param name="TeamNumber">The number of the team working on the project.</param>
 /// <param name="Department">The name of the department associated with the project.</param>
-public record GetProjectResponse(int Id, string ProjectName, string ClientName, string BusinessUnit, int TeamNumber, string Department);
+public record GetProjectResponse(
+    int Id,
+    string ProjectName,
+    string ClientName,
+    string BusinessUnit,
+    int TeamNumber,
+    string Department);
