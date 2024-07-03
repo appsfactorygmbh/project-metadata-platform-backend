@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.Projects;
@@ -31,12 +33,17 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     /// <returns>A task representing the asynchronous operation. When this task completes, it returns a collection of projects.</returns>
     public async Task<IEnumerable<Project>> GetProjectsAsync(string search)
     {
-            return [.. _context.Projects.Where(project => project.ProjectName.Contains(search)
-                                                          || project.ClientName.Contains(search)
-                                                          || project.BusinessUnit.Contains(search)
-                                                          || project.Department.Contains(search)
-            )];
+        var lowerSearch = search.ToLower();
+        return
+        [
+            .. _context.Projects.Where(project => project.ProjectName.ToLower().Contains(lowerSearch)
+                                                  || project.ClientName.ToLower().Contains(lowerSearch)
+                                                  || project.BusinessUnit.ToLower().Contains(lowerSearch)
+                                                  || project.TeamNumber.ToString().Contains(lowerSearch)
+            )
+        ];
     }
+
 
     /// <summary>
     ///     Asynchronously retrieves all projects from the database.
