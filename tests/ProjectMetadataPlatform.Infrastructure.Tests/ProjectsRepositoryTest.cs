@@ -51,4 +51,85 @@ public class ProjectsRepositoryTests : TestsWithDatabase
         Assert.That(project.TeamNumber, Is.EqualTo(42));
         Assert.That(project.Department, Is.EqualTo("Homelandsecurity"));
     }
+
+    [Test]
+    public async Task GetProjectsByBusinessUnitsAsync_ReturnsCorrectProjects()
+    {
+        var businessUnits = new List<string> { "666", "777" };
+        var projects = new List<Project>
+        {
+            new Project
+            {
+                Id = 1,
+                ProjectName = "Heather",
+                BusinessUnit = "666",
+                ClientName = "Metatron",
+                Department = "Mars",
+                TeamNumber = 42
+            },
+            new Project
+            {
+                Id = 2,
+                ProjectName = "James",
+                BusinessUnit = "777",
+                ClientName = "Lucifer",
+                Department = "Venus",
+                TeamNumber = 43
+            },
+            new Project
+            {
+                Id = 3,
+                ProjectName = "Marika",
+                BusinessUnit = "999",
+                ClientName = "Satan",
+                Department = "Earth",
+                TeamNumber = 44
+            },
+        };
+
+        _context.Projects.AddRange(projects);
+        await _context.SaveChangesAsync();
+
+        var result = await _repository.GetProjectsByBusinessUnitsAsync(businessUnits);
+
+        Assert.NotNull(result);
+        Assert.AreEqual(2, result.Count());
+        Assert.IsTrue(result.Any(p => p.BusinessUnit == "666"));
+        Assert.IsTrue(result.Any(p => p.BusinessUnit == "777"));
+    }
+
+    [Test]
+    public async Task GetProjectsByBusinessUnitsAsync_NoMatchingBusinessUnits_ReturnsEmpty()
+    {
+        var businessUnits = new List<string> { "999" };
+        var projects = new List<Project>
+        {
+            new Project
+            {
+                Id = 1,
+                ProjectName = "Heather",
+                BusinessUnit = "666",
+                ClientName = "Metatron",
+                Department = "Mars",
+                TeamNumber = 42
+            },
+            new Project
+            {
+                Id = 2,
+                ProjectName = "James",
+                BusinessUnit = "777",
+                ClientName = "Lucifer",
+                Department = "Venus",
+                TeamNumber = 43
+            },
+        };
+
+        _context.Projects.AddRange(projects);
+        await _context.SaveChangesAsync();
+
+        var result = await _repository.GetProjectsByBusinessUnitsAsync(businessUnits);
+
+        Assert.NotNull(result);
+        Assert.IsEmpty(result);
+    }
 }

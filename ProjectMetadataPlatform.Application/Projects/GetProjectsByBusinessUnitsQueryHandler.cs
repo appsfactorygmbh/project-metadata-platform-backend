@@ -19,11 +19,6 @@ public class GetProjectsByBusinessUnitsQueryHandler : IRequestHandler<GetProject
 
     public async Task<IEnumerable<Project>> Handle(GetProjectsByBusinessUnitsQuery request, CancellationToken cancellationToken)
     {
-        /*
-        if (request.BusinessUnits == null || request.BusinessUnits.Count == 0)
-        {
-            return Enumerable.Empty<Project>();
-        }*/
         return await _projectRepository.GetProjectsByBusinessUnitsAsync(request.BusinessUnits);
     }
 }
