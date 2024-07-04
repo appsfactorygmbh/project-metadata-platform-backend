@@ -12,8 +12,6 @@ namespace ProjectMetadataPlatform.Application.Tests.Plugins;
 [TestFixture]
 public class CreatePluginCommandHandlerTest
 {
-    private CreatePluginCommandHandler _handler;
-    private Mock<IPluginRepository> _mockPluginRepo;
 
     [SetUp]
     public void Setup()
@@ -21,7 +19,9 @@ public class CreatePluginCommandHandlerTest
         _mockPluginRepo = new Mock<IPluginRepository>();
         _handler = new CreatePluginCommandHandler(_mockPluginRepo.Object);
     }
-    
+    private CreatePluginCommandHandler _handler;
+    private Mock<IPluginRepository> _mockPluginRepo;
+
     [Test]
     public async Task CreatePlugin_Test()
     {

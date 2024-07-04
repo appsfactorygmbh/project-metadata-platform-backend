@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace ProjectMetadataPlatform.Api.Plugins.Models;
 
 /// <summary>
-/// Request for creating a new plugin.
+///     Request for creating a new plugin.
 /// </summary>
 /// <param name="PluginName">The name of the new plugin.</param>
 /// <param name="IsArchived">A boolean indicating if a plugin is archived/deleted.</param>

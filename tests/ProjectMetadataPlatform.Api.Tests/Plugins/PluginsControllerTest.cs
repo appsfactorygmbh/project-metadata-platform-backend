@@ -7,8 +7,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using NUnit.Framework;
 using Moq;
+using NUnit.Framework;
 using ProjectMetadataPlatform.Api.Plugins;
 using ProjectMetadataPlatform.Api.Plugins.Models;
 using ProjectMetadataPlatform.Application.Plugins;
@@ -191,4 +191,56 @@ public class Tests
             Assert.That(resultObj.Keys, Is.EqualTo(System.Array.Empty<string>()));
         });
     }
+    
+    [Test]
+    public async Task DeleteGlobalPlugin_Test()
+    {
+        var plugin = new Plugin { Id = 37, PluginName = "Three-Body-Problem", IsArchived = true };
+        _mediator.Setup(m => m.Send(It.IsAny<DeleteGlobalPluginCommand>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(plugin);
+            
+        ActionResult<DeleteGlobalPluginResponse> result = await _controller.Delete(37);
+
+            
+        var okResult = result.Result as OkObjectResult;
+        var resultValue = okResult?.Value as DeleteGlobalPluginResponse;
+        
+        Assert.Multiple(() =>
+        {
+            Assert.That(resultValue, Is.Not.Null);
+            Assert.That(resultValue!.IsArchived, Is.EqualTo(true));
+            Assert.That(resultValue!.PluginId, Is.EqualTo(37));
+        });
+    }
+    
+    [Test]
+    public async Task DeleteGlobalPlugin_PluginNotFound_Test()
+    {
+        _mediator.Setup(m => m.Send(It.IsAny<DeleteGlobalPluginCommand>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Plugin)null!);
+            
+        ActionResult<DeleteGlobalPluginResponse> result = await _controller.Delete(37);
+        
+        Assert.That(result.Result, Is.InstanceOf<NotFoundObjectResult>());
+        
+        var notFoundResult = result.Result as NotFoundObjectResult;
+        Assert.That(notFoundResult, Is.Not.Null);
+        Assert.That(notFoundResult.Value, Is.EqualTo("No Plugin with id 37 was found."));
+    }
+    
+    [Test]
+    public async Task DeleteGlobalPlugin_InvalidId_Test()
+    {
+        _mediator.Setup(m => m.Send(It.IsAny<DeleteGlobalPluginCommand>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new ArgumentException());
+            
+        ActionResult<DeleteGlobalPluginResponse> result = await _controller.Delete(0);
+        
+        Assert.That(result.Result, Is.InstanceOf<ObjectResult>());
+        
+        var badRequestResult = result.Result as ObjectResult;
+        Assert.That(badRequestResult, Is.Not.Null);
+        Assert.That(badRequestResult.Value, Is.EqualTo("PluginId can't be 0"));
+    }
+    
 }

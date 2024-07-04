@@ -13,26 +13,26 @@ namespace ProjectMetadataPlatform.Application.Tests.Interfaces;
 [TestFixture]
 public class GetAllProjectsQueryHandlerTest
 {
-    private GetAllProjectsQueryHandler _handler;
-    private Mock<IProjectsRepository> _mockProjectRepo;
     [SetUp]
     public void Setup()
     {
         _mockProjectRepo = new Mock<IProjectsRepository>();
         _handler = new GetAllProjectsQueryHandler(_mockProjectRepo.Object);
     }
+    private GetAllProjectsQueryHandler _handler;
+    private Mock<IProjectsRepository> _mockProjectRepo;
 
     [Test]
     public async Task HandleGetAllProjectsRequest_EmptyResponse_Test()
     {
         _mockProjectRepo.Setup(m => m.GetProjectsAsync()).ReturnsAsync([]);
         var request = new GetAllProjectsQuery("");
-        var result = await _handler.Handle(request, It.IsAny<CancellationToken>());
+        IEnumerable<Project> result = await _handler.Handle(request, It.IsAny<CancellationToken>());
 
         Project[] resultArray = result as Project[] ?? result.ToArray();
         Assert.That(resultArray, Is.Not.Null);
         Assert.That(resultArray, Is.InstanceOf<IEnumerable<Project>>());
-        
+
         Assert.That(resultArray, Has.Length.EqualTo(0));
     }
 
@@ -54,15 +54,15 @@ public class GetAllProjectsQueryHandlerTest
         _mockProjectRepo.Setup(m => m.GetProjectsAsync()).ReturnsAsync(projectsResponseContent);
         var request = new GetAllProjectsQuery("");
         var result = (await _handler.Handle(request, It.IsAny<CancellationToken>())).ToList();
-        
+
         Assert.That(result, Is.Not.Null);
         Assert.That(result, Is.InstanceOf<IEnumerable<Project>>());
 
         Project[] resultArray = result.ToArray();
         Assert.That(resultArray, Has.Length.EqualTo(1));
-        
-        
-        var project = resultArray.First();
+
+
+        Project project = resultArray.First();
         Assert.Multiple(() =>
         {
             Assert.That(project.Id, Is.EqualTo(0));
