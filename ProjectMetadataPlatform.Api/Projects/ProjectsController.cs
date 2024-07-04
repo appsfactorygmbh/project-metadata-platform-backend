@@ -172,35 +172,43 @@ public async Task<ActionResult<IEnumerable<GetProjectResponse>>> SearchProjects(
         return Ok(response);
     }
 
-    [HttpGet("BusinessUnits")]
-    public async Task<ActionResult<IEnumerable<GetProjectsResponse>>> GetByBusinessUnits([FromQuery] List<string>? businessUnits)
+    /// <summary>
+/// Gets all projects with the specified business units.
+/// </summary>
+/// <param name="businessUnits">A list of business units to filter the projects by.</param>
+/// <returns>A list of projects that belong to the specified business units.</returns>
+/// <response code="200">The projects are returned successfully.</response>
+/// <response code="400">The business units parameter is empty.</response>
+/// <response code="500">An internal error occurred.</response>
+[HttpGet("BusinessUnits")]
+public async Task<ActionResult<IEnumerable<GetProjectsResponse>>> GetByBusinessUnits([FromQuery] List<string>? businessUnits)
+{
+    if (businessUnits == null || businessUnits.Count == 0)
     {
-        if (businessUnits == null || businessUnits.Count == 0)
-        {
-            return StatusCode(StatusCodes.Status400BadRequest, "Business units cannot be empty");
-        }
-
-        var query = new GetProjectsByBusinessUnitsQuery(businessUnits);
-        IEnumerable<Project> projects;
-        try
-        {
-            projects = await _mediator.Send(query);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.StackTrace);
-            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-        }
-
-        var response = projects.Select(project => new GetProjectsResponse(
-            project.Id,
-            project.ProjectName,
-            project.ClientName,
-            project.BusinessUnit,
-            project.TeamNumber));
-
-        return Ok(response);
+        return StatusCode(StatusCodes.Status400BadRequest, "Business units cannot be empty");
     }
+
+    var query = new GetProjectsByBusinessUnitsQuery(businessUnits);
+    IEnumerable<Project> projects;
+    try
+    {
+        projects = await _mediator.Send(query);
+    }
+    catch (Exception e)
+    {
+        Console.WriteLine(e.StackTrace);
+        return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+    }
+
+    var response = projects.Select(project => new GetProjectsResponse(
+        project.Id,
+        project.ProjectName,
+        project.ClientName,
+        project.BusinessUnit,
+        project.TeamNumber));
+
+    return Ok(response);
+}
 
 
     /// <summary>

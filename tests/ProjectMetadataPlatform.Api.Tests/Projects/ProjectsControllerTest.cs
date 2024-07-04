@@ -14,6 +14,7 @@ using ProjectMetadataPlatform.Application.Plugins;
 using ProjectMetadataPlatform.Application.Projects;
 using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.Projects;
+using Microsoft.AspNetCore.Http;
 
 namespace ProjectMetadataPlatform.Api.Tests.Projects;
 
@@ -215,6 +216,101 @@ public class ProjectsControllerTest
             Assert.That(resultObj.PluginName, Is.EqualTo("plugin 1"));
             Assert.That(resultObj.DisplayName, Is.EqualTo("plugin 1"));
         });
+    }
 
+    [Test]
+    public async Task GetByBusinessUnitsTest_Match()
+    {
+        var businessUnits = new List<string> { "666" };
+        var projects = new List<Project>
+        {
+            new Project
+            {
+                Id = 1,
+                ProjectName = "Heather",
+                BusinessUnit = "666",
+                ClientName = "Metatron",
+                Department = "Mars",
+                TeamNumber = 42
+            },
+            new Project
+            {
+                Id = 2,
+                ProjectName = "James",
+                BusinessUnit = "777",
+                ClientName = "Lucifer",
+                Department = "Venus",
+                TeamNumber = 43
+            }
+        };
+
+        _mediator.Setup(m => m.Send(It.IsAny<GetProjectsByBusinessUnitsQuery>(), CancellationToken.None))
+            .ReturnsAsync(projects.Where(p => businessUnits.Contains(p.BusinessUnit)));
+
+        var result = await _controller.GetByBusinessUnits(businessUnits);
+
+        Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
+        var okResult = result.Result as OkObjectResult;
+
+        Assert.That(okResult.StatusCode, Is.EqualTo(StatusCodes.Status200OK));
+
+        var response = okResult.Value as IEnumerable<GetProjectsResponse>;
+        Assert.Multiple((() => {
+            Assert.That(response, Is.Not.Null);
+            Assert.That(response.Count(), Is.EqualTo(1));
+            Assert.That(response.First().BusinessUnit, Is.EqualTo("666"));
+        }));
+    }
+
+    [Test]
+    public async Task GetByBusinessUnits_EmptyInput()
+    {
+        List<string>? businessUnits = null;
+
+        var result = await _controller.GetByBusinessUnits(businessUnits);
+
+        Assert.That(result.Result, Is.InstanceOf<ObjectResult>());
+        var okResult = result.Result as ObjectResult;
+        Assert.Multiple((() => {
+            Assert.That(okResult.StatusCode, Is.EqualTo(StatusCodes.Status400BadRequest));
+            Assert.That(okResult.Value, Is.EqualTo("Business units cannot be empty"));
+        }));
+    }
+
+    [Test]
+    public async Task GetByBusinessUnits_EmptyInputList()
+    {
+        List<string>? businessUnits = new List<string>();
+
+        var result = await _controller.GetByBusinessUnits(businessUnits);
+
+        Assert.That(result.Result, Is.InstanceOf<ObjectResult>());
+        var okResult = result.Result as ObjectResult;
+        Assert.Multiple((() => {
+            Assert.That(okResult.StatusCode, Is.EqualTo(StatusCodes.Status400BadRequest));
+            Assert.That(okResult.Value, Is.EqualTo("Business units cannot be empty"));
+        }));
+    }
+
+    [Test]
+    public async Task GetByBusinessUnits_NoMatch()
+    {
+        var businessUnits = new List<string> { "666", "777" };
+
+        _mediator.Setup(m => m.Send(It.IsAny<GetProjectsByBusinessUnitsQuery>(), CancellationToken.None))
+            .ReturnsAsync(Enumerable.Empty<Project>());
+
+        var result = await _controller.GetByBusinessUnits(businessUnits);
+
+        Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
+        var okResult = result.Result as OkObjectResult;
+
+        Assert.That(okResult.StatusCode, Is.EqualTo(StatusCodes.Status200OK));
+
+        var response = okResult.Value as IEnumerable<GetProjectsResponse>;
+        Assert.Multiple((() => {
+            Assert.That(response, Is.Not.Null);
+            Assert.That(response.Count(), Is.EqualTo(0));
+        }));
     }
 }

@@ -70,6 +70,11 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
         return await GetEverything().ToListAsync();
     }
 
+        /// <summary>
+    /// Asynchronously retrieves all projects from the database that belong to the specified business units.
+    /// </summary>
+    /// <param name="businessUnits">A list of business units to filter the projects by.</param>
+    /// <returns>A task representing the asynchronous operation. Returns a collection of projects that belong to the specified business units.</returns>
     public async Task<IEnumerable<Project>> GetProjectsByBusinessUnitsAsync(List<string> businessUnits)
     {
         return await _context.Projects
