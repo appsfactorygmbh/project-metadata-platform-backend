@@ -42,6 +42,25 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
 
     }
 
+
+    /// <summary>
+    ///     Asynchronously retrieves all projects with names matching a specific search pattern from the database.
+    /// </summary>
+    /// <param name="search">Search pattern to look for in ProjectName.</param>
+    /// <returns>
+    ///     A task representing the asynchronous operation. When this task completes, it returns a collection of projects
+    ///     whose names contain the search pattern.
+    /// </returns>
+    public async Task<IEnumerable<Project>> GetProjectsProjectNameAsync(string search)
+    {
+        var lowerSearch = search.ToLower();
+        return
+        [
+            .. _context.Projects.Where(project => project.ProjectName.ToLower().Contains(lowerSearch))
+        ];
+
+    }
+
     /// <summary>
     ///     Asynchronously retrieves all projects from the database.
     /// </summary>

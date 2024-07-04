@@ -61,7 +61,7 @@ public class ProjectsController : ControllerBase
 
         return Ok(response);
     }
-    
+
 
     /// <summary>
     ///     Gets the project with the given id.
@@ -101,7 +101,49 @@ public class ProjectsController : ControllerBase
 
         return Ok(response);
     }
-    
+
+    /// <summary>
+///     Gets projects with an optional search string for the project name.
+///     If the search string is set, only projects whose names contain the search string are returned.
+/// </summary>
+/// <param name="searchString">The optional search string for the project name.</param>
+/// <returns>The list of projects.</returns>
+/// <response code="200">The projects are returned successfully.</response>
+/// <response code="404">No projects found matching the search criteria.</response>
+/// <response code="500">An internal error occurred.</response>
+[HttpGet("search")]
+public async Task<ActionResult<IEnumerable<GetProjectResponse>>> SearchProjects([FromQuery] string? searchString)
+{
+    var query = new SearchProjectsQuery(searchString);
+    IEnumerable<Project> projects;
+    try
+    {
+        projects = await _mediator.Send(query);
+    }
+    catch (Exception e)
+    {
+        Console.Write(e.StackTrace);
+        return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+    }
+
+    if (projects == null || !projects.Any())
+    {
+        return NotFound();
+    }
+
+    var response = projects.Select(project => new GetProjectResponse(
+        project.Id,
+        project.ProjectName,
+        project.ClientName,
+        project.BusinessUnit,
+        project.TeamNumber,
+        project.Department));
+
+    return Ok(response);
+}
+
+
+
     /// <summary>
     /// Gets all the plugins of the project with the given id.
     /// </summary>
