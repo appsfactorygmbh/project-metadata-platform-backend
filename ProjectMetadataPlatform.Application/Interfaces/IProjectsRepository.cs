@@ -29,6 +29,12 @@ public interface IProjectsRepository
     Task<Project?> GetProjectAsync(int id);
 
     /// <summary>
+    ///     Returns Projects based on ProjectName search string.
+    /// </summary>
+    /// <returns>One project or null.</returns>
+    Task<IEnumerable<Project>?> GetProjectsProjectNameAsync(string search);
+
+    /// <summary>
     ///     Saves a project to the database and returns it.
     /// </summary>
     /// <param name="project"></param>
