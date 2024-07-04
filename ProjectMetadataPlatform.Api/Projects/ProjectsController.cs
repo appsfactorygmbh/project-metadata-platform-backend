@@ -172,6 +172,37 @@ public async Task<ActionResult<IEnumerable<GetProjectResponse>>> SearchProjects(
         return Ok(response);
     }
 
+    [HttpGet("BusinessUnits")]
+    public async Task<ActionResult<IEnumerable<GetProjectsResponse>>> GetByBusinessUnits([FromQuery] List<string>? businessUnits)
+    {
+        if (businessUnits == null || businessUnits.Count == 0)
+        {
+            return StatusCode(StatusCodes.Status400BadRequest, "Business units cannot be empty");
+        }
+
+        var query = new GetProjectsByBusinessUnitsQuery(businessUnits);
+        IEnumerable<Project> projects;
+        try
+        {
+            projects = await _mediator.Send(query);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.StackTrace);
+            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+        }
+
+        var response = projects.Select(project => new GetProjectsResponse(
+            project.Id,
+            project.ProjectName,
+            project.ClientName,
+            project.BusinessUnit,
+            project.TeamNumber));
+
+        return Ok(response);
+    }
+
+
     /// <summary>
     ///     Creates a new project.
     /// </summary>

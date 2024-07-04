@@ -22,6 +22,8 @@ public interface IProjectsRepository
     /// <returns>An Enumeration of projects.</returns>
     Task<IEnumerable<Project>> GetProjectsAsync();
 
+    Task<IEnumerable<Project>> GetProjectsByBusinessUnitsAsync(List<string> businessUnits);
+
     /// <summary>
     ///     Returns a project.
     /// </summary>

@@ -4,7 +4,8 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Domain.Projects;
 using ProjectMetadataPlatform.Infrastructure.DataAccess;
-using ProjectMetadataPlatform.Infrastructure.Tests;
+
+namespace ProjectMetadataPlatform.Infrastructure.Tests;
 
 [TestFixture]
 public class ProjectsRepositoryTests : TestsWithDatabase

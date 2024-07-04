@@ -70,6 +70,13 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
         return await GetEverything().ToListAsync();
     }
 
+    public async Task<IEnumerable<Project>> GetProjectsByBusinessUnitsAsync(List<string> businessUnits)
+    {
+        return await _context.Projects
+            .Where(p => businessUnits.Contains(p.BusinessUnit))
+            .ToListAsync();
+    }
+
 
     /// <summary>
     ///     Asynchronously retrieves a project from the database by its identifier.
