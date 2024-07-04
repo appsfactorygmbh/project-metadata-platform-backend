@@ -35,5 +35,11 @@ public interface IProjectsRepository
     /// <returns></returns>
     Task AddOrUpdate(Project project);
 
+    /// <summary>
+    /// Asynchronously retrieves a collection of projects filtered by the specified business unit and/or team number.
+    /// </summary>
+    /// <param name="BusinessUnit">The business unit to filter projects by. Can be null to ignore this filter.</param>
+    /// <param name="TeamNumber">The team number to filter projects by. Can be null to ignore this filter.</param>
+    /// <returns>An Enumeration of projects</returns>
     Task<IEnumerable<Project>> GetBusinessUnitAndTeamnumberAsync(string? BusinessUnit, int? TeamNumber);
 }
