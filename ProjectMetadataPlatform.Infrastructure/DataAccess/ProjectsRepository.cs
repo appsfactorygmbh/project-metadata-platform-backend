@@ -82,8 +82,8 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
         await _context.SaveChangesAsync();
 
     }
-    public Task<IEnumerable<Project>> GetBusinessUnitAndTeamnumberAsync(string? BusinessUnit, int? Teamnumber)
+    public Task<IEnumerable<Project>> GetBusinessUnitAndTeamnumberAsync(string? BusinessUnit, int? TeamNumber)
     {
-        throw new System.NotImplementedException();
+
     }
 }
