@@ -34,4 +34,6 @@ public interface IProjectsRepository
     /// <param name="project"></param>
     /// <returns></returns>
     Task AddOrUpdate(Project project);
+
+    Task<IEnumerable<Project>> GetBusinessUnitAndTeamnumberAsync(string? BusinessUnit, int? Teamnumber);
 }
