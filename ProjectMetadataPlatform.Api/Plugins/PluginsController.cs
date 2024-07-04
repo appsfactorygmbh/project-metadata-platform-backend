@@ -103,7 +103,9 @@ public class PluginsController : ControllerBase
     /// <response code="404">No Plugin with the requested id was found.</response>
     /// <response code="500">An internal error occurred.</response>
     [HttpPatch("{pluginId:int}")]
-    public async Task<ActionResult<GetGlobalPluginResponse>> Patch(int pluginId, [FromBody] PatchGlobalPluginRequest request)
+    public async Task<ActionResult<GetGlobalPluginResponse>> Patch(
+        int pluginId,
+        [FromBody] PatchGlobalPluginRequest request)
     {
         var command = new PatchGlobalPluginCommand(pluginId, request.PluginName, request.IsArchived);
 
@@ -157,6 +159,48 @@ public class PluginsController : ControllerBase
             plugin.Id,
             plugin.IsArchived,
             keys));
+
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Deletes a plugin by its ID.
+    /// </summary>
+    /// <param name="pluginId">The unique identifier of the plugin to delete.</param>
+    /// <returns>
+    /// A <see cref="Task"/> representing the asynchronous operation, with an <see cref="ActionResult"/> that
+    /// contains a <see cref="DeleteGlobalPluginResponse"/> on success, or an error message on failure.
+    /// </returns>
+    /// <response code="200">OK if the plugin was successfully deleted.</response>
+    /// <response code="400">Bad Request if the pluginId is 0, indicating an invalid ID.</response>
+    /// <response code="404">Not Found if no plugin with the specified ID was found.</response>
+    /// <response code="500">Internal Server Error if an unexpected exception occurs.</response>
+    [HttpDelete("{pluginId:int}")]
+    public async Task<ActionResult<DeleteGlobalPluginResponse>> Delete(int pluginId)
+    {
+        if (pluginId <= 0)
+        {
+            return StatusCode(StatusCodes.Status400BadRequest, "PluginId can't be 0");
+        }
+        var command = new DeleteGlobalPluginCommand(pluginId);
+
+        try
+        {
+            var plugin = await _mediator.Send(command);
+            if (plugin == null)
+            {
+                return NotFound("No Plugin with id " + pluginId + " was found.");
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            Console.WriteLine(e.StackTrace);
+
+            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+        }
+
+        var response = new DeleteGlobalPluginResponse(pluginId, true);
 
         return Ok(response);
     }
