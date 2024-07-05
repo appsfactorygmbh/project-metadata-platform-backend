@@ -10,21 +10,21 @@ using ProjectMetadataPlatform.Domain.Projects;
 
 namespace ProjectMetadataPlatform.Application.Tests.Interfaces;
 
-public class GetProjectsByBusinessUnitsQueryHandlerTest
+public class GetProjectsByTeamNumbersQueryHandlerTest
 {
     [SetUp]
     public void Setup()
     {
         _mockProjectRepo = new Mock<IProjectsRepository>();
-        _handler = new GetProjectsByBusinessUnitsQueryHandler(_mockProjectRepo.Object);
+        _handler = new GetProjectsByTeamNumbersQueryHandler(_mockProjectRepo.Object);
     }
-    private GetProjectsByBusinessUnitsQueryHandler _handler;
+    private GetProjectsByTeamNumbersQueryHandler _handler;
     private Mock<IProjectsRepository> _mockProjectRepo;
 
     [Test]
-    public async Task GetProjectsByBusinessUnitsTest_Match()
+    public async Task GetProjectsByTeamNumbersTest_Match()
     {
-        var businessUnits = new List<string> { "666", "777" };
+        var teamNumbers = new List<int> { 42, 43 };
         var projects = new List<Project>
         {
             new Project
@@ -56,30 +56,30 @@ public class GetProjectsByBusinessUnitsQueryHandlerTest
             },
         };
 
-        _mockProjectRepo.Setup(repo => repo.GetProjectsByBusinessUnitsAsync(businessUnits))
-            .ReturnsAsync(projects.Where(p => businessUnits.Contains(p.BusinessUnit)));
+        _mockProjectRepo.Setup(repo => repo.GetProjectsByTeamNumbersAsync(teamNumbers))
+            .ReturnsAsync(projects.Where(p => teamNumbers.Contains(p.TeamNumber)));
 
-        var request = new GetProjectsByBusinessUnitsQuery(businessUnits);
+        var request = new GetProjectsByTeamNumbersQuery(teamNumbers);
 
         var result = await _handler.Handle(request, CancellationToken.None);
 
         Assert.Multiple((() => {
             Assert.That(result, Is.Not.Null);
             Assert.That(result.Count(), Is.EqualTo(2));
-            Assert.That(result.Any(p => p.BusinessUnit == "666"), Is.True);
-            Assert.That(result.Any(p => p.BusinessUnit == "777"), Is.True);
+            Assert.That(result.Any(p => p.TeamNumber == 42), Is.True);
+            Assert.That(result.Any(p => p.TeamNumber == 43), Is.True);
         }));
     }
 
     [Test]
-    public async Task GetProjectsByBusinessUnitsTest_NoMatch()
+    public async Task GetProjectsByTeamNumbersTest_NoMatch()
     {
-        var businessUnits = new List<string> { "666", "777" };
+        var teamNumbers = new List<int> { 42, 43 };
 
-        _mockProjectRepo.Setup(repo => repo.GetProjectsByBusinessUnitsAsync(businessUnits))
+        _mockProjectRepo.Setup(repo => repo.GetProjectsByTeamNumbersAsync(teamNumbers))
             .ReturnsAsync(Enumerable.Empty<Project>());
 
-        var request = new GetProjectsByBusinessUnitsQuery(businessUnits);
+        var request = new GetProjectsByTeamNumbersQuery(teamNumbers);
 
         var result = await _handler.Handle(request, CancellationToken.None);
 

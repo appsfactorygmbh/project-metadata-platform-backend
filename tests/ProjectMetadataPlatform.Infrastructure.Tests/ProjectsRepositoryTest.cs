@@ -92,10 +92,12 @@ public class ProjectsRepositoryTests : TestsWithDatabase
 
         var result = await _repository.GetProjectsByBusinessUnitsAsync(businessUnits);
 
-        Assert.NotNull(result);
-        Assert.AreEqual(2, result.Count());
-        Assert.IsTrue(result.Any(p => p.BusinessUnit == "666"));
-        Assert.IsTrue(result.Any(p => p.BusinessUnit == "777"));
+        Assert.Multiple((() => {
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Count(), Is.EqualTo(2));
+            Assert.That(result.Any(p => p.BusinessUnit == "666"), Is.True);
+            Assert.That(result.Any(p => p.BusinessUnit == "777"), Is.True);
+        }));
     }
 
     [Test]
@@ -129,7 +131,90 @@ public class ProjectsRepositoryTests : TestsWithDatabase
 
         var result = await _repository.GetProjectsByBusinessUnitsAsync(businessUnits);
 
-        Assert.NotNull(result);
-        Assert.IsEmpty(result);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result, Is.Empty);
+    }
+
+    [Test]
+    public async Task GetProjectsByTeamNumbersAsync_ReturnsCorrectProjects()
+    {
+        var teamNumbers = new List<int> { 42, 43 };
+        var projects = new List<Project>
+        {
+            new Project
+            {
+                Id = 1,
+                ProjectName = "Heather",
+                BusinessUnit = "666",
+                ClientName = "Metatron",
+                Department = "Mars",
+                TeamNumber = 42
+            },
+            new Project
+            {
+                Id = 2,
+                ProjectName = "James",
+                BusinessUnit = "777",
+                ClientName = "Lucifer",
+                Department = "Venus",
+                TeamNumber = 43
+            },
+            new Project
+            {
+                Id = 3,
+                ProjectName = "Marika",
+                BusinessUnit = "999",
+                ClientName = "Satan",
+                Department = "Earth",
+                TeamNumber = 44
+            },
+        };
+
+        _context.Projects.AddRange(projects);
+        await _context.SaveChangesAsync();
+
+        var result = await _repository.GetProjectsByTeamNumbersAsync(teamNumbers);
+
+        Assert.Multiple((() => {
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Count(), Is.EqualTo(2));
+            Assert.That(result.Any(p => p.TeamNumber == 42), Is.True);
+            Assert.That(result.Any(p => p.TeamNumber == 43), Is.True);
+        }));
+    }
+
+    [Test]
+    public async Task GetProjectsByTeamNumbersAsync_NoMatchingTeamNumbers_ReturnsEmpty()
+    {
+        var teamNumbers = new List<int> { 44 };
+        var projects = new List<Project>
+        {
+            new Project
+            {
+                Id = 1,
+                ProjectName = "Heather",
+                BusinessUnit = "666",
+                ClientName = "Metatron",
+                Department = "Mars",
+                TeamNumber = 42
+            },
+            new Project
+            {
+                Id = 2,
+                ProjectName = "James",
+                BusinessUnit = "777",
+                ClientName = "Lucifer",
+                Department = "Venus",
+                TeamNumber = 43
+            },
+        };
+
+        _context.Projects.AddRange(projects);
+        await _context.SaveChangesAsync();
+
+        var result = await _repository.GetProjectsByTeamNumbersAsync(teamNumbers);
+
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result, Is.Empty);
     }
 }
