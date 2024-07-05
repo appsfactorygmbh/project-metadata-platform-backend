@@ -61,7 +61,7 @@ public class ProjectsController : ControllerBase
 
         return Ok(response);
     }
-    
+
 
     /// <summary>
     ///     Gets the project with the given id.
@@ -101,7 +101,7 @@ public class ProjectsController : ControllerBase
 
         return Ok(response);
     }
-    
+
     /// <summary>
     /// Gets all the plugins of the project with the given id.
     /// </summary>
@@ -162,5 +162,31 @@ public class ProjectsController : ControllerBase
             Console.WriteLine(e.StackTrace);
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<GetProjectsResponse>>> GetByFilter(string? businessunit = null, int? teamnumber = null)
+    {
+        var query = new GetBusinessUnitAndTeamNumberQuery(businessunit, teamnumber);
+        IEnumerable<Project> projects;
+
+        try
+        {
+            projects = await _mediator.Send(query);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.StackTrace);
+            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+        }
+
+        IEnumerable<GetProjectsResponse> response = projects.Select(project => new GetProjectsResponse(
+            project.Id,
+            project.ProjectName,
+            project.ClientName,
+            project.BusinessUnit,
+            project.TeamNumber));
+
+        return Ok(response);
     }
 }

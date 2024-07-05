@@ -41,5 +41,5 @@ public interface IProjectsRepository
     /// <param name="BusinessUnit">The business unit to filter projects by. Can be null to ignore this filter.</param>
     /// <param name="TeamNumber">The team number to filter projects by. Can be null to ignore this filter.</param>
     /// <returns>An Enumeration of projects</returns>
-    Task<IEnumerable<Project>> GetBusinessUnitAndTeamnumberAsync(string? BusinessUnit, int? TeamNumber);
+    Task<IEnumerable<Project>> GetBusinessUnitAndTeamNumberAsync(string? BusinessUnit, int? TeamNumber);
 }

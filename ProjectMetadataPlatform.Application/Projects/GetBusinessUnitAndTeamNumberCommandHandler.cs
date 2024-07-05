@@ -11,28 +11,28 @@ namespace ProjectMetadataPlatform.Application.Projects;
 /// Handles the query to retrieve projects filtered by business unit and/or team number.
 /// </summary>
 
-public class GetBusinessUnitAndTeamnumberCommandHandler : IRequestHandler<GetBusinessUnitAndTeamnumberQuery, IEnumerable<Project>>
+public class GetBusinessUnitAndTeamNumberCommandHandler : IRequestHandler<GetBusinessUnitAndTeamNumberQuery, IEnumerable<Project>>
 {
     private readonly IProjectsRepository _projectRepository; // Repository interface for accessing projects data.
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="GetBusinessUnitAndTeamnumberCommandHandler"/> class.
+    /// Initializes a new instance of the <see cref="GetBusinessUnitAndTeamNumberCommandHandler"/> class.
     /// </summary>
     /// <param name="projectsRepository">The projects repository.</param>
-    public GetBusinessUnitAndTeamnumberCommandHandler(IProjectsRepository projectsRepository)
+    public GetBusinessUnitAndTeamNumberCommandHandler(IProjectsRepository projectsRepository)
     {
         _projectRepository = projectsRepository;
     }
 
     /// <summary>
-    /// Handles the <see cref="GetBusinessUnitAndTeamnumberQuery"/> request.
+    /// Handles the <see cref="GetBusinessUnitAndTeamNumberQuery"/> request.
     /// </summary>
     /// <param name="request">The query request containing filter criteria.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains a collection of projects that match the specified filters.</returns>
-    public Task<IEnumerable<Project>> Handle(GetBusinessUnitAndTeamnumberQuery request, CancellationToken cancellationToken)
+    public Task<IEnumerable<Project>> Handle(GetBusinessUnitAndTeamNumberQuery request, CancellationToken cancellationToken)
     {
-        return _projectRepository.GetBusinessUnitAndTeamnumberAsync(request.BusinessUnit, request.TeamNumber);
+        return _projectRepository.GetBusinessUnitAndTeamNumberAsync(request.BusinessUnit, request.TeamNumber);
     }
 
 }

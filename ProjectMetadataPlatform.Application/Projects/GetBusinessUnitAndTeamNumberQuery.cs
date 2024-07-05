@@ -10,4 +10,4 @@ namespace ProjectMetadataPlatform.Application.Projects;
 /// <param name="BusinessUnit">The business unit to filter projects by. If null, the filter is ignored.</param>
 /// <param name="TeamNumber">The team number to filter projects by. If null, the filter is ignored.</param>
 /// <returns>A collection of projects that match the specified filters.</returns>
-public record GetBusinessUnitAndTeamnumberQuery(string? BusinessUnit = null, int? TeamNumber = null) : IRequest<IEnumerable<Project>>;
+public record GetBusinessUnitAndTeamNumberQuery(string? BusinessUnit = null, int? TeamNumber = null) : IRequest<IEnumerable<Project>>;
