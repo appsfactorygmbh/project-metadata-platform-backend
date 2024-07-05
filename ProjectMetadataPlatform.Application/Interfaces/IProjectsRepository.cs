@@ -22,12 +22,19 @@ public interface IProjectsRepository
     /// <returns>An Enumeration of projects.</returns>
     Task<IEnumerable<Project>> GetProjectsAsync();
 
-    /// <summary>
-///     Returns a collection of projects that belong to the specified business units.
-/// </summary>
-/// <param name="businessUnits">A list of business units to filter the projects by.</param>
-/// <returns>An Enumeration of projects that belong to the specified business units.</returns>
-Task<IEnumerable<Project>> GetProjectsByBusinessUnitsAsync(List<string> businessUnits);
+        /// <summary>
+    ///     Returns a collection of projects that belong to the specified business units.
+    /// </summary>
+    /// <param name="businessUnits">A list of business units to filter the projects by.</param>
+    /// <returns>An Enumeration of projects that belong to the specified business units.</returns>
+    Task<IEnumerable<Project>> GetProjectsByBusinessUnitsAsync(List<string> businessUnits);
+
+        /// <summary>
+    /// Returns a collection of projects that belong to the specified team numbers.
+    /// </summary>
+    /// <param name="teamNumbers">A list of team numbers to filter the projects by.</param>
+    /// <returns>An Enumeration of projects that belong to the specified team numbers.</returns>
+    Task<IEnumerable<Project>> GetProjectsByTeamNumbersAsync(List<int> teamNumbers);
 
     /// <summary>
     ///     Returns a project.

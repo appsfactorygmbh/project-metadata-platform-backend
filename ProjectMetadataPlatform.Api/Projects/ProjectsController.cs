@@ -172,43 +172,81 @@ public async Task<ActionResult<IEnumerable<GetProjectResponse>>> SearchProjects(
         return Ok(response);
     }
 
-    /// <summary>
-/// Gets all projects with the specified business units.
-/// </summary>
-/// <param name="businessUnits">A list of business units to filter the projects by.</param>
-/// <returns>A list of projects that belong to the specified business units.</returns>
-/// <response code="200">The projects are returned successfully.</response>
-/// <response code="400">The business units parameter is empty.</response>
-/// <response code="500">An internal error occurred.</response>
-[HttpGet("BusinessUnits")]
-public async Task<ActionResult<IEnumerable<GetProjectsResponse>>> GetByBusinessUnits([FromQuery] List<string>? businessUnits)
-{
-    if (businessUnits == null || businessUnits.Count == 0)
+        /// <summary>
+    /// Gets all projects with the specified business units.
+    /// </summary>
+    /// <param name="businessUnits">A list of business units to filter the projects by.</param>
+    /// <returns>A list of projects that belong to the specified business units.</returns>
+    /// <response code="200">The projects are returned successfully.</response>
+    /// <response code="400">The business units parameter is empty.</response>
+    /// <response code="500">An internal error occurred.</response>
+    [HttpGet("BusinessUnits")]
+    public async Task<ActionResult<IEnumerable<GetProjectsResponse>>> GetByBusinessUnits([FromQuery] List<string>? businessUnits)
     {
-        return StatusCode(StatusCodes.Status400BadRequest, "Business units cannot be empty");
+        if (businessUnits == null || businessUnits.Count == 0)
+        {
+            return StatusCode(StatusCodes.Status400BadRequest, "Business units cannot be empty");
+        }
+
+        var query = new GetProjectsByBusinessUnitsQuery(businessUnits);
+        IEnumerable<Project> projects;
+        try
+        {
+            projects = await _mediator.Send(query);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.StackTrace);
+            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+        }
+
+        var response = projects.Select(project => new GetProjectsResponse(
+            project.Id,
+            project.ProjectName,
+            project.ClientName,
+            project.BusinessUnit,
+            project.TeamNumber));
+
+        return Ok(response);
     }
 
-    var query = new GetProjectsByBusinessUnitsQuery(businessUnits);
-    IEnumerable<Project> projects;
-    try
+        /// <summary>
+    /// Gets all projects with the specified team numbers.
+    /// </summary>
+    /// <param name="teamNumbers">A list of team numbers to filter the projects by.</param>
+    /// <returns>A list of projects that belong to the specified team numbers.</returns>
+    /// <response code="200">The projects are returned successfully.</response>
+    /// <response code="400">The team numbers parameter is empty.</response>
+    /// <response code="500">An internal error occurred.</response>
+    [HttpGet("TeamNumber")]
+    public async Task<ActionResult<IEnumerable<GetProjectsResponse>>> GetByTeamNumbers([FromQuery] List<int>? teamNumbers)
     {
-        projects = await _mediator.Send(query);
-    }
-    catch (Exception e)
-    {
-        Console.WriteLine(e.StackTrace);
-        return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-    }
+        if (teamNumbers == null || teamNumbers.Count == 0)
+        {
+            return StatusCode(StatusCodes.Status400BadRequest, "Team numbers cannot be empty");
+        }
 
-    var response = projects.Select(project => new GetProjectsResponse(
-        project.Id,
-        project.ProjectName,
-        project.ClientName,
-        project.BusinessUnit,
-        project.TeamNumber));
+        var query = new GetProjectsByTeamNumbersQuery(teamNumbers);
+        IEnumerable<Project> projects;
+        try
+        {
+            projects = await _mediator.Send(query);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.StackTrace);
+            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+        }
 
-    return Ok(response);
-}
+        var response = projects.Select(project => new GetProjectsResponse(
+            project.Id,
+            project.ProjectName,
+            project.ClientName,
+            project.BusinessUnit,
+            project.TeamNumber));
+
+        return Ok(response);
+    }
 
 
     /// <summary>

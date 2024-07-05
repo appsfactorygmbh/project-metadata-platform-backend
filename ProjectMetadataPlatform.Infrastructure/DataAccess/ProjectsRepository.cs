@@ -82,6 +82,17 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
             .ToListAsync();
     }
 
+        /// <summary>
+    /// Asynchronously retrieves all projects from the database that belong to the specified team numbers.
+    /// </summary>
+    /// <param name="teamNumbers">A list of team numbers to filter the projects by.</param>
+    /// <returns>A task representing the asynchronous operation. Returns a collection of projects that belong to the specified team numbers.</returns>
+    public async Task<IEnumerable<Project>> GetProjectsByTeamNumbersAsync(List<int> teamNumbers)
+    {
+        return await _context.Projects
+            .Where(p => teamNumbers.Contains(p.TeamNumber))
+            .ToListAsync();
+    }
 
     /// <summary>
     ///     Asynchronously retrieves a project from the database by its identifier.
