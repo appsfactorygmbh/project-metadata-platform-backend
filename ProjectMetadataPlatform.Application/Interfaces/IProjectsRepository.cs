@@ -17,12 +17,19 @@ public interface IProjectsRepository
     Task<IEnumerable<Project>> GetProjectsAsync(string search);
 
     /// <summary>
+    ///     Returns Projects based on ClientName search string.
+    /// </summary>
+    /// <param name="search"> Search String for ClientName</param>
+    /// <returns>List of projects (may be empty)</returns>
+    Task<IEnumerable<Project>?> GetProjectsClientNameAsync(string search);
+
+    /// <summary>
     ///     Returns a collection of all projects.
     /// </summary>
     /// <returns>An Enumeration of projects.</returns>
     Task<IEnumerable<Project>> GetProjectsAsync();
 
-        /// <summary>
+    /// <summary>
     ///     Returns a collection of projects that belong to the specified business units.
     /// </summary>
     /// <param name="businessUnits">A list of business units to filter the projects by.</param>
