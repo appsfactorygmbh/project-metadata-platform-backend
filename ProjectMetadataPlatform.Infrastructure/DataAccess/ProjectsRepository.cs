@@ -77,7 +77,7 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
             .. _context.Projects.Where(project => project.ClientName.ToLower().Contains(lowerSearch))
         ];
 
-    }-
+    }
 
     /// <summary>
     ///     Asynchronously retrieves all projects from the database.
