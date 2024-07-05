@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -188,5 +189,26 @@ public class ProjectsController : ControllerBase
             project.TeamNumber));
 
         return Ok(response);
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<GetBusinessUnitResponse>>> GetBusinessUnits(string businessunit)
+    {
+        var query = new GetBusinessUnitAndTeamNumberQuery(businessunit);
+        IEnumerable<Project> projects;
+
+        try
+        {
+            projects = await _mediator.Send(query);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.StackTrace);
+            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+        }
+
+        IEnumerable<string> businessunits = projects.Select(project => project.BusinessUnit).Distinct();
+
+        return Ok(businessunits);
     }
 }
