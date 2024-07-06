@@ -38,9 +38,9 @@ public class ProjectsController : ControllerBase
     /// <response code="200">The projects are returned successfully.</response>
     /// <response code="500">An internal error occurred.</response>
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<GetProjectsResponse>>> Get(string search = " ")
+    public async Task<ActionResult<IEnumerable<GetProjectsResponse>>> Get([FromQuery] ProjectFilterRequest request, string search = " ")
     {
-        var query = new GetAllProjectsQuery(search);
+        var query = new GetAllProjectsQuery(request, search);
         IEnumerable<Project> projects;
         try
         {
@@ -61,6 +61,7 @@ public class ProjectsController : ControllerBase
 
         return Ok(response);
     }
+
 
 
     /// <summary>
