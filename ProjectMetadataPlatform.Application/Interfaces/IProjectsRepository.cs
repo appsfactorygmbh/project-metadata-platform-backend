@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using ProjectMetadataPlatform.Application.Projects;
 using ProjectMetadataPlatform.Domain.Projects;
 
 namespace ProjectMetadataPlatform.Application.Interfaces;
@@ -14,7 +15,7 @@ public interface IProjectsRepository
     /// </summary>
     /// <param name="search">Search pattern to look for in ProjectName</param>
     /// <returns>An Enumeration of projects.</returns>
-    Task<IEnumerable<Project>> GetProjectsAsync(string search);
+    Task<IEnumerable<Project>> GetProjectsAsync(GetAllProjectsQuery query);
 
     /// <summary>
     ///     Returns Projects based on ClientName search string.

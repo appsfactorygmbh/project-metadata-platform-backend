@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using ProjectMetadataPlatform.Application.Interfaces;
+using ProjectMetadataPlatform.Application.Projects;
 using ProjectMetadataPlatform.Domain.Projects;
 
 namespace ProjectMetadataPlatform.Infrastructure.DataAccess;
@@ -28,18 +30,57 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     /// ///
     /// <param name="search">Search pattern to look for in ProjectName</param>
     /// <returns>A task representing the asynchronous operation. When this task completes, it returns a collection of projects.</returns>
-    public async Task<IEnumerable<Project>> GetProjectsAsync(string search)
+    public async Task<IEnumerable<Project>> GetProjectsAsync(GetAllProjectsQuery query)
     {
-        var lowerSearch = search.ToLower();
-        return
-        [
-            .. _context.Projects.Where(project => project.ProjectName.ToLower().Contains(lowerSearch)
-                                                  || project.ClientName.ToLower().Contains(lowerSearch)
-                                                  || project.BusinessUnit.ToLower().Contains(lowerSearch)
-                                                  || project.TeamNumber.ToString().Contains(lowerSearch)
-            )
-        ];
+        var filteredQuery = _context.Projects.AsQueryable();
 
+        if(!string.IsNullOrWhiteSpace(query.Search))
+        {
+            var lowerTextSearch = query.Search.ToLower();
+            filteredQuery = filteredQuery.Where(project => project.ProjectName.ToLower().Contains(lowerTextSearch)
+                                                  || project.ClientName.ToLower().Contains(lowerTextSearch)
+                                                  || project.BusinessUnit.ToLower().Contains(lowerTextSearch)
+                                                  || project.TeamNumber.ToString().Contains(lowerTextSearch));
+        }
+
+        if (!string.IsNullOrWhiteSpace(query.request.ProjectName))
+        {
+            string lowerProjectNameSearch = query.request.ProjectName.ToLower();
+            filteredQuery = filteredQuery.Where(project =>
+                project.ProjectName.ToLower().Contains(lowerProjectNameSearch)
+            );
+        }
+
+        if(!string.IsNullOrWhiteSpace(query.request.ClientName))
+        {
+            string lowerClientNameSearch = query.request.ClientName.ToLower();
+            filteredQuery = filteredQuery.Where(project =>
+                project.ClientName.ToLower().Contains(lowerClientNameSearch)
+            );
+        }
+
+        if (query.request.BusinessUnit != null && query.request.BusinessUnit.Count > 0)
+        {
+            foreach (var businessUnit in query.request.BusinessUnit)
+            {
+                string lowerBusinessUnitSearch = businessUnit.ToLower();
+                filteredQuery = filteredQuery.Where(project =>
+                    project.BusinessUnit.Contains(lowerBusinessUnitSearch)
+                );
+            }
+        }
+
+        if (query.request.TeamNumber != null && query.request.TeamNumber.Count > 0)
+        {
+            foreach (var teamNumber in query.request.TeamNumber)
+            {
+                filteredQuery = filteredQuery.Where(project =>
+                    project.TeamNumber == teamNumber
+                );
+            }
+        }
+
+        return await filteredQuery.ToListAsync();
     }
 
 
