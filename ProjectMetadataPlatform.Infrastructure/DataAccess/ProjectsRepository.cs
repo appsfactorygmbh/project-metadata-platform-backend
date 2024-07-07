@@ -42,36 +42,36 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
                                                   || project.TeamNumber.ToString().Contains(lowerTextSearch));
         }
 
-        if (query.request != null)
+        if (query.Request != null)
         {
-            if (!string.IsNullOrWhiteSpace(query.request.ProjectName))
+            if (!string.IsNullOrWhiteSpace(query.Request.ProjectName))
             {
-                string lowerProjectNameSearch = query.request.ProjectName.ToLower();
+                string lowerProjectNameSearch = query.Request.ProjectName.ToLower();
                 filteredQuery = filteredQuery.Where(project =>
                     project.ProjectName.ToLower().Contains(lowerProjectNameSearch)
                 );
             }
 
-            if(!string.IsNullOrWhiteSpace(query.request.ClientName))
+            if(!string.IsNullOrWhiteSpace(query.Request.ClientName))
             {
-                string lowerClientNameSearch = query.request.ClientName.ToLower();
+                string lowerClientNameSearch = query.Request.ClientName.ToLower();
                 filteredQuery = filteredQuery.Where(project =>
                     project.ClientName.ToLower().Contains(lowerClientNameSearch)
                 );
             }
 
-            if (query.request.BusinessUnit != null && query.request.BusinessUnit.Count > 0)
+            if (query.Request.BusinessUnit != null && query.Request.BusinessUnit.Count > 0)
             {
-                var lowerBusinessUnits = query.request.BusinessUnit.Select(bu => bu.ToLower()).ToList();
+                var lowerBusinessUnits = query.Request.BusinessUnit.Select(bu => bu.ToLower()).ToList();
                 filteredQuery = filteredQuery.Where(project =>
                     lowerBusinessUnits.Contains(project.BusinessUnit.ToLower())
                 );
             }
 
-            if (query.request.TeamNumber != null && query.request.TeamNumber.Count > 0)
+            if (query.Request.TeamNumber != null && query.Request.TeamNumber.Count > 0)
             {
                 filteredQuery = filteredQuery.Where(project =>
-                    query.request.TeamNumber.Contains(project.TeamNumber)
+                    query.Request.TeamNumber.Contains(project.TeamNumber)
                 );
             }
         }
