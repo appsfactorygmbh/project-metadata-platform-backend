@@ -153,7 +153,12 @@ public class ProjectsController : ControllerBase
 
             IRequest<int> command = projectId == null
                 ? command = new CreateProjectCommand(project.ProjectName, project.BusinessUnit, project.TeamNumber,
-                    project.Department, project.ClientName)
+                    project.Department, project.ClientName, project.PluginList!.Select(p => new ProjectPlugins
+                    {
+                        PluginId = p.Id,
+                        DisplayName = p.DisplayName,
+                        Url = p.Url
+                    }).ToList())
                 : command = new UpdateProjectCommand(project.ProjectName, project.BusinessUnit, project.TeamNumber,
                     project.Department, project.ClientName, projectId.Value, project.PluginList!.Select(p => new ProjectPlugins
                     {
@@ -175,6 +180,7 @@ public class ProjectsController : ControllerBase
         catch (Exception e)
         {
             Console.WriteLine(e.Message);
+            Console.WriteLine(e.StackTrace);
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
     }

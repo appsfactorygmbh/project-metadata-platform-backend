@@ -12,4 +12,4 @@ namespace ProjectMetadataPlatform.Api.Projects.Models;
 /// <param name="TeamNumber">The number of the team working on the project.</param>
 /// <param name="Department">The name of the department associated with the project.</param>
 /// <param name="PluginList">An optional list of plugins associated to the project.</param>
-public record CreateProjectRequest(string ProjectName, string BusinessUnit, int TeamNumber, string Department, string ClientName, List<GetPluginResponse>? PluginList = null);
+public record CreateProjectRequest(string ProjectName, string BusinessUnit, int TeamNumber, string Department, string ClientName, List<UpdateProjectPluginRequest>? PluginList = null);

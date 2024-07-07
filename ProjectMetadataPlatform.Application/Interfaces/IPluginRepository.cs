@@ -22,7 +22,7 @@ public interface IPluginRepository
     /// <param name="plugin">The Plugin to save</param>
     /// <returns></returns>
     Task<Plugin> StorePlugin(Plugin plugin);
-    
+
     /// <summary>
     /// Gets a specific Plugin by its id.
     /// </summary>
@@ -35,4 +35,10 @@ public interface IPluginRepository
     /// </summary>
     /// <returns>Collection of all global plugins</returns>
     Task<IEnumerable<Plugin>> GetGlobalPluginsAsync();
+
+    /// <summary>
+    /// Checks if a plugin exists.
+    /// </summary>
+    /// <returns>True, if the plugin with the given id exists</returns>
+    Task<bool> CheckPluginExists(int id);
 }

@@ -11,7 +11,7 @@ public class ProjectPlugins
     ///     The project stored in the relation.
     /// </summary>
     public Project? Project { get; set; }
-   
+
     /// <summary>
     ///     The plugin stored in the relation.
     /// </summary>
@@ -25,7 +25,7 @@ public class ProjectPlugins
     /// <summary>
     ///     The id for a project used as a foreign key for the project.
     /// </summary>
-    public required int ProjectId { get; set; }
+    public int ProjectId { get; set; }
 
     /// <summary>
     ///     The display name for the plugin.

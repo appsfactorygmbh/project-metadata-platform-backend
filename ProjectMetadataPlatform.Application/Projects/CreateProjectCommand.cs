@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using MediatR;
+using ProjectMetadataPlatform.Domain.Plugins;
 
 namespace ProjectMetadataPlatform.Application.Projects;
 
@@ -15,4 +17,5 @@ public record CreateProjectCommand(
     string BusinessUnit,
     int TeamNumber,
     string Department,
-    string ClientName) : IRequest<int>;
+    string ClientName,
+    List<ProjectPlugins> Plugins) : IRequest<int>;

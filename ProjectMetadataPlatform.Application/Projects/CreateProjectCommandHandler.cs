@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -12,13 +13,16 @@ namespace ProjectMetadataPlatform.Application.Projects;
 public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand, int>
 {
     private readonly IProjectsRepository _projectsRepository;
+    private readonly IPluginRepository _pluginRepository;
     /// <summary>
     ///     Creates a new instance of <see cref="CreateProjectCommandHandler" />.
     /// </summary>
     /// <param name="projectsRepository"></param>
-    public CreateProjectCommandHandler(IProjectsRepository projectsRepository)
+    /// <param name="pluginRepository"></param>
+    public CreateProjectCommandHandler(IProjectsRepository projectsRepository, IPluginRepository pluginRepository)
     {
         _projectsRepository = projectsRepository;
+        _pluginRepository = pluginRepository;
     }
     /// <summary>
     ///     Handles the request to create a project.
@@ -28,7 +32,14 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
     /// <returns>Response to the request</returns>
     public async Task<int> Handle(CreateProjectCommand request, CancellationToken cancellationToken)
     {
-        var project = new Project{ProjectName=request.ProjectName, BusinessUnit=request.BusinessUnit, TeamNumber=request.TeamNumber, Department=request.Department, ClientName=request.ClientName};
+        foreach (var plugin in request.Plugins)
+        {
+            if (!(await _pluginRepository.CheckPluginExists(plugin.PluginId)))
+            {
+                throw new InvalidOperationException("The Plugin with this id does not exist: " + plugin.PluginId);
+            }
+        }
+        var project = new Project{ProjectName=request.ProjectName, BusinessUnit=request.BusinessUnit, TeamNumber=request.TeamNumber, Department=request.Department, ClientName=request.ClientName, ProjectPlugins = request.Plugins};
         await _projectsRepository.Add(project);
         return project.Id;
     }

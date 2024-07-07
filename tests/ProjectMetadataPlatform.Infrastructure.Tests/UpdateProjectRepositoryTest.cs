@@ -18,6 +18,7 @@ public class UpdateProjectRepositoryTest : TestsWithDatabase
     {
         _context = DbContext();
         _repository = new ProjectsRepository(_context);
+        ClearData(_context);
     }
 
     [Test]
@@ -49,7 +50,6 @@ public class UpdateProjectRepositoryTest : TestsWithDatabase
         _context.Plugins.Add(examplePlugin);
         _context.Projects.Add(exampleProject);
         await _context.SaveChangesAsync();
-        await _repository.DeletePluginAssociation(exampleProject.Id);
         await _repository.UpdateProject(exampleProject,projectPluginList);
         var projectResult = _context.Projects.FirstOrDefault(p => p.Id == exampleProject.Id);
         Assert.That(projectResult, Is.Not.Null);

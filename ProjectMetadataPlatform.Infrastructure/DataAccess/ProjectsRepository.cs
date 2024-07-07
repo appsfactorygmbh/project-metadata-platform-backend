@@ -85,7 +85,6 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     /// <returns></returns>
     public async Task UpdateProject(Project project,List<ProjectPlugins> plugins)
     {
-        _context.ProjectPluginsRelation.AddRange(plugins);
         if(GetIf(p => p.Id == project.Id).FirstOrDefault() != null)
         {
             var existingProject = await _context.Projects
@@ -96,18 +95,9 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
             existingProject.BusinessUnit = project.BusinessUnit;
             existingProject.TeamNumber = project.TeamNumber;
             existingProject.ClientName = project.ClientName;
+            existingProject.ProjectPlugins = plugins;
             _ = await _context.SaveChangesAsync();
         }
-    }
-
-    /// <summary>
-    /// Deletes all plugins associated with a project.
-    /// </summary>
-    /// <param name="id">The id of the project from which all associated plugins will be deleted</param>
-    public async Task DeletePluginAssociation(int id)
-    {
-        _context.ProjectPluginsRelation.RemoveRange(_context.ProjectPluginsRelation.Where(p => p.ProjectId == id));
-        _ = await _context.SaveChangesAsync();
     }
 
     /// <summary>
@@ -115,9 +105,9 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     /// </summary>
     /// <param name="id"></param>
     /// <returns>True, if the project with the given id exists</returns>
-    public Task<bool> CheckProjectExists(int id)
+    public async Task<bool> CheckProjectExists(int id)
     {
-        return GetIf(p => p.Id == id).AnyAsync();
+        return _context.Projects.Any(project => project.Id == id);
     }
 
 
