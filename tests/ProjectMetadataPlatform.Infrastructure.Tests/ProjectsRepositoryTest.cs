@@ -54,7 +54,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
     }
 
     [Test]
-    public async Task GetProjectByMultipleFiltersAsync_ReturnsCorrectProjects()
+    public async Task GetProjectByMultipleFiltersAndSearchAsync_ReturnsCorrectProjects()
     {
         var filters = new ProjectFilterRequest
         {
@@ -94,7 +94,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
             },
         };
 
-        var query = new GetAllProjectsQuery(filters, null);
+        var query = new GetAllProjectsQuery(filters, "Hea");
 
         await _context.Database.EnsureCreatedAsync();
         _context.Projects.AddRange(projects);
@@ -113,9 +113,52 @@ public class ProjectsRepositoryTests : TestsWithDatabase
     }
 
     [Test]
-    public async Task GetProjectsByBusinessUnitsAsync_ReturnsCorrectProjects()
+    public async Task GetProjectsByFiltersAsync_NoMatchingProjects_ReturnsEmpty()
     {
-        var businessUnits = new List<string> { "666", "777" };
+        var filters = new ProjectFilterRequest
+        {
+            ProjectName = "Heather",
+            ClientName = "Gilgamesch",
+            BusinessUnit = new List<string> { "666", "777" },
+            TeamNumber = new List<int> { 42, 43 }
+        };
+        var projects = new List<Project>
+        {
+            new Project
+            {
+                Id = 1,
+                ProjectName = "Heather",
+                BusinessUnit = "666",
+                ClientName = "Metatron",
+                Department = "Mars",
+                TeamNumber = 42
+            },
+            new Project
+            {
+                Id = 2,
+                ProjectName = "James",
+                BusinessUnit = "777",
+                ClientName = "Lucifer",
+                Department = "Venus",
+                TeamNumber = 43
+            },
+        };
+
+        var query = new GetAllProjectsQuery(filters, null);
+
+        await _context.Database.EnsureCreatedAsync();
+        _context.Projects.AddRange(projects);
+        await _context.SaveChangesAsync();
+
+        var result = await _repository.GetProjectsAsync(query);
+
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result, Is.Empty);
+    }
+
+    [Test]
+    public async Task GetProjectsByFiltersAsync_NoFilters_ReturnsAllProjects()
+    {
         var projects = new List<Project>
         {
             new Project
@@ -147,134 +190,17 @@ public class ProjectsRepositoryTests : TestsWithDatabase
             },
         };
 
+        var query = new GetAllProjectsQuery(null, null);
+
+        await _context.Database.EnsureCreatedAsync();
         _context.Projects.AddRange(projects);
         await _context.SaveChangesAsync();
 
-        var result = await _repository.GetProjectsByBusinessUnitsAsync(businessUnits);
+        var result = await _repository.GetProjectsAsync(query);
 
         Assert.Multiple((() => {
             Assert.That(result, Is.Not.Null);
-            Assert.That(result.Count(), Is.EqualTo(2));
-            Assert.That(result.Any(p => p.BusinessUnit == "666"), Is.True);
-            Assert.That(result.Any(p => p.BusinessUnit == "777"), Is.True);
+            Assert.That(result.Count(), Is.EqualTo(3));
         }));
-    }
-
-    [Test]
-    public async Task GetProjectsByBusinessUnitsAsync_NoMatchingBusinessUnits_ReturnsEmpty()
-    {
-        var businessUnits = new List<string> { "999" };
-        var projects = new List<Project>
-        {
-            new Project
-            {
-                Id = 1,
-                ProjectName = "Heather",
-                BusinessUnit = "666",
-                ClientName = "Metatron",
-                Department = "Mars",
-                TeamNumber = 42
-            },
-            new Project
-            {
-                Id = 2,
-                ProjectName = "James",
-                BusinessUnit = "777",
-                ClientName = "Lucifer",
-                Department = "Venus",
-                TeamNumber = 43
-            },
-        };
-
-        _context.Projects.AddRange(projects);
-        await _context.SaveChangesAsync();
-
-        var result = await _repository.GetProjectsByBusinessUnitsAsync(businessUnits);
-
-        Assert.That(result, Is.Not.Null);
-        Assert.That(result, Is.Empty);
-    }
-
-    [Test]
-    public async Task GetProjectsByTeamNumbersAsync_ReturnsCorrectProjects()
-    {
-        var teamNumbers = new List<int> { 42, 43 };
-        var projects = new List<Project>
-        {
-            new Project
-            {
-                Id = 1,
-                ProjectName = "Heather",
-                BusinessUnit = "666",
-                ClientName = "Metatron",
-                Department = "Mars",
-                TeamNumber = 42
-            },
-            new Project
-            {
-                Id = 2,
-                ProjectName = "James",
-                BusinessUnit = "777",
-                ClientName = "Lucifer",
-                Department = "Venus",
-                TeamNumber = 43
-            },
-            new Project
-            {
-                Id = 3,
-                ProjectName = "Marika",
-                BusinessUnit = "999",
-                ClientName = "Satan",
-                Department = "Earth",
-                TeamNumber = 44
-            },
-        };
-
-        _context.Projects.AddRange(projects);
-        await _context.SaveChangesAsync();
-
-        var result = await _repository.GetProjectsByTeamNumbersAsync(teamNumbers);
-
-        Assert.Multiple((() => {
-            Assert.That(result, Is.Not.Null);
-            Assert.That(result.Count(), Is.EqualTo(2));
-            Assert.That(result.Any(p => p.TeamNumber == 42), Is.True);
-            Assert.That(result.Any(p => p.TeamNumber == 43), Is.True);
-        }));
-    }
-
-    [Test]
-    public async Task GetProjectsByTeamNumbersAsync_NoMatchingTeamNumbers_ReturnsEmpty()
-    {
-        var teamNumbers = new List<int> { 44 };
-        var projects = new List<Project>
-        {
-            new Project
-            {
-                Id = 1,
-                ProjectName = "Heather",
-                BusinessUnit = "666",
-                ClientName = "Metatron",
-                Department = "Mars",
-                TeamNumber = 42
-            },
-            new Project
-            {
-                Id = 2,
-                ProjectName = "James",
-                BusinessUnit = "777",
-                ClientName = "Lucifer",
-                Department = "Venus",
-                TeamNumber = 43
-            },
-        };
-
-        _context.Projects.AddRange(projects);
-        await _context.SaveChangesAsync();
-
-        var result = await _repository.GetProjectsByTeamNumbersAsync(teamNumbers);
-
-        Assert.That(result, Is.Not.Null);
-        Assert.That(result, Is.Empty);
     }
 }

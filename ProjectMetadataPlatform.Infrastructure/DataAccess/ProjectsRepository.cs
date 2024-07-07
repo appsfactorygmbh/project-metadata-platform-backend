@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using ProjectMetadataPlatform.Application.Interfaces;
@@ -25,10 +24,10 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     }
 
     /// <summary>
-    ///     Asynchronously retrieves all projects with specific search pattern from the database.
+    ///     Asynchronously retrieves all projects with specific search pattern or filter matches from the database.
     /// </summary>
     /// ///
-    /// <param name="search">Search pattern to look for in ProjectName</param>
+    /// <param name="query">The query containing filters and search pattern.</param>
     /// <returns>A task representing the asynchronous operation. When this task completes, it returns a collection of projects.</returns>
     public async Task<IEnumerable<Project>> GetProjectsAsync(GetAllProjectsQuery query)
     {
@@ -80,43 +79,6 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
         return await filteredQuery.ToListAsync();
     }
 
-
-    /// <summary>
-    ///     Asynchronously retrieves all projects with names matching a specific search pattern from the database.
-    /// </summary>
-    /// <param name="search">Search pattern to look for in ProjectName.</param>
-    /// <returns>
-    ///     A task representing the asynchronous operation. When this task completes, it returns a collection of projects
-    ///     whose names contain the search pattern.
-    /// </returns>
-    public async Task<IEnumerable<Project>> GetProjectsProjectNameAsync(string search)
-    {
-        var lowerSearch = search.ToLower();
-        return
-        [
-            .. _context.Projects.Where(project => project.ProjectName.ToLower().Contains(lowerSearch))
-        ];
-
-    }
-
-    /// <summary>
-    ///    Asynchronously retrieves all projects with client names matching a specific search pattern from the database.
-    /// </summary>
-    /// <param name="search"></param>
-    /// <returns>
-    ///     A task representing the asynchronous operation. When this task completes, it returns a collection of projects
-    ///     whose client names contain the search pattern.
-    /// </returns>
-    public async Task<IEnumerable<Project>> GetProjectsClientNameAsync(string search)
-    {
-        var lowerSearch = search.ToLower();
-        return
-        [
-            .. _context.Projects.Where(project => project.ClientName.ToLower().Contains(lowerSearch))
-        ];
-
-    }
-
     /// <summary>
     ///     Asynchronously retrieves all projects from the database.
     /// </summary>
@@ -124,30 +86,6 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     public async Task<IEnumerable<Project>> GetProjectsAsync()
     {
         return await GetEverything().ToListAsync();
-    }
-
-        /// <summary>
-    /// Asynchronously retrieves all projects from the database that belong to the specified business units.
-    /// </summary>
-    /// <param name="businessUnits">A list of business units to filter the projects by.</param>
-    /// <returns>A task representing the asynchronous operation. Returns a collection of projects that belong to the specified business units.</returns>
-    public async Task<IEnumerable<Project>> GetProjectsByBusinessUnitsAsync(List<string> businessUnits)
-    {
-        return await _context.Projects
-            .Where(p => businessUnits.Contains(p.BusinessUnit))
-            .ToListAsync();
-    }
-
-        /// <summary>
-    /// Asynchronously retrieves all projects from the database that belong to the specified team numbers.
-    /// </summary>
-    /// <param name="teamNumbers">A list of team numbers to filter the projects by.</param>
-    /// <returns>A task representing the asynchronous operation. Returns a collection of projects that belong to the specified team numbers.</returns>
-    public async Task<IEnumerable<Project>> GetProjectsByTeamNumbersAsync(List<int> teamNumbers)
-    {
-        return await _context.Projects
-            .Where(p => teamNumbers.Contains(p.TeamNumber))
-            .ToListAsync();
     }
 
     /// <summary>

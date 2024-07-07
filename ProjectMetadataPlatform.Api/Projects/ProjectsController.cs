@@ -33,8 +33,9 @@ public class ProjectsController : ControllerBase
     /// <summary>
     ///     Gets all projects or all projects that match the given search string.
     /// </summary>
+    /// <param name="request">The collection of filters to search by.</param>
     /// <param name="search">Search string to filter the projects by.</param>
-    /// <returns>All projects or all projects that match the given search string.</returns>
+    /// <returns>All projects or all projects that match the given search string or filters.</returns>
     /// <response code="200">The projects are returned successfully.</response>
     /// <response code="500">An internal error occurred.</response>
     [HttpGet]
@@ -61,8 +62,6 @@ public class ProjectsController : ControllerBase
 
         return Ok(response);
     }
-
-
 
     /// <summary>
     ///     Gets the project with the given id.
@@ -104,87 +103,6 @@ public class ProjectsController : ControllerBase
     }
 
     /// <summary>
-    ///     Gets projects with an optional search string for the project name.
-    ///     If the search string is set, only projects whose names contain the search string are returned.
-    /// </summary>
-    /// <param name="searchString">The optional search string for the project name.</param>
-    /// <returns>The list of projects.</returns>
-    /// <response code="200">The projects are returned successfully.</response>
-    /// <response code="404">No projects found matching the search criteria.</response>
-    /// <response code="500">An internal error occurred.</response>
-    [HttpGet("search")]
-    public async Task<ActionResult<IEnumerable<GetProjectResponse>>> SearchProjects([FromQuery] string? searchString)
-    {
-        var query = new SearchProjectsQuery(searchString);
-        IEnumerable<Project> projects;
-        try
-        {
-            projects = await _mediator.Send(query);
-        }
-        catch (Exception e)
-        {
-            Console.Write(e.StackTrace);
-            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-        }
-
-        if (projects == null || !projects.Any())
-        {
-            return NotFound();
-        }
-
-        var response = projects.Select(project => new GetProjectResponse(
-            project.Id,
-            project.ProjectName,
-            project.ClientName,
-            project.BusinessUnit,
-            project.TeamNumber,
-            project.Department));
-
-        return Ok(response);
-    }
-
-
-    /// <summary>
-    ///     Gets projects with an optional search string for the client name.
-    ///     If the search string is set, only projects whose client names contain the search string are returned.
-    /// </summary>
-    /// <param name="clientNameSearchString">The optional search string for the client name.</param>
-    /// <returns>The list of projects.</returns>
-    /// <response code="200">The projects are returned successfully.</response>
-    /// <response code="404">No projects found matching the search criteria.</response>
-    /// <response code="500">An internal error occurred.</response>
-    [HttpGet("searchByClientName")]
-    public async Task<ActionResult<IEnumerable<GetProjectResponse>>> SearchProjectsByClientName([FromQuery] string? clientNameSearchString)
-    {
-        var query = new SearchProjectsClientNameQuery(clientNameSearchString);
-        IEnumerable<Project> projects;
-        try
-        {
-            projects = await _mediator.Send(query);
-        }
-        catch (Exception e)
-        {
-            Console.Write(e.StackTrace);
-            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-        }
-
-        if (projects == null || !projects.Any())
-        {
-            return NotFound();
-        }
-
-        var response = projects.Select(project => new GetProjectResponse(
-            project.Id,
-            project.ProjectName,
-            project.ClientName,
-            project.BusinessUnit,
-            project.TeamNumber,
-            project.Department));
-
-        return Ok(response);
-    }
-
-    /// <summary>
     /// Gets all the plugins of the project with the given id.
     /// </summary>
     /// <param name="id">The id of the project.</param>
@@ -211,83 +129,6 @@ public class ProjectsController : ControllerBase
 
         return Ok(response);
     }
-
-        /// <summary>
-    /// Gets all projects with the specified business units.
-    /// </summary>
-    /// <param name="businessUnits">A list of business units to filter the projects by.</param>
-    /// <returns>A list of projects that belong to the specified business units.</returns>
-    /// <response code="200">The projects are returned successfully.</response>
-    /// <response code="400">The business units parameter is empty.</response>
-    /// <response code="500">An internal error occurred.</response>
-    [HttpGet("BusinessUnits")]
-    public async Task<ActionResult<IEnumerable<GetProjectsResponse>>> GetByBusinessUnits([FromQuery] List<string>? businessUnits)
-    {
-        if (businessUnits == null || businessUnits.Count == 0)
-        {
-            return StatusCode(StatusCodes.Status400BadRequest, "Business units cannot be empty");
-        }
-
-        var query = new GetProjectsByBusinessUnitsQuery(businessUnits);
-        IEnumerable<Project> projects;
-        try
-        {
-            projects = await _mediator.Send(query);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.StackTrace);
-            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-        }
-
-        var response = projects.Select(project => new GetProjectsResponse(
-            project.Id,
-            project.ProjectName,
-            project.ClientName,
-            project.BusinessUnit,
-            project.TeamNumber));
-
-        return Ok(response);
-    }
-
-        /// <summary>
-    /// Gets all projects with the specified team numbers.
-    /// </summary>
-    /// <param name="teamNumbers">A list of team numbers to filter the projects by.</param>
-    /// <returns>A list of projects that belong to the specified team numbers.</returns>
-    /// <response code="200">The projects are returned successfully.</response>
-    /// <response code="400">The team numbers parameter is empty.</response>
-    /// <response code="500">An internal error occurred.</response>
-    [HttpGet("TeamNumber")]
-    public async Task<ActionResult<IEnumerable<GetProjectsResponse>>> GetByTeamNumbers([FromQuery] List<int>? teamNumbers)
-    {
-        if (teamNumbers == null || teamNumbers.Count == 0)
-        {
-            return StatusCode(StatusCodes.Status400BadRequest, "Team numbers cannot be empty");
-        }
-
-        var query = new GetProjectsByTeamNumbersQuery(teamNumbers);
-        IEnumerable<Project> projects;
-        try
-        {
-            projects = await _mediator.Send(query);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.StackTrace);
-            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-        }
-
-        var response = projects.Select(project => new GetProjectsResponse(
-            project.Id,
-            project.ProjectName,
-            project.ClientName,
-            project.BusinessUnit,
-            project.TeamNumber));
-
-        return Ok(response);
-    }
-
 
     /// <summary>
     ///     Creates a new project.
