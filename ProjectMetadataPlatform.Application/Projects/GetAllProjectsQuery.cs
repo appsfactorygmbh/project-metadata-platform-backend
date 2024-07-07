@@ -9,4 +9,4 @@ namespace ProjectMetadataPlatform.Application.Projects;
 ///     Query to get all projects or all projects with specific search pattern
 ///     <param name="Search">Search pattern to look for in ProjectName</param>
 /// </summary>
-public record GetAllProjectsQuery(ProjectFilterRequest request, string Search) : IRequest<IEnumerable<Project>>;
+public record GetAllProjectsQuery(ProjectFilterRequest? request, string? Search) : IRequest<IEnumerable<Project>>;

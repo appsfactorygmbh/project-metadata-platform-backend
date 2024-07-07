@@ -27,8 +27,9 @@ public class GetProjectsBySearchingHandlerTest
     {
         Project[] emptyProjectList = Array.Empty<Project>();
 
-        _mockProjectRepo.Setup(m => m.GetProjectsAsync("M")).ReturnsAsync(emptyProjectList);
-        var query = new GetAllProjectsQuery("M");
+        var query = new GetAllProjectsQuery(null, "M");
+        _mockProjectRepo.Setup(m => m.GetProjectsAsync(query)).ReturnsAsync(emptyProjectList);
+
         IEnumerable<Project> result = await _handler.Handle(query, It.IsAny<CancellationToken>());
         Assert.IsEmpty(result);
     }
@@ -49,8 +50,10 @@ public class GetProjectsBySearchingHandlerTest
             }
         };
 
-        _mockProjectRepo.Setup(m => m.GetProjectsAsync("R")).ReturnsAsync(projectsResponseContent);
-        var query = new GetAllProjectsQuery("R");
+        var query = new GetAllProjectsQuery(null, "R");
+
+        _mockProjectRepo.Setup(m => m.GetProjectsAsync(query)).ReturnsAsync(projectsResponseContent);
+
         IEnumerable<Project> result = await _handler.Handle(query, It.IsAny<CancellationToken>());
 
         Assert.That(result, Is.Not.Null);
@@ -81,8 +84,8 @@ public class GetProjectsBySearchingHandlerTest
                 Department = "Homelandsecurity"
             }
         };
-        _mockProjectRepo.Setup(m => m.GetProjectsAsync()).ReturnsAsync(projectsResponseContent);
-        var query = new GetAllProjectsQuery("");
+        _mockProjectRepo.Setup(m => m.GetProjectsAsync(It.IsAny<GetAllProjectsQuery>())).ReturnsAsync(projectsResponseContent);
+        var query = new GetAllProjectsQuery(null, "");
         IEnumerable<Project> result = await _handler.Handle(query, It.IsAny<CancellationToken>());
 
         Assert.That(result, Is.Not.Null);

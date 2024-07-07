@@ -38,7 +38,7 @@ public class ProjectsControllerTest
         _mediator.Setup(m => m.Send(It.IsAny<GetAllProjectsQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync([]);
 
         // act
-        ActionResult<IEnumerable<GetProjectsResponse>> result = await _controller.Get();
+        ActionResult<IEnumerable<GetProjectsResponse>> result = await _controller.Get(null, null);
 
         // assert
         Assert.IsInstanceOf<OkObjectResult>(result.Result);
@@ -75,7 +75,7 @@ public class ProjectsControllerTest
             .ReturnsAsync(projectsResponseContent);
 
         // act
-        ActionResult<IEnumerable<GetProjectsResponse>> result = await _controller.Get();
+        ActionResult<IEnumerable<GetProjectsResponse>> result = await _controller.Get(null, null);
 
         // assert
         Assert.IsInstanceOf<OkObjectResult>(result.Result);
@@ -120,7 +120,7 @@ public class ProjectsControllerTest
             .ReturnsAsync(projectsResponseContent);
 
         // act
-        ActionResult<IEnumerable<GetProjectsResponse>> result = await _controller.Get("R");
+        ActionResult<IEnumerable<GetProjectsResponse>> result = await _controller.Get(null, "R");
 
         // assert
         Assert.IsInstanceOf<OkObjectResult>(result.Result);

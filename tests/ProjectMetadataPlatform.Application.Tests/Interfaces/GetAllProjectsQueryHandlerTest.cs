@@ -26,7 +26,7 @@ public class GetAllProjectsQueryHandlerTest
     public async Task HandleGetAllProjectsRequest_EmptyResponse_Test()
     {
         _mockProjectRepo.Setup(m => m.GetProjectsAsync()).ReturnsAsync([]);
-        var request = new GetAllProjectsQuery("");
+        var request = new GetAllProjectsQuery(null, "");
         IEnumerable<Project> result = await _handler.Handle(request, It.IsAny<CancellationToken>());
 
         Project[] resultArray = result as Project[] ?? result.ToArray();
@@ -51,8 +51,9 @@ public class GetAllProjectsQueryHandlerTest
                 Department = "Homelandsecurity"
             }
         };
-        _mockProjectRepo.Setup(m => m.GetProjectsAsync()).ReturnsAsync(projectsResponseContent);
-        var request = new GetAllProjectsQuery("");
+
+        _mockProjectRepo.Setup(m => m.GetProjectsAsync(It.IsAny<GetAllProjectsQuery>())).ReturnsAsync(projectsResponseContent);
+        var request = new GetAllProjectsQuery(null, "");
         var result = (await _handler.Handle(request, It.IsAny<CancellationToken>())).ToList();
 
         Assert.That(result, Is.Not.Null);

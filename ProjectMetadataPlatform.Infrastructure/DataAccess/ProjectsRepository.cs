@@ -43,39 +43,36 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
                                                   || project.TeamNumber.ToString().Contains(lowerTextSearch));
         }
 
-        if (!string.IsNullOrWhiteSpace(query.request.ProjectName))
+        if (query.request != null)
         {
-            string lowerProjectNameSearch = query.request.ProjectName.ToLower();
-            filteredQuery = filteredQuery.Where(project =>
-                project.ProjectName.ToLower().Contains(lowerProjectNameSearch)
-            );
-        }
-
-        if(!string.IsNullOrWhiteSpace(query.request.ClientName))
-        {
-            string lowerClientNameSearch = query.request.ClientName.ToLower();
-            filteredQuery = filteredQuery.Where(project =>
-                project.ClientName.ToLower().Contains(lowerClientNameSearch)
-            );
-        }
-
-        if (query.request.BusinessUnit != null && query.request.BusinessUnit.Count > 0)
-        {
-            foreach (var businessUnit in query.request.BusinessUnit)
+            if (!string.IsNullOrWhiteSpace(query.request.ProjectName))
             {
-                string lowerBusinessUnitSearch = businessUnit.ToLower();
+                string lowerProjectNameSearch = query.request.ProjectName.ToLower();
                 filteredQuery = filteredQuery.Where(project =>
-                    project.BusinessUnit.Contains(lowerBusinessUnitSearch)
+                    project.ProjectName.ToLower().Contains(lowerProjectNameSearch)
                 );
             }
-        }
 
-        if (query.request.TeamNumber != null && query.request.TeamNumber.Count > 0)
-        {
-            foreach (var teamNumber in query.request.TeamNumber)
+            if(!string.IsNullOrWhiteSpace(query.request.ClientName))
+            {
+                string lowerClientNameSearch = query.request.ClientName.ToLower();
+                filteredQuery = filteredQuery.Where(project =>
+                    project.ClientName.ToLower().Contains(lowerClientNameSearch)
+                );
+            }
+
+            if (query.request.BusinessUnit != null && query.request.BusinessUnit.Count > 0)
+            {
+                var lowerBusinessUnits = query.request.BusinessUnit.Select(bu => bu.ToLower()).ToList();
+                filteredQuery = filteredQuery.Where(project =>
+                    lowerBusinessUnits.Contains(project.BusinessUnit.ToLower())
+                );
+            }
+
+            if (query.request.TeamNumber != null && query.request.TeamNumber.Count > 0)
             {
                 filteredQuery = filteredQuery.Where(project =>
-                    project.TeamNumber == teamNumber
+                    query.request.TeamNumber.Contains(project.TeamNumber)
                 );
             }
         }

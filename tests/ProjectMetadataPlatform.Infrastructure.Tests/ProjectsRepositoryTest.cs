@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using ProjectMetadataPlatform.Application.Projects;
 using ProjectMetadataPlatform.Domain.Projects;
 using ProjectMetadataPlatform.Infrastructure.DataAccess;
 
@@ -50,6 +51,65 @@ public class ProjectsRepositoryTests : TestsWithDatabase
         Assert.That(project.BusinessUnit, Is.EqualTo("BuWeather"));
         Assert.That(project.TeamNumber, Is.EqualTo(42));
         Assert.That(project.Department, Is.EqualTo("Homelandsecurity"));
+    }
+
+    [Test]
+    public async Task GetProjectByMultipleFiltersAsync_ReturnsCorrectProjects()
+    {
+        var filters = new ProjectFilterRequest
+        {
+            ProjectName = "Heather",
+            ClientName = "Metatron",
+            BusinessUnit = new List<string> { "666", "777" },
+            TeamNumber = new List<int> { 42, 43 }
+        };
+        var projects = new List<Project>
+        {
+            new Project
+            {
+                Id = 1,
+                ProjectName = "Heather",
+                BusinessUnit = "666",
+                ClientName = "Metatron",
+                Department = "Mars",
+                TeamNumber = 42
+            },
+            new Project
+            {
+                Id = 2,
+                ProjectName = "James",
+                BusinessUnit = "777",
+                ClientName = "Lucifer",
+                Department = "Venus",
+                TeamNumber = 43
+            },
+            new Project
+            {
+                Id = 3,
+                ProjectName = "Marika",
+                BusinessUnit = "999",
+                ClientName = "Satan",
+                Department = "Earth",
+                TeamNumber = 44
+            },
+        };
+
+        var query = new GetAllProjectsQuery(filters, null);
+
+        await _context.Database.EnsureCreatedAsync();
+        _context.Projects.AddRange(projects);
+        await _context.SaveChangesAsync();
+
+        var result = await _repository.GetProjectsAsync(query);
+
+        Assert.Multiple((() => {
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Count(), Is.EqualTo(1));
+            Assert.That(result.Any(p => p.ProjectName == "Heather"), Is.True);
+            Assert.That(result.Any(p => p.ClientName == "Metatron"), Is.True);
+            Assert.That(result.Any(p => p.BusinessUnit == "666"), Is.True);
+            Assert.That(result.Any(p => p.TeamNumber == 42), Is.True);
+        }));
     }
 
     [Test]
