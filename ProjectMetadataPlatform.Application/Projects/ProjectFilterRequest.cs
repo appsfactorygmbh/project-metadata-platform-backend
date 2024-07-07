@@ -2,6 +2,9 @@ using System.Collections.Generic;
 
 namespace ProjectMetadataPlatform.Application.Projects;
 
+/// <summary>
+/// Represents a request object used for filtering projects.
+/// </summary>
 public class ProjectFilterRequest
 {
     public string? ProjectName { get; set; }

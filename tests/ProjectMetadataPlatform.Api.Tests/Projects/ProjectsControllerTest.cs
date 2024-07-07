@@ -276,9 +276,15 @@ public class ProjectsControllerTest
         Assert.That(okResult.StatusCode, Is.EqualTo(StatusCodes.Status200OK));
 
         var response = okResult.Value as IEnumerable<GetProjectsResponse>;
+
         Assert.Multiple((() => {
             Assert.That(response, Is.Not.Null);
             Assert.That(response.Count(), Is.EqualTo(1));
+            Assert.That(response.ToArray()[0].Id, Is.EqualTo(1));
+            Assert.That(response.ToArray()[0].ProjectName, Is.EqualTo("Heather"));
+            Assert.That(response.ToArray()[0].BusinessUnit, Is.EqualTo("666"));
+            Assert.That(response.ToArray()[0].ClientName, Is.EqualTo("Metatron"));
+            Assert.That(response.ToArray()[0].TeamNumber, Is.EqualTo(42));
         }));
     }
 
