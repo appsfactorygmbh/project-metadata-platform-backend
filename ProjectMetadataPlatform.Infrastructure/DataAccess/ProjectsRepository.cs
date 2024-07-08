@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -47,7 +48,7 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
         {
             if (!string.IsNullOrWhiteSpace(query.Request.ProjectName))
             {
-                string lowerProjectNameSearch = query.Request.ProjectName.ToLower();
+                var lowerProjectNameSearch = query.Request.ProjectName.ToLower();
                 filteredQuery = filteredQuery.Where(project =>
                     project.ProjectName.ToLower().Contains(lowerProjectNameSearch)
                 );
@@ -55,7 +56,7 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
 
             if(!string.IsNullOrWhiteSpace(query.Request.ClientName))
             {
-                string lowerClientNameSearch = query.Request.ClientName.ToLower();
+                var lowerClientNameSearch = query.Request.ClientName.ToLower();
                 filteredQuery = filteredQuery.Where(project =>
                     project.ClientName.ToLower().Contains(lowerClientNameSearch)
                 );
