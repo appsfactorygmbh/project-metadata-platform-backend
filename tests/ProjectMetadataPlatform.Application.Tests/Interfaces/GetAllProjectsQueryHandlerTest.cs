@@ -79,12 +79,12 @@ public class GetAllProjectsQueryHandlerTest
     public async Task HandleGetProjectsByFiltersRequest_Test()
     {
         var filters = new ProjectFilterRequest
-        {
-            ProjectName = "Heather",
-            ClientName = "Metatron",
-            BusinessUnit = new List<string> { "666", "777" },
-            TeamNumber = new List<int> { 42, 43 }
-        };
+        (
+            "Heather",
+            "Metatron",
+            new List<string> { "666", "777" },
+            new List<int> { 42, 43 }
+        );
         var projects = new List<Project>
         {
             new Project
@@ -135,12 +135,12 @@ public class GetAllProjectsQueryHandlerTest
     public async Task HandleGetProjectsByFiltersRequest_NoMatch_Test()
     {
         var filters = new ProjectFilterRequest
-        {
-            ProjectName = "Heather",
-            ClientName = "Gilgamesh",
-            BusinessUnit = new List<string> { "666", "777" },
-            TeamNumber = new List<int> { 42, 43 }
-        };
+        (
+            "Heather",
+            "Gilgamesh",
+            new List<string> { "666", "777" },
+            new List<int> { 42, 43 }
+        );
         var projects = new List<Project>
         {
             new Project
@@ -192,10 +192,12 @@ public class GetAllProjectsQueryHandlerTest
     {
         var search = "Hea";
         var filters = new ProjectFilterRequest
-        {
-            BusinessUnit = new List<string> { "666", "777" },
-            TeamNumber = new List<int> { 42, 43 }
-        };
+        (
+            null,
+            null,
+            new List<string> { "666", "777" },
+            new List<int> { 42, 43 }
+        );
         var projects = new List<Project>
         {
             new Project

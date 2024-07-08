@@ -60,7 +60,7 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
                 );
             }
 
-            if (query.Request.BusinessUnit != null && query.Request.BusinessUnit.Count > 0)
+            if (query.Request.BusinessUnit is { Count: > 0 })
             {
                 var lowerBusinessUnits = query.Request.BusinessUnit.Select(bu => bu.ToLower()).ToList();
                 filteredQuery = filteredQuery.Where(project =>
@@ -68,7 +68,7 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
                 );
             }
 
-            if (query.Request.TeamNumber != null && query.Request.TeamNumber.Count > 0)
+            if (query.Request.TeamNumber is { Count: > 0 })
             {
                 filteredQuery = filteredQuery.Where(project =>
                     query.Request.TeamNumber.Contains(project.TeamNumber)

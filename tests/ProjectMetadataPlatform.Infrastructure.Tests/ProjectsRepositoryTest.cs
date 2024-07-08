@@ -57,12 +57,12 @@ public class ProjectsRepositoryTests : TestsWithDatabase
     public async Task GetProjectByMultipleFiltersAndSearchAsync_ReturnsCorrectProjects()
     {
         var filters = new ProjectFilterRequest
-        {
-            ProjectName = "Heather",
-            ClientName = "Metatron",
-            BusinessUnit = new List<string> { "666", "777" },
-            TeamNumber = new List<int> { 42, 43 }
-        };
+        (
+            "Heather",
+            "Metatron",
+            new List<string> { "666", "777" },
+            new List<int> { 42, 43 }
+        );
         var projects = new List<Project>
         {
             new Project
@@ -116,12 +116,12 @@ public class ProjectsRepositoryTests : TestsWithDatabase
     public async Task GetProjectsByFiltersAsync_NoMatchingProjects_ReturnsEmpty()
     {
         var filters = new ProjectFilterRequest
-        {
-            ProjectName = "Heather",
-            ClientName = "Gilgamesch",
-            BusinessUnit = new List<string> { "666", "777" },
-            TeamNumber = new List<int> { 42, 43 }
-        };
+        (
+            "Heather",
+            "Gilgamesch",
+            new List<string> { "666", "777" },
+            new List<int> { 42, 43 }
+        );
         var projects = new List<Project>
         {
             new Project
