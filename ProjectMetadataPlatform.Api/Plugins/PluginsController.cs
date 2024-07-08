@@ -28,7 +28,7 @@ public class PluginsController : ControllerBase
     {
         _mediator = mediator;
     }
-    
+
     /// <summary>
     /// Creates a new plugin with the given name.
     /// </summary>

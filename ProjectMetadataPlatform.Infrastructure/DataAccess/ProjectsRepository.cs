@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Application.Projects;
+using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.Projects;
 
 namespace ProjectMetadataPlatform.Infrastructure.DataAccess;
@@ -103,19 +104,47 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     /// </summary>
     /// <param name="project">Project to be saved in the database</param>
     /// <returns>Project is returned</returns>
-    public async Task AddOrUpdate(Project project)
+    public async Task Add(Project project)
     {
         if (GetIf(p => p.Id == project.Id).FirstOrDefault() == null)
         {
             Create(project);
-
         }
-        else
-        {
-            Update(project);
-        }
-
-        await _context.SaveChangesAsync();
-
+        _ = await _context.SaveChangesAsync();
     }
+
+    /// <summary>
+    /// Updates a project in the database and returns it.
+    /// </summary>
+    /// <param name="project">Project to be updated</param>
+    /// <param name="plugins">Plugins of the project</param>
+    /// <returns></returns>
+    public async Task UpdateProject(Project project,List<ProjectPlugins> plugins)
+    {
+        if(GetIf(p => p.Id == project.Id).FirstOrDefault() != null)
+        {
+            var existingProject = await _context.Projects
+                .Include(p => p.ProjectPlugins)
+                .FirstOrDefaultAsync(p => p.Id == project.Id);
+            existingProject!.ProjectName = project.ProjectName;
+            existingProject.Department = project.Department;
+            existingProject.BusinessUnit = project.BusinessUnit;
+            existingProject.TeamNumber = project.TeamNumber;
+            existingProject.ClientName = project.ClientName;
+            existingProject.ProjectPlugins = plugins;
+            _ = await _context.SaveChangesAsync();
+        }
+    }
+
+    /// <summary>
+    /// Checks if a project exists.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns>True, if the project with the given id exists</returns>
+    public async Task<bool> CheckProjectExists(int id)
+    {
+        return _context.Projects.Any(project => project.Id == id);
+    }
+
+
 }

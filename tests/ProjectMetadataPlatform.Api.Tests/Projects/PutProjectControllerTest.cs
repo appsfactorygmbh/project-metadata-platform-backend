@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -30,7 +31,7 @@ public class PutProjectControllerTest
         //prepare
         _mediator.Setup(m => m.Send(It.IsAny<CreateProjectCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(1);
         var request = new CreateProjectRequest("Example Project", "Example Business Unit", 1, "Example Department",
-            "Example Client");
+            "Example Client", []);
         ActionResult<CreateProjectResponse> result = await _controller.Put(request);
         Assert.That(result.Result, Is.InstanceOf<CreatedResult>());
         var createdResult = result.Result as CreatedResult;
@@ -53,5 +54,22 @@ public class PutProjectControllerTest
         var request = new CreateProjectRequest("", " ", 1, "", "");
         ActionResult<CreateProjectResponse> result = await _controller.Put(request);
         Assert.That(result.Result, Is.InstanceOf<BadRequestObjectResult>());
+    }
+
+    [Test]
+    public async Task ChangeProjectDataControllerTest()
+    {
+        _mediator.Setup(m => m.Send(It.IsAny<UpdateProjectCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(1);
+        var request = new UpdateProjectCommand("Example Project", "Example Business Unit", 1, "Example Department", "Example Client",1,[]);
+        var result = await _mediator.Object.Send(request);
+        Assert.That(result, Is.EqualTo(1));
+    }
+
+    [Test]
+    public async Task ChangeProjectIdNotFoundControllerTest()
+    {
+        _mediator.Setup(m => m.Send(It.IsAny<UpdateProjectCommand>(), It.IsAny<CancellationToken>())).ThrowsAsync(new InvalidOperationException("Project does not exist."));
+        var request = new UpdateProjectCommand("Example Project", "Example Business Unit", 1, "Example Department", "Example Client",2,[]);
+        Assert.That(() => _mediator.Object.Send(request), Throws.Exception.TypeOf<InvalidOperationException>());
     }
 }

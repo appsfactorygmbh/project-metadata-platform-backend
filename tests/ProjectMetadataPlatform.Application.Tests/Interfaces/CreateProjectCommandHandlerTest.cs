@@ -11,15 +11,17 @@ namespace ProjectMetadataPlatform.Application.Tests.Interfaces;
 [TestFixture]
 public class CreateProjectCommandHandlerTest
 {
+    private CreateProjectCommandHandler _handler;
+    private Mock<IProjectsRepository> _mockProjectRepo;
+    private Mock<IPluginRepository> _mockPluginRepo;
 
     [SetUp]
     public void Setup()
     {
         _mockProjectRepo = new Mock<IProjectsRepository>();
-        _handler = new CreateProjectCommandHandler(_mockProjectRepo.Object);
+        _mockPluginRepo = new Mock<IPluginRepository>();
+        _handler = new CreateProjectCommandHandler(_mockProjectRepo.Object, _mockPluginRepo.Object);
     }
-    private CreateProjectCommandHandler _handler;
-    private Mock<IProjectsRepository> _mockProjectRepo;
 
     [Test]
     public async Task CreateProject_Test()
@@ -33,7 +35,7 @@ public class CreateProjectCommandHandlerTest
             Department = "Example Department",
             ClientName = "Example Client"
         };
-        _mockProjectRepo.Setup(m => m.AddOrUpdate(It.IsAny<Project>())).Callback<Project>(p => p.Id = 1)
+        _mockProjectRepo.Setup(m => m.Add(It.IsAny<Project>())).Callback<Project>(p => p.Id = 1)
             .Returns(Task.CompletedTask);
 
         // act
@@ -41,7 +43,7 @@ public class CreateProjectCommandHandlerTest
         int result =
             await _handler.Handle(
                 new CreateProjectCommand("Example Project", "Example Business Unit", 1, "Example Department",
-                    "Example Client"), It.IsAny<CancellationToken>());
+                    "Example Client", []), It.IsAny<CancellationToken>());
 
         Assert.That(result, Is.EqualTo(1));
 
