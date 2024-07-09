@@ -70,7 +70,7 @@ sonarqube:
       - .sonar/cache
   script:
     - 'dotnet tool restore'
-    - '/root/.dotnet/tools/dotnet-sonarscanner begin /k:"Project-Metadata-Platform-Backend" /d:sonar.token="$SONAR_TOKEN" /d:"sonar.host.url=$SONAR_HOST_URL" /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml /d:sonar.tests=/tests/ '
+    - '/root/.dotnet/tools/dotnet-sonarscanner begin /k:"Project-Metadata-Platform-Backend" /d:sonar.token="$SONAR_TOKEN" /d:"sonar.host.url=$SONAR_HOST_URL" /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml /d:sonar.tests=/tests/ /d:sonar.exclusions=/ProjectMetadataPlatform.Infrastructure/Migrations/** '
     - 'dotnet build --no-incremental --configuration Release --packages ./.nuget/'
     - 'dotnet tool run dotnet-coverage collect "dotnet test --configuration Release" -f xml -o "coverage.xml"'
     - '/root/.dotnet/tools/dotnet-sonarscanner end /d:sonar.token="$SONAR_TOKEN"'

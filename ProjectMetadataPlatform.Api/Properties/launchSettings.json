@@ -8,7 +8,12 @@
       "launchUrl": "swagger",
       "applicationUrl": "http://localhost:5091",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "PMP_DB_URL": "localhost",
+        "PMP_DB_PORT": "5432",
+        "PMP_DB_NAME": "pmp_db_local",
+        "PMP_DB_USER": "postgres",
+        "PMP_DB_PASSWORD": "postgres"
       }
     },
     "https": {
@@ -18,7 +23,12 @@
       "launchUrl": "swagger",
       "applicationUrl": "https://localhost:7234;http://localhost:5091",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "PMP_DB_URL": "localhost",
+        "PMP_DB_PORT": "5432",
+        "PMP_DB_NAME": "pmp_db_local",
+        "PMP_DB_USER": "postgres",
+        "PMP_DB_PASSWORD": "postgres"
       }
     }
   }

@@ -26,7 +26,10 @@ builder.Services.AddCors(options
 builder.Services.AddControllers();
 
 
-WebApplication app = builder.Build();
+var app = builder.Build();
+
+app.Services.MigrateDatabase();
+
 app.UseSwagger();
 app.UseSwaggerUI();
 

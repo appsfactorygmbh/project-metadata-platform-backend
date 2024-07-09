@@ -4,3 +4,48 @@ services:
     container_name: backend-production
     ports:
       - 8080:8080
+    environment:
+      - PMP_DB_URL=db-production
+      - PMP_DB_USER_FILE=/run/secrets/db_user
+      - PMP_DB_PASSWORD_FILE=/run/secrets/db_password
+      - PMP_DB_NAME_FILE=/run/secrets/db_name
+      - PMP_DB_PORT=5432
+    networks:
+      - backend-production
+    secrets:
+      - db_user
+      - db_password
+      - db_name
+  
+  db:
+    image: postgres:15
+    container_name: db-production
+    environment:
+      - POSTGRES_USER_FILE=/run/secrets/db_user
+      - POSTGRES_PASSWORD_FILE=/run/secrets/db_password
+      - POSTGRES_DB_FILE=/run/secrets/db_name
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    networks:
+      - backend-production
+    secrets:
+      - db_user
+      - db_password
+      - db_name
+
+secrets:
+  db_password:
+    file: db_password.txt
+  db_user:
+    file: db_user.txt
+  db_name:
+    file: db_name.txt
+
+volumes:
+  db_data:
+
+networks:
+  backend-production:
+    driver: bridge

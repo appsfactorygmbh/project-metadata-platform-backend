@@ -9,20 +9,6 @@ namespace ProjectMetadataPlatform.Infrastructure.DataAccess;
 /// </summary>
 public sealed class ProjectMetadataPlatformDbContext : DbContext
 {
-
-
-    /// <inheritdoc />
-    public ProjectMetadataPlatformDbContext()
-    {
-        Database.Migrate();
-    }
-
-    /// <inheritdoc />
-    public ProjectMetadataPlatformDbContext(DbContextOptions<ProjectMetadataPlatformDbContext> options) : base(options)
-    {
-        _ = Database.EnsureCreated();
-    }
-
     /// <summary>
     ///     Represents the table for the relation between Project and Plugin entities.
     /// </summary>
@@ -39,6 +25,16 @@ public sealed class ProjectMetadataPlatformDbContext : DbContext
     /// </summary>
     public DbSet<Project> Projects { get; set; }
 
+
+    /// <inheritdoc />
+    public ProjectMetadataPlatformDbContext()
+    {
+    }
+
+    /// <inheritdoc />
+    public ProjectMetadataPlatformDbContext(DbContextOptions<ProjectMetadataPlatformDbContext> options) : base(options)
+    {
+    }
 
     /// <summary>
     ///     Configures the model that was discovered by convention from the entity types
@@ -58,7 +54,7 @@ public sealed class ProjectMetadataPlatformDbContext : DbContext
         SeedData(modelBuilder);
     }
 
-    private void SeedData(ModelBuilder modelBuilder)
+    private static void SeedData(ModelBuilder modelBuilder)
     {
         var project1 = new Project
         {
@@ -180,7 +176,6 @@ public sealed class ProjectMetadataPlatformDbContext : DbContext
                 DisplayName = "Jira",
                 Project = null!,
                 Plugin = null!
-            }
-        );
+            });
     }
 }
