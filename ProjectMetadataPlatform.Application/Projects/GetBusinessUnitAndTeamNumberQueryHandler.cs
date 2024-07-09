@@ -32,6 +32,10 @@ public class GetBusinessUnitAndTeamNumberQueryHandler : IRequestHandler<GetBusin
     /// <returns>A task that represents the asynchronous operation. The task result contains a collection of projects that match the specified filters.</returns>
     public Task<IEnumerable<Project>> Handle(GetBusinessUnitAndTeamNumberQuery request, CancellationToken cancellationToken)
     {
+        if (request.BusinessUnit == null && request.TeamNumber == null)
+        {
+            return _projectRepository.GetProjectsAsync();
+        }
         return _projectRepository.GetBusinessUnitAndTeamNumberAsync(request.BusinessUnit, request.TeamNumber);
     }
 
