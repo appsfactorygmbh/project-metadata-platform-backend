@@ -165,6 +165,17 @@ public class ProjectsController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Retrieves a distinct list of all business units from the projects.
+    /// </summary>
+    /// <remarks>
+    /// This endpoint queries all projects without any filter (empty search string) and extracts the business units.
+    /// It then returns a distinct list of these business units. This can be useful for filtering projects by business unit
+    /// or simply to obtain an overview of all business units involved in the projects.
+    /// </remarks>
+    /// <returns>An <see cref="ActionResult"/> containing a list of distinct business units.</returns>
+    /// <response code="200">Returns the list of distinct business units successfully.</response>
+    /// <response code="500">Indicates an internal error occurred while processing the request.</response>
     [HttpGet]
     public async Task<ActionResult<IEnumerable<GetProjectsResponse>>> GetByFilter(string? businessunit = null, int? teamnumber = null)
     {
@@ -191,6 +202,17 @@ public class ProjectsController : ControllerBase
         return Ok(response);
     }
 
+    /// <summary>
+    /// Retrieves a distinct list of all business units from the projects.
+    /// </summary>
+    /// <remarks>
+    /// This endpoint queries all projects without any filter (empty search string) and extracts the business units.
+    /// It then returns a distinct list of these business units. This can be useful for filtering projects by business unit
+    /// or simply to obtain an overview of all business units involved in the projects.
+    /// </remarks>
+    /// <returns>An <see cref="ActionResult"/> containing a list of distinct business units.</returns>
+    /// <response code="200">Returns the list of distinct business units successfully.</response>
+    /// <response code="500">Indicates an internal error occurred while processing the request.</response>
     [HttpGet]
     public async Task<ActionResult<IEnumerable<GetBusinessUnitResponse>>> GetAllBusinessUnits()
     {
@@ -212,6 +234,17 @@ public class ProjectsController : ControllerBase
         return Ok(businessunits);
     }
 
+    /// <summary>
+    /// Retrieves a distinct list of all business units from the projects.
+    /// </summary>
+    /// <remarks>
+    /// This endpoint queries all projects without any filter (empty search string) and extracts the business units.
+    /// It then returns a distinct list of these business units. This can be useful for filtering projects by business unit
+    /// or simply to obtain an overview of all business units involved in the projects.
+    /// </remarks>
+    /// <returns>An <see cref="ActionResult"/> containing a list of distinct business units.</returns>
+    /// <response code="200">Returns the list of distinct business units successfully.</response>
+    /// <response code="500">Indicates an internal error occurred while processing the request.</response>
     [HttpGet]
     public async Task<ActionResult<IEnumerable<GetTeamNumberResponse>>> GetAllTeamNumbers()
     {
