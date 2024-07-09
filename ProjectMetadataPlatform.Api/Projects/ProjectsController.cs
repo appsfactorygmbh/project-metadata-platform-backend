@@ -173,7 +173,7 @@ public class ProjectsController : ControllerBase
     /// <returns>A list of projects that match the given filters. Each project includes its ID, project name, client name, business unit, and team number.</returns>
     /// <response code="200">Returns the filtered list of projects successfully.</response>
     /// <response code="500">Indicates an internal error occurred while processing the request.</response>
-    [HttpGet]
+    [HttpGet("/filterData/{businessunit}&{teamnumber:int}")]
     public async Task<ActionResult<IEnumerable<GetProjectsResponse>>> GetByFilter(string? businessunit = null, int? teamnumber = null)
     {
         var query = new GetBusinessUnitAndTeamNumberQuery(businessunit, teamnumber);
@@ -210,7 +210,7 @@ public class ProjectsController : ControllerBase
     /// <returns>An <see cref="ActionResult"/> containing a list of distinct business units.</returns>
     /// <response code="200">Returns the list of distinct business units successfully.</response>
     /// <response code="500">Indicates an internal error occurred while processing the request.</response>
-    [HttpGet]
+    [HttpGet("/filterData/businessunits")]
     public async Task<ActionResult<IEnumerable<GetBusinessUnitResponse>>> GetAllBusinessUnits()
     {
         var query = new GetAllProjectsQuery("");
@@ -242,7 +242,7 @@ public class ProjectsController : ControllerBase
     /// <returns>An <see cref="ActionResult"/> containing a list of distinct team numbers.</returns>
     /// <response code="200">Returns the list of distinct team numbers successfully.</response>
     /// <response code="500">Indicates an internal error occurred while processing the request.</response>
-    [HttpGet]
+    [HttpGet("filterData/teamnumbers")]
     public async Task<ActionResult<IEnumerable<GetTeamNumberResponse>>> GetAllTeamNumbers()
     {
         var query = new GetAllProjectsQuery("");
