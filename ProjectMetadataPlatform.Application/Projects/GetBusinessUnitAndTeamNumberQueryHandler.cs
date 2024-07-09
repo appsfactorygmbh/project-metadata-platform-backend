@@ -11,15 +11,15 @@ namespace ProjectMetadataPlatform.Application.Projects;
 /// Handles the query to retrieve projects filtered by business unit and/or team number.
 /// </summary>
 
-public class GetBusinessUnitAndTeamNumberCommandHandler : IRequestHandler<GetBusinessUnitAndTeamNumberQuery, IEnumerable<Project>>
+public class GetBusinessUnitAndTeamNumberQueryHandler : IRequestHandler<GetBusinessUnitAndTeamNumberQuery, IEnumerable<Project>>
 {
     private readonly IProjectsRepository _projectRepository; // Repository interface for accessing projects data.
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="GetBusinessUnitAndTeamNumberCommandHandler"/> class.
+    /// Initializes a new instance of the <see cref="GetBusinessUnitAndTeamNumberQueryHandler"/> class.
     /// </summary>
     /// <param name="projectsRepository">The projects repository.</param>
-    public GetBusinessUnitAndTeamNumberCommandHandler(IProjectsRepository projectsRepository)
+    public GetBusinessUnitAndTeamNumberQueryHandler(IProjectsRepository projectsRepository)
     {
         _projectRepository = projectsRepository;
     }

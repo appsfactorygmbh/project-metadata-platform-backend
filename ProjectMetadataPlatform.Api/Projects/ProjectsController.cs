@@ -166,15 +166,12 @@ public class ProjectsController : ControllerBase
     }
 
     /// <summary>
-    /// Retrieves a distinct list of all business units from the projects.
+    /// Retrieves a filtered list of projects based on the specified business unit and/or team number.
     /// </summary>
-    /// <remarks>
-    /// This endpoint queries all projects without any filter (empty search string) and extracts the business units.
-    /// It then returns a distinct list of these business units. This can be useful for filtering projects by business unit
-    /// or simply to obtain an overview of all business units involved in the projects.
-    /// </remarks>
-    /// <returns>An <see cref="ActionResult"/> containing a list of distinct business units.</returns>
-    /// <response code="200">Returns the list of distinct business units successfully.</response>
+    /// <param name="businessunit">Optional. The business unit to filter projects by.</param>
+    /// <param name="teamnumber">Optional. The team number to filter projects by.</param>
+    /// <returns>A list of projects that match the given filters. Each project includes its ID, project name, client name, business unit, and team number.</returns>
+    /// <response code="200">Returns the filtered list of projects successfully.</response>
     /// <response code="500">Indicates an internal error occurred while processing the request.</response>
     [HttpGet]
     public async Task<ActionResult<IEnumerable<GetProjectsResponse>>> GetByFilter(string? businessunit = null, int? teamnumber = null)
@@ -235,15 +232,15 @@ public class ProjectsController : ControllerBase
     }
 
     /// <summary>
-    /// Retrieves a distinct list of all business units from the projects.
+    /// Retrieves a distinct list of all team numbers from the projects.
     /// </summary>
     /// <remarks>
-    /// This endpoint queries all projects without any filter (empty search string) and extracts the business units.
-    /// It then returns a distinct list of these business units. This can be useful for filtering projects by business unit
-    /// or simply to obtain an overview of all business units involved in the projects.
+    /// This endpoint queries all projects without any filter (empty search string) and extracts the team numbers.
+    /// It then returns a distinct list of these team numbers. This can be useful for filtering projects by team number
+    /// or simply to obtain an overview of all team numbers involved in the projects.
     /// </remarks>
-    /// <returns>An <see cref="ActionResult"/> containing a list of distinct business units.</returns>
-    /// <response code="200">Returns the list of distinct business units successfully.</response>
+    /// <returns>An <see cref="ActionResult"/> containing a list of distinct team numbers.</returns>
+    /// <response code="200">Returns the list of distinct team numbers successfully.</response>
     /// <response code="500">Indicates an internal error occurred while processing the request.</response>
     [HttpGet]
     public async Task<ActionResult<IEnumerable<GetTeamNumberResponse>>> GetAllTeamNumbers()

@@ -1,7 +1,7 @@
 namespace ProjectMetadataPlatform.Api.Projects.Models;
 
 /// <summary>
-/// Represents the response model for a business unit.
+/// Represents the response model for a team number.
 /// </summary>
-/// <param name="BusinessUnit">The name of the business unit.</param>
+/// <param name="TeamNumber">The unique team number.</param>
 public record GetTeamNumberResponse(int TeamNumber);
