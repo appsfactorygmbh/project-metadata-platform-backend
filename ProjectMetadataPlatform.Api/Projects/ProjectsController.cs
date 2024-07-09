@@ -192,14 +192,13 @@ public class ProjectsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<GetBusinessUnitResponse>>> GetBusinessUnits(string businessunit)
+    public async Task<ActionResult<IEnumerable<GetBusinessUnitResponse>>> GetAllBusinessUnits()
     {
-        var query = new GetBusinessUnitAndTeamNumberQuery(businessunit);
         IEnumerable<Project> projects;
 
         try
         {
-            projects = await _mediator.Send(query);
+            projects = await _mediator.Send(new GetAllProjectsQuery(""));
         }
         catch (Exception e)
         {
