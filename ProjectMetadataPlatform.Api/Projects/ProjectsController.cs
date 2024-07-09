@@ -173,8 +173,8 @@ public class ProjectsController : ControllerBase
     /// <returns>A list of projects that match the given filters. Each project includes its ID, project name, client name, business unit, and team number.</returns>
     /// <response code="200">Returns the filtered list of projects successfully.</response>
     /// <response code="500">Indicates an internal error occurred while processing the request.</response>
-    [HttpGet("/filterData/{businessunit}&{teamnumber:int}")]
-    public async Task<ActionResult<IEnumerable<GetProjectsResponse>>> GetByFilter(string? businessunit = null, int? teamnumber = null)
+    [HttpGet("/filterData")]
+    public async Task<ActionResult<IEnumerable<GetProjectsResponse>>> GetByFilter([FromQuery] string? businessunit = null, [FromQuery] int? teamnumber = null)
     {
         var query = new GetBusinessUnitAndTeamNumberQuery(businessunit, teamnumber);
         IEnumerable<Project> projects;
