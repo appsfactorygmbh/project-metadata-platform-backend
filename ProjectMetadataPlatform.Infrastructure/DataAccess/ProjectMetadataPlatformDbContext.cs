@@ -184,8 +184,8 @@ public sealed class ProjectMetadataPlatformDbContext : IdentityDbContext<Identit
         var hasher = new PasswordHasher<IdentityUser>();
         var user = new IdentityUser
         {
-            Id = "test",
-            UserName = "admin"
+            UserName = "admin",
+            NormalizedUserName = "admin"
         };
         user.PasswordHash = hasher.HashPassword(user,"admin"); // Example password
         modelBuilder.Entity<IdentityUser>().HasData(user);

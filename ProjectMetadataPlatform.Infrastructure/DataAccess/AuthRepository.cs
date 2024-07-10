@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -30,8 +31,8 @@ public class AuthRepository :  IAuthRepository
     /// <returns>True, if the credentials are correct</returns>
     public async Task<bool> CheckLogin(string username, string password)
     {
-        Console.Write(await _userManager.Users.ToListAsync());
-        var user = await _userManager.FindByNameAsync(username);
+        Console.Write((await _userManager.Users.ToListAsync())[0].NormalizedUserName + "\n\n\n\n\n");
+        var user = await _userManager.Users.FirstOrDefaultAsync(a => a.UserName == username);
         return await _userManager.CheckPasswordAsync(user, password);
     }
 

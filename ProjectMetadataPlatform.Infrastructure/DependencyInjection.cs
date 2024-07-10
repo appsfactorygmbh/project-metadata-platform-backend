@@ -21,7 +21,6 @@ public static class DependencyInjection
     ///     Adds the necessary dependencies for the infrastructure layer.
     /// </summary>
     /// <param name="serviceCollection">The service collection.</param>
-    /// <param name="configuration">The configuration of the project.</param>
     /// <returns>The service collection with the add dependencies.</returns>
     public static IServiceCollection AddInfrastructureDependencies(this IServiceCollection serviceCollection)
     {
