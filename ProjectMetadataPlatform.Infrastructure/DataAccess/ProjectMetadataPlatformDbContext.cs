@@ -1,13 +1,15 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.Projects;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace ProjectMetadataPlatform.Infrastructure.DataAccess;
 
 /// <summary>
 ///     DbContext for the project metadata platform database.
 /// </summary>
-public sealed class ProjectMetadataPlatformDbContext : DbContext
+public sealed class ProjectMetadataPlatformDbContext : IdentityDbContext<IdentityUser>
 {
     /// <summary>
     ///     Represents the table for the relation between Project and Plugin entities.
@@ -177,5 +179,13 @@ public sealed class ProjectMetadataPlatformDbContext : DbContext
                 Project = null!,
                 Plugin = null!
             });
+        var hasher = new PasswordHasher<IdentityUser>();
+        var user = new IdentityUser
+        {
+            UserName = "test"
+        };
+
+        user.PasswordHash = hasher.HashPassword(user, "test"); // Example password
+        modelBuilder.Entity<IdentityUser>().HasData(user);
     }
 }

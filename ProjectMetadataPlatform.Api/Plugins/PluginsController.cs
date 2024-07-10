@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ProjectMetadataPlatform.Api.Plugins.Models;
@@ -37,6 +38,7 @@ public class PluginsController : ControllerBase
     /// <response code="201">The Plugin was created successfully.</response>
     /// <response code="400">The request data is invalid.</response>
     /// <response code="500">An internal error occurred.</response>
+    [Authorize]
     [HttpPut]
     public async Task<ActionResult<CreatePluginResponse>> Put([FromBody] CreatePluginRequest request)
     {

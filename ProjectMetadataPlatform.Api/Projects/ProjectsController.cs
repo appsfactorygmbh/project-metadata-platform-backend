@@ -132,7 +132,7 @@ public class ProjectsController : ControllerBase
     }
 
     /// <summary>
-    ///     Creates a new project.
+    ///     Creates a new project or updates the one with given id.
     /// </summary>
     /// <param name="project">The data of the new project.</param>
     /// <param name="projectId">The id, if an existing project should be overwritten.</param>

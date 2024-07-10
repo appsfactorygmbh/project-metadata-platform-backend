@@ -1,10 +1,15 @@
 using System;
 using System.IO;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Infrastructure.DataAccess;
 using ProjectMetadataPlatform.Infrastructure.Plugins;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 
 namespace ProjectMetadataPlatform.Infrastructure;
 
@@ -17,13 +22,15 @@ public static class DependencyInjection
     ///     Adds the necessary dependencies for the infrastructure layer.
     /// </summary>
     /// <param name="serviceCollection">The service collection.</param>
+    /// <param name="configuration">The configuration of the project.</param>
     /// <returns>The service collection with the add dependencies.</returns>
     public static IServiceCollection AddInfrastructureDependencies(this IServiceCollection serviceCollection)
     {
         serviceCollection.AddDbContextWithPostgresConnection();
-
+        serviceCollection.ConfigureAuth();
         _ = serviceCollection.AddScoped<IPluginRepository, PluginRepository>();
         _ = serviceCollection.AddScoped<IProjectsRepository, ProjectsRepository>();
+        _ = serviceCollection.AddScoped<IAuthRepository, AuthRepository>();
 
         return serviceCollection;
     }
@@ -55,6 +62,38 @@ public static class DependencyInjection
 
             return File.ReadAllText(path);
         }
+    }
+
+    /// <summary>
+    ///    Configures the authentication for the project.
+    /// </summary>
+    /// <param name="serviceCollection"></param>
+    /// <param name="configuration"></param>
+    private static void ConfigureAuth(this IServiceCollection serviceCollection)
+    {
+        _ = serviceCollection.AddIdentity<IdentityUser, IdentityRole>()
+            .AddEntityFrameworkStores<ProjectMetadataPlatformDbContext>()
+            .AddDefaultTokenProviders();
+
+        _ = serviceCollection.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    //should also get this from the environment
+                    ValidIssuer = "ValidIssuer",
+                    ValidAudience = "ValidAudience",
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKey@345"))
+                };
+            });
     }
 
     /// <summary>
