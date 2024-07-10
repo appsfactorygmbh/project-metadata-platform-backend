@@ -3,6 +3,8 @@ services:
   backend:
     image: gitlab.dit.htwk-leipzig.de:5050/projekt2024_a_appsfactory_project_metadata_platform/backend/staging:latest
     container_name: backend-local
+    depends_on:
+      - db
     ports:
       - 8090:8080
     environment:
