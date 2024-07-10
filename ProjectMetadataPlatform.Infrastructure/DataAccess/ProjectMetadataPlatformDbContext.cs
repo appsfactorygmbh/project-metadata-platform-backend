@@ -179,13 +179,15 @@ public sealed class ProjectMetadataPlatformDbContext : IdentityDbContext<Identit
                 Project = null!,
                 Plugin = null!
             });
+
+
         var hasher = new PasswordHasher<IdentityUser>();
         var user = new IdentityUser
         {
-            UserName = "test"
+            Id = "test",
+            UserName = "admin"
         };
-
-        user.PasswordHash = hasher.HashPassword(user, "test"); // Example password
+        user.PasswordHash = hasher.HashPassword(user,"admin"); // Example password
         modelBuilder.Entity<IdentityUser>().HasData(user);
     }
 }

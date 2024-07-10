@@ -36,14 +36,14 @@ public class LoginQueryHandler : IRequestHandler<LoginQuery, JwtTokens>
     /// <returns>JwtTokens when successful</returns>
     public async Task<JwtTokens> Handle(LoginQuery request, CancellationToken cancellationToken)
     {
-        if (_authRepository.CheckLogin(request.Username, request.Password).Result)
+        if (!_authRepository.CheckLogin(request.Username, request.Password).Result)
         {
             throw new InvalidOperationException("Invalid login credentials.");
         }
         //should also get this from the environment
         var validIssuer = "ValidIssuer";
         var validAudience = "ValidAudience";
-        var issuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKey@345"));
+        var issuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKeyThatIsAtLeast257BitLong@345"));
 
         var tokenDescriptor = new SecurityTokenDescriptor
         {

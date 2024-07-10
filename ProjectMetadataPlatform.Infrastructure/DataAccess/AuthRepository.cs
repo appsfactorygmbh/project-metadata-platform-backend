@@ -1,5 +1,7 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using ProjectMetadataPlatform.Application.Interfaces;
 
 namespace ProjectMetadataPlatform.Infrastructure.DataAccess;
@@ -28,8 +30,9 @@ public class AuthRepository :  IAuthRepository
     /// <returns>True, if the credentials are correct</returns>
     public async Task<bool> CheckLogin(string username, string password)
     {
+        Console.Write(await _userManager.Users.ToListAsync());
         var user = await _userManager.FindByNameAsync(username);
-        return (user != null) && (await _userManager.CheckPasswordAsync(user, password));
+        return await _userManager.CheckPasswordAsync(user, password);
     }
 
     /// <summary>

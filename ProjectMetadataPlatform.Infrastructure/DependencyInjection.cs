@@ -8,7 +8,6 @@ using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Infrastructure.DataAccess;
 using ProjectMetadataPlatform.Infrastructure.Plugins;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ProjectMetadataPlatform.Infrastructure;
@@ -91,7 +90,7 @@ public static class DependencyInjection
                     //should also get this from the environment
                     ValidIssuer = "ValidIssuer",
                     ValidAudience = "ValidAudience",
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKey@345"))
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKeyThatIsAtLeast257BitLong@345"))
                 };
             });
     }
