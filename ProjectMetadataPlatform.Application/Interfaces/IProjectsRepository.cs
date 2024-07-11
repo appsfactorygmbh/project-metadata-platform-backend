@@ -51,12 +51,4 @@ public interface IProjectsRepository
     /// <param name="id"></param>
     /// <returns>True, if the project with the given id exists</returns>
     Task<bool> CheckProjectExists(int id);
-
-    /// <summary>
-    /// Asynchronously retrieves a collection of projects filtered by the specified business unit and/or team number.
-    /// </summary>
-    /// <param name="BusinessUnit">The business unit to filter projects by. Can be null to ignore this filter.</param>
-    /// <param name="TeamNumber">The team number to filter projects by. Can be null to ignore this filter.</param>
-    /// <returns>An Enumeration of projects</returns>
-    Task<IEnumerable<Project>> GetBusinessUnitAndTeamNumberAsync(string? BusinessUnit, int? TeamNumber);
 }

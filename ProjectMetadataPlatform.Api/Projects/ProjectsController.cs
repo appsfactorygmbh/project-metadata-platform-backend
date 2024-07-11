@@ -188,40 +188,6 @@ public class ProjectsController : ControllerBase
     }
 
     /// <summary>
-    /// Retrieves a filtered list of projects based on the specified business unit and/or team number.
-    /// </summary>
-    /// <param name="businessunit">Optional. The business unit to filter projects by.</param>
-    /// <param name="teamnumber">Optional. The team number to filter projects by.</param>
-    /// <returns>A list of projects that match the given filters. Each project includes its ID, project name, client name, business unit, and team number.</returns>
-    /// <response code="200">Returns the filtered list of projects successfully.</response>
-    /// <response code="500">Indicates an internal error occurred while processing the request.</response>
-    [HttpGet("/filterData")]
-    public async Task<ActionResult<IEnumerable<GetProjectsResponse>>> GetByFilter([FromQuery] string? businessunit = null, [FromQuery] int? teamnumber = null)
-    {
-        var query = new GetBusinessUnitAndTeamNumberQuery(businessunit, teamnumber);
-        IEnumerable<Project> projects;
-
-        try
-        {
-            projects = await _mediator.Send(query);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.StackTrace);
-            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-        }
-
-        IEnumerable<GetProjectsResponse> response = projects.Select(project => new GetProjectsResponse(
-            project.Id,
-            project.ProjectName,
-            project.ClientName,
-            project.BusinessUnit,
-            project.TeamNumber));
-
-        return Ok(response);
-    }
-
-    /// <summary>
     /// Retrieves a distinct list of all business units from the projects.
     /// </summary>
     /// <remarks>

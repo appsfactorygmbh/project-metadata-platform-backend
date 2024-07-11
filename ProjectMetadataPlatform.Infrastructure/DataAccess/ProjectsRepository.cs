@@ -145,16 +145,4 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     {
         return _context.Projects.Any(project => project.Id == id);
     }
-
-    /// <summary>
-    /// Asynchronously retrieves a collection of projects filtered by the specified business unit and/or team number.
-    /// </summary>
-    /// <param name="BusinessUnit">The business unit to filter projects by. Can be null to ignore this filter.</param>
-    /// <param name="TeamNumber">The team number to filter projects by. Can be null to ignore this filter.</param>
-    /// <returns>A task that represents the asynchronous operation. The task result contains a collection of projects that match the specified filters.</returns>
-    public Task<IEnumerable<Project>> GetBusinessUnitAndTeamNumberAsync(string? BusinessUnit, int? TeamNumber)
-    {
-        return Task.FromResult<IEnumerable<Project>>(_context.Projects.Where(p
-            => p.BusinessUnit == BusinessUnit || p.TeamNumber == TeamNumber));
-    }
 }
