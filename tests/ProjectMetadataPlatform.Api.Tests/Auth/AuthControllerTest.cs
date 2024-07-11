@@ -36,8 +36,8 @@ public class Tests
         Assert.That(result.Value, Is.InstanceOf<LoginResponse>());
         Assert.Multiple(() =>
         {
-            Assert.That(result.Value.accessToken, Is.EqualTo("accessToken"));
-            Assert.That(result.Value.refreshToken, Is.EqualTo("refreshToken"));
+            Assert.That(result.Value.AccessToken, Is.EqualTo("accessToken"));
+            Assert.That(result.Value.RefreshToken, Is.EqualTo("refreshToken"));
         });
         ;
     }

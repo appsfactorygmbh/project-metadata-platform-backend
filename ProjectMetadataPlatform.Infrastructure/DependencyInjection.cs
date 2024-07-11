@@ -44,7 +44,7 @@ public static class DependencyInjection
 
         var connectionString = $"Host={url};Port={port};User Id={user};Password={password};Database={database}";
 
-        serviceCollection.AddDbContext<ProjectMetadataPlatformDbContext>(options
+        _ = serviceCollection.AddDbContext<ProjectMetadataPlatformDbContext>(options
             => options.UseNpgsql(connectionString));
 
         static string GetEnvVarOrLoadFromFile(string envVarName)
@@ -67,7 +67,6 @@ public static class DependencyInjection
     ///    Configures the authentication for the project.
     /// </summary>
     /// <param name="serviceCollection"></param>
-    /// <param name="configuration"></param>
     private static void ConfigureAuth(this IServiceCollection serviceCollection)
     {
         _ = serviceCollection.AddIdentity<IdentityUser, IdentityRole>()
@@ -79,22 +78,23 @@ public static class DependencyInjection
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })
-            .AddJwtBearer(options =>
+            .AddJwtBearer(options => options.TokenValidationParameters = new TokenValidationParameters
             {
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    //should also get this from the environment
-                    ValidIssuer = "ValidIssuer",
-                    ValidAudience = "ValidAudience",
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKeyThatIsAtLeast257BitLong@345"))
-                };
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                //should also get this from the environment
+                ValidIssuer = "ValidIssuer",
+                ValidAudience = "ValidAudience",
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKeyThatIsAtLeast257BitLong@345"))
             });
     }
 
+    /// <summary>
+    /// Adds the admin user to the database.
+    /// </summary>
+    /// <param name="serviceProvider"></param>
     public static void AddAdminUser(this IServiceProvider serviceProvider)
     {
         var password = Environment.GetEnvironmentVariable("PMP_ADMIN_PASSWORD") ?? "admin";
@@ -114,9 +114,9 @@ public static class DependencyInjection
             NormalizedUserName = "admin"
         };
         user.PasswordHash = hasher.HashPassword(user,password);
-        dbContext.Users.Add(user);
+        _ = dbContext.Users.Add(user);
 
-        dbContext.SaveChanges();
+        _ = dbContext.SaveChanges();
     }
 
     /// <summary>

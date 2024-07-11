@@ -94,10 +94,10 @@ public sealed class ProjectMetadataPlatformDbContext : IdentityDbContext<Identit
 
         var plugin3 = new Plugin { Id = 300, PluginName = "Jira" };
 
-        modelBuilder.Entity<Project>().HasData(project1, project2, project3);
-        modelBuilder.Entity<Plugin>().HasData(plugin1, plugin2, plugin3);
+        _ = modelBuilder.Entity<Project>().HasData(project1, project2, project3);
+        _ = modelBuilder.Entity<Plugin>().HasData(plugin1, plugin2, plugin3);
 
-        modelBuilder.Entity<ProjectPlugins>().HasData(
+        _ = modelBuilder.Entity<ProjectPlugins>().HasData(
             new ProjectPlugins
             {
                 ProjectId = project1.Id,

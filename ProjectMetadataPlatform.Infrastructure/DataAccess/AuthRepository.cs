@@ -32,7 +32,7 @@ public class AuthRepository :  IAuthRepository
     {
         Console.Write((await _userManager.Users.ToListAsync())[0].NormalizedUserName + "\n\n\n\n\n");
         var user = await _userManager.Users.FirstOrDefaultAsync(a => a.UserName == username);
-        return await _userManager.CheckPasswordAsync(user, password);
+        return await _userManager.CheckPasswordAsync(user!, password);
     }
 
     /// <summary>

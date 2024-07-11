@@ -2,6 +2,9 @@ using System.Threading.Tasks;
 
 namespace ProjectMetadataPlatform.Application.Interfaces;
 
+/// <summary>
+/// Repository for authentication.
+/// </summary>
 public interface IAuthRepository
 {
     /// <summary>
