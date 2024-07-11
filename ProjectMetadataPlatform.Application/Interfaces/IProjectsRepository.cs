@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using ProjectMetadataPlatform.Domain.Plugins;
+using ProjectMetadataPlatform.Application.Projects;
 using ProjectMetadataPlatform.Domain.Projects;
 
 namespace ProjectMetadataPlatform.Application.Interfaces;
@@ -12,9 +14,9 @@ public interface IProjectsRepository
     /// <summary>
     ///     Returns a collection of all projects with specific search pattern.
     /// </summary>
-    /// <param name="search">Search pattern to look for in ProjectName</param>
+    /// <param name="query">The query containing filters and search pattern.</param>
     /// <returns>An Enumeration of projects.</returns>
-    Task<IEnumerable<Project>> GetProjectsAsync(string search);
+    Task<IEnumerable<Project>> GetProjectsAsync(GetAllProjectsQuery query);
 
     /// <summary>
     ///     Returns a collection of all projects.
@@ -33,6 +35,22 @@ public interface IProjectsRepository
     /// </summary>
     /// <param name="project"></param>
     /// <returns></returns>
+    Task Add(Project project);
+
+    /// <summary>
+    /// Updates a project in the database and returns it.
+    /// </summary>
+    /// <param name="project">Project to be updated</param>
+    /// <param name="plugins">plugins of project</param>
+    /// <returns></returns>
+    Task UpdateProject(Project project,List<ProjectPlugins> plugins);
+
+    /// <summary>
+    /// Checks if a project exists.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns>True, if the project with the given id exists</returns>
+    Task<bool> CheckProjectExists(int id);
     Task AddOrUpdate(Project project);
 
     /// <summary>

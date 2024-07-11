@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Domain.Projects;
 using ProjectMetadataPlatform.Infrastructure.DataAccess;
+using ProjectMetadataPlatform.Application.Projects;
 
 namespace ProjectMetadataPlatform.Infrastructure.Tests;
 
@@ -36,11 +37,13 @@ public class ProjectsBySearchTest : TestsWithDatabase
             Department = "Homelandsecurity"
         };
 
+        var query = new GetAllProjectsQuery(null, "Reg");
+
         _context.Projects.Add(exampleProject);
         await _context.SaveChangesAsync();
 
         // Act
-        IEnumerable<Project> result = await _repository.GetProjectsAsync("ege");
+        IEnumerable<Project> result = await _repository.GetProjectsAsync(query);
         Assert.IsNotEmpty(result);
         Project project = result.First();
         // Assert
@@ -66,10 +69,12 @@ public class ProjectsBySearchTest : TestsWithDatabase
             Department = "Homelandsecurity"
         };
 
+        var query = new GetAllProjectsQuery(null, "x");
+
         _context.Projects.Add(project);
         await _context.SaveChangesAsync();
 
-        IEnumerable<Project> result = await _repository.GetProjectsAsync("x");
+        IEnumerable<Project> result = await _repository.GetProjectsAsync(query);
         Assert.IsEmpty(result);
     }
 
@@ -108,12 +113,14 @@ public class ProjectsBySearchTest : TestsWithDatabase
             }
         };
 
+        var query = new GetAllProjectsQuery(null, "Reg");
+
         _context.Projects.AddRange(projects);
 
         await _context.SaveChangesAsync();
 
         // Act
-        IEnumerable<Project> result = await _repository.GetProjectsAsync("Reg");
+        IEnumerable<Project> result = await _repository.GetProjectsAsync(query);
 
         // Assert
         Assert.AreEqual(2, result.Count());
@@ -155,17 +162,20 @@ public class ProjectsBySearchTest : TestsWithDatabase
             }
         };
 
+        var query1 = new GetAllProjectsQuery(null, "Reg");
+        var query2 = new GetAllProjectsQuery(null, "EGen");
+
         _context.Projects.AddRange(projects);
 
         await _context.SaveChangesAsync();
 
         // Act
-        IEnumerable<Project> result = await _repository.GetProjectsAsync("Reg");
+        IEnumerable<Project> result = await _repository.GetProjectsAsync(query1);
 
         // Assert
         Assert.AreEqual(2, result.Count());
 
-        IEnumerable<Project> resultIgnoreCase = await _repository.GetProjectsAsync("EGen");
+        IEnumerable<Project> resultIgnoreCase = await _repository.GetProjectsAsync(query2);
 
         // Assert
         Assert.AreEqual(2, resultIgnoreCase.Count());
@@ -205,25 +215,31 @@ public class ProjectsBySearchTest : TestsWithDatabase
                 Department = "Homelandsecurity"
             }
         };
+
+        var query1 = new GetAllProjectsQuery(null, "42");
+        var query2 = new GetAllProjectsQuery(null, "41");
+        var query3 = new GetAllProjectsQuery(null, "4");
+        var query4 = new GetAllProjectsQuery(null, "2");
+
         _context.Projects.AddRange(projects);
 
         await _context.SaveChangesAsync();
 
         // Act
-        IEnumerable<Project> resultExactDouble = await _repository.GetProjectsAsync("42");
+        IEnumerable<Project> resultExactDouble = await _repository.GetProjectsAsync(query1);
 
         // Assert
         Assert.AreEqual(2, resultExactDouble.Count());
 
-        IEnumerable<Project> resultExactSingle = await _repository.GetProjectsAsync("41");
+        IEnumerable<Project> resultExactSingle = await _repository.GetProjectsAsync(query2);
         // Assert
         Assert.AreEqual(1, resultExactSingle.Count());
 
-        IEnumerable<Project> resultOnlyFirstNumber = await _repository.GetProjectsAsync("4");
+        IEnumerable<Project> resultOnlyFirstNumber = await _repository.GetProjectsAsync(query3);
         // Assert
         Assert.AreEqual(3, resultOnlyFirstNumber.Count());
 
-        IEnumerable<Project> resultOnlySecondNumberNumber = await _repository.GetProjectsAsync("2");
+        IEnumerable<Project> resultOnlySecondNumberNumber = await _repository.GetProjectsAsync(query4);
         // Assert
         Assert.AreEqual(2, resultOnlySecondNumberNumber.Count());
     }

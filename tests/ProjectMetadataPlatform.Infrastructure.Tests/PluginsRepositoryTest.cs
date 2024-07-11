@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Domain.Plugins;
@@ -144,5 +145,31 @@ public class PluginsRepositoryTest : TestsWithDatabase
         var plugin = await _repository.GetPluginByIdAsync(42);
 
         Assert.That(plugin, Is.Null);
+    }
+
+    [Test]
+    public async Task GetGlobalPlugins_Test()
+    {
+        var examplePlugin = new Plugin { PluginName = "Warp-Drive", ProjectPlugins = [], Id = 42 };
+        _context.Add(examplePlugin);
+        _context.SaveChanges();
+
+        var plugin = await _repository.GetGlobalPluginsAsync();
+
+        Assert.That(plugin, Is.Not.Null);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(plugin.First().PluginName, Is.EqualTo("Warp-Drive"));
+            Assert.That(plugin.First().Id, Is.EqualTo(42));
+        });
+    }
+
+    [Test]
+    public async Task GetGlobalPlugins_NoPlugins_Test()
+    {
+        var plugin = await _repository.GetGlobalPluginsAsync();
+
+        Assert.That(plugin, Is.Empty);
     }
 }

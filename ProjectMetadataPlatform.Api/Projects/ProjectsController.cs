@@ -34,14 +34,15 @@ public class ProjectsController : ControllerBase
     /// <summary>
     ///     Gets all projects or all projects that match the given search string.
     /// </summary>
+    /// <param name="request">The collection of filters to search by.</param>
     /// <param name="search">Search string to filter the projects by.</param>
-    /// <returns>All projects or all projects that match the given search string.</returns>
+    /// <returns>All projects or all projects that match the given search string or filters.</returns>
     /// <response code="200">The projects are returned successfully.</response>
     /// <response code="500">An internal error occurred.</response>
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<GetProjectsResponse>>> Get(string search = " ")
+    public async Task<ActionResult<IEnumerable<GetProjectsResponse>>> Get([FromQuery] ProjectFilterRequest? request, string? search = " ")
     {
-        var query = new GetAllProjectsQuery(search);
+        var query = new GetAllProjectsQuery(request, search);
         IEnumerable<Project> projects;
         try
         {
@@ -125,8 +126,8 @@ public class ProjectsController : ControllerBase
         }
 
         IEnumerable<GetPluginResponse> response = projectPlugins.Select(plugin
-            => new GetPluginResponse(plugin.Plugin.PluginName, plugin.Url,
-                plugin.DisplayName ?? plugin.Plugin.PluginName));
+            => new GetPluginResponse(plugin.Plugin!.PluginName, plugin.Url,
+                plugin.DisplayName ?? plugin.Plugin.PluginName, plugin.Plugin.Id));
 
         return Ok(response);
     }
@@ -135,12 +136,13 @@ public class ProjectsController : ControllerBase
     ///     Creates a new project.
     /// </summary>
     /// <param name="project">The data of the new project.</param>
+    /// <param name="projectId">The id, if an existing project should be overwritten.</param>
     /// <returns>A response containing the id of the created project.</returns>
     /// <response code="201">The Project has been created successfully.</response>
     /// <response code="400">The request data is invalid.</response>
     /// <response code="500">An internal error occurred.</response>
     [HttpPut]
-    public async Task<ActionResult<CreateProjectResponse>> Put([FromBody] CreateProjectRequest project)
+    public async Task<ActionResult<CreateProjectResponse>> Put([FromBody] CreateProjectRequest project, int? projectId = null )
     {
         try
         {
@@ -151,15 +153,35 @@ public class ProjectsController : ControllerBase
                 return BadRequest("ProjectName, BusinessUnit, Department and ClientName must not be empty.");
             }
 
-            var command = new CreateProjectCommand(project.ProjectName, project.BusinessUnit, project.TeamNumber,
-                project.Department, project.ClientName);
-            int id = await _mediator.Send(command);
+            IRequest<int> command = projectId == null
+                ? command = new CreateProjectCommand(project.ProjectName, project.BusinessUnit, project.TeamNumber,
+                    project.Department, project.ClientName, (project.PluginList ?? []).Select(p => new ProjectPlugins
+                    {
+                        PluginId = p.Id,
+                        DisplayName = p.DisplayName,
+                        Url = p.Url
+                    }).ToList())
+                : command = new UpdateProjectCommand(project.ProjectName, project.BusinessUnit, project.TeamNumber,
+                    project.Department, project.ClientName, projectId.Value, (project.PluginList ?? []).Select(p => new ProjectPlugins
+                    {
+                        ProjectId = projectId.Value,
+                        PluginId = p.Id,
+                        DisplayName = p.DisplayName,
+                        Url = p.Url
+                    }).ToList());
+
+            var id = await _mediator.Send(command);
 
             var response = new CreateProjectResponse(id);
             return Created("/Projects/" + id, response);
         }
+        catch (InvalidOperationException e)
+        {
+            return BadRequest(e.Message);
+        }
         catch (Exception e)
         {
+            Console.WriteLine(e.Message);
             Console.WriteLine(e.StackTrace);
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }

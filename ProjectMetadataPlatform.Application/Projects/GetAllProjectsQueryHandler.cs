@@ -22,13 +22,8 @@ public class GetAllProjectsQueryHandler : IRequestHandler<GetAllProjectsQuery, I
     }
 
     /// <inheritdoc />
-    public Task<IEnumerable<Project>> Handle(GetAllProjectsQuery request, CancellationToken cancellationToken)
+    public async Task<IEnumerable<Project>> Handle(GetAllProjectsQuery request, CancellationToken cancellationToken)
     {
-
-        return string.IsNullOrWhiteSpace(request.Search)
-            ? _projectRepository.GetProjectsAsync()
-            : _projectRepository.GetProjectsAsync(request.Search);
-
-
+        return await _projectRepository.GetProjectsAsync(request);
     }
 }

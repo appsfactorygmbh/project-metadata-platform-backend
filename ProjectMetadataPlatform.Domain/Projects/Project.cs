@@ -6,14 +6,13 @@ namespace ProjectMetadataPlatform.Domain.Projects;
 /// <summary>
 ///     The representation of a project in the Database.
 /// </summary>
-// TODO Add list of plugins as property.
 public class Project
 {
     /// <summary>
     ///     Gets or sets the id of the project.
     /// </summary>
     public int Id { get; set; }
-
+    
     /// <summary>
     ///     Gets or sets the name of the project. This property is required.
     /// </summary>

@@ -73,4 +73,13 @@ public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
     {
         return await _context.Plugins.ToListAsync();
     }
+
+    /// <summary>
+    /// Checks if a plugin exists.
+    /// </summary>
+    /// <returns>True, if the plugin with the given id exists</returns>
+    public async Task<bool> CheckPluginExists(int id)
+    {
+        return _context.Plugins.Any(plugin => plugin.Id == id);
+    }
 }

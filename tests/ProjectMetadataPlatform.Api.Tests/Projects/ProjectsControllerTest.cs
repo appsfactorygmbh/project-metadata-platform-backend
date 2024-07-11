@@ -14,6 +14,7 @@ using ProjectMetadataPlatform.Application.Plugins;
 using ProjectMetadataPlatform.Application.Projects;
 using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.Projects;
+using Microsoft.AspNetCore.Http;
 
 namespace ProjectMetadataPlatform.Api.Tests.Projects;
 
@@ -37,7 +38,7 @@ public class ProjectsControllerTest
         _mediator.Setup(m => m.Send(It.IsAny<GetAllProjectsQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync([]);
 
         // act
-        ActionResult<IEnumerable<GetProjectsResponse>> result = await _controller.Get();
+        ActionResult<IEnumerable<GetProjectsResponse>> result = await _controller.Get(null, null);
 
         // assert
         Assert.IsInstanceOf<OkObjectResult>(result.Result);
@@ -74,7 +75,7 @@ public class ProjectsControllerTest
             .ReturnsAsync(projectsResponseContent);
 
         // act
-        ActionResult<IEnumerable<GetProjectsResponse>> result = await _controller.Get();
+        ActionResult<IEnumerable<GetProjectsResponse>> result = await _controller.Get(null, null);
 
         // assert
         Assert.IsInstanceOf<OkObjectResult>(result.Result);
@@ -119,7 +120,7 @@ public class ProjectsControllerTest
             .ReturnsAsync(projectsResponseContent);
 
         // act
-        ActionResult<IEnumerable<GetProjectsResponse>> result = await _controller.Get("R");
+        ActionResult<IEnumerable<GetProjectsResponse>> result = await _controller.Get(null, "R");
 
         // assert
         Assert.IsInstanceOf<OkObjectResult>(result.Result);
@@ -215,6 +216,139 @@ public class ProjectsControllerTest
             Assert.That(resultObj.PluginName, Is.EqualTo("plugin 1"));
             Assert.That(resultObj.DisplayName, Is.EqualTo("plugin 1"));
         });
+    }
 
+    [Test]
+    public async Task GetProjectByFiltersAndSearchTest()
+    {
+        var search = "Hea";
+        var filters = new ProjectFilterRequest
+        (
+            "Heather",
+            "Metatron",
+            new List<string> { "666", "777" },
+            new List<int> { 42, 43 }
+        );
+        var projects = new List<Project>
+        {
+            new Project
+            {
+                Id = 1,
+                ProjectName = "Heather",
+                BusinessUnit = "666",
+                ClientName = "Metatron",
+                Department = "Mars",
+                TeamNumber = 42
+            },
+            new Project
+            {
+                Id = 2,
+                ProjectName = "James",
+                BusinessUnit = "777",
+                ClientName = "Lucifer",
+                Department = "Venus",
+                TeamNumber = 43
+            },
+            new Project
+            {
+                Id = 3,
+                ProjectName = "Marika",
+                BusinessUnit = "999",
+                ClientName = "Satan",
+                Department = "Earth",
+                TeamNumber = 44
+            },
+        };
+
+        _mediator.Setup(m => m.Send(It.IsAny<GetAllProjectsQuery>(), CancellationToken.None))
+            .ReturnsAsync(projects.Where(p =>
+                p.ProjectName.ToLower().Contains(search.ToLower()) &&
+                p.ProjectName.ToLower().Contains(filters.ProjectName.ToLower()) &&
+                p.ClientName.ToLower().Contains(filters.ClientName.ToLower()) &&
+                filters.BusinessUnit.Contains(p.BusinessUnit) &&
+                filters.TeamNumber.Contains(p.TeamNumber)));
+
+        var result = await _controller.Get(filters, search);
+
+        Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
+        var okResult = result.Result as OkObjectResult;
+
+        Assert.That(okResult.StatusCode, Is.EqualTo(StatusCodes.Status200OK));
+
+        var response = okResult.Value as IEnumerable<GetProjectsResponse>;
+
+        Assert.Multiple((() => {
+            Assert.That(response, Is.Not.Null);
+            Assert.That(response.Count(), Is.EqualTo(1));
+            Assert.That(response.ToArray()[0].Id, Is.EqualTo(1));
+            Assert.That(response.ToArray()[0].ProjectName, Is.EqualTo("Heather"));
+            Assert.That(response.ToArray()[0].BusinessUnit, Is.EqualTo("666"));
+            Assert.That(response.ToArray()[0].ClientName, Is.EqualTo("Metatron"));
+            Assert.That(response.ToArray()[0].TeamNumber, Is.EqualTo(42));
+        }));
+    }
+
+    [Test]
+    public async Task GetProjectByFiltersAndSearchTest_NoMatch()
+    {
+        var search = "Hea";
+        var filters = new ProjectFilterRequest
+        (
+            "Heather",
+            "Gilgamesch",
+            new List<string> { "666", "777" },
+            new List<int> { 42, 43 }
+        );
+        var projects = new List<Project>
+        {
+            new Project
+            {
+                Id = 1,
+                ProjectName = "Heather",
+                BusinessUnit = "666",
+                ClientName = "Metatron",
+                Department = "Mars",
+                TeamNumber = 42
+            },
+            new Project
+            {
+                Id = 2,
+                ProjectName = "James",
+                BusinessUnit = "777",
+                ClientName = "Lucifer",
+                Department = "Venus",
+                TeamNumber = 43
+            },
+            new Project
+            {
+                Id = 3,
+                ProjectName = "Marika",
+                BusinessUnit = "999",
+                ClientName = "Satan",
+                Department = "Earth",
+                TeamNumber = 44
+            },
+        };
+
+        _mediator.Setup(m => m.Send(It.IsAny<GetAllProjectsQuery>(), CancellationToken.None))
+            .ReturnsAsync(projects.Where(p =>
+                p.ProjectName.ToLower().Contains(search.ToLower()) &&
+                p.ProjectName.ToLower().Contains(filters.ProjectName.ToLower()) &&
+                p.ClientName.ToLower().Contains(filters.ClientName.ToLower()) &&
+                filters.BusinessUnit.Contains(p.BusinessUnit) &&
+                filters.TeamNumber.Contains(p.TeamNumber)));
+
+        var result = await _controller.Get(filters, search);
+
+        Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
+        var okResult = result.Result as OkObjectResult;
+
+        Assert.That(okResult.StatusCode, Is.EqualTo(StatusCodes.Status200OK));
+
+        var response = okResult.Value as IEnumerable<GetProjectsResponse>;
+        Assert.Multiple((() => {
+            Assert.That(response, Is.Not.Null);
+            Assert.That(response.Count(), Is.EqualTo(0));
+        }));
     }
 }

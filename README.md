@@ -1,93 +1,146 @@
-# Backend
+# Appsfactory "Metadata Platform" Backend
 
+## Overview
 
+This project is an ASP.NET Core application using Entity Framework Core and PostgreSQL. It provides a RESTful API for managing metadata of projects.
 
-## Getting started
+## Getting Started
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+### Prerequisites
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+-   [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
 
-## Add your files
+### Installation
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+1. Clone the repository:
 
+    ```sh
+    git clone <repository-url>
+    cd backend
+    ```
+
+2. Restore the dependencies:
+    ```sh
+    dotnet restore
+    ```
+
+### Scripts
+
+#### Build:
+
+```sh
+dotnet build
 ```
-cd existing_repo
-git remote add origin https://gitlab.dit.htwk-leipzig.de/projekt2024_A_Appsfactory_Project_Metadata_Platform/backend.git
-git branch -M main
-git push -uf origin main
+
+Builds the app.
+
+#### Run:
+
+Running the app locally requires a PostgreSQL database. The repository already contains a corresponding docker compose file.
+First, install Docker and Docker Compose: https://docs.docker.com/get-docker/ and https://docs.docker.com/compose/install/.
+Then, run the following command inside the repository directory to start the database container:
+
+```sh
+docker compose -f docker-compose-database.yml up --remove-orphans -d
 ```
 
-## Integrate with your tools
+Next, open a terminal in the ProjectMetadataPlatform.Api directory and run the following command to apply any existing migrations to the database:
 
-- [ ] [Set up project integrations](https://gitlab.dit.htwk-leipzig.de/projekt2024_A_Appsfactory_Project_Metadata_Platform/backend/-/settings/integrations)
+With powershell (You may have to run `dotnet tool update --global PowerShell` first):
 
-## Collaborate with your team
+```pwsh
+pwsh .\dotnet_ef.ps1 database update
+```
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+With bash:
 
-## Test and Deploy
+````sh
+ sh ./dotnet_ef.sh database update
+ ```
 
-Use the built-in continuous integration in GitLab.
+You can now run the app with the following command or an IDE of your choice:
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+```sh
+dotnet run
+````
 
-***
+#### Test:
 
-# Editing this README
+```sh
+dotnet test
+```
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+Runs unit tests with NUnit.
 
-## Suggestions for a good README
+### Project Structure
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+The project is build following the Clean Architecture principles. The project is structured as follows:
 
-## Name
-Choose a self-explaining name for your project.
+-   `ProjectMetadataPlatform.Application`: Application layer
+-   `ProjectMetadataPlatform.Domain`: Domain layer
+-   `ProjectMetadataPlatform.Infrastructure`: Infrastructure layer
+-   `ProjectMetadataPlatform.Api`: Api/Presentation layer
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+-   `tests/ProjectMetadataPlatform.Application.Tests`: Application layer tests
+-   `tests/ProjectMetadataPlatform.Domain.Tests`: Domain layer tests
+-   `tests/ProjectMetadataPlatform.Infrastructure.Tests`: Infrastructure layer tests
+-   `tests/ProjectMetadataPlatform.Api.Tests`: Api/Presentation layer tests
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+## Development
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+### Running the application
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+See the [Run-Script](#run) section for how to run the application with a local database.
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+### Database Migrations
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+When changing the domain models or their configurations in the infrastructure layer, you need to create a new migration.
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+1. Create a local database container according to the instructions in the [Run-Script](#run) section.
+2. Open a terminal in the `ProjectMetadataPlatform.Api` directory.
+3. Run the following command to apply the existing migrations to the database:
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+    With powershell:
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+    ```pwsh
+    pwsh .\dotnet_ef.ps1 database update
+    ```
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+    With bash:
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+    ```sh
+     sh ./dotnet_ef.sh database update
+    ```
 
-## License
-For open source projects, say how it is licensed.
+4. Make the required changes to the domain models or their configurations.
+5. Run the following command to create a new migration:
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+    With powershell:
+
+    ```pwsh
+    pwsh .\dotnet_ef.ps1 migrations add <migration-name>
+    ```
+
+    With bash:
+
+    ```sh
+     sh ./dotnet_ef.sh migrations add <migration-name>
+    ```
+
+6. Commit the generated migration files. The files can be found in the `ProjectMetadataPlatform.Infrastructure/Migrations` directory.
+7. Push the changes to gitlab and create a merge request using the `DB-Migration` description template.
+8. Run the following command to create the migration script, then add it to the merge request description:
+
+    With powershell:
+
+    ```pwsh
+    pwsh .\dotnet_ef.ps1 migrations script <name-of-the-last-migration>
+    ```
+
+    With bash:
+
+    ```sh
+     sh ./dotnet_ef.sh migrations script <name-of-the-last-migration>
+    ```
+
+9. Run the migration script on the staging database once the merge request is approved and merged.

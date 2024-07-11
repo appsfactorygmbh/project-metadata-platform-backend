@@ -26,7 +26,7 @@ public class GetAllProjectsQueryHandlerTest
     public async Task HandleGetAllProjectsRequest_EmptyResponse_Test()
     {
         _mockProjectRepo.Setup(m => m.GetProjectsAsync()).ReturnsAsync([]);
-        var request = new GetAllProjectsQuery("");
+        var request = new GetAllProjectsQuery(null, "");
         IEnumerable<Project> result = await _handler.Handle(request, It.IsAny<CancellationToken>());
 
         Project[] resultArray = result as Project[] ?? result.ToArray();
@@ -51,8 +51,9 @@ public class GetAllProjectsQueryHandlerTest
                 Department = "Homelandsecurity"
             }
         };
-        _mockProjectRepo.Setup(m => m.GetProjectsAsync()).ReturnsAsync(projectsResponseContent);
-        var request = new GetAllProjectsQuery("");
+
+        _mockProjectRepo.Setup(m => m.GetProjectsAsync(It.IsAny<GetAllProjectsQuery>())).ReturnsAsync(projectsResponseContent);
+        var request = new GetAllProjectsQuery(null, "");
         var result = (await _handler.Handle(request, It.IsAny<CancellationToken>())).ToList();
 
         Assert.That(result, Is.Not.Null);
@@ -72,5 +73,218 @@ public class GetAllProjectsQueryHandlerTest
             Assert.That(project.Department, Is.EqualTo("Homelandsecurity"));
             Assert.That(project.TeamNumber, Is.EqualTo(42));
         });
+    }
+
+    [Test]
+    public async Task HandleGetProjectsByFiltersRequest_Test()
+    {
+        var filters = new ProjectFilterRequest
+        (
+            "Heather",
+            "Metatron",
+            new List<string> { "666", "777" },
+            new List<int> { 42, 43 }
+        );
+        var projects = new List<Project>
+        {
+            new Project
+            {
+                Id = 1,
+                ProjectName = "Heather",
+                BusinessUnit = "666",
+                ClientName = "Metatron",
+                Department = "Mars",
+                TeamNumber = 42
+            },
+            new Project
+            {
+                Id = 2,
+                ProjectName = "James",
+                BusinessUnit = "777",
+                ClientName = "Lucifer",
+                Department = "Venus",
+                TeamNumber = 43
+            },
+            new Project
+            {
+                Id = 3,
+                ProjectName = "Marika",
+                BusinessUnit = "999",
+                ClientName = "Satan",
+                Department = "Earth",
+                TeamNumber = 44
+            },
+        };
+
+        _mockProjectRepo.Setup(m => m.GetProjectsAsync(It.IsAny<GetAllProjectsQuery>())).ReturnsAsync(projects.Where(
+            p => filters.ProjectName.Contains(p.ProjectName) &&
+                 filters.ClientName.Contains(p.ClientName) &&
+                 filters.BusinessUnit.Contains(p.BusinessUnit) &&
+                 filters.TeamNumber.Contains(p.TeamNumber)));
+        var request = new GetAllProjectsQuery(filters, "");
+        var result = await _handler.Handle(request, It.IsAny<CancellationToken>());
+
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result, Is.InstanceOf<IEnumerable<Project>>());
+
+        Project[] resultArray = result.ToArray();
+        Assert.That(resultArray, Has.Length.EqualTo(1));
+    }
+
+    [Test]
+    public async Task HandleGetProjectsByFiltersRequest_NoMatch_Test()
+    {
+        var filters = new ProjectFilterRequest
+        (
+            "Heather",
+            "Gilgamesh",
+            new List<string> { "666", "777" },
+            new List<int> { 42, 43 }
+        );
+        var projects = new List<Project>
+        {
+            new Project
+            {
+                Id = 1,
+                ProjectName = "Heather",
+                BusinessUnit = "666",
+                ClientName = "Metatron",
+                Department = "Mars",
+                TeamNumber = 42
+            },
+            new Project
+            {
+                Id = 2,
+                ProjectName = "James",
+                BusinessUnit = "777",
+                ClientName = "Lucifer",
+                Department = "Venus",
+                TeamNumber = 43
+            },
+            new Project
+            {
+                Id = 3,
+                ProjectName = "Marika",
+                BusinessUnit = "999",
+                ClientName = "Satan",
+                Department = "Earth",
+                TeamNumber = 44
+            },
+        };
+
+        _mockProjectRepo.Setup(m => m.GetProjectsAsync(It.IsAny<GetAllProjectsQuery>())).ReturnsAsync(projects.Where(
+            p => filters.ProjectName.Contains(p.ProjectName) &&
+                 filters.ClientName.Contains(p.ClientName) &&
+                 filters.BusinessUnit.Contains(p.BusinessUnit) &&
+                 filters.TeamNumber.Contains(p.TeamNumber)));
+        var request = new GetAllProjectsQuery(filters, "");
+        var result = await _handler.Handle(request, It.IsAny<CancellationToken>());
+
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result, Is.InstanceOf<IEnumerable<Project>>());
+
+        Project[] resultArray = result.ToArray();
+        Assert.That(resultArray, Has.Length.EqualTo(0));
+    }
+
+    [Test]
+    public async Task HandleGetProjectsByFiltersRequestAndSearch_Match_Test()
+    {
+        var search = "Hea";
+        var filters = new ProjectFilterRequest
+        (
+            null,
+            null,
+            new List<string> { "666", "777" },
+            new List<int> { 42, 43 }
+        );
+        var projects = new List<Project>
+        {
+            new Project
+            {
+                Id = 1,
+                ProjectName = "Heather",
+                BusinessUnit = "666",
+                ClientName = "Metatron",
+                Department = "Mars",
+                TeamNumber = 42
+            },
+            new Project
+            {
+                Id = 2,
+                ProjectName = "James",
+                BusinessUnit = "777",
+                ClientName = "Lucifer",
+                Department = "Venus",
+                TeamNumber = 43
+            },
+            new Project
+            {
+                Id = 3,
+                ProjectName = "Marika",
+                BusinessUnit = "999",
+                ClientName = "Satan",
+                Department = "Earth",
+                TeamNumber = 44
+            },
+        };
+
+        _mockProjectRepo.Setup(m => m.GetProjectsAsync(It.IsAny<GetAllProjectsQuery>())).ReturnsAsync(projects.Where(
+            p => p.ProjectName.ToLower().Contains(search.ToLower()) &&
+                 filters.BusinessUnit.Contains(p.BusinessUnit) &&
+                 filters.TeamNumber.Contains(p.TeamNumber)));
+        var request = new GetAllProjectsQuery(filters, search);
+        var result = await _handler.Handle(request, It.IsAny<CancellationToken>());
+
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result, Is.InstanceOf<IEnumerable<Project>>());
+
+        Project[] resultArray = result.ToArray();
+        Assert.That(resultArray, Has.Length.EqualTo(1));
+    }
+
+    [Test]
+    public async Task HandleGetProjects_NoFilterAndSearch_Test()
+    {
+        var projects = new List<Project>
+        {
+            new Project
+            {
+                Id = 1,
+                ProjectName = "Heather",
+                BusinessUnit = "666",
+                ClientName = "Metatron",
+                Department = "Mars",
+                TeamNumber = 42
+            },
+            new Project
+            {
+                Id = 2,
+                ProjectName = "James",
+                BusinessUnit = "777",
+                ClientName = "Lucifer",
+                Department = "Venus",
+                TeamNumber = 43
+            },
+            new Project
+            {
+                Id = 3,
+                ProjectName = "Marika",
+                BusinessUnit = "999",
+                ClientName = "Satan",
+                Department = "Earth",
+                TeamNumber = 44
+            },
+        };
+
+        _mockProjectRepo.Setup(m => m.GetProjectsAsync(It.IsAny<GetAllProjectsQuery>())).ReturnsAsync(projects);
+        var request = new GetAllProjectsQuery(null, "");
+        var result = await _handler.Handle(request, It.IsAny<CancellationToken>());
+
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result, Is.InstanceOf<IEnumerable<Project>>());
+
+        Project[] resultArray = result.ToArray();
+        Assert.That(resultArray, Has.Length.EqualTo(3));
     }
 }
