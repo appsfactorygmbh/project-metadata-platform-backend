@@ -18,7 +18,7 @@ services:
       - db_name
     labels:
       - traefik.enable=true
-      - traefik.http.routers.backend-production.rule=Host(`www.backend.htwk.appsfactory.app`)
+      - traefik.http.routers.backend-production.rule=Host(`api.htwk.appsfactory.app`)
       - traefik.http.routers.backend-production.entrypoints=websecure
       - traefik.http.routers.backend-production.tls.certresolver=le-tls
       - traefik.http.services.backend-production-service.loadbalancer.server.port=8080

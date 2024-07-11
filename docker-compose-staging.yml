@@ -18,7 +18,7 @@ services:
       - db_name
     labels:
       - traefik.enable=true
-      - traefik.http.routers.backend-staging.rule=Host(`www.backend.staging.htwk.appsfactory.app`)
+      - traefik.http.routers.backend-staging.rule=Host(`api.staging.htwk.appsfactory.app`)
       - traefik.http.routers.backend-staging.entrypoints=websecure
       - traefik.http.routers.backend-staging.tls.certresolver=le-tls
       - traefik.http.services.backend-staging-service.loadbalancer.server.port=8080
