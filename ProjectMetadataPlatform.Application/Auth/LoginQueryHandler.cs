@@ -50,7 +50,7 @@ public class LoginQueryHandler : IRequestHandler<LoginQuery, JwtTokens>
             [
                 new Claim(ClaimTypes.Name, request.Username)
             ]),
-            Expires = DateTime.UtcNow.AddMinutes(5),
+            Expires = DateTime.UtcNow.AddMinutes(15),
             Issuer = validIssuer,
             Audience = validAudience,
             SigningCredentials = new SigningCredentials(issuerSigningKey, SecurityAlgorithms.HmacSha256Signature)
@@ -58,6 +58,7 @@ public class LoginQueryHandler : IRequestHandler<LoginQuery, JwtTokens>
         var tokenHandler = new JwtSecurityTokenHandler();
         var token = tokenHandler.CreateToken(tokenDescriptor);
         var stringToken = tokenHandler.WriteToken(token);
+        //TODO save the refresh token in the database
         return new JwtTokens { AccessToken = stringToken, RefreshToken = Guid.NewGuid().ToString() };
     }
 }

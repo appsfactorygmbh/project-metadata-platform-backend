@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -101,6 +102,10 @@ public static class DependencyInjection
         using var scope = serviceProvider.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<ProjectMetadataPlatformDbContext>();
 
+        if (dbContext.Users.Any())
+        {
+            return;
+        }
 
         var hasher = new PasswordHasher<IdentityUser>();
         var user = new IdentityUser

@@ -16,6 +16,7 @@ namespace ProjectMetadataPlatform.Api.Plugins;
 ///     Endpoints for managing plugins.
 /// </summary>
 [ApiController]
+[Authorize]
 [Route("[controller]")]
 public class PluginsController : ControllerBase
 {
@@ -38,7 +39,6 @@ public class PluginsController : ControllerBase
     /// <response code="201">The Plugin was created successfully.</response>
     /// <response code="400">The request data is invalid.</response>
     /// <response code="500">An internal error occurred.</response>
-    [Authorize]
     [HttpPut]
     public async Task<ActionResult<CreatePluginResponse>> Put([FromBody] CreatePluginRequest request)
     {

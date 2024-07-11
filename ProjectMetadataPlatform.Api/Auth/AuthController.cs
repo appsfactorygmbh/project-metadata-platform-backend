@@ -32,7 +32,7 @@ public class AuthController : ControllerBase
     /// </summary>
     /// <param name="request"></param>
     /// <returns></returns>
-    [HttpPut]
+    [HttpPut ("/basic")]
     public async Task<ActionResult<LoginResponse>> Put([FromBody] LoginRequest request)
     {
         var query = new LoginQuery(request.Username, request.Password);

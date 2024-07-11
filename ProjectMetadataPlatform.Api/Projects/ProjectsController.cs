@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ProjectMetadataPlatform.Api.Plugins.Models;
@@ -17,7 +18,9 @@ namespace ProjectMetadataPlatform.Api.Projects;
 /// <summary>
 ///     Endpoints for managing projects.
 /// </summary>
+
 [ApiController]
+[Authorize]
 [Route("[controller]")]
 public class ProjectsController : ControllerBase
 {

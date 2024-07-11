@@ -1,8 +1,10 @@
 using System;
 using System.IO;
 using System.Linq;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OpenApi.Models;
 using ProjectMetadataPlatform.Application;
 using ProjectMetadataPlatform.Infrastructure;
 
@@ -16,7 +18,26 @@ builder.Services.AddSwaggerGen(options =>
     var xmlDocFiles = Directory.GetFiles(Path.Combine(AppContext.BaseDirectory), "*.xml").ToList();
 
     xmlDocFiles.ForEach(path => options.IncludeXmlComments(path, true));
+    var jwtSecurityScheme = new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Description = "Enter your Bearer token like this: Bearer {your token}",
+        Scheme = JwtBearerDefaults.AuthenticationScheme,
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Reference = new OpenApiReference
+        {
+            Id = JwtBearerDefaults.AuthenticationScheme,
+            Type = ReferenceType.SecurityScheme
+        }
+    };
+    options.AddSecurityDefinition(jwtSecurityScheme.Reference.Id, jwtSecurityScheme);
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        { jwtSecurityScheme, Array.Empty<string>() }
+    });
 });
+
 builder.Services
     .AddApplicationDependencies()
     .AddInfrastructureDependencies();
