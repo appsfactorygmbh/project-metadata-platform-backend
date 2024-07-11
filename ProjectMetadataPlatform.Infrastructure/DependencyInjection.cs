@@ -94,6 +94,26 @@ public static class DependencyInjection
             });
     }
 
+    public static void AddAdminUser(this IServiceProvider serviceProvider)
+    {
+        var password = Environment.GetEnvironmentVariable("PMP_ADMIN_PASSWORD") ?? "admin";
+
+        using var scope = serviceProvider.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<ProjectMetadataPlatformDbContext>();
+
+
+        var hasher = new PasswordHasher<IdentityUser>();
+        var user = new IdentityUser
+        {
+            UserName = "admin",
+            NormalizedUserName = "admin"
+        };
+        user.PasswordHash = hasher.HashPassword(user,password);
+        dbContext.Users.Add(user);
+
+        dbContext.SaveChanges();
+    }
+
     /// <summary>
     /// Migrates the database.
     /// </summary>
@@ -104,8 +124,8 @@ public static class DependencyInjection
             using var serviceScope = serviceProvider.CreateScope();
             var services = serviceScope.ServiceProvider;
 
-            var myDependency = services.GetRequiredService<ProjectMetadataPlatformDbContext>();
-            myDependency.Database.Migrate();
+            var dbContext = services.GetRequiredService<ProjectMetadataPlatformDbContext>();
+            dbContext.Database.Migrate();
         }
     }
 }

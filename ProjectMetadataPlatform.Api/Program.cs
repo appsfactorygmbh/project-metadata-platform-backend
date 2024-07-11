@@ -29,6 +29,7 @@ builder.Services.AddControllers();
 var app = builder.Build();
 
 app.Services.MigrateDatabase();
+app.Services.AddAdminUser();
 
 app.UseSwagger();
 app.UseSwaggerUI();
