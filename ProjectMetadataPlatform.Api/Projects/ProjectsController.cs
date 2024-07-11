@@ -235,7 +235,7 @@ public class ProjectsController : ControllerBase
     [HttpGet("/filterData/businessunits")]
     public async Task<ActionResult<IEnumerable<GetBusinessUnitResponse>>> GetAllBusinessUnits()
     {
-        var query = new GetAllProjectsQuery("");
+        var query = new GetAllProjectsQuery(null, null);
         IEnumerable<Project> projects;
 
         try
@@ -267,7 +267,7 @@ public class ProjectsController : ControllerBase
     [HttpGet("filterData/teamnumbers")]
     public async Task<ActionResult<IEnumerable<GetTeamNumberResponse>>> GetAllTeamNumbers()
     {
-        var query = new GetAllProjectsQuery("");
+        var query = new GetAllProjectsQuery(null, null);
         IEnumerable<Project> projects;
 
         try

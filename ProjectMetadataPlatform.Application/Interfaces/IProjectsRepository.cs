@@ -51,7 +51,6 @@ public interface IProjectsRepository
     /// <param name="id"></param>
     /// <returns>True, if the project with the given id exists</returns>
     Task<bool> CheckProjectExists(int id);
-    Task AddOrUpdate(Project project);
 
     /// <summary>
     /// Asynchronously retrieves a collection of projects filtered by the specified business unit and/or team number.
