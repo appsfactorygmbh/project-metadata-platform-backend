@@ -1,16 +1,15 @@
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.IdentityModel.Tokens;
-using ProjectMetadataPlatform.Application.Auth;
 using ProjectMetadataPlatform.Application.Interfaces;
+using ProjectMetadataPlatform.Application.Plugins;
 using ProjectMetadataPlatform.Domain.Auth;
 
-namespace ProjectMetadataPlatform.Application.Plugins;
+namespace ProjectMetadataPlatform.Application.Auth;
 
 /// <summary>
 ///     Handler for the <see cref="CreatePluginCommand" />
@@ -43,7 +42,7 @@ public class LoginQueryHandler : IRequestHandler<LoginQuery, JwtTokens>
         //should also get this from the environment
         var validIssuer = "ValidIssuer";
         var validAudience = "ValidAudience";
-        var issuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKeyThatIsAtLeast257BitLong@345"));
+        var issuerSigningKey = new SymmetricSecurityKey("superSecretKeyThatIsAtLeast257BitLong@345"u8.ToArray());
 
         var tokenDescriptor = new SecurityTokenDescriptor
         {
@@ -59,6 +58,6 @@ public class LoginQueryHandler : IRequestHandler<LoginQuery, JwtTokens>
         var tokenHandler = new JwtSecurityTokenHandler();
         var token = tokenHandler.CreateToken(tokenDescriptor);
         var stringToken = tokenHandler.WriteToken(token);
-        return new JwtTokens{ AccessToken = stringToken, RefreshToken = Guid.NewGuid().ToString()};
+        return new JwtTokens { AccessToken = stringToken, RefreshToken = Guid.NewGuid().ToString() };
     }
 }
