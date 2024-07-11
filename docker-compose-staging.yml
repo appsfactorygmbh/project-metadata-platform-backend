@@ -2,8 +2,8 @@ services:
   backend:
     image: gitlab.dit.htwk-leipzig.de:5050/projekt2024_a_appsfactory_project_metadata_platform/backend/staging:latest
     container_name: backend-staging
-    ports:
-      - 8090:8080
+    depends_on:
+      - db
     environment:
       - PMP_DB_URL=db-staging
       - PMP_DB_USER_FILE=/run/secrets/db_user
@@ -16,7 +16,13 @@ services:
       - db_user
       - db_password
       - db_name
-  
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.backend-staging.rule=Host(`api.staging.htwk.appsfactory.app`)
+      - traefik.http.routers.backend-staging.entrypoints=websecure
+      - traefik.http.routers.backend-staging.tls.certresolver=le-tls
+      - traefik.http.services.backend-staging-service.loadbalancer.server.port=8080
+
   db:
     image: postgres:15
     container_name: db-staging
@@ -34,6 +40,12 @@ services:
       - db_user
       - db_password
       - db_name
+    labels:
+      - traefik.enable=true
+      - traefik.tcp.routers.database-staging.rule=HostSNI(`database.staging.htwk.appsfactory.app`)
+      - traefik.tcp.routers.database-staging.entrypoints=tcp
+      - traefik.tcp.routers.database-staging.tls.certresolver=le-tls
+      - traefik.tcp.services.database-staging-service.loadbalancer.server.port=5432
 
 secrets:
   db_password:
@@ -45,7 +57,8 @@ secrets:
 
 volumes:
   db_data:
-    
+
 networks:
   backend-staging:
+    name: backend-staging
     driver: bridge

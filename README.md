@@ -8,21 +8,21 @@ This project is an ASP.NET Core application using Entity Framework Core and Post
 
 ### Prerequisites
 
-- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
+-   [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
 
 ### Installation
 
 1. Clone the repository:
 
-   ```sh
-   git clone <repository-url>
-   cd backend
-   ```
+    ```sh
+    git clone <repository-url>
+    cd backend
+    ```
 
 2. Restore the dependencies:
-   ```sh
-   dotnet restore
-   ```
+    ```sh
+    dotnet restore
+    ```
 
 ### Scripts
 
@@ -44,11 +44,25 @@ Then, run the following command inside the repository directory to start the dat
 docker compose -f docker-compose-database.yml up --remove-orphans -d
 ```
 
+Next, open a terminal in the ProjectMetadataPlatform.Api directory and run the following command to apply any existing migrations to the database:
+
+With powershell (You may have to run `dotnet tool update --global PowerShell` first):
+
+```pwsh
+pwsh .\dotnet_ef.ps1 database update
+```
+
+With bash:
+
+````sh
+ sh ./dotnet_ef.sh database update
+ ```
+
 You can now run the app with the following command or an IDE of your choice:
 
 ```sh
 dotnet run
-```
+````
 
 #### Test:
 
@@ -62,17 +76,17 @@ Runs unit tests with NUnit.
 
 The project is build following the Clean Architecture principles. The project is structured as follows:
 
-- `ProjectMetadataPlatform.Application`: Application layer
-- `ProjectMetadataPlatform.Domain`: Domain layer
-- `ProjectMetadataPlatform.Infrastructure`: Infrastructure layer
-- `ProjectMetadataPlatform.Api`: Api/Presentation layer
+-   `ProjectMetadataPlatform.Application`: Application layer
+-   `ProjectMetadataPlatform.Domain`: Domain layer
+-   `ProjectMetadataPlatform.Infrastructure`: Infrastructure layer
+-   `ProjectMetadataPlatform.Api`: Api/Presentation layer
 
-- `tests/ProjectMetadataPlatform.Application.Tests`: Application layer tests
-- `tests/ProjectMetadataPlatform.Domain.Tests`: Domain layer tests
-- `tests/ProjectMetadataPlatform.Infrastructure.Tests`: Infrastructure layer tests
-- `tests/ProjectMetadataPlatform.Api.Tests`: Api/Presentation layer tests
+-   `tests/ProjectMetadataPlatform.Application.Tests`: Application layer tests
+-   `tests/ProjectMetadataPlatform.Domain.Tests`: Domain layer tests
+-   `tests/ProjectMetadataPlatform.Infrastructure.Tests`: Infrastructure layer tests
+-   `tests/ProjectMetadataPlatform.Api.Tests`: Api/Presentation layer tests
 
-## Development 
+## Development
 
 ### Running the application
 
@@ -86,38 +100,47 @@ When changing the domain models or their configurations in the infrastructure la
 2. Open a terminal in the `ProjectMetadataPlatform.Api` directory.
 3. Run the following command to apply the existing migrations to the database:
 
-   With powershell:
-   ```pwsh
-   pwsh .\dotnet_ef.ps1 database update
-   ```
+    With powershell:
 
-   With bash:
-   ```sh
-    sh ./dotnet_ef.sh database update
+    ```pwsh
+    pwsh .\dotnet_ef.ps1 database update
     ```
+
+    With bash:
+
+    ```sh
+     sh ./dotnet_ef.sh database update
+    ```
+
 4. Make the required changes to the domain models or their configurations.
 5. Run the following command to create a new migration:
 
-   With powershell:
-   ```pwsh
-   pwsh .\dotnet_ef.ps1 migrations add <migration-name>
-   ```
+    With powershell:
 
-   With bash:
-   ```sh
-    sh ./dotnet_ef.sh migrations add <migration-name>
+    ```pwsh
+    pwsh .\dotnet_ef.ps1 migrations add <migration-name>
     ```
+
+    With bash:
+
+    ```sh
+     sh ./dotnet_ef.sh migrations add <migration-name>
+    ```
+
 6. Commit the generated migration files. The files can be found in the `ProjectMetadataPlatform.Infrastructure/Migrations` directory.
 7. Push the changes to gitlab and create a merge request using the `DB-Migration` description template.
 8. Run the following command to create the migration script, then add it to the merge request description:
 
-   With powershell:
-   ```pwsh
-   pwsh .\dotnet_ef.ps1 migrations script <name-of-the-last-migration>
-   ```
+    With powershell:
 
-   With bash:
-   ```sh
-    sh ./dotnet_ef.sh migrations script <name-of-the-last-migration>
+    ```pwsh
+    pwsh .\dotnet_ef.ps1 migrations script <name-of-the-last-migration>
     ```
+
+    With bash:
+
+    ```sh
+     sh ./dotnet_ef.sh migrations script <name-of-the-last-migration>
+    ```
+
 9. Run the migration script on the staging database once the merge request is approved and merged.

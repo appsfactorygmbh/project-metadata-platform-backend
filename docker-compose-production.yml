@@ -2,8 +2,8 @@ services:
   backend:
     image: gitlab.dit.htwk-leipzig.de:5050/projekt2024_a_appsfactory_project_metadata_platform/backend/production:latest
     container_name: backend-production
-    ports:
-      - 8080:8080
+    depends_on:
+      - db
     environment:
       - PMP_DB_URL=db-production
       - PMP_DB_USER_FILE=/run/secrets/db_user
@@ -16,7 +16,13 @@ services:
       - db_user
       - db_password
       - db_name
-  
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.backend-production.rule=Host(`api.htwk.appsfactory.app`)
+      - traefik.http.routers.backend-production.entrypoints=websecure
+      - traefik.http.routers.backend-production.tls.certresolver=le-tls
+      - traefik.http.services.backend-production-service.loadbalancer.server.port=8080
+
   db:
     image: postgres:15
     container_name: db-production
@@ -34,6 +40,12 @@ services:
       - db_user
       - db_password
       - db_name
+    labels:
+      - traefik.enable=true
+      - traefik.tcp.routers.database-production.rule=HostSNI(`database.htwk.appsfactory.app`)
+      - traefik.tcp.routers.database-production.entrypoints=tcp
+      - traefik.tcp.routers.database-production.tls.certresolver=le-tls
+      - traefik.tcp.services.database-production-service.loadbalancer.server.port=5432
 
 secrets:
   db_password:
@@ -48,4 +60,5 @@ volumes:
 
 networks:
   backend-production:
+    name: backend-production
     driver: bridge
