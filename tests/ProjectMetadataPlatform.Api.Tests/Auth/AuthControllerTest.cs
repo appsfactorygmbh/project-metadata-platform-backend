@@ -1,6 +1,8 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
@@ -23,7 +25,7 @@ public class Tests
     }
 
     [Test]
-    public async Task CorrectLoginTest()
+    public async Task SuccessfulLoginTest()
     {
         _mediator.Setup(m => m.Send(It.IsAny<LoginQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new JwtTokens{AccessToken = "accessToken", RefreshToken = "refreshToken"});
@@ -38,5 +40,19 @@ public class Tests
             Assert.That(result.Value.refreshToken, Is.EqualTo("refreshToken"));
         });
         ;
+    }
+
+    [Test]
+    public async Task WrongCredentialsLoginTest()
+    {
+        _mediator.Setup(m => m.Send(It.IsAny<LoginQuery>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new InvalidOperationException("Invalid login credentials."));
+
+        var request = new LoginRequest("username", "password");
+
+        var result = await _controller.Put(request);
+        Assert.That(result.Result, Is.InstanceOf<BadRequestObjectResult>());
+        var badRequestObjectResult = result.Result as BadRequestObjectResult;
+        Assert.That(badRequestObjectResult!.Value, Is.EqualTo("Invalid login credentials."));
     }
 }
