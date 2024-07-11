@@ -145,4 +145,9 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     {
         return _context.Projects.Any(project => project.Id == id);
     }
+
+    public async Task<IEnumerable<int>> GetTeamNumbersAsync()
+    {
+        return await _context.Projects.Select(project => project.TeamNumber).Distinct().ToListAsync();
+    }
 }

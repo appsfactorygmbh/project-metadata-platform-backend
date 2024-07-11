@@ -51,4 +51,6 @@ public interface IProjectsRepository
     /// <param name="id"></param>
     /// <returns>True, if the project with the given id exists</returns>
     Task<bool> CheckProjectExists(int id);
+
+    Task <IEnumerable<int>>GetTeamNumbersAsync();
 }
