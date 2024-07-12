@@ -16,7 +16,6 @@ public class GetAllTeamNumbersControllerTest
 {
     private ProjectsController _controller;
     private Mock<IMediator> _mediator;
-    private static readonly int[] Expected = [42, 43];
 
     [SetUp]
     public void Setup()
@@ -43,7 +42,7 @@ public class GetAllTeamNumbersControllerTest
 
         Assert.That(okResult?.StatusCode, Is.EqualTo(StatusCodes.Status200OK));
         var response = (okResult.Value, Is.InstanceOf<IEnumerable<int>>());
-        Assert.That(response.Value, Is.EquivalentTo(Expected));
+        Assert.That(response.Value, Is.EquivalentTo(projectsResponseContent));
     }
 
     [Test]

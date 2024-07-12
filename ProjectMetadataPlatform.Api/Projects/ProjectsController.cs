@@ -214,9 +214,9 @@ public class ProjectsController : ControllerBase
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
 
-        IEnumerable<string> response = businessunits.Distinct();
+        IEnumerable<string> response = businessunits;
 
-        return Ok(businessunits);
+        return Ok(response);
     }
 
     /// <summary>
