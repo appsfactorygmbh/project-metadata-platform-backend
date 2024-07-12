@@ -203,4 +203,38 @@ public class ProjectsRepositoryTests : TestsWithDatabase
             Assert.That(result.Count(), Is.EqualTo(3));
         }));
     }
+    [Test]
+    public async Task GetAllTeamNumbersAsync_ReturnAllTeamNumbers()
+    {
+        var projects = new List<Project>
+        {
+            new Project
+            {
+                Id = 1,
+                ProjectName = "Regen",
+                ClientName = "Nasa",
+                BusinessUnit = "BuWeather",
+                TeamNumber = 42,
+                Department = "Homelandsecurity"
+            },
+            new Project
+            {
+                Id = 2,
+                ProjectName = "Regen",
+                ClientName = "Nasa",
+                BusinessUnit = "BuWeather",
+                TeamNumber = 43,
+                Department = "Homelandsecurity"
+            }
+        };
+
+        _context.Projects.RemoveRange(_context.Projects);
+        _context.Projects.AddRange(projects);
+        await _context.SaveChangesAsync();
+
+        IEnumerable<int> result = await _repository.GetTeamNumbersAsync();
+
+        Assert.AreEqual(2, result.Count());
+        Assert.That(result, Is.EquivalentTo(new[] { 42, 43 }));
+    }
 }
