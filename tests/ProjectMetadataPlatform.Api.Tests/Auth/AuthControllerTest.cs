@@ -32,7 +32,7 @@ public class Tests
 
         var request = new LoginRequest("username", "password");
 
-        var result = await _controller.Put(request);
+        var result = await _controller.Post(request);
         Assert.That(result.Value, Is.InstanceOf<LoginResponse>());
         Assert.Multiple(() =>
         {
@@ -48,9 +48,9 @@ public class Tests
         _mediator.Setup(m => m.Send(It.IsAny<LoginQuery>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidOperationException("Invalid login credentials."));
 
-        var request = new LoginRequest("username", "password");
+        var request = new LoginRequest("wrong_username", "password");
 
-        var result = await _controller.Put(request);
+        var result = await _controller.Post(request);
         Assert.That(result.Result, Is.InstanceOf<BadRequestObjectResult>());
         var badRequestObjectResult = result.Result as BadRequestObjectResult;
         Assert.That(badRequestObjectResult!.Value, Is.EqualTo("Invalid login credentials."));

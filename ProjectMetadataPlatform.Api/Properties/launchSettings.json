@@ -13,7 +13,10 @@
         "PMP_DB_PORT": "5432",
         "PMP_DB_NAME": "pmp_db_local",
         "PMP_DB_USER": "postgres",
-        "PMP_DB_PASSWORD": "postgres"
+        "PMP_DB_PASSWORD": "postgres",
+        "JWT_VALID_ISSUER" : "validIssuer",
+        "JWT_VALID_AUDIENCE" : "validAudience",
+        "JWT_ISSUER_SIGNING_KEY" : "superSecretKeyThatIsAtLeast257BitLong@345"
       }
     },
     "https": {
@@ -28,7 +31,10 @@
         "PMP_DB_PORT": "5432",
         "PMP_DB_NAME": "pmp_db_local",
         "PMP_DB_USER": "postgres",
-        "PMP_DB_PASSWORD": "postgres"
+        "PMP_DB_PASSWORD": "postgres",
+        "JWT_VALID_ISSUER" : "validIssuer",
+        "JWT_VALID_AUDIENCE" : "validAudience",
+        "JWT_ISSUER_SIGNING_KEY" : "superSecretKeyThatIsAtLeast257BitLong@345"
       }
     }
   }

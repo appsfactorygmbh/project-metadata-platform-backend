@@ -32,8 +32,10 @@ public class AuthController : ControllerBase
     /// </summary>
     /// <param name="request"></param>
     /// <returns></returns>
-    [HttpPut ("/basic")]
-    public async Task<ActionResult<LoginResponse>> Put([FromBody] LoginRequest request)
+    /// <response code="200">Returns the access and refresh tokens.</response>
+    /// <response code="400">If the credentials are invalid.</response>
+    [HttpPost ("basic")]
+    public async Task<ActionResult<LoginResponse>> Post([FromBody] LoginRequest request)
     {
         var query = new LoginQuery(request.Username, request.Password);
         try

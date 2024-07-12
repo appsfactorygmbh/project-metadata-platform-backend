@@ -72,7 +72,11 @@ public static class DependencyInjection
         _ = serviceCollection.AddIdentity<IdentityUser, IdentityRole>()
             .AddEntityFrameworkStores<ProjectMetadataPlatformDbContext>()
             .AddDefaultTokenProviders();
-
+        var validIssuer = Environment.GetEnvironmentVariable("JWT_VALID_ISSUER")
+                          ?? throw new InvalidOperationException("JWT_VALID_ISSUER must be configured");
+        var validAudience = Environment.GetEnvironmentVariable("JWT_VALID_AUDIENCE") ?? throw new InvalidOperationException("JWT_VALID_AUDIENCE must be configured");
+        var issuerSigningKey = Environment.GetEnvironmentVariable("JWT_ISSUER_SIGNING_KEY")
+                               ?? throw new InvalidOperationException("JWT_ISSUER_SIGNING_KEY must be configured");
         _ = serviceCollection.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -85,9 +89,9 @@ public static class DependencyInjection
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
                 //should also get this from the environment
-                ValidIssuer = "ValidIssuer",
-                ValidAudience = "ValidAudience",
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKeyThatIsAtLeast257BitLong@345"))
+                ValidIssuer = validIssuer,
+                ValidAudience = validAudience,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(issuerSigningKey))
             });
     }
 

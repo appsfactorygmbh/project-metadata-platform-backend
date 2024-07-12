@@ -25,12 +25,11 @@ public class AuthRepository :  IAuthRepository
     /// <summary>
     /// Checks if the given login credentials are correct.
     /// </summary>
-    /// <param name="username"></param>
-    /// <param name="password"></param>
+    /// <param name="username">Username of the user</param>
+    /// <param name="password">Password of the user</param>
     /// <returns>True, if the credentials are correct</returns>
     public async Task<bool> CheckLogin(string username, string password)
     {
-        Console.Write((await _userManager.Users.ToListAsync())[0].NormalizedUserName + "\n\n\n\n\n");
         var user = await _userManager.Users.FirstOrDefaultAsync(a => a.UserName == username);
         return await _userManager.CheckPasswordAsync(user!, password);
     }
