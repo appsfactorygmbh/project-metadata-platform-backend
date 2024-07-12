@@ -39,19 +39,8 @@ public class LoginQueryHandler : IRequestHandler<LoginQuery, JwtTokens>
         {
             throw new InvalidOperationException("Invalid login credentials.");
         }
-        //should also get this from the environmen
-        /*
-        var validIssuer = "ValidIssuer";
-        var validAudience = "ValidAudience";
-        var issuerSigningKey = new SymmetricSecurityKey("superSecretKeyThatIsAtLeast257BitLong@345"u8.ToArray());
-        */
-
-        var validIssuer = Environment.GetEnvironmentVariable("JWT_VALID_ISSUER")
-                          ?? throw new InvalidOperationException("JWT_VALID_ISSUER must be configured");
-        var validAudience = Environment.GetEnvironmentVariable("JWT_VALID_AUDIENCE") ?? throw new InvalidOperationException("JWT_VALID_AUDIENCE must be configured");
-        var issuerSigningKeyRaw = Environment.GetEnvironmentVariable("JWT_ISSUER_SIGNING_KEY")
-                               ?? throw new InvalidOperationException("JWT_ISSUER_SIGNING_KEY must be configured");
-        var issuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(issuerSigningKeyRaw));
+        var tokenDescriptorInformation = await _authRepository.GetTokenDescriptorInformation();
+        var issuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(tokenDescriptorInformation!.IssuerSigningKey!));
 
         var tokenDescriptor = new SecurityTokenDescriptor
         {
@@ -60,8 +49,8 @@ public class LoginQueryHandler : IRequestHandler<LoginQuery, JwtTokens>
                 new Claim(ClaimTypes.Name, request.Username)
             ]),
             Expires = DateTime.UtcNow.AddMinutes(15),
-            Issuer = validIssuer,
-            Audience = validAudience,
+            Issuer = tokenDescriptorInformation.ValidIssuer,
+            Audience = tokenDescriptorInformation.ValidAudience,
             SigningCredentials = new SigningCredentials(issuerSigningKey, SecurityAlgorithms.HmacSha256Signature)
         };
         var tokenHandler = new JwtSecurityTokenHandler();

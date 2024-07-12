@@ -34,6 +34,7 @@ public class AuthController : ControllerBase
     /// <returns></returns>
     /// <response code="200">Returns the access and refresh tokens.</response>
     /// <response code="400">If the credentials are invalid.</response>
+    /// <response code="500">If an unexpected error occurs.</response>
     [HttpPost ("basic")]
     public async Task<ActionResult<LoginResponse>> Post([FromBody] LoginRequest request)
     {

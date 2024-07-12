@@ -43,17 +43,17 @@ public sealed class ProjectMetadataPlatformDbContext : IdentityDbContext<Identit
     ///     exposed in DbSet properties on your derived context. The resulting model may be cached
     ///     and re-used for subsequent instances of your derived context.
     /// </summary>
-    /// <param name="modelBuilder">
+    /// <param name="builder">
     ///     Provides a simple API surface for configuring a
     ///     Microsoft.EntityFrameworkCore.Metadata.IMutableModel that defines the shape of your entities, the relationships
     ///     between them, and how they map to the database.
     /// </param>
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    protected override void OnModelCreating(ModelBuilder builder)
     {
-        base.OnModelCreating(modelBuilder);
-        _ = modelBuilder.ApplyConfigurationsFromAssembly(typeof(ProjectMetadataPlatformDbContext).Assembly);
+        base.OnModelCreating(builder);
+        _ = builder.ApplyConfigurationsFromAssembly(typeof(ProjectMetadataPlatformDbContext).Assembly);
 
-        SeedData(modelBuilder);
+        SeedData(builder);
     }
 
     private static void SeedData(ModelBuilder modelBuilder)

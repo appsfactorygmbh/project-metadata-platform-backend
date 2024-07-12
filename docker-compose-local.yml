@@ -14,9 +14,12 @@ services:
       - PMP_DB_NAME=pmp_db_local
       - PMP_DB_PORT=5432
       - PMP_MIGRATE_DB_ON_STARTUP=true
+      - JWT_VALID_ISSUER=validIssue
+      - JWT_VALID_AUDIENCE=validAudience
+      - JWT_ISSUER_SIGNING_KEY=superSecretKeyThatIsAtLeast257BitLong@345
     networks:
       - backend-local
-  
+
   db:
     image: postgres:15
     container_name: db-local

@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using ProjectMetadataPlatform.Domain.Auth;
 
 namespace ProjectMetadataPlatform.Application.Interfaces;
 
@@ -22,4 +23,10 @@ public interface IAuthRepository
     /// <param name="password">Password of the user</param>
     /// <returns></returns>
     Task<string?> CreateUser(string username, string password);
+
+
+    /// <summary>
+    /// Get the information for the token descriptor.
+    /// </summary>
+    Task<TokenDescriptorInformation?> GetTokenDescriptorInformation();
 }
