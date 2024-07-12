@@ -8,7 +8,6 @@ namespace ProjectMetadataPlatform.Application.Projects;
 
 public class GetAllTeamNumbersQueryHandler: IRequestHandler<GetAllTeamNumbersQuery, IEnumerable<int>>
 {
-
     private readonly IProjectsRepository _projectsRepository;
 
     public GetAllTeamNumbersQueryHandler(IProjectsRepository projectsRepository)
@@ -18,7 +17,6 @@ public class GetAllTeamNumbersQueryHandler: IRequestHandler<GetAllTeamNumbersQue
 
     public Task<IEnumerable<int>> Handle(GetAllTeamNumbersQuery request, CancellationToken cancellationToken)
     {
-
         return _projectsRepository.GetTeamNumbersAsync();
     }
 }

@@ -201,12 +201,12 @@ public class ProjectsController : ControllerBase
     [HttpGet("/filterData/businessunits")]
     public async Task<ActionResult<IEnumerable<GetBusinessUnitResponse>>> GetAllBusinessUnits()
     {
-        var query = new GetAllProjectsQuery(null, null);
-        IEnumerable<Project> projects;
+        var query = new GetAllBusinessUnitsQuery();
+        IEnumerable<string> businessunits;
 
         try
         {
-            projects = await _mediator.Send(query);
+            businessunits = await _mediator.Send(query);
         }
         catch (Exception e)
         {
@@ -214,7 +214,7 @@ public class ProjectsController : ControllerBase
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
 
-        IEnumerable<string> businessunits = projects.Select(project => project.BusinessUnit).Distinct();
+        IEnumerable<string> response = businessunits.Distinct();
 
         return Ok(businessunits);
     }
