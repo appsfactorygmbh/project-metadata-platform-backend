@@ -27,28 +27,12 @@ public class GetAllBusinessUnitsControllerTest
     [Test]
     public async Task GetAllBusinessUnitsTest()
     {
-        var projectsResponseContent = new List<Project>
+        IEnumerable<string> projectsResponseContent = new List<string>()
         {
-            new()
-            {
-                Id = 50,
-                ProjectName = "MetaDataPlatform",
-                ClientName = "Appsfactory",
-                BusinessUnit = "Health",
-                TeamNumber = 200,
-                Department = "Security"
-            },
-            new Project
-            {
-                Id = 2,
-                ProjectName = "James",
-                BusinessUnit = "777",
-                ClientName = "Lucifer",
-                Department = "Venus",
-                TeamNumber = 43
-            },
+            "BusinessUnit1",
+            "BusinessUnit2"
         };
-        _mediator.Setup(m => m.Send(It.IsAny<GetAllProjectsQuery>(), It.IsAny<CancellationToken>()))
+        _mediator.Setup(m => m.Send(It.IsAny<GetAllBusinessUnitsQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(projectsResponseContent);
 
         var result = await _controller.GetAllBusinessUnits();
@@ -56,24 +40,8 @@ public class GetAllBusinessUnitsControllerTest
         Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
         var okResult = result.Result as OkObjectResult;
 
-        Assert.That(okResult.StatusCode, Is.EqualTo(StatusCodes.Status200OK));
+        Assert.That(okResult?.StatusCode, Is.EqualTo(StatusCodes.Status200OK));
         var response = (okResult.Value, Is.InstanceOf<IEnumerable<string>>());
-        Assert.That(response.Value, Is.EquivalentTo(new[] { "Health", "777" }));
-    }
-
-    [Test]
-    public async Task GetAllBusinessUnits_EmptyList_Test()
-    {
-        _mediator.Setup(m => m.Send(It.IsAny<GetAllProjectsQuery>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<Project>());
-
-        var result = await _controller.GetAllBusinessUnits();
-
-        Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
-        var okResult = result.Result as OkObjectResult;
-
-        Assert.That(okResult.StatusCode, Is.EqualTo(StatusCodes.Status200OK));
-        var response = (okResult.Value, Is.InstanceOf<IEnumerable<string>>());
-        Assert.That(response.Value, Is.Empty);
+        Assert.That(response.Value, Is.EquivalentTo(projectsResponseContent));
     }
 }
