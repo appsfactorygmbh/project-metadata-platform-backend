@@ -20,6 +20,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\..\ProjectMetadataPlatform.Api\ProjectMetadataPlatform.Api.csproj" />
         <ProjectReference Include="..\..\ProjectMetadataPlatform.Application\ProjectMetadataPlatform.Application.csproj"/>
 
     </ItemGroup>
