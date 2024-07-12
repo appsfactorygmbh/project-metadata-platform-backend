@@ -39,8 +39,8 @@ public class LoginQueryHandler : IRequestHandler<LoginQuery, JwtTokens>
         {
             throw new InvalidOperationException("Invalid login credentials.");
         }
-        var tokenDescriptorInformation = await _authRepository.GetTokenDescriptorInformation();
-        var issuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(tokenDescriptorInformation!.IssuerSigningKey!));
+        var tokenDescriptorInformation = TokenDescriptorInformation.ReadFromEnvVariables();
+        var issuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(tokenDescriptorInformation.IssuerSigningKey));
 
         var tokenDescriptor = new SecurityTokenDescriptor
         {

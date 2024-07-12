@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Linq;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -10,6 +9,8 @@ using ProjectMetadataPlatform.Infrastructure.DataAccess;
 using ProjectMetadataPlatform.Infrastructure.Plugins;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using ProjectMetadataPlatform.Application;
+using ProjectMetadataPlatform.Application.Auth;
 
 namespace ProjectMetadataPlatform.Infrastructure;
 
@@ -38,29 +39,14 @@ public static class DependencyInjection
     {
         var url = Environment.GetEnvironmentVariable("PMP_DB_URL");
         var port = Environment.GetEnvironmentVariable("PMP_DB_PORT");
-        var user = GetEnvVarOrLoadFromFile("PMP_DB_USER");
-        var password = GetEnvVarOrLoadFromFile("PMP_DB_PASSWORD");
-        var database = GetEnvVarOrLoadFromFile("PMP_DB_NAME");
+        var user = EnvironmentUtils.GetEnvVarOrLoadFromFile("PMP_DB_USER");
+        var password = EnvironmentUtils.GetEnvVarOrLoadFromFile("PMP_DB_PASSWORD");
+        var database = EnvironmentUtils.GetEnvVarOrLoadFromFile("PMP_DB_NAME");
 
         var connectionString = $"Host={url};Port={port};User Id={user};Password={password};Database={database}";
 
         _ = serviceCollection.AddDbContext<ProjectMetadataPlatformDbContext>(options
             => options.UseNpgsql(connectionString));
-
-        static string GetEnvVarOrLoadFromFile(string envVarName)
-        {
-            var value = Environment.GetEnvironmentVariable(envVarName);
-
-            if (value is not null)
-            {
-                return value;
-            }
-
-            var path = Environment.GetEnvironmentVariable(envVarName + "_FILE")
-                       ?? throw new InvalidOperationException($"Either {envVarName} or {envVarName}_FILE must be configured");
-
-            return File.ReadAllText(path);
-        }
     }
 
     /// <summary>
@@ -72,11 +58,9 @@ public static class DependencyInjection
         _ = serviceCollection.AddIdentity<IdentityUser, IdentityRole>()
             .AddEntityFrameworkStores<ProjectMetadataPlatformDbContext>()
             .AddDefaultTokenProviders();
-        var validIssuer = Environment.GetEnvironmentVariable("JWT_VALID_ISSUER")
-                          ?? throw new InvalidOperationException("JWT_VALID_ISSUER must be configured");
-        var validAudience = Environment.GetEnvironmentVariable("JWT_VALID_AUDIENCE") ?? throw new InvalidOperationException("JWT_VALID_AUDIENCE must be configured");
-        var issuerSigningKey = Environment.GetEnvironmentVariable("JWT_ISSUER_SIGNING_KEY")
-                               ?? throw new InvalidOperationException("JWT_ISSUER_SIGNING_KEY must be configured");
+
+        var tokenDescriptorInformation = TokenDescriptorInformation.ReadFromEnvVariables();
+
         _ = serviceCollection.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -89,9 +73,9 @@ public static class DependencyInjection
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
                 //should also get this from the environment
-                ValidIssuer = validIssuer,
-                ValidAudience = validAudience,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(issuerSigningKey))
+                ValidIssuer = tokenDescriptorInformation.ValidIssuer,
+                ValidAudience = tokenDescriptorInformation.ValidAudience,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenDescriptorInformation.IssuerSigningKey))
             });
     }
 
@@ -117,7 +101,7 @@ public static class DependencyInjection
             UserName = "admin",
             NormalizedUserName = "admin"
         };
-        user.PasswordHash = hasher.HashPassword(user,password);
+        user.PasswordHash = hasher.HashPassword(user, password);
         _ = dbContext.Users.Add(user);
 
         _ = dbContext.SaveChanges();

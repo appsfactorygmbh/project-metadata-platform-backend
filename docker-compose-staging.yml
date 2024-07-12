@@ -10,12 +10,16 @@ services:
       - PMP_DB_PASSWORD_FILE=/run/secrets/db_password
       - PMP_DB_NAME_FILE=/run/secrets/db_name
       - PMP_DB_PORT=5432
+      - JWT_VALID_ISSUER=validIssue
+      - JWT_VALID_AUDIENCE=validAudience
+      - JWT_ISSUER_SIGNING_KEY_FILE=/run/secrets/jwt_issuer_signing_key
     networks:
       - backend-staging
     secrets:
       - db_user
       - db_password
       - db_name
+      - jwt_issuer_signing_key
     labels:
       - traefik.enable=true
       - traefik.http.routers.backend-staging.rule=Host(`api.staging.htwk.appsfactory.app`)
@@ -54,6 +58,8 @@ secrets:
     file: db_user.txt
   db_name:
     file: db_name.txt
+  jwt_issuer_signing_key:
+    file: jwt_issuer_signing_key.txt
 
 volumes:
   db_data:
