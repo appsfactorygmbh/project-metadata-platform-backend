@@ -22,6 +22,7 @@ public class AuthRepository : RepositoryBase<RefreshToken>,IAuthRepository
     {
         _userManager = userManager;
         _context = dbContext;
+
     }
 
     /// <summary>
@@ -48,11 +49,12 @@ public class AuthRepository : RepositoryBase<RefreshToken>,IAuthRepository
         var result = await _userManager.CreateAsync(user, password);
         return result.Succeeded ? user.Id : null;
     }
-    public async Task StoreRefreshToken(string userId, string refreshToken)
+    public async Task StoreRefreshToken(string username, string refreshToken)
     {
+        var user = await _userManager.Users.FirstOrDefaultAsync(a => a.UserName == username);
         var RefreshToken = new RefreshToken
         {
-            UserId = userId,
+            UserId = user.Id,
             Token = refreshToken,
             ExpirationDate = DateTime.UtcNow.AddHours(6)
 
@@ -60,11 +62,7 @@ public class AuthRepository : RepositoryBase<RefreshToken>,IAuthRepository
         Create(RefreshToken);
         _ = await _context.SaveChangesAsync();
     }
-    public async Task<string> GetUserId(string username)
-    {
-        var user = await _userManager.Users.FirstOrDefaultAsync(a => a.UserName == username);
-        return user.Id;
-    }
+
 
 
 }

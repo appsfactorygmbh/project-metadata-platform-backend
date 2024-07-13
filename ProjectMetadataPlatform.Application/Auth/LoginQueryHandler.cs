@@ -57,7 +57,7 @@ public class LoginQueryHandler : IRequestHandler<LoginQuery, JwtTokens>
         var token = tokenHandler.CreateToken(tokenDescriptor);
         var stringToken = tokenHandler.WriteToken(token);
         var refreshToken = Guid.NewGuid().ToString();
-        _authRepository.StoreRefreshToken(refreshToken,_authRepository.GetUserId(request.Username).Result);
+        await _authRepository.StoreRefreshToken(request.Username,refreshToken);
         return new JwtTokens { AccessToken = stringToken, RefreshToken = refreshToken };
     }
 }
