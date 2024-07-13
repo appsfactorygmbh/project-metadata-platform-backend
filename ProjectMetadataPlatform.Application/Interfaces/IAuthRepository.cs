@@ -23,4 +23,10 @@ public interface IAuthRepository
     /// <param name="password">Password of the user</param>
     /// <returns></returns>
     Task<string?> CreateUser(string username, string password);
+
+    Task StoreRefreshToken(string userId, string refreshToken);
+
+    Task<string> GetUserId(string username);
+
+
 }
