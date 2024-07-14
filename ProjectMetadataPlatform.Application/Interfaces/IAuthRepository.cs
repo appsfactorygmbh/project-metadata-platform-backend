@@ -26,6 +26,8 @@ public interface IAuthRepository
 
     Task StoreRefreshToken(string username, string refreshToken);
 
+    Task UpdateRefreshToken(string username, string refreshToken);
 
+    Task<bool> CheckRefreshToken(string username);
 
 }

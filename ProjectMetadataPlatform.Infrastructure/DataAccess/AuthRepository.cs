@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -65,6 +66,21 @@ public class AuthRepository : RepositoryBase<RefreshToken>,IAuthRepository
         _ = await _context.SaveChangesAsync();
     }
 
+    public async Task UpdateRefreshToken(string username, string refreshToken)
+    {
+        var user = await _userManager.Users.FirstOrDefaultAsync(a => a.UserName == username);
+        var RefreshToken = GetIf(rt => rt.UserId == user.Id).FirstOrDefaultAsync().Result;
+        RefreshToken.Token = refreshToken;
+        RefreshToken.ExpirationDate = DateTime.UtcNow.AddHours(6);
+        Update(RefreshToken);
+        _ = await _context.SaveChangesAsync();
+    }
+
+    public async Task<bool> CheckRefreshToken(string username)
+    {
+        var user = await _userManager.Users.FirstOrDefaultAsync(a => a.UserName == username);
+        return GetIf(rt => rt.UserId == user.Id).Any();
+    }
 
 
 }
