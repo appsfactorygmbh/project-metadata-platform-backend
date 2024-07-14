@@ -15,7 +15,7 @@ public class RefreshTokenModelConfig : IEntityTypeConfiguration<RefreshToken>
     public void Configure(EntityTypeBuilder<RefreshToken> builder)
     {
         // Set the primary key for the Project entity
-        _ = builder.HasKey(e => e.Token);
+        _ = builder.HasKey(e => e.Id);
 
         _ = builder.HasOne(pp => pp.User)
             .WithMany()

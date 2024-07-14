@@ -60,7 +60,7 @@ public class AuthController : ControllerBase
 
     [HttpGet("refresh")]
 
-    public async Task<ActionResult<LoginResponse>> RefreshToken([FromHeader(Name = "Authorization")] RefreshRequest request )
+    public async Task<ActionResult<LoginResponse>> Get([FromHeader(Name = "Authorization")] RefreshRequest request )
     {
 
         var query = new RefreshTokenQuery(request.AccessToken, request.RefreshToken);

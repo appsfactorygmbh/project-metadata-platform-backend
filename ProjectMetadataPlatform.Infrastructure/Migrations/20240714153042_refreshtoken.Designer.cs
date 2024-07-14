@@ -12,7 +12,7 @@ using ProjectMetadataPlatform.Infrastructure.DataAccess;
 namespace ProjectMetadataPlatform.Infrastructure.Migrations
 {
     [DbContext(typeof(ProjectMetadataPlatformDbContext))]
-    [Migration("20240714140157_refreshtoken")]
+    [Migration("20240714153042_refreshtoken")]
     partial class refreshtoken
     {
         /// <inheritdoc />
@@ -223,17 +223,24 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
 
             modelBuilder.Entity("ProjectMetadataPlatform.Domain.Auth.RefreshToken", b =>
                 {
-                    b.Property<string>("Token")
-                        .HasColumnType("text");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("ExpirationDate")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("Token");
+                    b.HasKey("Id");
 
                     b.HasIndex("UserId");
 

@@ -55,4 +55,22 @@ public class Tests
         var badRequestObjectResult = result.Result as BadRequestObjectResult;
         Assert.That(badRequestObjectResult!.Value, Is.EqualTo("Invalid login credentials."));
     }
+
+    [Test]
+    public async Task SuccessfulRefreshTest()
+    {
+        _mediator.Setup(m => m.Send(It.IsAny<RefreshTokenQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new JwtTokens{AccessToken = "accessToken", RefreshToken = "refreshToken"});
+
+        var request = new RefreshRequest("username", "password");
+
+        var result = await _controller.Get(request);
+        Assert.That(result.Value, Is.InstanceOf<LoginResponse>());
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Value.AccessToken, Is.EqualTo("accessToken"));
+            Assert.That(result.Value.RefreshToken, Is.EqualTo("refreshToken"));
+        });
+        ;
+    }
 }
