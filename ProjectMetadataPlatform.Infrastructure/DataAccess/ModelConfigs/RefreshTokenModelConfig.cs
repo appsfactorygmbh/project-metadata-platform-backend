@@ -1,0 +1,24 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using ProjectMetadataPlatform.Domain.Auth;
+
+namespace ProjectMetadataPlatform.Infrastructure.DataAccess.ModelConfigs;
+
+public class RefreshTokenModelConfig : IEntityTypeConfiguration<RefreshToken>
+{
+
+    /// <summary>
+    ///     Configures the Project entity.
+    /// </summary>
+    /// <param name="builder"></param>
+    public void Configure(EntityTypeBuilder<RefreshToken> builder)
+    {
+        // Set the primary key for the Project entity
+        _ = builder.HasKey(e => e.Token);
+
+        _ = builder.HasOne(pp => pp.User)
+            .WithOne()
+            .HasForeignKey<IdentityUser>(pp => pp.Id);
+    }
+}
