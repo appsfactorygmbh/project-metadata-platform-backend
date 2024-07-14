@@ -62,8 +62,8 @@ public class AuthController : ControllerBase
 
     public async Task<ActionResult<LoginResponse>> RefreshToken([FromHeader(Name = "Authorization")] RefreshRequest request )
     {
-        /*
-        var query = new RefreshTokenQuery(request);
+
+        var query = new RefreshTokenQuery(request.AccessToken, request.RefreshToken);
         try
         {
             var tokens = await _mediator.Send(query);
@@ -79,8 +79,8 @@ public class AuthController : ControllerBase
             Console.WriteLine(e.StackTrace);
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
-        */
-        return new LoginResponse("","");
+
+
     }
 
 }

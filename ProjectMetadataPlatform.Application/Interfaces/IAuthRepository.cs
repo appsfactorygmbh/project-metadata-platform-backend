@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Threading.Tasks;
 using ProjectMetadataPlatform.Domain.Auth;
 
@@ -30,4 +31,5 @@ public interface IAuthRepository
 
     Task<bool> CheckRefreshToken(string username);
 
+    Task<bool> CheckRefreshTokenRequest(string username, string refreshToken);
 }

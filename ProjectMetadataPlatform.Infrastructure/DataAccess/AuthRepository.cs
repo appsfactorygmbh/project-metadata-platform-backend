@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -80,6 +81,12 @@ public class AuthRepository : RepositoryBase<RefreshToken>,IAuthRepository
     {
         var user = await _userManager.Users.FirstOrDefaultAsync(a => a.UserName == username);
         return GetIf(rt => rt.UserId == user.Id).Any();
+    }
+    public async Task<bool> CheckRefreshTokenRequest(string username, string refreshToken)
+    {
+        var user = await _userManager.Users.FirstOrDefaultAsync(a => a.UserName == username);
+        var token = GetIf(rt => rt.UserId == user.Id).FirstOrDefaultAsync().Result;
+        return user != null || token.Token != refreshToken || token.ExpirationDate < DateTime.UtcNow;
     }
 
 
