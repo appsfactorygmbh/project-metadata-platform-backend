@@ -54,8 +54,10 @@ public class AuthRepository : RepositoryBase<RefreshToken>,IAuthRepository
         var user = await _userManager.Users.FirstOrDefaultAsync(a => a.UserName == username);
         var RefreshToken = new RefreshToken
         {
-            User = user,
+
             Token = refreshToken,
+            User = user,
+            UserId = user.Id,
             ExpirationDate = DateTime.UtcNow.AddHours(6)
 
         };

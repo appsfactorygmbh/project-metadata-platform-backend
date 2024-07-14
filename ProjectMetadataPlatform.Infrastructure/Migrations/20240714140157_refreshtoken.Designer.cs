@@ -12,7 +12,7 @@ using ProjectMetadataPlatform.Infrastructure.DataAccess;
 namespace ProjectMetadataPlatform.Infrastructure.Migrations
 {
     [DbContext(typeof(ProjectMetadataPlatformDbContext))]
-    [Migration("20240714132853_refreshtoken")]
+    [Migration("20240714140157_refreshtoken")]
     partial class refreshtoken
     {
         /// <inheritdoc />
@@ -229,7 +229,13 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
                     b.Property<DateTime>("ExpirationDate")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.HasKey("Token");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("RefreshToken");
                 });
@@ -430,15 +436,6 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUser", b =>
-                {
-                    b.HasOne("ProjectMetadataPlatform.Domain.Auth.RefreshToken", null)
-                        .WithOne("User")
-                        .HasForeignKey("Microsoft.AspNetCore.Identity.IdentityUser", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
@@ -481,6 +478,17 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("ProjectMetadataPlatform.Domain.Auth.RefreshToken", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("ProjectMetadataPlatform.Domain.Plugins.ProjectPlugins", b =>
                 {
                     b.HasOne("ProjectMetadataPlatform.Domain.Plugins.Plugin", "Plugin")
@@ -498,12 +506,6 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
                     b.Navigation("Plugin");
 
                     b.Navigation("Project");
-                });
-
-            modelBuilder.Entity("ProjectMetadataPlatform.Domain.Auth.RefreshToken", b =>
-                {
-                    b.Navigation("User")
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("ProjectMetadataPlatform.Domain.Plugins.Plugin", b =>

@@ -16,29 +16,29 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
                 columns: table => new
                 {
                     Token = table.Column<string>(type: "text", nullable: false),
+                    UserId = table.Column<string>(type: "text", nullable: false),
                     ExpirationDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_RefreshToken", x => x.Token);
+                    table.ForeignKey(
+                        name: "FK_RefreshToken_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.AddForeignKey(
-                name: "FK_AspNetUsers_RefreshToken_Id",
-                table: "AspNetUsers",
-                column: "Id",
-                principalTable: "RefreshToken",
-                principalColumn: "Token",
-                onDelete: ReferentialAction.Cascade);
+            migrationBuilder.CreateIndex(
+                name: "IX_RefreshToken_UserId",
+                table: "RefreshToken",
+                column: "UserId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_AspNetUsers_RefreshToken_Id",
-                table: "AspNetUsers");
-
             migrationBuilder.DropTable(
                 name: "RefreshToken");
         }
