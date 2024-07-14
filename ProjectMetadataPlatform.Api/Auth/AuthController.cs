@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ProjectMetadataPlatform.Api.Auth.Models;
@@ -56,4 +57,30 @@ public class AuthController : ControllerBase
         }
 
     }
+
+    [HttpGet("refresh")]
+
+    public async Task<ActionResult<LoginResponse>> RefreshToken([FromHeader(Name = "Authorization")] RefreshRequest request )
+    {
+        /*
+        var query = new RefreshTokenQuery(request);
+        try
+        {
+            var tokens = await _mediator.Send(query);
+            return new LoginResponse(tokens.AccessToken!, tokens.RefreshToken!);
+        }
+        catch (InvalidOperationException e)
+        {
+            return BadRequest(e.Message);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            Console.WriteLine(e.StackTrace);
+            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+        }
+        */
+        return new LoginResponse("","");
+    }
+
 }
