@@ -25,26 +25,12 @@ public class RefreshTokenQueryHandler : IRequestHandler<RefreshTokenQuery, JwtTo
     }
     public async Task<JwtTokens> Handle(RefreshTokenQuery request, CancellationToken cancellationToken)
     {
-        var principal = new JwtSecurityTokenHandler().ValidateToken(request.AccessToken, new TokenValidationParameters
-        {
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(TokenDescriptorInformation.ReadFromEnvVariables().IssuerSigningKey)),
-            ValidateIssuer = true,
-            ValidIssuer = TokenDescriptorInformation.ReadFromEnvVariables().ValidIssuer,
-            ValidateAudience = true,
-            ValidAudience = TokenDescriptorInformation.ReadFromEnvVariables().ValidAudience,
-            ValidateLifetime = false
 
-        }, out _);
-
-        if (principal?.Identity?.Name is null)
-        {
-            throw new AuthenticationException("Invalid token.");
-        }
-        if (!_authRepository.CheckRefreshTokenRequest(principal.Identity.Name, request.RefreshToken).Result)
+        if (!_authRepository.CheckRefreshTokenRequest( request.RefreshToken).Result)
         {
             throw new AuthenticationException("Invalid refresh token.");
         }
+
         var tokenDescriptorInformation = TokenDescriptorInformation.ReadFromEnvVariables();
         var issuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(tokenDescriptorInformation.IssuerSigningKey));
 
@@ -52,7 +38,7 @@ public class RefreshTokenQueryHandler : IRequestHandler<RefreshTokenQuery, JwtTo
         {
             Subject = new ClaimsIdentity(
             [
-                new Claim(ClaimTypes.Name, principal.Identity.Name)
+                new Claim(ClaimTypes.Name,_authRepository.GetUserNamebyRefreshToken(request.RefreshToken).Result)
             ]),
             Expires = DateTime.UtcNow.AddMinutes(15),
             Issuer = tokenDescriptorInformation.ValidIssuer,

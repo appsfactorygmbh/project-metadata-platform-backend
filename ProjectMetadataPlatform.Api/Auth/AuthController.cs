@@ -1,4 +1,5 @@
 using System;
+using System.Security.Authentication;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -60,16 +61,16 @@ public class AuthController : ControllerBase
 
     [HttpGet("refresh")]
 
-    public async Task<ActionResult<LoginResponse>> Get([FromHeader(Name = "Authorization")] RefreshRequest request )
+    public async Task<ActionResult<LoginResponse>> Get([FromHeader(Name = "Authorization")] string refreshToken )
     {
 
-        var query = new RefreshTokenQuery(request.AccessToken, request.RefreshToken);
+        var query = new RefreshTokenQuery(refreshToken);
         try
         {
             var tokens = await _mediator.Send(query);
             return new LoginResponse(tokens.AccessToken!, tokens.RefreshToken!);
         }
-        catch (InvalidOperationException e)
+        catch (AuthenticationException e)
         {
             return BadRequest(e.Message);
         }

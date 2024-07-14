@@ -1,4 +1,5 @@
 using System;
+using System.Security.Authentication;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -62,7 +63,7 @@ public class Tests
         _mediator.Setup(m => m.Send(It.IsAny<RefreshTokenQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new JwtTokens{AccessToken = "accessToken", RefreshToken = "refreshToken"});
 
-        var request = new RefreshRequest("username", "password");
+        var request = "refreshToken";
 
         var result = await _controller.Get(request);
         Assert.That(result.Value, Is.InstanceOf<LoginResponse>());
@@ -72,5 +73,19 @@ public class Tests
             Assert.That(result.Value.RefreshToken, Is.EqualTo("refreshToken"));
         });
         ;
+    }
+
+    [Test]
+    public async Task InvalidRefreshTokenTest()
+    {
+        _mediator.Setup(m => m.Send(It.IsAny<RefreshTokenQuery>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new AuthenticationException("Invalid refresh token."));
+
+        var request = "invalidRefreshToken";
+
+        var result = await _controller.Get(request);
+        Assert.That(result.Result, Is.InstanceOf<BadRequestObjectResult>());
+        var badRequestObjectResult = result.Result as BadRequestObjectResult;
+        Assert.That(badRequestObjectResult!.Value, Is.EqualTo("Invalid refresh token."));
     }
 }

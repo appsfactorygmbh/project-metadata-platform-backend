@@ -31,5 +31,7 @@ public interface IAuthRepository
 
     Task<bool> CheckRefreshToken(string username);
 
-    Task<bool> CheckRefreshTokenRequest(string username, string refreshToken);
+    Task<bool> CheckRefreshTokenRequest(string refreshToken);
+
+    Task<string> GetUserNamebyRefreshToken(string refreshToken);
 }

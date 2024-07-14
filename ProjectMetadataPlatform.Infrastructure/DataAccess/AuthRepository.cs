@@ -79,14 +79,18 @@ public class AuthRepository : RepositoryBase<RefreshToken>,IAuthRepository
 
     public async Task<bool> CheckRefreshToken(string username)
     {
-        var user = await _userManager.Users.FirstOrDefaultAsync(a => a.UserName == username);
-        return GetIf(rt => rt.UserId == user.Id).Any();
+
+        return GetIf(rt => rt.User.UserName == username).Any();
     }
-    public async Task<bool> CheckRefreshTokenRequest(string username, string refreshToken)
+    public async Task<bool> CheckRefreshTokenRequest(string refreshToken)
     {
-        var user = await _userManager.Users.FirstOrDefaultAsync(a => a.UserName == username);
-        var token = GetIf(rt => rt.UserId == user.Id).FirstOrDefaultAsync().Result;
-        return user != null || token.Token != refreshToken || token.ExpirationDate < DateTime.UtcNow;
+        var token = GetIf(rt => rt.Token == refreshToken).FirstOrDefaultAsync().Result;
+        return (token != null  && token.ExpirationDate < DateTime.UtcNow);
+    }
+    public async Task<string> GetUserNamebyRefreshToken(string refreshToken)
+    {
+        var token = GetIf(rt => rt.Token == refreshToken).FirstOrDefaultAsync().Result;
+        return token.User.UserName;
     }
 
 
