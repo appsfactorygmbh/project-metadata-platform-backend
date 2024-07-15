@@ -74,7 +74,9 @@ public class AuthRepository : RepositoryBase<RefreshToken>,IAuthRepository
         RefreshToken.Token = refreshToken;
         RefreshToken.ExpirationDate = DateTime.UtcNow.AddHours(6);
         Update(RefreshToken);
+
         _ = await _context.SaveChangesAsync();
+        Console.WriteLine("UpdatedToken "+GetIf(rt => rt.UserId == user.Id).FirstOrDefaultAsync().Result.Token);
     }
 
     public async Task<bool> CheckRefreshToken(string username)
@@ -85,12 +87,15 @@ public class AuthRepository : RepositoryBase<RefreshToken>,IAuthRepository
     public async Task<bool> CheckRefreshTokenRequest(string refreshToken)
     {
         var token = GetIf(rt => rt.Token == refreshToken).FirstOrDefaultAsync().Result;
-        return (token != null  && token.ExpirationDate < DateTime.UtcNow);
+        Console.WriteLine("CheckRequest "+token.Token);
+        return (token != null  && token.ExpirationDate > DateTime.UtcNow);
     }
     public async Task<string> GetUserNamebyRefreshToken(string refreshToken)
     {
         var token = GetIf(rt => rt.Token == refreshToken).FirstOrDefaultAsync().Result;
-        return token.User.UserName;
+        var user = await _userManager.Users.FirstOrDefaultAsync(a => a.Id == token.UserId);
+
+        return user.UserName;;
     }
 
 

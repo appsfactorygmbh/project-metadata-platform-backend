@@ -61,10 +61,15 @@ public class AuthController : ControllerBase
 
     [HttpGet("refresh")]
 
-    public async Task<ActionResult<LoginResponse>> Get([FromHeader(Name = "Authorization")] string refreshToken )
+    public async Task<ActionResult<LoginResponse>> Get([FromHeader(Name = "Authorize")] string refreshToken )
     {
+        Console.WriteLine(refreshToken);
+        if (!refreshToken.StartsWith("Refresh "))
+        {
+            return BadRequest("Invalid Header format");
+        }
 
-        var query = new RefreshTokenQuery(refreshToken);
+        var query = new RefreshTokenQuery(refreshToken.Substring(8));
         try
         {
             var tokens = await _mediator.Send(query);

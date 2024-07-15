@@ -25,11 +25,11 @@ public class RefreshTokenQueryHandler : IRequestHandler<RefreshTokenQuery, JwtTo
     }
     public async Task<JwtTokens> Handle(RefreshTokenQuery request, CancellationToken cancellationToken)
     {
-
         if (!_authRepository.CheckRefreshTokenRequest( request.RefreshToken).Result)
         {
             throw new AuthenticationException("Invalid refresh token.");
         }
+        var username = await _authRepository.GetUserNamebyRefreshToken(request.RefreshToken);
 
         var tokenDescriptorInformation = TokenDescriptorInformation.ReadFromEnvVariables();
         var issuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(tokenDescriptorInformation.IssuerSigningKey));
@@ -38,7 +38,7 @@ public class RefreshTokenQueryHandler : IRequestHandler<RefreshTokenQuery, JwtTo
         {
             Subject = new ClaimsIdentity(
             [
-                new Claim(ClaimTypes.Name,_authRepository.GetUserNamebyRefreshToken(request.RefreshToken).Result)
+                new Claim(ClaimTypes.Name,username)
             ]),
             Expires = DateTime.UtcNow.AddMinutes(15),
             Issuer = tokenDescriptorInformation.ValidIssuer,
