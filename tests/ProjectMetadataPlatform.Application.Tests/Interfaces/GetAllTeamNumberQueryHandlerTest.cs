@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Api.Projects;
+using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Application.Projects;
 
 namespace ProjectMetadataPlatform.Application.Tests.Interfaces;
@@ -16,12 +17,11 @@ public class GetAllTeamNumberQueryHandlerTest
     [SetUp]
     public void Setup()
     {
-        _mediator = new Mock<IMediator>();
-        _controller = new ProjectsController(_mediator.Object);
+        _mockProjectRepo = new Mock<IProjectsRepository>();
+        _handler = new GetAllTeamNumbersQueryHandler(_mockProjectRepo.Object);
     }
-
-    private ProjectsController _controller;
-    private Mock<IMediator> _mediator;
+    private GetAllTeamNumbersQueryHandler _handler;
+    private Mock<IProjectsRepository> _mockProjectRepo;
 
     [Test]
     public async Task GetAllTeamNumbersTest()
@@ -31,16 +31,14 @@ public class GetAllTeamNumberQueryHandlerTest
             42,
             43
         };
-        _mediator.Setup(m => m.Send(It.IsAny<GetAllTeamNumbersQuery>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(projectsResponseContent);
+        _mockProjectRepo.Setup(m => m.GetTeamNumbersAsync()).ReturnsAsync(projectsResponseContent);
 
-        var result = await _controller.GetAllTeamNumbers();
+        var query = new GetAllTeamNumbersQuery();
+        var result = await _handler.Handle(query, It.IsAny<CancellationToken>());
 
-        Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
-        var okResult = result.Result as OkObjectResult;
+        Assert.That(result, Is.InstanceOf<IEnumerable<int>>());
 
-        Assert.That(okResult?.StatusCode, Is.EqualTo(StatusCodes.Status200OK));
-        var response = (okResult.Value, Is.InstanceOf<IEnumerable<int>>());
-        Assert.That(response.Value, Is.EquivalentTo(projectsResponseContent));
+        Assert.That( result, Is.EquivalentTo(projectsResponseContent));
+
     }
 }
