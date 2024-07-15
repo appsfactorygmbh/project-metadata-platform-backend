@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using ProjectMetadataPlatform.Domain.Logs;
 using ProjectMetadataPlatform.Domain.Plugins;
 
 namespace ProjectMetadataPlatform.Domain.Projects;
@@ -42,6 +43,8 @@ public class Project
     ///     Is used for the many-to-many relation in EF core.
     /// </summary>
     public ICollection<ProjectPlugins>? ProjectPlugins { get; set; }
+
+    public ICollection<Log>? ProjectLogs { get; set; }
 
     /// <summary>
     /// A boolean indicating if a plugin is archived/deleted.

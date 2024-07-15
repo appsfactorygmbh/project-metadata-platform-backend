@@ -20,7 +20,5 @@ public class PluginModelConfig : IEntityTypeConfiguration<Plugin>
         _ = builder.HasMany(p => p.ProjectPlugins)
             .WithOne(pp => pp.Plugin)
             .HasForeignKey(pp => pp.PluginId);
-
-
     }
 }
