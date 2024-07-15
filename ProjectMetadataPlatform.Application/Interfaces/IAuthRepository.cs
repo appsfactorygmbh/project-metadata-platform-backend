@@ -1,6 +1,6 @@
-using System.Security.Claims;
+
 using System.Threading.Tasks;
-using ProjectMetadataPlatform.Domain.Auth;
+
 
 namespace ProjectMetadataPlatform.Application.Interfaces;
 
@@ -25,13 +25,40 @@ public interface IAuthRepository
     /// <returns></returns>
     Task<string?> CreateUser(string username, string password);
 
+    /// <summary>
+    /// Saves a refresh Token to the database.
+    /// </summary>
+    /// <param name="username">associated Username</param>
+    /// <param name="refreshToken">Value of the Token</param>
+    /// <returns></returns>
     Task StoreRefreshToken(string username, string refreshToken);
 
+    /// <summary>
+    /// updates an existing refresh Token.
+    /// </summary>
+    /// <param name="username">associates Username</param>
+    /// <param name="refreshToken">Values of the Token</param>
+    /// <returns></returns>
     Task UpdateRefreshToken(string username, string refreshToken);
 
-    Task<bool> CheckRefreshToken(string username);
+    /// <summary>
+    /// Checks for the existence of a refresh Token for a specific user.
+    /// </summary>
+    /// <param name="username">name of a user</param>
+    /// <returns>True if a token exists; False if no token exists</returns>
+    Task<bool> CheckRefreshTokenExists(string username);
 
+    /// <summary>
+    /// Checks if a refresh Token is valid.
+    /// </summary>
+    /// <param name="refreshToken"></param>
+    /// <returns>true if the token is valid; false if the token isn't valid</returns>
     Task<bool> CheckRefreshTokenRequest(string refreshToken);
 
+    /// <summary>
+    /// Gets the username related to a refresh Token.
+    /// </summary>
+    /// <param name="refreshToken">a refresh Token</param>
+    /// <returns>a username</returns>
     Task<string> GetUserNamebyRefreshToken(string refreshToken);
 }

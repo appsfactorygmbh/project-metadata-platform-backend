@@ -2,7 +2,6 @@ using System;
 using System.Security.Authentication;
 using System.Threading.Tasks;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ProjectMetadataPlatform.Api.Auth.Models;
@@ -59,11 +58,18 @@ public class AuthController : ControllerBase
 
     }
 
+    /// <summary>
+    /// Returns a new access token using the given refresh token.
+    /// </summary>
+    /// <param name="refreshToken">Refresh</param>
+    /// <returns></returns>
+    /// <response code="200">Returns the access and refresh tokens.</response>
+    /// <response code="400">If the refresh token or the header format are invalid.</response>
+    /// <response code="500">If an unexpected error occurs.</response>
     [HttpGet("refresh")]
-
     public async Task<ActionResult<LoginResponse>> Get([FromHeader(Name = "Authorize")] string refreshToken )
     {
-        Console.WriteLine(refreshToken);
+
         if (!refreshToken.StartsWith("Refresh "))
         {
             return BadRequest("Invalid Header format");

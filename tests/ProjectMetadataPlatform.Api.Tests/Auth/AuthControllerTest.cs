@@ -3,7 +3,7 @@ using System.Security.Authentication;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using Microsoft.AspNetCore.Http.HttpResults;
+
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
@@ -40,7 +40,6 @@ public class Tests
             Assert.That(result.Value.AccessToken, Is.EqualTo("accessToken"));
             Assert.That(result.Value.RefreshToken, Is.EqualTo("refreshToken"));
         });
-        ;
     }
 
     [Test]
@@ -72,7 +71,7 @@ public class Tests
             Assert.That(result.Value.AccessToken, Is.EqualTo("accessToken"));
             Assert.That(result.Value.RefreshToken, Is.EqualTo("refreshToken"));
         });
-        ;
+
     }
 
     [Test]

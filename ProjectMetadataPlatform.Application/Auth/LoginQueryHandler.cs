@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.IdentityModel.Tokens;
 using ProjectMetadataPlatform.Application.Interfaces;
-using ProjectMetadataPlatform.Application.Plugins;
+
 using ProjectMetadataPlatform.Domain.Auth;
 
 namespace ProjectMetadataPlatform.Application.Auth;
 
 /// <summary>
-///     Handler for the <see cref="CreatePluginCommand" />
+///     Handler for the <see cref="LoginQuery" />
 /// </summary>
 public class LoginQueryHandler : IRequestHandler<LoginQuery, JwtTokens>
 {
@@ -57,7 +57,7 @@ public class LoginQueryHandler : IRequestHandler<LoginQuery, JwtTokens>
         var token = tokenHandler.CreateToken(tokenDescriptor);
         var stringToken = tokenHandler.WriteToken(token);
         var refreshToken = Guid.NewGuid().ToString();
-        if (_authRepository.CheckRefreshToken(request.Username).Result)
+        if (_authRepository.CheckRefreshTokenExists(request.Username).Result)
         {
             await _authRepository.UpdateRefreshToken(request.Username,refreshToken);
         }
