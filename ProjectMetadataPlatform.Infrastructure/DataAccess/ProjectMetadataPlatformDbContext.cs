@@ -1,8 +1,6 @@
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using ProjectMetadataPlatform.Application.Interfaces;
-using ProjectMetadataPlatform.Application.Interfaces;
+using ProjectMetadataPlatform.Domain.Logs;
 using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.Projects;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -31,6 +29,10 @@ public sealed class ProjectMetadataPlatformDbContext : IdentityDbContext<User>, 
     /// </summary>
     public DbSet<Project> Projects { get; set; }
 
+    /// <summary>
+    ///     Represents the table for log entities.
+    /// </summary>
+    public DbSet<Log> Logs { get; set; }
 
     /// <inheritdoc />
     public ProjectMetadataPlatformDbContext()

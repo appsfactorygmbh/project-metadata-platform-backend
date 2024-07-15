@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Infrastructure.DataAccess;
+using ProjectMetadataPlatform.Infrastructure.Logs;
 using ProjectMetadataPlatform.Infrastructure.Plugins;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
@@ -38,6 +39,7 @@ public static class DependencyInjection
         _ = serviceCollection.AddScoped<IUsersRepository, UsersRepository>();
         _ = serviceCollection.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
+        _ = serviceCollection.AddScoped<ILogRepository, LogRepository>();
         return serviceCollection;
     }
 
