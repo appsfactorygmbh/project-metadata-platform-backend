@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ProjectMetadataPlatform.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class refreshtoken : Migration
+    public partial class refreshToken : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

@@ -1,10 +1,13 @@
-using Microsoft.AspNetCore.Identity;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ProjectMetadataPlatform.Domain.Auth;
 
 namespace ProjectMetadataPlatform.Infrastructure.DataAccess.ModelConfigs;
 
+/// <summary>
+///    Configures the RefreshToken entity.
+/// </summary>
 public class RefreshTokenModelConfig : IEntityTypeConfiguration<RefreshToken>
 {
 
