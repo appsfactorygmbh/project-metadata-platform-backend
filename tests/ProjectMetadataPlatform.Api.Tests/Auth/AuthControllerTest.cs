@@ -63,7 +63,7 @@ public class Tests
         _mediator.Setup(m => m.Send(It.IsAny<RefreshTokenQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new JwtTokens{AccessToken = "accessToken", RefreshToken = "refreshToken"});
 
-        var request = "refreshToken";
+        var request = "Refresh refreshToken";
 
         var result = await _controller.Get(request);
         Assert.That(result.Value, Is.InstanceOf<LoginResponse>());
@@ -81,11 +81,21 @@ public class Tests
         _mediator.Setup(m => m.Send(It.IsAny<RefreshTokenQuery>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new AuthenticationException("Invalid refresh token."));
 
-        var request = "invalidRefreshToken";
+        var request = "Refresh invalidRefreshToken";
 
         var result = await _controller.Get(request);
         Assert.That(result.Result, Is.InstanceOf<BadRequestObjectResult>());
         var badRequestObjectResult = result.Result as BadRequestObjectResult;
         Assert.That(badRequestObjectResult!.Value, Is.EqualTo("Invalid refresh token."));
+    }
+
+    [Test]
+    public async Task InvalidHeaderTest()
+    {
+        var request = "invalidHeader";
+        var result = await _controller.Get(request);
+        Assert.That(result.Result, Is.InstanceOf<BadRequestObjectResult>());
+        var badRequestObjectResult = result.Result as BadRequestObjectResult;
+        Assert.That(badRequestObjectResult!.Value, Is.EqualTo("Invalid Header format"));
     }
 }
