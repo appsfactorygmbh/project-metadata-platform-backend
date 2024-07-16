@@ -198,7 +198,7 @@ public class ProjectsController : ControllerBase
     /// <response code="200">Returns the list of distinct business units successfully.</response>
     /// <response code="500">Indicates an internal error occurred while processing the request.</response>
     [HttpGet("/filterData/businessunits")]
-    public async Task<ActionResult<IEnumerable<GetBusinessUnitResponse>>> GetAllBusinessUnits()
+    public async Task<ActionResult<IEnumerable<string>>> GetAllBusinessUnits()
     {
         var query = new GetAllBusinessUnitsQuery();
         IEnumerable<string> businessunits;
@@ -230,7 +230,7 @@ public class ProjectsController : ControllerBase
     /// <response code="200">Returns the list of distinct team numbers successfully.</response>
     /// <response code="500">Indicates an internal error occurred while processing the request.</response>
     [HttpGet("filterData/teamnumbers")]
-    public async Task<ActionResult<IEnumerable<GetTeamNumberResponse>>> GetAllTeamNumbers()
+    public async Task<ActionResult<IEnumerable<int>>> GetAllTeamNumbers()
     {
         var query = new GetAllTeamNumbersQuery();
         IEnumerable<int> teamNumbers;
