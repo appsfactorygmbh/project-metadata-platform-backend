@@ -67,7 +67,7 @@ public class AuthController : ControllerBase
     /// <response code="400">If the refresh token or the header format are invalid.</response>
     /// <response code="500">If an unexpected error occurs.</response>
     [HttpGet("refresh")]
-    public async Task<ActionResult<LoginResponse>> Get([FromHeader(Name = "Authorize")] string refreshToken )
+    public async Task<ActionResult<LoginResponse>> Get([FromHeader(Name = "Authorization")] string refreshToken )
     {
 
         if (!refreshToken.StartsWith("Refresh "))
