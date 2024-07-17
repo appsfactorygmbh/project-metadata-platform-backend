@@ -44,9 +44,8 @@ public class Project
     /// </summary>
     public ICollection<ProjectPlugins>? ProjectPlugins { get; set; }
 
-    public ICollection<Log>? ProjectLogs { get; set; }
-
-    /// <summary>
+    public ICollection<Log>? Logs { get; set; }
+/// <summary>
     /// A boolean indicating if a plugin is archived/deleted.
     /// </summary>
     public bool IsArchived { get; set; }

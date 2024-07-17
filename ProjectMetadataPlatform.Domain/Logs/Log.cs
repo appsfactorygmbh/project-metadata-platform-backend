@@ -23,12 +23,12 @@ public class Log
     /// <summary>
     ///     The Project, on wich the action was taken
     /// </summary>
-    public Project? Project { get; set; }
+    public Project? Project { get; set; } = null!;
 
     /// <summary>
     ///     The Project Id of the related Project
     /// </summary>
-    public int ProjectId { get; set; }
+    public required int ProjectId { get; set; }
 
     /// <summary>
     ///     The taken action
