@@ -13,6 +13,7 @@ services:
       - JWT_VALID_ISSUER=validIssue
       - JWT_VALID_AUDIENCE=validAudience
       - JWT_ISSUER_SIGNING_KEY_FILE=/run/secrets/jwt_issuer_signing_key
+      - REFRESH_TOKEN_EXPIRATION_HOURS=6
     networks:
       - backend-staging
     secrets:
