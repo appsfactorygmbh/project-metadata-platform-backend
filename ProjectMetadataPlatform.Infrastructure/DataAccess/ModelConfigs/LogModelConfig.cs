@@ -11,9 +11,10 @@ public class LogModelConfig : IEntityTypeConfiguration<Log>
     {
         _ = builder.HasKey(e => e.Id);
 
-        _ = builder.HasOne(l => l.Project)
-            .WithMany(project => project.ProjectLogs)
-            .HasForeignKey(p => p.ProjectId);
-
+        _ = builder
+            .HasOne(e => e.Project)
+            .WithMany(e => e.Logs)
+            .HasForeignKey(e => e.ProjectId)
+            .IsRequired();
     }
 }
