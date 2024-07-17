@@ -16,7 +16,8 @@
         "PMP_DB_PASSWORD": "postgres",
         "JWT_VALID_ISSUER" : "validIssuer",
         "JWT_VALID_AUDIENCE" : "validAudience",
-        "JWT_ISSUER_SIGNING_KEY" : "superSecretKeyThatIsAtLeast257BitLong@345"
+        "JWT_ISSUER_SIGNING_KEY" : "superSecretKeyThatIsAtLeast257BitLong@345",
+        "REFRESH_TOKEN_EXPIRATION_HOURS" : "6"
       }
     },
     "https": {
@@ -34,7 +35,8 @@
         "PMP_DB_PASSWORD": "postgres",
         "JWT_VALID_ISSUER" : "validIssuer",
         "JWT_VALID_AUDIENCE" : "validAudience",
-        "JWT_ISSUER_SIGNING_KEY" : "superSecretKeyThatIsAtLeast257BitLong@345"
+        "JWT_ISSUER_SIGNING_KEY" : "superSecretKeyThatIsAtLeast257BitLong@345",
+        "REFRESH_TOKEN_EXPIRATION_HOURS" : "6"
       }
     }
   }

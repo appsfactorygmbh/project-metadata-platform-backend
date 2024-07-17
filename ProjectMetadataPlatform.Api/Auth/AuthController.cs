@@ -61,7 +61,7 @@ public class AuthController : ControllerBase
     /// <summary>
     /// Returns a new access token using the given refresh token.
     /// </summary>
-    /// <param name="refreshToken">Refresh</param>
+    /// <param name="refreshToken">Refresh Token header in the format 'Refresh refreshToken'</param>
     /// <returns></returns>
     /// <response code="200">Returns the access and refresh tokens.</response>
     /// <response code="400">If the refresh token or the header format are invalid.</response>
@@ -75,7 +75,7 @@ public class AuthController : ControllerBase
             return BadRequest("Invalid Header format");
         }
 
-        var query = new RefreshTokenQuery(refreshToken.Substring(8));
+        var query = new RefreshTokenQuery(refreshToken.Replace("Refresh ", ""));
         try
         {
             var tokens = await _mediator.Send(query);

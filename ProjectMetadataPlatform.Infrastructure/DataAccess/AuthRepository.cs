@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using ProjectMetadataPlatform.Application;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Domain.Auth;
 
@@ -60,13 +61,14 @@ public class AuthRepository : RepositoryBase<RefreshToken>,IAuthRepository
     public async Task StoreRefreshToken(string username, string refreshToken)
     {
         var user = await _userManager.Users.FirstOrDefaultAsync(a => a.UserName == username);
+        var expirationTime = int.Parse(EnvironmentUtils.GetEnvVarOrLoadFromFile("REFRESH_TOKEN_EXPIRATION_HOURS"));
         var token = new RefreshToken
         {
 
             Token = refreshToken,
             User = user,
             UserId = user?.Id,
-            ExpirationDate = DateTime.UtcNow.AddHours(6)
+            ExpirationDate = DateTime.UtcNow.AddHours(expirationTime)
 
         };
         Create(token);
@@ -83,10 +85,11 @@ public class AuthRepository : RepositoryBase<RefreshToken>,IAuthRepository
     {
         var user = await _userManager.Users.FirstOrDefaultAsync(a => a.UserName == username);
         var token = GetIf(rt => user != null && rt.UserId == user.Id).FirstOrDefaultAsync().Result;
+        var expirationTime = int.Parse(EnvironmentUtils.GetEnvVarOrLoadFromFile("REFRESH_TOKEN_EXPIRATION_HOURS"));
         if (token != null)
         {
             token.Token = refreshToken;
-            token.ExpirationDate = DateTime.UtcNow.AddHours(6);
+            token.ExpirationDate = DateTime.UtcNow.AddHours(expirationTime);
             Update(token);
         }
 
