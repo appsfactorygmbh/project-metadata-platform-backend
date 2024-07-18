@@ -5,8 +5,16 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace ProjectMetadataPlatform.Application.Auth;
 
+/// <summary>
+/// Service for creating access tokens.
+/// </summary>
 public static class AccessTokenService
 {
+    /// <summary>
+    /// Creates an access token for the given username.
+    /// </summary>
+    /// <param name="username">Username for user the access token belongs to</param>
+    /// <returns>access token value as a string</returns>
     public static string CreateAccessToken(string username)
     {
         var tokenDescriptorInformation = TokenDescriptorInformation.ReadFromEnvVariables();

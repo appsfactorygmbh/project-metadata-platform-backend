@@ -43,7 +43,7 @@ public class AuthController : ControllerBase
         try
         {
             var tokens = await _mediator.Send(query);
-            return new LoginResponse(tokens.AccessToken!, tokens.RefreshToken!);
+            return new LoginResponse(tokens.AccessToken, tokens.RefreshToken);
         }
         catch (InvalidOperationException e)
         {
@@ -79,7 +79,7 @@ public class AuthController : ControllerBase
         try
         {
             var tokens = await _mediator.Send(query);
-            return new LoginResponse(tokens.AccessToken!, tokens.RefreshToken!);
+            return new LoginResponse(tokens.AccessToken, tokens.RefreshToken);
         }
         catch (AuthenticationException e)
         {
