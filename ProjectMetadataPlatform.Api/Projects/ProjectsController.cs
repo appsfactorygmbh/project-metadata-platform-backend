@@ -114,7 +114,7 @@ public class ProjectsController : ControllerBase
     /// <response code="200">All Plugins of the project are returned successfully.</response>
     /// <response code="500">An internal error occurred.</response>
     [HttpGet("{id:int}/plugins")]
-    public async Task<ActionResult<IEnumerable<GetPluginResponse>>> GetPlugins( int id)
+    public async Task<ActionResult<IEnumerable<GetPluginResponse>>> GetPlugins(int id)
     {
         var query = new GetAllPluginsForProjectIdQuery(id);
         IEnumerable<ProjectPlugins> projectPlugins;
@@ -144,7 +144,7 @@ public class ProjectsController : ControllerBase
     /// <response code="400">The request data is invalid.</response>
     /// <response code="500">An internal error occurred.</response>
     [HttpPut]
-    public async Task<ActionResult<CreateProjectResponse>> Put([FromBody] CreateProjectRequest project, int? projectId = null )
+    public async Task<ActionResult<CreateProjectResponse>> Put([FromBody] CreateProjectRequest project, int? projectId = null)
     {
         try
         {
@@ -187,5 +187,69 @@ public class ProjectsController : ControllerBase
             Console.WriteLine(e.StackTrace);
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
+    }
+
+    /// <summary>
+    /// Retrieves a distinct list of all business units from the projects.
+    /// </summary>
+    /// <remarks>
+    /// This endpoint queries all projects without any filter (empty search string) and extracts the business units.
+    /// It then returns a distinct list of these business units. This can be useful for filtering projects by business unit
+    /// or simply to obtain an overview of all business units involved in the projects.
+    /// </remarks>
+    /// <returns>An <see cref="ActionResult"/> containing a list of distinct business units.</returns>
+    /// <response code="200">Returns the list of distinct business units successfully.</response>
+    /// <response code="500">Indicates an internal error occurred while processing the request.</response>
+    [HttpGet("/filterData/businessunits")]
+    public async Task<ActionResult<IEnumerable<string>>> GetAllBusinessUnits()
+    {
+        var query = new GetAllBusinessUnitsQuery();
+        IEnumerable<string> businessunits;
+
+        try
+        {
+            businessunits = await _mediator.Send(query);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.StackTrace);
+            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+        }
+
+        IEnumerable<string> response = businessunits;
+
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Retrieves a distinct list of all team numbers from the projects.
+    /// </summary>
+    /// <remarks>
+    /// This endpoint queries all projects without any filter (empty search string) and extracts the team numbers.
+    /// It then returns a distinct list of these team numbers. This can be useful for filtering projects by team number
+    /// or simply to obtain an overview of all team numbers involved in the projects.
+    /// </remarks>
+    /// <returns>An <see cref="ActionResult"/> containing a list of distinct team numbers.</returns>
+    /// <response code="200">Returns the list of distinct team numbers successfully.</response>
+    /// <response code="500">Indicates an internal error occurred while processing the request.</response>
+    [HttpGet("filterData/teamnumbers")]
+    public async Task<ActionResult<IEnumerable<int>>> GetAllTeamNumbers()
+    {
+        var query = new GetAllTeamNumbersQuery();
+        IEnumerable<int> teamNumbers;
+
+        try
+        {
+            teamNumbers = await _mediator.Send(query);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.StackTrace);
+            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+        }
+
+        IEnumerable<int> response = teamNumbers;
+
+        return Ok(response);
     }
 }

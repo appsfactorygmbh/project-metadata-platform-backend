@@ -15,6 +15,7 @@ services:
       - JWT_ISSUER_SIGNING_KEY_FILE=/run/secrets/jwt_issuer_signing_key
       - REFRESH_TOKEN_EXPIRATION_HOURS=6
       - ACCESS_TOKEN_EXPIRATION_MINUTES=15
+      - PMP_ADMIN_PASSWORD_FILE=/run/secrets/admin_password
     networks:
       - backend-staging
     secrets:
@@ -62,6 +63,8 @@ secrets:
     file: db_name.txt
   jwt_issuer_signing_key:
     file: jwt_issuer_signing_key.txt
+  admin_password:
+    file: admin_password.txt
 
 volumes:
   db_data:
