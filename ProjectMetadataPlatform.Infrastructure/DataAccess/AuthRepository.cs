@@ -125,7 +125,7 @@ public class AuthRepository : RepositoryBase<RefreshToken>,IAuthRepository
     /// </summary>
     /// <param name="refreshToken">a refresh Token</param>
     /// <returns>a username</returns>
-    public async Task<string?> GetUserNamebyRefreshToken(string refreshToken)
+    public async Task<string?> GetUserNameByRefreshToken(string refreshToken)
     {
         var token = GetIf(rt => rt.Token == refreshToken).FirstOrDefaultAsync().Result;
         var user = await _userManager.Users.FirstOrDefaultAsync(a => token != null && a.Id == token.UserId);

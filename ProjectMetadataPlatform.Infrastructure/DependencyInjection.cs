@@ -72,7 +72,6 @@ public static class DependencyInjection
                 ValidateAudience = true,
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
-                //should also get this from the environment
                 ValidIssuer = tokenDescriptorInformation.ValidIssuer,
                 ValidAudience = tokenDescriptorInformation.ValidAudience,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenDescriptorInformation.IssuerSigningKey))

@@ -28,5 +28,5 @@ public class RefreshToken
     /// <summary>
     /// Expiration date of the token.
     /// </summary>
-    public DateTime ExpirationDate { get; set; }
+    public DateTimeOffset ExpirationDate { get; set; }
 }

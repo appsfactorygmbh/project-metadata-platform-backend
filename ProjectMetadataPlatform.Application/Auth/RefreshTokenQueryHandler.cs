@@ -36,29 +36,12 @@ public class RefreshTokenQueryHandler : IRequestHandler<RefreshTokenQuery, JwtTo
     /// <exception cref="AuthenticationException"></exception>
     public async Task<JwtTokens> Handle(RefreshTokenQuery request, CancellationToken cancellationToken)
     {
-        if (!_authRepository.CheckRefreshTokenRequest( request.RefreshToken).Result)
+        if (! await _authRepository.CheckRefreshTokenRequest( request.RefreshToken))
         {
             throw new AuthenticationException("Invalid refresh token.");
         }
-        var username = await _authRepository.GetUserNamebyRefreshToken(request.RefreshToken);
-
-        var tokenDescriptorInformation = TokenDescriptorInformation.ReadFromEnvVariables();
-        var issuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(tokenDescriptorInformation.IssuerSigningKey));
-
-        var tokenDescriptor = new SecurityTokenDescriptor
-        {
-            Subject = new ClaimsIdentity(
-            [
-                new Claim(ClaimTypes.Name,username)
-            ]),
-            Expires = DateTime.UtcNow.AddMinutes(15),
-            Issuer = tokenDescriptorInformation.ValidIssuer,
-            Audience = tokenDescriptorInformation.ValidAudience,
-            SigningCredentials = new SigningCredentials(issuerSigningKey, SecurityAlgorithms.HmacSha256Signature)
-        };
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var token = tokenHandler.CreateToken(tokenDescriptor);
-        var stringToken = tokenHandler.WriteToken(token);
+        var username = await _authRepository.GetUserNameByRefreshToken(request.RefreshToken);
+        var stringToken = AccessTokenService.CreateAccessToken(username);
         return new JwtTokens { AccessToken = stringToken, RefreshToken = request.RefreshToken};
     }
 }

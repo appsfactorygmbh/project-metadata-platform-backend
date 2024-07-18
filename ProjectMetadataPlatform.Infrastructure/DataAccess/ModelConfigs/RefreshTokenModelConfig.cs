@@ -6,18 +6,18 @@ using ProjectMetadataPlatform.Domain.Auth;
 namespace ProjectMetadataPlatform.Infrastructure.DataAccess.ModelConfigs;
 
 /// <summary>
-///    Configures the RefreshToken entity.
+///     Data Base Configuration for the Refresh Tokens.
 /// </summary>
 public class RefreshTokenModelConfig : IEntityTypeConfiguration<RefreshToken>
 {
 
     /// <summary>
-    ///     Configures the Project entity.
+    ///     Configures the RefreshToken entity.
     /// </summary>
     /// <param name="builder"></param>
     public void Configure(EntityTypeBuilder<RefreshToken> builder)
     {
-        // Set the primary key for the Project entity
+        // Set the primary key for the RefreshToken entity
         _ = builder.HasKey(e => e.Id);
 
         _ = builder.HasOne(pp => pp.User)

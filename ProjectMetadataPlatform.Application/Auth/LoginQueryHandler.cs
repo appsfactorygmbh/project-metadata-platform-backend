@@ -1,10 +1,7 @@
 using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using Microsoft.IdentityModel.Tokens;
 using ProjectMetadataPlatform.Application.Interfaces;
 
 using ProjectMetadataPlatform.Domain.Auth;
@@ -39,25 +36,9 @@ public class LoginQueryHandler : IRequestHandler<LoginQuery, JwtTokens>
         {
             throw new InvalidOperationException("Invalid login credentials.");
         }
-        var tokenDescriptorInformation = TokenDescriptorInformation.ReadFromEnvVariables();
-        var issuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(tokenDescriptorInformation.IssuerSigningKey));
-
-        var tokenDescriptor = new SecurityTokenDescriptor
-        {
-            Subject = new ClaimsIdentity(
-            [
-                new Claim(ClaimTypes.Name, request.Username)
-            ]),
-            Expires = DateTime.UtcNow.AddMinutes(15),
-            Issuer = tokenDescriptorInformation.ValidIssuer,
-            Audience = tokenDescriptorInformation.ValidAudience,
-            SigningCredentials = new SigningCredentials(issuerSigningKey, SecurityAlgorithms.HmacSha256Signature)
-        };
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var token = tokenHandler.CreateToken(tokenDescriptor);
-        var stringToken = tokenHandler.WriteToken(token);
+        var stringToken = AccessTokenService.CreateAccessToken(request.Username);
         var refreshToken = Guid.NewGuid().ToString();
-        if (_authRepository.CheckRefreshTokenExists(request.Username).Result)
+        if ( await _authRepository.CheckRefreshTokenExists(request.Username))
         {
             await _authRepository.UpdateRefreshToken(request.Username,refreshToken);
         }
