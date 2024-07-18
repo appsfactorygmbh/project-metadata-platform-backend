@@ -23,6 +23,7 @@ services:
       - db_password
       - db_name
       - jwt_issuer_signing_key
+      - admin_password
     labels:
       - traefik.enable=true
       - traefik.http.routers.backend-staging.rule=Host(`api.staging.htwk.appsfactory.app`)

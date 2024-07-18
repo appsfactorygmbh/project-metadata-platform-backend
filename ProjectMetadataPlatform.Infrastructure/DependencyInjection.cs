@@ -87,7 +87,7 @@ public static class DependencyInjection
         string password;
         try
         {
-            password = EnvironmentUtils.GetEnvVarOrLoadFromFile("PMP_ADMIN_PASSWORD");
+            password = EnvironmentUtils.GetEnvVarOrLoadFromFile("PMP_ADMIN_PASSWORD").Trim();
         }
         catch (InvalidOperationException)
         {
