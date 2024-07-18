@@ -85,7 +85,15 @@ public static class DependencyInjection
     /// <param name="serviceProvider"></param>
     public static void AddAdminUser(this IServiceProvider serviceProvider)
     {
-        var password = Environment.GetEnvironmentVariable("PMP_ADMIN_PASSWORD") ?? "admin";
+        string password;
+        try
+        {
+            password = EnvironmentUtils.GetEnvVarOrLoadFromFile("PMP_ADMIN_PASSWORD");
+        }
+        catch (InvalidOperationException)
+        {
+            password = "admin";
+        }
 
         using var scope = serviceProvider.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<ProjectMetadataPlatformDbContext>();

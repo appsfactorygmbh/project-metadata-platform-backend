@@ -13,6 +13,7 @@ services:
       - JWT_VALID_ISSUER=validIssue
       - JWT_VALID_AUDIENCE=validAudience
       - JWT_ISSUER_SIGNING_KEY_FILE=/run/secrets/jwt_issuer_signing_key
+      - PMP_ADMIN_PASSWORD_FILE=/run/secrets/admin_password
     networks:
       - backend-production
     secrets:
@@ -60,6 +61,8 @@ secrets:
     file: db_name.txt
   jwt_issuer_signing_key:
     file: jwt_issuer_signing_key.txt
+  admin_password:
+    file: admin_password.txt
 
 volumes:
   db_data:
