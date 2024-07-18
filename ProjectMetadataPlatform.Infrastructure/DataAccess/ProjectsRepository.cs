@@ -146,5 +146,22 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
         return _context.Projects.Any(project => project.Id == id);
     }
 
+    /// <summary>
+    /// Asynchronously retrieves a distinct list of business units from all projects.
+    /// </summary>
+    /// <returns>A task representing the asynchronous operation, which upon completion returns a collection of distinct business unit names.</returns>
+    public async Task<IEnumerable<string>> GetBusinessUnitsAsync()
+    {
+        return await _context.Projects.Select(project => project.BusinessUnit).Distinct().ToListAsync();
+    }
+
+    /// <summary>
+    /// Asynchronously retrieves a distinct list of team numbers from all projects.
+    /// </summary>
+    /// <returns>A task representing the asynchronous operation, which upon completion returns a collection of distinct team numbers.</returns>
+    public async Task<IEnumerable<int>> GetTeamNumbersAsync()
+    {
+        return await _context.Projects.Select(project => project.TeamNumber).Distinct().ToListAsync();
+    }
 
 }

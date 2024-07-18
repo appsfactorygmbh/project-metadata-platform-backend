@@ -203,4 +203,134 @@ public class ProjectsRepositoryTests : TestsWithDatabase
             Assert.That(result.Count(), Is.EqualTo(3));
         }));
     }
+    [Test]
+    public async Task GetAllTeamNumbersAsync_ReturnAllTeamNumbers()
+    {
+        var projects = new List<Project>
+        {
+            new Project
+            {
+                Id = 1,
+                ProjectName = "Regen",
+                ClientName = "Nasa",
+                BusinessUnit = "BuWeather",
+                TeamNumber = 42,
+                Department = "Homelandsecurity"
+            },
+            new Project
+            {
+                Id = 2,
+                ProjectName = "Regen",
+                ClientName = "Nasa",
+                BusinessUnit = "BuWeather",
+                TeamNumber = 43,
+                Department = "Homelandsecurity"
+            }
+        };
+
+        _context.Projects.RemoveRange(_context.Projects);
+        _context.Projects.AddRange(projects);
+        await _context.SaveChangesAsync();
+
+        IEnumerable<int> result = await _repository.GetTeamNumbersAsync();
+
+        Assert.AreEqual(2, result.Count());
+        Assert.That(result, Is.EquivalentTo(new[] { 42, 43 }));
+    }
+
+    [Test]
+    public async Task GetAllBusinessUnitsAsync_ReturnsAllBusinessUnits()
+    {
+        var projects = new List<Project>
+        {
+            new Project
+            {
+                Id = 1,
+                ProjectName = "Project1",
+                ClientName = "ClientA",
+                BusinessUnit = "Unit1",
+                TeamNumber = 42,
+                Department = "Dept1"
+            },
+            new Project
+            {
+                Id = 2,
+                ProjectName = "Project2",
+                ClientName = "ClientB",
+                BusinessUnit = "Unit2",
+                TeamNumber = 43,
+                Department = "Dept2"
+            }
+        };
+
+        _context.Projects.RemoveRange(_context.Projects);
+        _context.Projects.AddRange(projects);
+        await _context.SaveChangesAsync();
+
+        IEnumerable<string> result = await _repository.GetBusinessUnitsAsync();
+        Assert.Multiple(() =>
+        {
+            IEnumerable<string> enumerable = result as string[] ?? result.ToArray();
+            Assert.That(enumerable.Count(), Is.EqualTo(2));
+            Assert.That(enumerable, Is.EquivalentTo(new[] { "Unit1", "Unit2" }));
+        });
+    }
+
+    [Test]
+    public async Task GetAllBusinessUnitsAsync_WithDuplicateBusinessUnits_ReturnsDistinctBusinessUnits()
+    {
+        var projects = new List<Project>
+        {
+            new Project
+            {
+                Id = 1,
+                ProjectName = "Project1",
+                ClientName = "ClientA",
+                BusinessUnit = "Unit1",
+                TeamNumber = 42,
+                Department = "Dept1"
+            },
+            new Project
+            {
+                Id = 2,
+                ProjectName = "Project2",
+                ClientName = "ClientB",
+                BusinessUnit = "Unit1", // Duplicate BusinessUnit
+                TeamNumber = 43,
+                Department = "Dept2"
+            },
+            new Project
+            {
+                Id = 3,
+                ProjectName = "Project3",
+                ClientName = "ClientC",
+                BusinessUnit = "Unit2",
+                TeamNumber = 44,
+                Department = "Dept3"
+            }
+        };
+
+        _context.Projects.RemoveRange(_context.Projects);
+        _context.Projects.AddRange(projects);
+        await _context.SaveChangesAsync();
+
+        IEnumerable<string> result = await _repository.GetBusinessUnitsAsync();
+        Assert.Multiple(() =>
+        {
+            IEnumerable<string> enumerable = result as string[] ?? result.ToArray();
+            Assert.That(enumerable.Count(), Is.EqualTo(2));
+            Assert.That(enumerable, Is.EquivalentTo(new[] { "Unit1", "Unit2" }));
+        });
+    }
+
+    [Test]
+    public async Task GetAllBusinessUnitsAsync_WhenNoProjects_ReturnsEmpty()
+    {
+        _context.Projects.RemoveRange(_context.Projects);
+        await _context.SaveChangesAsync();
+
+        IEnumerable<string> result = await _repository.GetBusinessUnitsAsync();
+
+        Assert.That(result, Is.Empty);
+    }
 }

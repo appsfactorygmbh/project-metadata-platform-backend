@@ -51,4 +51,16 @@ public interface IProjectsRepository
     /// <param name="id"></param>
     /// <returns>True, if the project with the given id exists</returns>
     Task<bool> CheckProjectExists(int id);
+
+    /// <summary>
+    /// Asynchronously retrieves a distinct list of business units from all projects.
+    /// </summary>
+    /// <returns>A task representing the asynchronous operation, which upon completion returns a collection of distinct business unit names.</returns>
+    Task<IEnumerable<string>> GetBusinessUnitsAsync();
+
+    /// <summary>
+    /// Asynchronously retrieves a distinct list of team numbers from all projects.
+    /// </summary>
+    /// <returns>A task representing the asynchronous operation, which upon completion returns a collection of distinct team numbers.</returns>
+    Task <IEnumerable<int>>GetTeamNumbersAsync();
 }
