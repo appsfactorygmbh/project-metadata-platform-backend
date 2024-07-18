@@ -175,14 +175,14 @@ public class AuthRepositoryTest : TestsWithDatabase
     public async Task CheckRefreshTokenRequest_UnsuccessfulNoToken_Test()
     {
         var username = "test";
-
+        var token = "test";
         Environment.SetEnvironmentVariable("REFRESH_TOKEN_EXPIRATION_HOURS","6");
         _context.Users.Add(new IdentityUser { UserName = username });
         await _context.SaveChangesAsync();
 
         _mockUserManager.Setup(m => m.Users).Returns(_context.Users);
 
-        var result = await _repository.CheckRefreshTokenExists(username);
+        var result = await _repository.CheckRefreshTokenRequest(token);
         Assert.That(result, Is.False);
 
 
@@ -192,13 +192,14 @@ public class AuthRepositoryTest : TestsWithDatabase
     public async Task CheckRefreshTokenRequest_UnsuccessfulExpired_Test()
     {
         var username = "test";
+        var token = "test";
         Environment.SetEnvironmentVariable("REFRESH_TOKEN_EXPIRATION_HOURS","0");
         _context.Users.Add(new IdentityUser { UserName = username });
         await _context.SaveChangesAsync();
 
         _mockUserManager.Setup(m => m.Users).Returns(_context.Users);
-
-        var result = await _repository.CheckRefreshTokenExists(username);
+        await _repository.StoreRefreshToken(username,token);
+        var result = await _repository.CheckRefreshTokenRequest(token);
         Assert.That(result, Is.False);
 
 
