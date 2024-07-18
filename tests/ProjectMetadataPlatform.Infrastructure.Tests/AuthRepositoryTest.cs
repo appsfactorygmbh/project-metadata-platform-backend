@@ -2,8 +2,10 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using NUnit.Framework;
+using ProjectMetadataPlatform.Domain.Auth;
 using ProjectMetadataPlatform.Infrastructure.DataAccess;
 
 namespace ProjectMetadataPlatform.Infrastructure.Tests;
@@ -111,6 +113,7 @@ public class AuthRepositoryTest : TestsWithDatabase
         _mockUserManager.Setup(m => m.Users).Returns(_context.Users);
         await _repository.StoreRefreshToken(username,"oldToken");
         var count = _repository.GetEverything().Count();
+        _context.ChangeTracker.Clear();
         await _repository.UpdateRefreshToken(username,token);
         var result = _repository.GetIf(rt=>rt.User.UserName==username).FirstOrDefault();
         Assert.That(result, Is.Not.Null);
