@@ -2,7 +2,6 @@ using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using NUnit.Framework;
@@ -22,13 +21,15 @@ public class LogRepositoryTest : TestsWithDatabase
     public void Setup()
     {
         _context = DbContext();
-        var context = new DefaultHttpContext();
+        var httpContextAccessorMock = new Mock<IHttpContextAccessor>();
+
         var identity = new GenericIdentity("camo", "test");
         var contextUser = new ClaimsPrincipal(identity); //add claims as needed
         var httpContext = new DefaultHttpContext() {
             User = contextUser
         };
-        _loggingRepository = new LogRepository(_context, httpContext);
+        httpContextAccessorMock.Setup(_ => _.HttpContext).Returns(httpContext);
+        _loggingRepository = new LogRepository(_context, httpContextAccessorMock.Object);
 
         _context = DbContext();
         ClearData(_context);
@@ -46,11 +47,13 @@ public class LogRepositoryTest : TestsWithDatabase
         };
         await _context.Projects.AddAsync(exampleProject);
         await _context.SaveChangesAsync();
-        await _loggingRepository.AddLogForCurrentUser( exampleProject, Action.Added, "added project");
-        var dbLog = await _context?.Logs.FirstOrDefaultAsync();
+        await _loggingRepository.AddLogForCurrentUser( exampleProject.Id, Action.Added, "added project");
+        var dbLog = await _context?.Logs.FirstOrDefaultAsync()!;
         Assert.NotNull(dbLog);
-        Assert.That(dbLog.Action, Is.EqualTo(Action.Added));
-        Assert.That(dbLog.Project == exampleProject);
-        Assert.That(dbLog.Username, Is.EqualTo("camo"));
+        Assert.Multiple(() =>
+        {
+            Assert.That(dbLog.Action, Is.EqualTo(Action.Added));
+            Assert.That(dbLog.Username, Is.EqualTo("camo"));
+        });
     }
 }

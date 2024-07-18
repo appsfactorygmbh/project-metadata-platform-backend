@@ -10,9 +10,9 @@ public interface ILogRepository
     /// <summary>
     ///     Adds new log for user.
     /// </summary>
-    /// <param name="project"></param>
+    /// <param name="projectId"></param>
     /// <param name="action"></param>
     /// <param name="changes"></param>
     /// <returns></returns>
-    Task AddLogForCurrentUser(Project project, Action action, string changes);
+    Task AddLogForCurrentUser(int  projectId, Action action, string changes);
 }

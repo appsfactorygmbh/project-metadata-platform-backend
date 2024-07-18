@@ -46,6 +46,8 @@ builder.Services
     .AddApplicationDependencies()
     .AddInfrastructureDependencies();
 
+builder.Services.AddHttpContextAccessor();
+
 builder.Services.AddCors(options
     => options.AddDefaultPolicy(policyBuilder => policyBuilder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
 builder.Services.AddControllers();

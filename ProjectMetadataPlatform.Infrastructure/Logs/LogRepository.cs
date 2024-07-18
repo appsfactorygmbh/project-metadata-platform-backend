@@ -1,22 +1,28 @@
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Domain.Logs;
-using ProjectMetadataPlatform.Domain.Projects;
 using ProjectMetadataPlatform.Infrastructure.DataAccess;
 using static System.DateTimeOffset;
 using Action = ProjectMetadataPlatform.Domain.Logs.Action;
 
 namespace ProjectMetadataPlatform.Infrastructure.Logs;
 
+/// <summary>
+///  Repository for creating and accessing logs.
+/// </summary>
 public class LogRepository : RepositoryBase<Log>, ILogRepository
 {
     private readonly ProjectMetadataPlatformDbContext _context;
-    private readonly HttpContext _httpContextAccessor;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public LogRepository(ProjectMetadataPlatformDbContext dbContext, HttpContext httpContextAccessor) : base(dbContext)
+    /// <summary>
+    ///     initialising context and httpContextAccessor to provide user information
+    /// </summary>
+    /// <param name="dbContext"></param>
+    /// <param name="httpContextAccessor"></param>
+    public LogRepository(ProjectMetadataPlatformDbContext dbContext, IHttpContextAccessor httpContextAccessor) : base(dbContext)
     {
         _context = dbContext;
         _httpContextAccessor = httpContextAccessor;
@@ -25,23 +31,21 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
     /// <summary>
     ///     Adds new log into database.
     /// </summary>
-    /// <param name="log"></param>
-    /// <param name="project"></param>
+    /// <param name="projectId"></param>
     /// <param name="action"></param>
     /// <param name="changes"></param>
-    public async Task AddLogForCurrentUser(Project project, Action action, string changes)
+    public async Task AddLogForCurrentUser(int projectId, Action action, string changes)
     {
-        var username = _httpContextAccessor.User.Identity.Name;
+        var username = _httpContextAccessor.HttpContext?.User.Identity?.Name ?? "admin";
         var log = new Log
         {
-            Username = username ?? "admin",
+            Username = username,
             Action = action,
             Changes = changes,
-            Project = project,
-            ProjectId = project.Id,
+            ProjectId = projectId,
             TimeStamp = UtcNow
         };
-        var projects = await _context.Projects.Include(b => b.Logs).FirstAsync(pro => pro.Id == project.Id);
+        var projects = await _context.Projects.Include(b => b.Logs).FirstAsync(pro => pro.Id == projectId);
         projects.Logs!.Add(log);
         _ = await _context.SaveChangesAsync();
     }
