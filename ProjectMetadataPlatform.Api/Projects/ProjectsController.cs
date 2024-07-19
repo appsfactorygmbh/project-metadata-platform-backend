@@ -92,7 +92,7 @@ public class ProjectsController : ControllerBase
 
         if (project == null)
         {
-            return NotFound(project);
+            return NotFound(id);
         }
 
         var response = new GetProjectResponse(
@@ -156,14 +156,14 @@ public class ProjectsController : ControllerBase
             }
 
             IRequest<int> command = projectId == null
-                ? command = new CreateProjectCommand(project.ProjectName, project.BusinessUnit, project.TeamNumber,
+                ? new CreateProjectCommand(project.ProjectName, project.BusinessUnit, project.TeamNumber,
                     project.Department, project.ClientName, (project.PluginList ?? []).Select(p => new ProjectPlugins
                     {
                         PluginId = p.Id,
                         DisplayName = p.DisplayName,
                         Url = p.Url
                     }).ToList())
-                : command = new UpdateProjectCommand(project.ProjectName, project.BusinessUnit, project.TeamNumber,
+                : new UpdateProjectCommand(project.ProjectName, project.BusinessUnit, project.TeamNumber,
                     project.Department, project.ClientName, projectId.Value, (project.PluginList ?? []).Select(p => new ProjectPlugins
                     {
                         ProjectId = projectId.Value,

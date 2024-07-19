@@ -1,3 +1,4 @@
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -25,14 +26,26 @@ public class GetProjectByIdControllerTest
     private Mock<IMediator> _mediator;
 
     [Test]
-    public async Task GetProjectbyId_NonexistentProject_Test()
+    public async Task GetProjectById_NonexistentProject_Test()
     {
         _mediator.Setup(m => m.Send(It.Is<GetProjectQuery>(q => q.Id == 1), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Project)null);
+            .ReturnsAsync((Project?)null);
         ActionResult<GetProjectResponse> result = await _controller.Get(1);
-        Assert.IsNotNull(result);
+        Assert.That(result, Is.Not.Null);
 
-        Assert.IsInstanceOf<NotFoundObjectResult>(result.Result);
+        Assert.That(result.Result, Is.InstanceOf<NotFoundObjectResult>());
+    }
+
+    [Test]
+    public async Task MediatorThrowsExceptionTest()
+    {
+        _mediator.Setup(mediator => mediator.Send(It.IsAny<GetProjectQuery>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new InvalidDataException("An error message"));
+        var result = await _controller.Get(1);
+        Assert.That(result.Result, Is.InstanceOf<StatusCodeResult>());
+
+        var badRequestResult = result.Result as StatusCodeResult;
+        Assert.That(badRequestResult!.StatusCode, Is.EqualTo(500));
     }
 
     [Test]
@@ -55,21 +68,24 @@ public class GetProjectByIdControllerTest
         ActionResult<GetProjectResponse> result = await _controller.Get(50);
 
         // assert
-        Assert.IsInstanceOf<OkObjectResult>(result.Result);
+        Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
 
         var okResult = result.Result as OkObjectResult;
-        Assert.IsNotNull(okResult);
-        Assert.IsInstanceOf<GetProjectResponse>(okResult.Value);
+        Assert.That(okResult, Is.Not.Null);
+        Assert.That(okResult.Value, Is.InstanceOf<GetProjectResponse>());
 
         var getProjectResponse = okResult.Value as GetProjectResponse;
-        Assert.IsNotNull(getProjectResponse);
+        Assert.That(getProjectResponse, Is.Not.Null);
 
         GetProjectResponse? project = getProjectResponse;
-        Assert.That(project.Id, Is.EqualTo(50));
-        Assert.That(project.ProjectName, Is.EqualTo("MetaDataPlatform"));
-        Assert.That(project.ClientName, Is.EqualTo("Appsfactory"));
-        Assert.That(project.BusinessUnit, Is.EqualTo("BusinessUnit"));
-        Assert.That(project.TeamNumber, Is.EqualTo(200));
-        Assert.That(project.Department, Is.EqualTo("Security"));
+        Assert.Multiple(() =>
+        {
+            Assert.That(project.Id, Is.EqualTo(50));
+            Assert.That(project.ProjectName, Is.EqualTo("MetaDataPlatform"));
+            Assert.That(project.ClientName, Is.EqualTo("Appsfactory"));
+            Assert.That(project.BusinessUnit, Is.EqualTo("BusinessUnit"));
+            Assert.That(project.TeamNumber, Is.EqualTo(200));
+            Assert.That(project.Department, Is.EqualTo("Security"));
+        });
     }
 }

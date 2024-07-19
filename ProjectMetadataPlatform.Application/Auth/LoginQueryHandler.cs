@@ -38,13 +38,13 @@ public class LoginQueryHandler : IRequestHandler<LoginQuery, JwtTokens>
         }
         var stringToken = AccessTokenService.CreateAccessToken(request.Username);
         var refreshToken = Guid.NewGuid().ToString();
-        if ( await _authRepository.CheckRefreshTokenExists(request.Username))
+        if (await _authRepository.CheckRefreshTokenExists(request.Username))
         {
-            await _authRepository.UpdateRefreshToken(request.Username,refreshToken);
+            await _authRepository.UpdateRefreshToken(request.Username, refreshToken);
         }
         else
         {
-            await _authRepository.StoreRefreshToken(request.Username,refreshToken);
+            await _authRepository.StoreRefreshToken(request.Username, refreshToken);
         }
         return new JwtTokens { AccessToken = stringToken, RefreshToken = refreshToken };
     }

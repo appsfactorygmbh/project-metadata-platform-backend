@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -41,17 +42,15 @@ public class ProjectsControllerTest
         ActionResult<IEnumerable<GetProjectsResponse>> result = await _controller.Get(null, null);
 
         // assert
-        Assert.IsInstanceOf<OkObjectResult>(result.Result);
+        Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
 
         var okResult = result.Result as OkObjectResult;
-        Assert.IsNotNull(okResult);
-        Assert.IsInstanceOf<IEnumerable<GetProjectsResponse>>(okResult.Value);
+        Assert.That(okResult, Is.Not.Null);
+        Assert.That(okResult.Value, Is.InstanceOf<IEnumerable<GetProjectsResponse>>());
 
-        var getProjectsResponseEnumeration = okResult.Value as IEnumerable<GetProjectsResponse>;
-        Assert.IsNotNull(getProjectsResponseEnumeration);
+        var getProjectsResponseArray = (okResult.Value as IEnumerable<GetProjectsResponse>)?.ToArray();
+        Assert.That(getProjectsResponseArray, Is.Not.Null);
 
-        GetProjectsResponse[] getProjectsResponseArray = getProjectsResponseEnumeration as GetProjectsResponse[]
-                                                         ?? getProjectsResponseEnumeration.ToArray();
         Assert.That(getProjectsResponseArray, Has.Length.EqualTo(0));
     }
 
@@ -78,25 +77,26 @@ public class ProjectsControllerTest
         ActionResult<IEnumerable<GetProjectsResponse>> result = await _controller.Get(null, null);
 
         // assert
-        Assert.IsInstanceOf<OkObjectResult>(result.Result);
+        Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
 
         var okResult = result.Result as OkObjectResult;
-        Assert.IsNotNull(okResult);
-        Assert.IsInstanceOf<IEnumerable<GetProjectsResponse>>(okResult.Value);
+        Assert.That(okResult, Is.Not.Null);
+        Assert.That(okResult.Value, Is.InstanceOf<IEnumerable<GetProjectsResponse>>());
 
-        var getProjectsResponseEnumeration = okResult.Value as IEnumerable<GetProjectsResponse>;
-        Assert.IsNotNull(getProjectsResponseEnumeration);
+        var getProjectsResponseArray = (okResult.Value as IEnumerable<GetProjectsResponse>)?.ToArray();
+        Assert.That(getProjectsResponseArray, Is.Not.Null);
 
-        GetProjectsResponse[] getProjectsResponseArray = getProjectsResponseEnumeration as GetProjectsResponse[]
-                                                         ?? getProjectsResponseEnumeration.ToArray();
         Assert.That(getProjectsResponseArray, Has.Length.EqualTo(1));
 
         GetProjectsResponse project = getProjectsResponseArray.First();
-        Assert.That(project.Id, Is.EqualTo(1));
-        Assert.That(project.ProjectName, Is.EqualTo("Regen"));
-        Assert.That(project.ClientName, Is.EqualTo("Nasa"));
-        Assert.That(project.BusinessUnit, Is.EqualTo("BuWeather"));
-        Assert.That(project.TeamNumber, Is.EqualTo(42));
+        Assert.Multiple(() =>
+        {
+            Assert.That(project.Id, Is.EqualTo(1));
+            Assert.That(project.ProjectName, Is.EqualTo("Regen"));
+            Assert.That(project.ClientName, Is.EqualTo("Nasa"));
+            Assert.That(project.BusinessUnit, Is.EqualTo("BuWeather"));
+            Assert.That(project.TeamNumber, Is.EqualTo(42));
+        });
     }
 
     [Test]
@@ -123,28 +123,40 @@ public class ProjectsControllerTest
         ActionResult<IEnumerable<GetProjectsResponse>> result = await _controller.Get(null, "R");
 
         // assert
-        Assert.IsInstanceOf<OkObjectResult>(result.Result);
+        Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
 
         var okResult = result.Result as OkObjectResult;
-        Assert.IsNotNull(okResult);
-        Assert.IsInstanceOf<IEnumerable<GetProjectsResponse>>(okResult.Value);
+        Assert.That(okResult, Is.Not.Null);
+        Assert.That(okResult.Value, Is.InstanceOf<IEnumerable<GetProjectsResponse>>());
 
-        var getProjectsResponseEnumeration = okResult.Value as IEnumerable<GetProjectsResponse>;
-        Assert.IsNotNull(getProjectsResponseEnumeration);
+        var getProjectsResponseArray = (okResult.Value as IEnumerable<GetProjectsResponse>)?.ToArray();
+        Assert.That(getProjectsResponseArray, Is.Not.Null);
 
-        GetProjectsResponse[] getProjectsResponseArray = getProjectsResponseEnumeration as GetProjectsResponse[]
-                                                         ?? getProjectsResponseEnumeration.ToArray();
         Assert.That(getProjectsResponseArray, Has.Length.EqualTo(1));
 
         GetProjectsResponse project = getProjectsResponseArray.First();
-        Assert.That(project.ProjectName, Is.EqualTo("Regen"));
-        Assert.That(project.ClientName, Is.EqualTo("Nasa"));
-        Assert.That(project.BusinessUnit, Is.EqualTo("BuWeather"));
-        Assert.That(project.TeamNumber, Is.EqualTo(42));
-
+        Assert.Multiple(() =>
+        {
+            Assert.That(project.ProjectName, Is.EqualTo("Regen"));
+            Assert.That(project.ClientName, Is.EqualTo("Nasa"));
+            Assert.That(project.BusinessUnit, Is.EqualTo("BuWeather"));
+            Assert.That(project.TeamNumber, Is.EqualTo(42));
+        });
     }
 
-     [Test]
+    [Test]
+    public async Task GetAllProjects_MediatorThrowsExceptionTest()
+    {
+        _mediator.Setup(mediator => mediator.Send(It.IsAny<GetAllProjectsQuery>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new InvalidDataException("An error message"));
+        var result = await _controller.Get(null, "search");
+        Assert.That(result.Result, Is.InstanceOf<StatusCodeResult>());
+
+        var badRequestResult = result.Result as StatusCodeResult;
+        Assert.That(badRequestResult!.StatusCode, Is.EqualTo(500));
+    }
+
+    [Test]
     public async Task GetAllPlugins_EmptyResponseList_Test()
     {
         _mediator.Setup(m => m.Send(It.IsAny<GetAllPluginsForProjectIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new List<ProjectPlugins>());
@@ -152,9 +164,26 @@ public class ProjectsControllerTest
 
 
         Assert.That(result, Is.Not.Null);
-        var value = result.Result as OkObjectResult;
-        Assert.IsEmpty((IEnumerable)value.Value);
+        var okResult = result.Result as OkObjectResult;
+        Assert.That(okResult, Is.Not.Null);
+        Assert.Multiple(() =>
+        {
+            Assert.That(okResult.Value, Is.Not.Null);
+            Assert.That(okResult.Value, Is.InstanceOf<IEnumerable>());
+            Assert.That((IEnumerable)okResult.Value!, Is.Empty);
+        });
+    }
 
+    [Test]
+    public async Task MediatorThrowsExceptionTest()
+    {
+        _mediator.Setup(mediator => mediator.Send(It.IsAny<GetAllPluginsForProjectIdQuery>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new InvalidDataException("An error message"));
+        var result = await _controller.GetPlugins(1);
+        Assert.That(result.Result, Is.InstanceOf<StatusCodeResult>());
+
+        var badRequestResult = result.Result as StatusCodeResult;
+        Assert.That(badRequestResult!.StatusCode, Is.EqualTo(500));
     }
 
     [Test]
@@ -165,7 +194,7 @@ public class ProjectsControllerTest
         var projcet = new Project { Id = 1, Department = "department 1", BusinessUnit = "business unit 1", ClientName = "client name 1", ProjectName = "project 1", TeamNumber = 1 };
         var responseContent = new List<ProjectPlugins>
         {
-            new ProjectPlugins{ ProjectId = 1, PluginId = 1, Plugin = plugin,Project = projcet,DisplayName = "Gitlab", Url ="Plugin1.com"},
+            new() { ProjectId = 1, PluginId = 1, Plugin = plugin,Project = projcet,DisplayName = "Gitlab", Url ="Plugin1.com"},
         };
 
         _mediator.Setup(m => m.Send(It.IsAny<GetAllPluginsForProjectIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(responseContent);
@@ -201,7 +230,7 @@ public class ProjectsControllerTest
         var projcet = new Project { Id = 1, Department = "department 1", BusinessUnit = "business unit 1", ClientName = "client name 1", ProjectName = "project 1", TeamNumber = 1 };
         var responseContent = new List<ProjectPlugins>
         {
-            new ProjectPlugins{ ProjectId = 1, PluginId = 1, Plugin = plugin,Project = projcet, Url ="Plugin1.com"},
+            new() { ProjectId = 1, PluginId = 1, Plugin = plugin,Project = projcet, Url ="Plugin1.com"},
         };
 
         _mediator.Setup(m => m.Send(It.IsAny<GetAllPluginsForProjectIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(responseContent);
@@ -229,57 +258,36 @@ public class ProjectsControllerTest
             new List<string> { "666", "777" },
             new List<int> { 42, 43 }
         );
-        var projects = new List<Project>
-        {
-            new Project
-            {
-                Id = 1,
-                ProjectName = "Heather",
-                BusinessUnit = "666",
-                ClientName = "Metatron",
-                Department = "Mars",
-                TeamNumber = 42
-            },
-            new Project
-            {
-                Id = 2,
-                ProjectName = "James",
-                BusinessUnit = "777",
-                ClientName = "Lucifer",
-                Department = "Venus",
-                TeamNumber = 43
-            },
-            new Project
-            {
-                Id = 3,
-                ProjectName = "Marika",
-                BusinessUnit = "999",
-                ClientName = "Satan",
-                Department = "Earth",
-                TeamNumber = 44
-            },
-        };
 
         _mediator.Setup(m => m.Send(It.IsAny<GetAllProjectsQuery>(), CancellationToken.None))
-            .ReturnsAsync(projects.Where(p =>
-                p.ProjectName.ToLower().Contains(search.ToLower()) &&
-                p.ProjectName.ToLower().Contains(filters.ProjectName.ToLower()) &&
-                p.ClientName.ToLower().Contains(filters.ClientName.ToLower()) &&
-                filters.BusinessUnit.Contains(p.BusinessUnit) &&
-                filters.TeamNumber.Contains(p.TeamNumber)));
+            .ReturnsAsync(new List<Project>
+            {
+                new()
+                {
+                    Id = 1,
+                    ProjectName = "Heather",
+                    BusinessUnit = "666",
+                    ClientName = "Metatron",
+                    Department = "Mars",
+                    TeamNumber = 42
+                }
+            });
 
         var result = await _controller.Get(filters, search);
 
         Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
         var okResult = result.Result as OkObjectResult;
 
+        Assert.That(okResult, Is.Not.Null);
         Assert.That(okResult.StatusCode, Is.EqualTo(StatusCodes.Status200OK));
 
-        var response = okResult.Value as IEnumerable<GetProjectsResponse>;
+        var response = (okResult.Value as IEnumerable<GetProjectsResponse>)?.ToList();
+        Assert.That(response, Is.Not.Null);
 
-        Assert.Multiple((() => {
+        Assert.Multiple((() =>
+        {
             Assert.That(response, Is.Not.Null);
-            Assert.That(response.Count(), Is.EqualTo(1));
+            Assert.That(response, Has.Count.EqualTo(1));
             Assert.That(response.ToArray()[0].Id, Is.EqualTo(1));
             Assert.That(response.ToArray()[0].ProjectName, Is.EqualTo("Heather"));
             Assert.That(response.ToArray()[0].BusinessUnit, Is.EqualTo("666"));
@@ -299,56 +307,23 @@ public class ProjectsControllerTest
             new List<string> { "666", "777" },
             new List<int> { 42, 43 }
         );
-        var projects = new List<Project>
-        {
-            new Project
-            {
-                Id = 1,
-                ProjectName = "Heather",
-                BusinessUnit = "666",
-                ClientName = "Metatron",
-                Department = "Mars",
-                TeamNumber = 42
-            },
-            new Project
-            {
-                Id = 2,
-                ProjectName = "James",
-                BusinessUnit = "777",
-                ClientName = "Lucifer",
-                Department = "Venus",
-                TeamNumber = 43
-            },
-            new Project
-            {
-                Id = 3,
-                ProjectName = "Marika",
-                BusinessUnit = "999",
-                ClientName = "Satan",
-                Department = "Earth",
-                TeamNumber = 44
-            },
-        };
 
         _mediator.Setup(m => m.Send(It.IsAny<GetAllProjectsQuery>(), CancellationToken.None))
-            .ReturnsAsync(projects.Where(p =>
-                p.ProjectName.ToLower().Contains(search.ToLower()) &&
-                p.ProjectName.ToLower().Contains(filters.ProjectName.ToLower()) &&
-                p.ClientName.ToLower().Contains(filters.ClientName.ToLower()) &&
-                filters.BusinessUnit.Contains(p.BusinessUnit) &&
-                filters.TeamNumber.Contains(p.TeamNumber)));
+            .ReturnsAsync([]);
 
         var result = await _controller.Get(filters, search);
 
         Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
         var okResult = result.Result as OkObjectResult;
 
+        Assert.That(okResult, Is.Not.Null);
         Assert.That(okResult.StatusCode, Is.EqualTo(StatusCodes.Status200OK));
 
-        var response = okResult.Value as IEnumerable<GetProjectsResponse>;
-        Assert.Multiple((() => {
+        var response = (okResult.Value as IEnumerable<GetProjectsResponse>)?.ToArray();
+        Assert.Multiple((() =>
+        {
             Assert.That(response, Is.Not.Null);
-            Assert.That(response.Count(), Is.EqualTo(0));
+            Assert.That(response, Is.Empty);
         }));
     }
 }

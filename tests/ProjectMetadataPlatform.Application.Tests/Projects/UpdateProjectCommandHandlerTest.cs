@@ -9,7 +9,7 @@ using ProjectMetadataPlatform.Application.Projects;
 using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.Projects;
 
-namespace ProjectMetadataPlatform.Application.Tests.Interfaces;
+namespace ProjectMetadataPlatform.Application.Tests.Projects;
 
 public class UpdateProjectCommandHandlerTest
 {

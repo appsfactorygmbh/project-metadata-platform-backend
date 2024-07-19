@@ -6,7 +6,7 @@ using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Application.Projects;
 using ProjectMetadataPlatform.Domain.Projects;
 
-namespace ProjectMetadataPlatform.Application.Tests.Interfaces;
+namespace ProjectMetadataPlatform.Application.Tests.Projects;
 
 [TestFixture]
 public class GetProjectByIDQueryHandlerTest

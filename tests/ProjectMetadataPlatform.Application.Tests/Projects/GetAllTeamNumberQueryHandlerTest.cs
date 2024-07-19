@@ -1,14 +1,12 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-
 using Moq;
 using NUnit.Framework;
-
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Application.Projects;
 
-namespace ProjectMetadataPlatform.Application.Tests.Interfaces;
+namespace ProjectMetadataPlatform.Application.Tests.Projects;
 
 public class GetAllTeamNumberQueryHandlerTest
 {

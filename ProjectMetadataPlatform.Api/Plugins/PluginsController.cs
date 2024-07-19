@@ -63,7 +63,7 @@ public class PluginsController : ControllerBase
         }
 
         var response = new CreatePluginResponse(pluginId);
-        string uri = "/Plugins/" + pluginId;
+        var uri = "/Plugins/" + pluginId;
         return Created(uri, response);
     }
 
@@ -127,7 +127,7 @@ public class PluginsController : ControllerBase
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
 
-        string[] keys= [];
+        string[] keys = [];
         var response = plugins.Select(plugin => new GetGlobalPluginResponse(
             plugin.PluginName,
             plugin.Id,

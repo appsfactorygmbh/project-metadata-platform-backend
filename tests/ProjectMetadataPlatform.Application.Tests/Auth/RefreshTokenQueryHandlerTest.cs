@@ -1,3 +1,4 @@
+using System;
 using System.Security.Authentication;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,11 +22,14 @@ public class RefreshTokenQueryHandlerTest
         _handler = new RefreshTokenQueryHandler(_mockAuthRepo.Object);
     }
 
-
     [Test]
-    [Ignore("cant retrieve environment variables in test")]
     public async Task HandleRefreshTokenQueryHandler_ValidToken_Test()
     {
+        Environment.SetEnvironmentVariable("JWT_VALID_ISSUER", "test_issuer");
+        Environment.SetEnvironmentVariable("JWT_VALID_AUDIENCE", "test_audience");
+        Environment.SetEnvironmentVariable("JWT_ISSUER_SIGNING_KEY", "test_key_that_certainly_is_long_enough");
+        Environment.SetEnvironmentVariable("ACCESS_TOKEN_EXPIRATION_MINUTES", "1");
+
         _mockAuthRepo.Setup(m => m.CheckRefreshTokenRequest(It.IsAny<string>())).ReturnsAsync(true);
         _mockAuthRepo.Setup(m => m.GetUserNameByRefreshToken(It.IsAny<string>())).ReturnsAsync("admin");
         var request = new RefreshTokenQuery("refreshToken");
