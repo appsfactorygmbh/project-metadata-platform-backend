@@ -47,12 +47,12 @@ public class LogRepositoryTest : TestsWithDatabase
         };
         await _context.Projects.AddAsync(exampleProject);
         await _context.SaveChangesAsync();
-        await _loggingRepository.AddLogForCurrentUser( exampleProject.Id, Action.Added, "added project");
+        await _loggingRepository.AddLogForCurrentUser( exampleProject.Id, Action.ADDED, "added project");
         var dbLog = await _context?.Logs.FirstOrDefaultAsync()!;
         Assert.NotNull(dbLog);
         Assert.Multiple(() =>
         {
-            Assert.That(dbLog.Action, Is.EqualTo(Action.Added));
+            Assert.That(dbLog.Action, Is.EqualTo(Action.ADDED));
             Assert.That(dbLog.Username, Is.EqualTo("camo"));
         });
     }

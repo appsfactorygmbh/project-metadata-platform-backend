@@ -4,9 +4,16 @@ using ProjectMetadataPlatform.Domain.Logs;
 
 namespace ProjectMetadataPlatform.Infrastructure.DataAccess.ModelConfigs;
 
+/// <summary>
+///     Configuration of the Log Table in the database.
+/// </summary>
 public class LogModelConfig : IEntityTypeConfiguration<Log>
 {
 
+    /// <summary>
+    ///     Configures Log entity
+    /// </summary>
+    /// <param name="builder"></param>
     public void Configure(EntityTypeBuilder<Log> builder)
     {
         _ = builder.HasKey(e => e.Id);
