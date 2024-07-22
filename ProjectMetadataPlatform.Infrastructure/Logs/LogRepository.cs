@@ -36,7 +36,7 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
     /// <param name="changes"></param>
     public async Task AddLogForCurrentUser(int projectId, Action action, string changes)
     {
-        var username = _httpContextAccessor.HttpContext?.User.Identity?.Name ?? "admin";
+        var username = _httpContextAccessor.HttpContext?.User.Identity?.Name ?? "Unknown user";
         var log = new Log
         {
             Username = username,

@@ -3,6 +3,9 @@ using ProjectMetadataPlatform.Domain.Projects;
 
 namespace ProjectMetadataPlatform.Domain.Logs;
 
+/// <summary>
+///     Representation of a Log in database.
+/// </summary>
 public class Log
 {
     /// <summary>
@@ -36,7 +39,7 @@ public class Log
     public Action Action { get; set; }
 
     /// <summary>
-    ///     idk yet
+    ///     The changes that were made.
     /// </summary>
     public string Changes { get; set; }
 }

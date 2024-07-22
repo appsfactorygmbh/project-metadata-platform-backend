@@ -4,6 +4,9 @@ using ProjectMetadataPlatform.Domain.Projects;
 
 namespace ProjectMetadataPlatform.Application.Interfaces;
 
+/// <summary>
+///     Repository for logging project changes
+/// </summary>
 public interface ILogRepository
 {
 

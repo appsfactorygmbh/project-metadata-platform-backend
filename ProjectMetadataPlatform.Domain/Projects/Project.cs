@@ -44,6 +44,9 @@ public class Project
     /// </summary>
     public ICollection<ProjectPlugins>? ProjectPlugins { get; set; }
 
+    /// <summary>
+    ///     Includes the logs for the project. Used for one to many relationship.
+    /// </summary>
     public ICollection<Log>? Logs { get; set; }
 /// <summary>
     /// A boolean indicating if a plugin is archived/deleted.
