@@ -39,7 +39,7 @@ public class AuthRepositoryTest : TestsWithDatabase
     {
         var username = "test";
         var password = "test";
-        _mockUserManager.Setup(m => m.CreateAsync(It.IsAny<IdentityUser>(), It.IsAny<string>()) ).ReturnsAsync(IdentityResult.Success);
+        _mockUserManager.Setup(m => m.CreateAsync(It.IsAny<User>(), It.IsAny<string>()) ).ReturnsAsync(IdentityResult.Success);
         var id=await _repository.CreateUser(username, password);
         Assert.That(id, Is.Not.Null);
 
@@ -52,11 +52,11 @@ public class AuthRepositoryTest : TestsWithDatabase
         var username = "test";
         var password = "test";
 
-        _context.Users.Add(new IdentityUser { UserName = username });
+        _context.Users.Add(new User { UserName = username });
         await _context.SaveChangesAsync();
 
         _mockUserManager.Setup(m => m.Users).Returns(_context.Users);
-        _mockUserManager.Setup(m => m.CheckPasswordAsync(It.IsAny<IdentityUser>(), It.IsAny<string>())).ReturnsAsync(true);
+        _mockUserManager.Setup(m => m.CheckPasswordAsync(It.IsAny<User>(), It.IsAny<string>())).ReturnsAsync(true);
 
         var result=await _repository.CheckLogin(username, password);
         Assert.That(result, Is.True);
@@ -70,11 +70,11 @@ public class AuthRepositoryTest : TestsWithDatabase
         var username = "test";
         var password = "test";
 
-        _context.Users.Add(new IdentityUser { UserName = username });
+        _context.Users.Add(new User { UserName = username });
         await _context.SaveChangesAsync();
 
         _mockUserManager.Setup(m => m.Users).Returns(_context.Users);
-        _mockUserManager.Setup(m => m.CheckPasswordAsync(It.IsAny<IdentityUser>(), It.IsAny<string>())).ReturnsAsync(false);
+        _mockUserManager.Setup(m => m.CheckPasswordAsync(It.IsAny<User>(), It.IsAny<string>())).ReturnsAsync(false);
 
         var result=await _repository.CheckLogin(username, password);
         Assert.That(result, Is.False);
@@ -88,7 +88,7 @@ public class AuthRepositoryTest : TestsWithDatabase
         var username = "test";
         var token = "test";
         Environment.SetEnvironmentVariable("REFRESH_TOKEN_EXPIRATION_HOURS","6");
-        _context.Users.Add(new IdentityUser { UserName = username });
+        _context.Users.Add(new User { UserName = username });
         await _context.SaveChangesAsync();
 
         _mockUserManager.Setup(m => m.Users).Returns(_context.Users);
@@ -107,7 +107,7 @@ public class AuthRepositoryTest : TestsWithDatabase
         var username = "test";
         var token = "test";
         Environment.SetEnvironmentVariable("REFRESH_TOKEN_EXPIRATION_HOURS","6");
-        _context.Users.Add(new IdentityUser { UserName = username });
+        _context.Users.Add(new User { UserName = username });
         await _context.SaveChangesAsync();
         _mockUserManager.Setup(m => m.Users).Returns(_context.Users);
         await _repository.StoreRefreshToken(username,"oldToken");
@@ -128,7 +128,7 @@ public class AuthRepositoryTest : TestsWithDatabase
         var username = "test";
         var token = "test";
         Environment.SetEnvironmentVariable("REFRESH_TOKEN_EXPIRATION_HOURS","6");
-        _context.Users.Add(new IdentityUser { UserName = username });
+        _context.Users.Add(new User { UserName = username });
         await _context.SaveChangesAsync();
 
         _mockUserManager.Setup(m => m.Users).Returns(_context.Users);
@@ -144,7 +144,7 @@ public class AuthRepositoryTest : TestsWithDatabase
     {
         var username = "test";
         Environment.SetEnvironmentVariable("REFRESH_TOKEN_EXPIRATION_HOURS","6");
-        _context.Users.Add(new IdentityUser { UserName = username });
+        _context.Users.Add(new User { UserName = username });
         await _context.SaveChangesAsync();
 
         _mockUserManager.Setup(m => m.Users).Returns(_context.Users);
@@ -161,7 +161,7 @@ public class AuthRepositoryTest : TestsWithDatabase
         var username = "test";
         var token = "test";
         Environment.SetEnvironmentVariable("REFRESH_TOKEN_EXPIRATION_HOURS","6");
-        _context.Users.Add(new IdentityUser { UserName = username });
+        _context.Users.Add(new User { UserName = username });
         await _context.SaveChangesAsync();
 
         _mockUserManager.Setup(m => m.Users).Returns(_context.Users);
@@ -178,7 +178,7 @@ public class AuthRepositoryTest : TestsWithDatabase
         var username = "test";
         var token = "test";
         Environment.SetEnvironmentVariable("REFRESH_TOKEN_EXPIRATION_HOURS","6");
-        _context.Users.Add(new IdentityUser { UserName = username });
+        _context.Users.Add(new User { UserName = username });
         await _context.SaveChangesAsync();
 
         _mockUserManager.Setup(m => m.Users).Returns(_context.Users);
@@ -195,7 +195,7 @@ public class AuthRepositoryTest : TestsWithDatabase
         var username = "test";
         var token = "test";
         Environment.SetEnvironmentVariable("REFRESH_TOKEN_EXPIRATION_HOURS","0");
-        _context.Users.Add(new IdentityUser { UserName = username });
+        _context.Users.Add(new User { UserName = username });
         await _context.SaveChangesAsync();
 
         _mockUserManager.Setup(m => m.Users).Returns(_context.Users);
@@ -212,7 +212,7 @@ public class AuthRepositoryTest : TestsWithDatabase
         var username = "test";
         var token = "test";
         Environment.SetEnvironmentVariable("REFRESH_TOKEN_EXPIRATION_HOURS","0");
-        _context.Users.Add(new IdentityUser { UserName = username });
+        _context.Users.Add(new User { UserName = username });
         await _context.SaveChangesAsync();
 
         _mockUserManager.Setup(m => m.Users).Returns(_context.Users);

@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Application.Interfaces;
+using ProjectMetadataPlatform.Domain.User;
 using ProjectMetadataPlatform.Infrastructure.DataAccess;
 
 namespace ProjectMetadataPlatform.Infrastructure.Tests;
@@ -57,7 +58,7 @@ public class DependencyInjectionTests : TestsWithDatabase
         {
             Assert.That(identityUser.UserName, Is.EqualTo("admin"));
             Assert.That(
-                new PasswordHasher<IdentityUser>().VerifyHashedPassword(identityUser,
+                new PasswordHasher<User>().VerifyHashedPassword(identityUser,
                     identityUser.PasswordHash!,
                     expectedPassword),
                 Is.EqualTo(PasswordVerificationResult.Success));
