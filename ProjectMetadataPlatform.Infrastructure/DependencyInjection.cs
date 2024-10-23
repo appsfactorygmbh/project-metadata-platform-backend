@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using ProjectMetadataPlatform.Application;
 using ProjectMetadataPlatform.Application.Auth;
+using ProjectMetadataPlatform.Domain.User;
 
 namespace ProjectMetadataPlatform.Infrastructure;
 
@@ -55,7 +56,7 @@ public static class DependencyInjection
     /// <param name="serviceCollection"></param>
     private static void ConfigureAuth(this IServiceCollection serviceCollection)
     {
-        _ = serviceCollection.AddIdentity<IdentityUser, IdentityRole>()
+        _ = serviceCollection.AddIdentity<User, IdentityRole>()
             .AddEntityFrameworkStores<ProjectMetadataPlatformDbContext>()
             .AddDefaultTokenProviders();
 
@@ -102,8 +103,8 @@ public static class DependencyInjection
             return;
         }
 
-        var hasher = new PasswordHasher<IdentityUser>();
-        var user = new IdentityUser
+        var hasher = new PasswordHasher<User>();
+        var user = new User
         {
             UserName = "admin",
             NormalizedUserName = "admin"

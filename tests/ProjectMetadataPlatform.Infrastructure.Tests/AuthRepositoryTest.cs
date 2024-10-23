@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Moq;
 using NUnit.Framework;
+using ProjectMetadataPlatform.Domain.User;
 using ProjectMetadataPlatform.Infrastructure.DataAccess;
 
 namespace ProjectMetadataPlatform.Infrastructure.Tests;
@@ -12,13 +13,13 @@ public class AuthRepositoryTest : TestsWithDatabase
 {
     private ProjectMetadataPlatformDbContext _context;
     private AuthRepository _repository;
-    private Mock<UserManager<IdentityUser>> _mockUserManager;
+    private Mock<UserManager<User>> _mockUserManager;
 
 
     [SetUp]
     public void Setup()
     {
-        _mockUserManager = new Mock<UserManager<IdentityUser>>(new Mock<IUserStore<IdentityUser>>().Object,
+        _mockUserManager = new Mock<UserManager<User>>(new Mock<IUserStore<User>>().Object,
             null, null, null, null, null, null, null, null);
         _context = DbContext();
         _repository = new AuthRepository(_context,_mockUserManager.Object);

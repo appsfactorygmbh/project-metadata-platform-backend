@@ -3,13 +3,14 @@ using Microsoft.EntityFrameworkCore;
 using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.Projects;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using ProjectMetadataPlatform.Domain.User;
 
 namespace ProjectMetadataPlatform.Infrastructure.DataAccess;
 
 /// <summary>
 ///     DbContext for the project metadata platform database.
 /// </summary>
-public sealed class ProjectMetadataPlatformDbContext : IdentityDbContext<IdentityUser>
+public sealed class ProjectMetadataPlatformDbContext : IdentityDbContext<User>
 {
     /// <summary>
     ///     Represents the table for the relation between Project and Plugin entities.

@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using ProjectMetadataPlatform.Application;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Domain.Auth;
+using ProjectMetadataPlatform.Domain.User;
 
 namespace ProjectMetadataPlatform.Infrastructure.DataAccess;
 
@@ -14,14 +15,14 @@ namespace ProjectMetadataPlatform.Infrastructure.DataAccess;
 /// </summary>
 public class AuthRepository : RepositoryBase<RefreshToken>,IAuthRepository
 {
-    private readonly UserManager<IdentityUser> _userManager;
+    private readonly UserManager<User> _userManager;
     private readonly ProjectMetadataPlatformDbContext _context;
     /// <summary>
     ///     Initializes a new instance of the <see cref="ProjectsRepository" /> class.
     /// </summary>
     /// <param name="dbContext"></param>
     /// <param name="userManager"></param>
-    public AuthRepository(ProjectMetadataPlatformDbContext dbContext,UserManager<IdentityUser> userManager) : base(dbContext)
+    public AuthRepository(ProjectMetadataPlatformDbContext dbContext,UserManager<User> userManager) : base(dbContext)
     {
         _userManager = userManager;
         _context = dbContext;
@@ -48,7 +49,7 @@ public class AuthRepository : RepositoryBase<RefreshToken>,IAuthRepository
     /// <returns></returns>
     public async Task<string?> CreateUser(string username, string password)
     {
-        var user = new IdentityUser { UserName = username };
+        var user = new User { UserName = username };
         var result = await _userManager.CreateAsync(user, password);
         return result.Succeeded ? user.Id : null;
     }
