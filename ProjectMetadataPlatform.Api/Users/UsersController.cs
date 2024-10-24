@@ -21,9 +21,11 @@ namespace ProjectMetadataPlatform.Api.Users;
 public class UsersController : ControllerBase
 {
     private readonly IMediator _mediator;
+
     /// <summary>
     ///     Creates a new instance of the <see cref="UsersController" /> class.
     /// </summary>
+    /// <param name="mediator"></param>
     public UsersController(IMediator mediator)
     {
         _mediator = mediator;
@@ -135,4 +137,11 @@ public class UsersController : ControllerBase
             );
         return Ok(response);
     }
+
+    [HttpPatch("{userId:int}")]
+    public async Task<ActionResult<GetUserResponse>> Patch(int userId, [FromBody] PatchUserRequest request)
+    {
+        return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+    }
+
 }
