@@ -107,7 +107,8 @@ public static class DependencyInjection
         var user = new User
         {
             UserName = "admin",
-            NormalizedUserName = "admin"
+            NormalizedUserName = "admin",
+            Name = "admin"
         };
         user.PasswordHash = hasher.HashPassword(user, password);
         _ = dbContext.Users.Add(user);
