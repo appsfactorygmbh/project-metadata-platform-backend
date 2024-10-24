@@ -5,11 +5,14 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ProjectMetadataPlatform.Api.Users.Models;
 using ProjectMetadataPlatform.Application.Users;
 using ProjectMetadataPlatform.Domain.User;
-
+using ProjectMetadataPlatform.Api.Users.Models;
+using ProjectMetadataPlatform.Application.Users;
 namespace ProjectMetadataPlatform.Api.Users;
 
 /// <summary>
@@ -141,7 +144,28 @@ public class UsersController : ControllerBase
     [HttpPatch("{userId:int}")]
     public async Task<ActionResult<GetUserResponse>> Patch(int userId, [FromBody] PatchUserRequest request)
     {
-        return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+        var command = new PatchUserCommand(userId, request.Username, request.Name, request.Email, request.Password);
+
+        IdentityUser? user;
+        try
+        {
+            user = await _mediator.Send(command);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            Console.WriteLine(e.StackTrace);
+
+            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+        }
+
+        if (user == null)
+        {
+            return NotFound("No user with id " + userId + "was found.");
+        }
+
+        var response = new GetUserResponse(user.UserName, user.UserName, user.Email);
+        return Ok(response);
     }
 
 }
