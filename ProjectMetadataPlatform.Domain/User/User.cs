@@ -11,6 +11,6 @@ namespace ProjectMetadataPlatform.Domain.User
         /// <summary>
         /// Gets or sets the name of the user.
         /// </summary>
-        private string Name { get; set; }
+        public string Name { get; set; }
     }
 }

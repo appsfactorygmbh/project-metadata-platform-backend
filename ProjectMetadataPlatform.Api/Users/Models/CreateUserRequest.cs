@@ -1,3 +1,3 @@
 namespace ProjectMetadataPlatform.Api.Users.Models;
 
-public record CreateUserRequest(string Username, string Name, string Email, string Password);
+public record CreateUserRequest(string UserId, string Username, string Name, string Email, string Password);

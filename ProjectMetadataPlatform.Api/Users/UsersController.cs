@@ -24,17 +24,17 @@ public class UsersController : ControllerBase
         _mediator = mediator;
     }
 
-    [HttpPut("{UserId:int}")]
-    public async Task<ActionResult<StatusCodeResult>> Put([FromBody] CreateUserRequest request)
+    [HttpPut("{UserId:string}")]
+    public async Task<ActionResult<StatusCodeResult>> Put(string UserId,[FromBody] CreateUserRequest request)
     {
 
 
-        var command = new CreateUserCommand(request.Username, request.Name, request.Email, request.Password);
+        var command = new CreateUserCommand(UserId,request.Username, request.Name, request.Email, request.Password);
 
         int pluginId;
         try
         {
-            pluginId = await _mediator.Send(command);
+            await _mediator.Send(command);
         }
         catch (Exception e)
         {
