@@ -32,7 +32,7 @@ public static class DependencyInjection
         _ = serviceCollection.AddScoped<IPluginRepository, PluginRepository>();
         _ = serviceCollection.AddScoped<IProjectsRepository, ProjectsRepository>();
         _ = serviceCollection.AddScoped<IAuthRepository, AuthRepository>();
-        _ = serviceCollection.AddScoped<IUserRepository, UserRepository>();
+        _ = serviceCollection.AddScoped<IUsersRepository, UsersRepository>();
 
         return serviceCollection;
     }
