@@ -6,5 +6,5 @@ namespace ProjectMetadataPlatform.Api.Users.Models;
 /// <param name="Id">The id of the user.</param>
 /// <param name="Name">The name of the user.</param>
 public record GetAllUsersResponse(
-    int Id,
+    string Id,
     string Name);
