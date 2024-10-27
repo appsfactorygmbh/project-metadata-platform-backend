@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
 using ProjectMetadataPlatform.Domain.User;
 
 namespace ProjectMetadataPlatform.Application.Interfaces;
