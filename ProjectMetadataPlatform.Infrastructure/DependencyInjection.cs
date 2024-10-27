@@ -12,6 +12,7 @@ using Microsoft.IdentityModel.Tokens;
 using ProjectMetadataPlatform.Application;
 using ProjectMetadataPlatform.Application.Auth;
 using ProjectMetadataPlatform.Domain.User;
+using ProjectMetadataPlatform.Infrastructure.Users;
 
 namespace ProjectMetadataPlatform.Infrastructure;
 
@@ -32,6 +33,7 @@ public static class DependencyInjection
         _ = serviceCollection.AddScoped<IPluginRepository, PluginRepository>();
         _ = serviceCollection.AddScoped<IProjectsRepository, ProjectsRepository>();
         _ = serviceCollection.AddScoped<IAuthRepository, AuthRepository>();
+        _ = serviceCollection.AddScoped<IUsersRepository, UsersRepository>();
 
         return serviceCollection;
     }
