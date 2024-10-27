@@ -32,7 +32,6 @@ public static class DependencyInjection
         _ = serviceCollection.AddScoped<IPluginRepository, PluginRepository>();
         _ = serviceCollection.AddScoped<IProjectsRepository, ProjectsRepository>();
         _ = serviceCollection.AddScoped<IAuthRepository, AuthRepository>();
-        _ = serviceCollection.AddScoped<IUsersRepository, UsersRepository>();
 
         return serviceCollection;
     }
@@ -107,8 +106,9 @@ public static class DependencyInjection
         var hasher = new PasswordHasher<User>();
         var user = new User
         {
-            UserName = "Admin",
-            NormalizedUserName = "Admin"
+            UserName = "admin",
+            NormalizedUserName = "admin",
+            Name = "admin"
         };
         user.PasswordHash = hasher.HashPassword(user, password);
         _ = dbContext.Users.Add(user);
