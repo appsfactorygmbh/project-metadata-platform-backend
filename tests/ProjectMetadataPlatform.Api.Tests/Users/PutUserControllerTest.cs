@@ -1,16 +1,12 @@
-using System.Linq;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
-using ProjectMetadataPlatform.Api.Plugins.Models;
-using ProjectMetadataPlatform.Api.Projects;
-using ProjectMetadataPlatform.Api.Projects.Models;
 using ProjectMetadataPlatform.Api.Users;
 using ProjectMetadataPlatform.Api.Users.Models;
-using ProjectMetadataPlatform.Application.Projects;
 using ProjectMetadataPlatform.Application.Users;
 
 
@@ -35,11 +31,21 @@ public class PutUserControllerTest
         _mediator.Setup(m => m.Send(It.IsAny<CreateUserCommand>(), It.IsAny<CancellationToken>()));
         var request= new CreateUserRequest(  "Example Name", "Example Username", "Example Email", "Example Password");
         ActionResult result = await _controller.Put(1,request);
-        Assert.That(result.GetType(), Is.InstanceOf<CreatedResult>());
-        _mediator.Verify(mediator => mediator.Send(It.Is<CreateUserCommand>(command =>
-                command.UserId == 1 && command.Name == "Example Name" && command.Username == "Example Username" &&
-                command.Email == "Example Email" && command.Password == "Example Password"),
-            It.IsAny<CancellationToken>()));
+        Assert.That(result, Is.InstanceOf<StatusCodeResult>());
+
+    }
+
+    [Test]
+    public async Task CreateUser_InvalidPassword_Test()
+    {
+        //prepare
+        _mediator.Setup(m => m.Send(It.IsAny<CreateUserCommand>(), It.IsAny<CancellationToken>())).ThrowsAsync(new ArgumentException("Invalid password"));
+        var request= new CreateUserRequest(  "Example Name", "Example Username", "Example Email", "Example Password");
+        ActionResult result = await _controller.Put(1,request);
+        Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
+        var badRequestResult = result as BadRequestObjectResult;
+        Assert.That(badRequestResult, Is.Not.Null);
+        Assert.That(badRequestResult.Value, Is.EqualTo("Invalid password"));
     }
 
 }

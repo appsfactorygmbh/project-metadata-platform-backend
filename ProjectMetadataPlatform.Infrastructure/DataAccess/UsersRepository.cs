@@ -29,19 +29,24 @@ public class UsersRepository : RepositoryBase<User>, IUsersRepository
     /// </summary>
     /// <param name="user">User to be created.</param>
     /// <param name="password">Password of the user.</param>
-    public async Task CreateUserAsync(User user, string password)
+    /// <returns>Id of the created User.</returns>
+    public async Task<string> CreateUserAsync(User user, string password)
     {
-        Console.WriteLine(user.Id);
         var identityResult = await _userManager.CreateAsync(user, password);
         _ = await _context.SaveChangesAsync();
         if (!identityResult.Succeeded)
         {
-            throw new ArgumentException("User creation "+identityResult.ToString());
+            throw new ArgumentException("User creation "+identityResult);
         }
-
+        return user.Id;
 
     }
 
+    /// <summary>
+    /// Returns the user with the given id.
+    /// </summary>
+    /// <param name="id">Id of the user to be searched for.</param>
+    /// <returns>If found the user otherwise null.</returns>
     public Task<User?> GetUserByIdAsync(int id)
     {
         return _userManager.FindByIdAsync(id.ToString());

@@ -2,7 +2,6 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Domain.User;
 
@@ -13,7 +12,7 @@ namespace ProjectMetadataPlatform.Application.Users;
 ///     Handler for the <see cref="CreateUserCommand" />
 /// </summary>
 /// </summary>
-public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand>
+public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, string>
 {
     private readonly IUsersRepository _usersRepository;
 
@@ -32,14 +31,15 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand>
     /// </summary>
     /// <param name="request">Request for user creation. </param>
     /// <param name="cancellationToken"></param>
-    public async Task Handle(CreateUserCommand request, CancellationToken cancellationToken)
+    public async Task<string> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
         if (_usersRepository.GetUserByIdAsync(request.UserId).Result!= null)
         {
             throw new ArgumentException("User with this Id already exists.");
         }
         var user = new User { Name = request.Name, UserName = request.Username, Email = request.Email, Id = request.UserId.ToString()};
-        await _usersRepository.CreateUserAsync(user, request.Password);
+        var result = await _usersRepository.CreateUserAsync(user, request.Password);
+        return result;
 
 
 
