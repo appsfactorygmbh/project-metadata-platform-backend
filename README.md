@@ -144,3 +144,7 @@ When changing the domain models or their configurations in the infrastructure la
     ```
 
 9. Run the migration script on the staging database once the merge request is approved and merged.
+
+### Connecting to the database
+
+See https://gitlab.dit.htwk-leipzig.de/projekt2024_A_Appsfactory_Project_Metadata_Platform/backend/-/wikis/home/DB-Verbindung
