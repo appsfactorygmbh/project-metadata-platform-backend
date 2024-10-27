@@ -50,7 +50,7 @@ public class UsersController : ControllerBase
 
         try
         {
-            await _mediator.Send(command);
+            _ = await _mediator.Send(command);
         }
         catch ( ArgumentException e)
         {

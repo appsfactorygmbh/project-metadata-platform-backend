@@ -34,12 +34,7 @@ public class UsersRepository : RepositoryBase<User>, IUsersRepository
     {
         var identityResult = await _userManager.CreateAsync(user, password);
         _ = await _context.SaveChangesAsync();
-        if (!identityResult.Succeeded)
-        {
-            throw new ArgumentException("User creation "+identityResult);
-        }
-        return user.Id;
-
+        return !identityResult.Succeeded ? throw new ArgumentException("User creation "+identityResult) : user.Id;
     }
 
     /// <summary>
