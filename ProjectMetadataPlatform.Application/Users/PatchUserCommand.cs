@@ -1,6 +1,6 @@
 using MediatR;
-using Microsoft.AspNetCore.Identity;
+using ProjectMetadataPlatform.Domain.User;
 
 namespace ProjectMetadataPlatform.Application.Users;
 
-public record PatchUserCommand(int Id, string? Username = null, string? Name = null, string? Email = null, string? Password = null): IRequest<IdentityUser?>;
+public record PatchUserCommand(int Id, string? Username = null, string? Name = null, string? Email = null, string? Password = null): IRequest<User?>;

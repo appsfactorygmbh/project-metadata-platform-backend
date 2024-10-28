@@ -5,8 +5,6 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ProjectMetadataPlatform.Api.Users.Models;
 using ProjectMetadataPlatform.Application.Users;
@@ -146,7 +144,7 @@ public class UsersController : ControllerBase
     {
         var command = new PatchUserCommand(userId, request.Username, request.Name, request.Email, request.Password);
 
-        IdentityUser? user;
+        User? user;
         try
         {
             user = await _mediator.Send(command);

@@ -1,24 +1,25 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using ProjectMetadataPlatform.Application.Interfaces;
+using ProjectMetadataPlatform.Domain.User;
 
 namespace ProjectMetadataPlatform.Infrastructure.DataAccess;
 
-public class UsersRepository : RepositoryBase<IdentityUser>, IUsersRepository
+public class UsersRepository : RepositoryBase<User>, IUsersRepository
 {
-    private readonly UserManager<IdentityUser> _userManager;
+    private readonly UserManager<User> _userManager;
 
-    public UsersRepository(ProjectMetadataPlatformDbContext projectMetadataPlatformDbContext, UserManager<IdentityUser> userManager) : base(projectMetadataPlatformDbContext)
+    public UsersRepository(ProjectMetadataPlatformDbContext projectMetadataPlatformDbContext, UserManager<User> userManager) : base(projectMetadataPlatformDbContext)
     {
         _userManager = userManager;
     }
 
-    public Task<IdentityUser?> GetUserByIdAsync(int id)
+    public Task<User?> GetUserByIdAsync(int id)
     {
         return _userManager.FindByIdAsync(id.ToString());
     }
 
-    public async Task<IdentityUser> StoreUser(IdentityUser user)
+    public async Task<User> StoreUser(User user)
     {
         if (user.Id == "")
         {
@@ -40,7 +41,7 @@ public class UsersRepository : RepositoryBase<IdentityUser>, IUsersRepository
     /// <returns></returns>
     public async Task<string?> CreateUser(string username, string password)
     {
-        var user = new IdentityUser { UserName = username };
+        var user = new User { UserName = username };
         var result = await _userManager.CreateAsync(user, password);
         return result.Succeeded ? user.Id : null;
     }
