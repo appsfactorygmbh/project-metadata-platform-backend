@@ -10,10 +10,12 @@ namespace ProjectMetadataPlatform.Application.Users;
 public class PatchUserCommandHandler: IRequestHandler<PatchUserCommand, User?>
 {
     private readonly IUsersRepository _usersRepository;
+    private readonly IPasswordHasher<User> _passwordHasher;
 
-    public PatchUserCommandHandler(IUsersRepository usersRepository)
+    public PatchUserCommandHandler(IUsersRepository usersRepository, IPasswordHasher<User> passwordHasher)
     {
         _usersRepository = usersRepository;
+        _passwordHasher = passwordHasher;
     }
 
     public async Task<User?> Handle(PatchUserCommand request, CancellationToken cancellationToken)
@@ -28,8 +30,7 @@ public class PatchUserCommandHandler: IRequestHandler<PatchUserCommand, User?>
         user.UserName = request.Username ?? user.UserName;
         user.Name = request.Name ?? user.Name;
         user.Email = request.Email ?? user.Email;
-        // todo
-        user.PasswordHash = request.Password ?? user.PasswordHash;
+        user.PasswordHash = request.Password != null ? _passwordHasher.HashPassword(user, request.Password) : user.PasswordHash;
 
         return await _usersRepository.StoreUser(user);
     }

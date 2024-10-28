@@ -34,6 +34,7 @@ public static class DependencyInjection
         _ = serviceCollection.AddScoped<IProjectsRepository, ProjectsRepository>();
         _ = serviceCollection.AddScoped<IAuthRepository, AuthRepository>();
         _ = serviceCollection.AddScoped<IUsersRepository, UsersRepository>();
+        _ = serviceCollection.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
         return serviceCollection;
     }
