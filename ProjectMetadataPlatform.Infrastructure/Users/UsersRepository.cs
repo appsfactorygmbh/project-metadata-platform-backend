@@ -1,10 +1,10 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Domain.User;
 using ProjectMetadataPlatform.Infrastructure.DataAccess;
+using Microsoft.AspNetCore.Identity;
 
 namespace ProjectMetadataPlatform.Infrastructure.Users;
 
@@ -13,15 +13,19 @@ namespace ProjectMetadataPlatform.Infrastructure.Users;
 /// </summary>
 public class UsersRepository : RepositoryBase<User>, IUsersRepository
 {
+    private readonly UserManager<User> _userManager;
     private readonly ProjectMetadataPlatformDbContext _context;
     /// <summary>
     ///     Initializes a new instance of the <see cref="UsersRepository" /> class.
     /// </summary>
     /// <param name="dbContext">The database context for accessing project data.</param>
-    public UsersRepository(ProjectMetadataPlatformDbContext dbContext) : base(dbContext)
+    /// <param name="userManager">Manager for users of the type user.</param>
+    public UsersRepository(ProjectMetadataPlatformDbContext dbContext,UserManager<User> userManager) : base(dbContext)
     {
+        _userManager = userManager;
         _context = dbContext;
     }
+
 
     /// <summary>
     ///     Asynchronously retrieves all projects from the database.
