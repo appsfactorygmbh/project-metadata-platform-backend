@@ -30,11 +30,11 @@ public class PatchUserCommandHandlerTest
         var user = new User { Id = "42", Name = "Culture Candela", UserName = "WTFPL 2", Email = "candela@hip-hop.dancehall" };
         var newUser = new User { Id = "42", Name = "Culcha Candela", UserName = "WTFPL 2", Email = "candela@hip-hop.dancehall" };
 
-        _mockUsersRepo.Setup(repo => repo.GetUserByIdAsync(42)).ReturnsAsync(user);
+        _mockUsersRepo.Setup(repo => repo.GetUserByIdAsync("42")).ReturnsAsync(user);
         _mockUsersRepo.Setup(repo => repo.StoreUser(It.IsAny<User>())).ReturnsAsync((User p) => p);
 
         var result =
-            await _handler.Handle(new PatchUserCommand(42, null, "Culcha Candela"), It.IsAny<CancellationToken>());
+            await _handler.Handle(new PatchUserCommand("42", null, "Culcha Candela"), It.IsAny<CancellationToken>());
 
         Assert.Multiple(() =>
         {
@@ -51,11 +51,11 @@ public class PatchUserCommandHandlerTest
     {
         var user = new User { Id = "42", Name = "Coldplay", UserName = "MIT", Email = "cold@play.co.uk" };
 
-        _mockUsersRepo.Setup(repo => repo.GetUserByIdAsync(42)).ReturnsAsync(user);
+        _mockUsersRepo.Setup(repo => repo.GetUserByIdAsync("42")).ReturnsAsync(user);
         _mockUsersRepo.Setup(repo => repo.StoreUser(It.IsAny<User>())).ReturnsAsync((User p) => p);
 
         var result =
-            await _handler.Handle(new PatchUserCommand(42), It.IsAny<CancellationToken>());
+            await _handler.Handle(new PatchUserCommand("42"), It.IsAny<CancellationToken>());
 
         Assert.Multiple(() =>
         {
@@ -70,10 +70,10 @@ public class PatchUserCommandHandlerTest
     [Test]
     public async Task PatchUser_NotFound_Test()
     {
-        _mockUsersRepo.Setup(repo => repo.GetUserByIdAsync(42)).ReturnsAsync((User)null!);
+        _mockUsersRepo.Setup(repo => repo.GetUserByIdAsync("42")).ReturnsAsync((User)null!);
 
         var result =
-            await _handler.Handle(new PatchUserCommand(42), It.IsAny<CancellationToken>());
+            await _handler.Handle(new PatchUserCommand("42"), It.IsAny<CancellationToken>());
 
         Assert.That(result, Is.Null);
     }

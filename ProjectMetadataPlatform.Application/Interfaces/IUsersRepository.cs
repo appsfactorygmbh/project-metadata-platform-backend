@@ -23,12 +23,6 @@ public interface IUsersRepository
     /// </summary>
     /// <returns>Enumerable of all User-Objects</returns>
     Task<IEnumerable<User>> GetAllUsersAsync();
-    Task<User?> GetUserByIdAsync(int id);
-    /// <summary>
-    /// Returns a user by their ID.
-    /// </summary>
-    /// <param name="id">The ID of the user to retrieve.</param>
-    /// <returns>The User object if found; otherwise, null.</returns>
     Task<User?> GetUserByIdAsync(string id);
     Task<User> StoreUser(User user);
 }

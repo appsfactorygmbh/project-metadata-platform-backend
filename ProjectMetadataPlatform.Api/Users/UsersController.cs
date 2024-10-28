@@ -139,8 +139,8 @@ public class UsersController : ControllerBase
         return Ok(response);
     }
 
-    [HttpPatch("{userId:int}")]
-    public async Task<ActionResult<GetUserResponse>> Patch(int userId, [FromBody] PatchUserRequest request)
+    [HttpPatch("{userId}")]
+    public async Task<ActionResult<GetUserResponse>> Patch(string userId, [FromBody] PatchUserRequest request)
     {
         var command = new PatchUserCommand(userId, request.Username, request.Name, request.Email, request.Password);
 
