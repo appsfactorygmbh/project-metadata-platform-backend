@@ -125,4 +125,28 @@ public class UsersRepositoryTest : TestsWithDatabase
 
         Assert.That(result, Is.Null);
     }
+
+    [Test]
+    public async Task StoreUser_CreatesUser_Test()
+    {
+        var user = new User { Id = "", Name = "Geordie Greep", UserName = "geordieCreep", Email = "notblackmidi@geordiegreep.com" };
+
+        var result = await _repository.StoreUser(user);
+
+        _mockUserManager.Verify(x => x.CreateAsync(user), Times.Once);
+
+        Assert.That(result, Is.EqualTo(user));
+    }
+
+    [Test]
+    public async Task StoreUser_UpdatesUser_Test()
+    {
+        var user = new User { Id = "13", Name = "Linkin Park", UserName = "Clara Park", Email = "emily.armstrong@linkinpark.leipzig.de" };
+
+        var result = await _repository.StoreUser(user);
+
+        _mockUserManager.Verify(x => x.UpdateAsync(user), Times.Once);
+
+        Assert.That(result, Is.EqualTo(user));
+    }
 }
