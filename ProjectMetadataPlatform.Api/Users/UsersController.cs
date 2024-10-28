@@ -9,8 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using ProjectMetadataPlatform.Api.Users.Models;
 using ProjectMetadataPlatform.Application.Users;
 using ProjectMetadataPlatform.Domain.User;
-using ProjectMetadataPlatform.Api.Users.Models;
-using ProjectMetadataPlatform.Application.Users;
+
 namespace ProjectMetadataPlatform.Api.Users;
 
 /// <summary>
@@ -26,7 +25,7 @@ public class UsersController : ControllerBase
     /// <summary>
     ///     Creates a new instance of the <see cref="UsersController" /> class.
     /// </summary>
-    /// <param name="mediator"></param>
+    /// <param name="mediator">The mediator instance used for sending commands and queries.</param>
     public UsersController(IMediator mediator)
     {
         _mediator = mediator;
@@ -139,6 +138,12 @@ public class UsersController : ControllerBase
         return Ok(response);
     }
 
+    /// <summary>
+    /// Patches the user information.
+    /// </summary>
+    /// <param name="userId">The unique identifier of the user to be patched.</param>
+    /// <param name="request">The request model containing the new user information.</param>
+    /// <returns>The updated user information.</returns>
     [HttpPatch("{userId}")]
     public async Task<ActionResult<GetUserResponse>> Patch(string userId, [FromBody] PatchUserRequest request)
     {
