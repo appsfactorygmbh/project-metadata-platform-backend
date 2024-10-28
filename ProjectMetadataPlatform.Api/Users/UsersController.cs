@@ -36,7 +36,7 @@ public class UsersController : ControllerBase
     /// <response code="500">An internal error occurred.</response>
     /// <response code="400">The request was invalid.</response>
     [HttpPut("{userId:int}")]
-    public async Task<ActionResult> Put(int userId,[FromBody] CreateUserRequest request)
+    public async Task<ActionResult<CreateUserResponse>> Put(int userId,[FromBody] CreateUserRequest request)
     {
         if (userId==0 || string.IsNullOrWhiteSpace(request.Name)
                                                            || string.IsNullOrWhiteSpace(request.Username)
@@ -47,10 +47,10 @@ public class UsersController : ControllerBase
         }
 
         var command = new CreateUserCommand(userId,request.Username, request.Name, request.Email, request.Password);
-
+        string id;
         try
         {
-            _ = await _mediator.Send(command);
+            id= await _mediator.Send(command);
         }
         catch ( ArgumentException e)
         {
@@ -63,8 +63,8 @@ public class UsersController : ControllerBase
 
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
-
-
-        return new StatusCodeResult(StatusCodes.Status201Created);
+        var response = new CreateUserResponse(int.Parse(id));
+        var uri = "/Users/" + id;
+        return Created(uri,response);
     }
 }
