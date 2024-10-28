@@ -159,10 +159,10 @@ public class UsersController : ControllerBase
 
         if (user == null)
         {
-            return NotFound("No user with id " + userId + "was found.");
+            return NotFound("No user with id " + userId + " was found.");
         }
 
-        var response = new GetUserResponse(user.UserName, user.UserName, user.Email);
+        var response = new GetUserResponse(user.Id, user.UserName, user.Name, user.Email);
         return Ok(response);
     }
 
