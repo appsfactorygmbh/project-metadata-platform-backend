@@ -61,4 +61,22 @@ public class UsersRepository : RepositoryBase<User>, IUsersRepository
         return _userManager.FindByIdAsync(id);
     }
 
+    /// <summary>
+    /// Stores the user information.
+    /// </summary>
+    /// <param name="user">The user to be stored.</param>
+    /// <returns>The stored user.</returns>
+    public async Task<User> StoreUser(User user)
+    {
+        if (user.Id == "")
+        {
+            await _userManager.CreateAsync(user);
+        }
+        else
+        {
+            await _userManager.UpdateAsync(user);
+        }
+
+        return user;
+    }
 }
