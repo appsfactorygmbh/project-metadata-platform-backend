@@ -200,7 +200,7 @@ public class ProjectsController : ControllerBase
     /// <returns>An <see cref="ActionResult"/> containing a list of distinct business units.</returns>
     /// <response code="200">Returns the list of distinct business units successfully.</response>
     /// <response code="500">Indicates an internal error occurred while processing the request.</response>
-    [HttpGet("/filterData/businessunits")]
+    [HttpGet("filterData/businessunits")]
     public async Task<ActionResult<IEnumerable<string>>> GetAllBusinessUnits()
     {
         var query = new GetAllBusinessUnitsQuery();
