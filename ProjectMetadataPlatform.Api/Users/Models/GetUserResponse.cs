@@ -1,5 +1,3 @@
-using System.Text;
-
 namespace ProjectMetadataPlatform.Api.Users.Models;
 /// <summary>
 /// Represents the response model for retrieving user information.

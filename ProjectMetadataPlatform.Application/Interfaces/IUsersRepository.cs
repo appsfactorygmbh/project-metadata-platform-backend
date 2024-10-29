@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 using ProjectMetadataPlatform.Domain.User;
 using System.Collections.Generic;
-using ProjectMetadataPlatform.Domain.User;
 
 namespace ProjectMetadataPlatform.Application.Interfaces;
 
