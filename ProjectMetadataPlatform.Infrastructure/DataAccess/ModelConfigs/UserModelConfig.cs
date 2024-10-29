@@ -4,9 +4,15 @@ using ProjectMetadataPlatform.Domain.User;
 
 namespace ProjectMetadataPlatform.Infrastructure.DataAccess.ModelConfigs;
 
+/// <summary>
+/// Configuration class for the User entity.
+/// </summary>
 public class UserModelConfig : IEntityTypeConfiguration<User>
 {
-
+    /// <summary>
+    /// Configures the User entity.
+    /// </summary>
+    /// <param name="builder">The builder to be used to configure the User entity.</param>
     public void Configure(EntityTypeBuilder<User> builder)
     {
         _ = builder.HasKey(e => e.Id);
