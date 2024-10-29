@@ -6,10 +6,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using ProjectMetadataPlatform.Api.Plugins.Models;
-using ProjectMetadataPlatform.Application.Plugins;
 using ProjectMetadataPlatform.Application.Users;
-using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.User;
 using ProjectMetadataPlatform.Api.Users.Models;
 

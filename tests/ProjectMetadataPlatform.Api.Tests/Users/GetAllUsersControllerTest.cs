@@ -10,6 +10,8 @@ using ProjectMetadataPlatform.Api.Users;
 using ProjectMetadataPlatform.Application.Users;
 using ProjectMetadataPlatform.Domain.User;
 using ProjectMetadataPlatform.Api.Users.Models;
+using System;
+using Microsoft.AspNetCore.Http;
 
 namespace ProjectMetadataPlatform.Api.Tests.Users;
 
@@ -76,6 +78,22 @@ public class GetAllUsersControllerTest
         var response = okResult.Value as IEnumerable<GetAllUsersResponse>;
         Assert.That(response, Is.Not.Null);
         Assert.That(response.Count(), Is.EqualTo(0));
+    }
+
+    [Test]
+    public async Task Get_ReturnsMediatorException()
+    {
+        _mediator.Setup(m => m.Send(It.IsAny<GetAllUsersQuery>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new InvalidOperationException("Test exception"));
+
+        var result = await _controller.Get();
+
+        var objectResult = result.Result as StatusCodeResult;
+        Assert.Multiple(() =>
+        {
+            Assert.That(objectResult, Is.Not.Null);
+            Assert.That(objectResult.StatusCode, Is.EqualTo(StatusCodes.Status500InternalServerError));
+        });
     }
 
 }
