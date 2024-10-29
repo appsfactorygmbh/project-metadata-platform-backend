@@ -35,18 +35,18 @@ public class UsersController : ControllerBase
     /// <response code="201">The user was created successfully.</response>
     /// <response code="500">An internal error occurred.</response>
     /// <response code="400">The request was invalid.</response>
-    [HttpPut("{userId:int}")]
-    public async Task<ActionResult<CreateUserResponse>> Put(int userId,[FromBody] CreateUserRequest request)
+    [HttpPut]
+    public async Task<ActionResult<CreateUserResponse>> Put([FromBody] CreateUserRequest request)
     {
-        if (userId==0 || string.IsNullOrWhiteSpace(request.Name)
-                                                           || string.IsNullOrWhiteSpace(request.Username)
-                                                           || string.IsNullOrWhiteSpace(request.Email)
-                                                           || string.IsNullOrWhiteSpace(request.Password))
+        if (string.IsNullOrWhiteSpace(request.Name)
+            || string.IsNullOrWhiteSpace(request.Username)
+            || string.IsNullOrWhiteSpace(request.Email)
+            || string.IsNullOrWhiteSpace(request.Password))
         {
-            return BadRequest("userId, name, username, email and password must not be empty.");
+            return BadRequest("name, username, email and password must not be empty.");
         }
 
-        var command = new CreateUserCommand(userId,request.Username, request.Name, request.Email, request.Password);
+        var command = new CreateUserCommand(request.Username, request.Name, request.Email, request.Password);
         string id;
         try
         {

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using ProjectMetadataPlatform.Application.Interfaces;
@@ -32,6 +33,8 @@ public class UsersRepository : RepositoryBase<User>, IUsersRepository
     /// <returns>Id of the created User.</returns>
     public async Task<string> CreateUserAsync(User user, string password)
     {
+
+        user.Id = (_context.Users.Max(user => int.Parse(user.Id)) + 1).ToString();
         var identityResult = await _userManager.CreateAsync(user, password);
         _ = await _context.SaveChangesAsync();
         return !identityResult.Succeeded ? throw new ArgumentException("User creation "+identityResult) : user.Id;

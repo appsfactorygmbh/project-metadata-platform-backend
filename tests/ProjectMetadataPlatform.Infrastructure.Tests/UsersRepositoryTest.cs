@@ -18,11 +18,13 @@ public class UsersRepositoryTest : TestsWithDatabase
             null, null, null, null, null, null, null, null);
         _context = DbContext();
         _repository = new UsersRepository(_context,_mockUserManager.Object);
+
         ClearData(_context);
     }
     private ProjectMetadataPlatformDbContext _context;
     private UsersRepository _repository;
     private Mock<UserManager<User>> _mockUserManager;
+
 
     [TearDown]
     public void TearDown()
@@ -35,7 +37,7 @@ public class UsersRepositoryTest : TestsWithDatabase
     [Test]
     public async Task CreateUserAsync_Test()
     {
-        var user = new User { UserName = "Example Username", Name = "Example Name", Email = "Example Email", Id = "1"};
+        var user = new User { UserName = "Example Username", Name = "Example Name", Email = "Example Email", };
         var password = "test";
         _mockUserManager.Setup(m => m.CreateAsync(It.IsAny<User>(), It.IsAny<string>()) ).ReturnsAsync(IdentityResult.Success);
         var id=await _repository.CreateUserAsync(user, password);
@@ -45,15 +47,18 @@ public class UsersRepositoryTest : TestsWithDatabase
     [Test]
     public async Task CreateUserAsync_InvalidPassword_Test()
     {
-        var user = new User { UserName = "Example Username", Name = "Example Name", Email = "Example Email", Id = "1"};
+        _context.Users.Add(new User { UserName = "Example Username", Name = "Example Name", Email = "Example Email", Id = "1"});
+        var user = new User { UserName = "Example Username", Name = "Example Name", Email = "Example Email"};
         var password = "test";
         _mockUserManager.Setup(m => m.CreateAsync(It.IsAny<User>(), It.IsAny<string>()) ).ReturnsAsync(IdentityResult.Failed());
+
         Assert.ThrowsAsync<ArgumentException>(() => _repository.CreateUserAsync(user, password));
     }
 
     [Test]
     public async Task GetUserByIdAsync_Test()
     {
+        _context.Users.Add(new User { UserName = "Example Username", Name = "Example Name", Email = "Example Email", Id = "1"});
         var user = new User { UserName = "Example Username", Name = "Example Name", Email = "Example Email", Id = "1"};
         _mockUserManager.Setup(m => m.FindByIdAsync(It.IsAny<string>()) ).ReturnsAsync(user);
         var result = await _repository.GetUserByIdAsync(1);

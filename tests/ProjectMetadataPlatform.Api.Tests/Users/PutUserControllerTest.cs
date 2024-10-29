@@ -31,7 +31,7 @@ public class PutUserControllerTest
         //prepare
         _mediator.Setup(m => m.Send(It.IsAny<CreateUserCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync("1");
         var request= new CreateUserRequest(  "Example Username", "Example Name", "Example Email", "Example Password");
-        ActionResult<CreateUserResponse> result = await _controller.Put(1,request);
+        ActionResult<CreateUserResponse> result = await _controller.Put(request);
         Assert.That(result.Result, Is.InstanceOf<CreatedResult>());
         var createdResult = result.Result as CreatedResult;
 
@@ -59,7 +59,7 @@ public class PutUserControllerTest
         //prepare
         _mediator.Setup(m => m.Send(It.IsAny<CreateUserCommand>(), It.IsAny<CancellationToken>())).ThrowsAsync(new ArgumentException("Invalid password"));
         var request= new CreateUserRequest(  "Example Name", "Example Username", "Example Email", "Example Password");
-        ActionResult<CreateUserResponse> result = await _controller.Put(1,request);
+        ActionResult<CreateUserResponse> result = await _controller.Put(request);
         Assert.That(result.Result, Is.InstanceOf<BadRequestObjectResult>());
         var badRequestResult = result.Result as BadRequestObjectResult;
         Assert.That(badRequestResult, Is.Not.Null);
@@ -70,11 +70,11 @@ public class PutUserControllerTest
     public async Task CreateUser_InvalidRequest_Test()
     {
         var request= new CreateUserRequest(  "", "", "", "");
-        ActionResult<CreateUserResponse> result = await _controller.Put(0,request);
+        ActionResult<CreateUserResponse> result = await _controller.Put(request);
         Assert.That(result.Result, Is.InstanceOf<BadRequestObjectResult>());
         var badRequestResult = result.Result as BadRequestObjectResult;
         Assert.That(badRequestResult, Is.Not.Null);
-        Assert.That(badRequestResult.Value, Is.EqualTo("userId, name, username, email and password must not be empty."));
+        Assert.That(badRequestResult.Value, Is.EqualTo("name, username, email and password must not be empty."));
     }
 
     [Test]
@@ -83,7 +83,7 @@ public class PutUserControllerTest
         _mediator.Setup(mediator => mediator.Send(It.IsAny<CreateUserCommand>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidDataException("An error message"));
         var request= new CreateUserRequest(  "Example Name", "Example Username", "Example Email", "Example Password");
-        ActionResult<CreateUserResponse> result = await _controller.Put(1,request);
+        ActionResult<CreateUserResponse> result = await _controller.Put(request);
         Assert.That(result.Result, Is.InstanceOf<StatusCodeResult>());
 
         var badRequestResult = result.Result as StatusCodeResult;

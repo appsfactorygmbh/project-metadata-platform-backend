@@ -10,4 +10,4 @@ namespace ProjectMetadataPlatform.Application.Users;
 /// <param name="Name">Name of the user.</param>
 /// <param name="Email">Email of the user.</param>
 /// <param name="Password">Password of the user.</param>
-public record CreateUserCommand(int UserId, string Username, string Name, string Email, string Password):IRequest<string>;
+public record CreateUserCommand( string Username, string Name, string Email, string Password):IRequest<string>;

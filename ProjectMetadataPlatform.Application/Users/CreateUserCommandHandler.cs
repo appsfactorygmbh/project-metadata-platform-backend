@@ -33,11 +33,8 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, strin
     /// <param name="cancellationToken"></param>
     public async Task<string> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
-        if (_usersRepository.GetUserByIdAsync(request.UserId).Result!= null)
-        {
-            throw new ArgumentException("User with this Id already exists.");
-        }
-        var user = new User { Name = request.Name, UserName = request.Username, Email = request.Email, Id = request.UserId.ToString()};
+
+        var user = new User { Name = request.Name, UserName = request.Username, Email = request.Email};
         var result = await _usersRepository.CreateUserAsync(user, request.Password);
         return result;
 
