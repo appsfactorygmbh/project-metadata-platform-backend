@@ -12,6 +12,7 @@ using Microsoft.IdentityModel.Tokens;
 using ProjectMetadataPlatform.Application;
 using ProjectMetadataPlatform.Application.Auth;
 using ProjectMetadataPlatform.Domain.User;
+using ProjectMetadataPlatform.Infrastructure.Users;
 
 namespace ProjectMetadataPlatform.Infrastructure;
 

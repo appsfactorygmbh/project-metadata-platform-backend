@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -6,6 +8,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ProjectMetadataPlatform.Api.Users.Models;
 using ProjectMetadataPlatform.Application.Users;
+using ProjectMetadataPlatform.Domain.User;
+using ProjectMetadataPlatform.Api.Users.Models;
 
 namespace ProjectMetadataPlatform.Api.Users;
 
@@ -65,5 +69,32 @@ public class UsersController : ControllerBase
         var response = new CreateUserResponse(int.Parse(id));
         var uri = "/Users/" + id;
         return Created(uri,response);
+    }
+    /// <summary>
+    ///     Gets all users.
+    /// </summary>
+    /// <returns>All users.</returns>
+    /// <response code="200">The users are returned successfully.</response>
+    /// <response code="500">An internal error occurred.</response>
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<GetAllUsersResponse>>> Get()
+    {
+        var query = new GetAllUsersQuery();
+        IEnumerable<User> users;
+        try
+        {
+            users = await _mediator.Send(query);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            Console.WriteLine(e.StackTrace);
+            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+        }
+
+        IEnumerable<GetAllUsersResponse> response = users.Select(user => new GetAllUsersResponse(
+            user.Id,
+            user.Name));
+        return Ok(response);
     }
 }

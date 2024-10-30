@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using ProjectMetadataPlatform.Domain.User;
+using System.Collections.Generic;
 
 namespace ProjectMetadataPlatform.Application.Interfaces;
 
@@ -22,6 +23,12 @@ public interface IUsersRepository
     /// <param name="id">Id of the searched for user.</param>
     /// <returns>User that is searched for or null.</returns>
     Task<User?> GetUserByIdAsync(int id);
+
+    /// <summary>
+    /// Returns all users.
+    /// </summary>
+    /// <returns>Enumerable of all User-Objects</returns>
+    Task<IEnumerable<User>> GetAllUsersAsync();
 
 
 
