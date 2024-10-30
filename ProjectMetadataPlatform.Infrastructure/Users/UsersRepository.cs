@@ -26,7 +26,6 @@ public class UsersRepository : RepositoryBase<User>, IUsersRepository
         _context = dbContext;
     }
 
-
     /// <summary>
     ///     Asynchronously retrieves all projects from the database.
     /// </summary>
@@ -35,4 +34,15 @@ public class UsersRepository : RepositoryBase<User>, IUsersRepository
     {
         return await GetEverything().ToListAsync();
     }
+
+    /// <summary>
+    /// Retrieves a user by their unique identifier.
+    /// </summary>
+    /// <param name="id">The unique identifier of the user.</param>
+    /// <returns>The user with the specified identifier, or null if not found.</returns>
+    public Task<User?> GetUserByIdAsync(string id)
+    {
+        return _userManager.FindByIdAsync(id);
+    }
+
 }

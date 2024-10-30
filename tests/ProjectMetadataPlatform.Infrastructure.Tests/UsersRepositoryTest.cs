@@ -71,4 +71,35 @@ public class UsersRepositoryTest : TestsWithDatabase
             Assert.That(result.ElementAt(0).Name, Is.EqualTo("Hinz"));
         }));
     }
+
+    [Test]
+    public async Task GetUserByIdAsync_Test()
+    {
+        var user = new User
+        {
+            Id = "1",
+            Name = "Hinz"
+        };
+        _mockUserManager.Setup(m => m.FindByIdAsync("1")).ReturnsAsync(user);
+
+        var result = await _repository.GetUserByIdAsync("1");
+
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result, Is.InstanceOf<User>());
+        Assert.Multiple((() =>
+        {
+            Assert.That(result.Id, Is.EqualTo("1"));
+            Assert.That(result.Name, Is.EqualTo("Hinz"));
+        }));
+    }
+
+    [Test]
+    public async Task GetUserByIdAsync_NonexistentUser_Test()
+    {
+        _mockUserManager.Setup(m => m.FindByIdAsync("1")).ReturnsAsync((User?)null);
+
+        var result = await _repository.GetUserByIdAsync("1");
+
+        Assert.That(result, Is.Null);
+    }
 }

@@ -57,4 +57,41 @@ public class UsersController : ControllerBase
         return Ok(response);
     }
 
+        /// <summary>
+    ///     Gets a user by their ID.
+    /// </summary>
+    /// <param name="userId">The ID of the user to retrieve.</param>
+    /// <returns>The user with the specified ID.</returns>
+    /// <response code="200">The user is returned successfully.</response>
+    /// <response code="404">The user with the specified ID was not found.</response>
+    /// <response code="500">An internal error occurred.</response>
+    [HttpGet("{userId}")]
+    public async Task<ActionResult<GetUserResponse>> GetUserById(string userId)
+    {
+        var query = new GetUserQuery(userId);
+        User? user;
+        try
+        {
+            user = await _mediator.Send(query);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            Console.WriteLine(e.StackTrace);
+            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+        }
+
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        var response = new GetUserResponse(
+            user.Id,
+            user.UserName ?? "",
+            user.Name,
+            user.Email ?? ""
+            );
+        return Ok(response);
+    }
 }
