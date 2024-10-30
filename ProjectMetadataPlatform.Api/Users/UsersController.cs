@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using ProjectMetadataPlatform.Api.Users.Models;
 using ProjectMetadataPlatform.Application.Users;
 using ProjectMetadataPlatform.Domain.User;
-using ProjectMetadataPlatform.Api.Users.Models;
+
 
 namespace ProjectMetadataPlatform.Api.Users;
 
