@@ -61,3 +61,8 @@ app.MapControllers();
 app.UseCors();
 
 app.Run();
+
+/// <summary>
+/// The entry point for the application.
+/// </summary>
+public partial class Program;

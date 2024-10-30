@@ -24,6 +24,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectMetadataPlatform.Inf
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectMetadataPlatform.Api", "ProjectMetadataPlatform.Api\ProjectMetadataPlatform.Api.csproj", "{C7536C6E-ADC2-423C-939E-042B97AEF9CD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectMetadataPlatform.IntegrationTests", "tests\ProjectMetadataPlatform.IntegrationTests\ProjectMetadataPlatform.IntegrationTests.csproj", "{054A8413-5009-446D-9F72-1A307A859B54}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -62,6 +64,10 @@ Global
 		{C7536C6E-ADC2-423C-939E-042B97AEF9CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C7536C6E-ADC2-423C-939E-042B97AEF9CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C7536C6E-ADC2-423C-939E-042B97AEF9CD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{054A8413-5009-446D-9F72-1A307A859B54}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{054A8413-5009-446D-9F72-1A307A859B54}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{054A8413-5009-446D-9F72-1A307A859B54}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{054A8413-5009-446D-9F72-1A307A859B54}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{B1C1DA21-4CD9-40FA-93AB-977B08D45A57} = {7B202114-61C6-4AD8-B540-E16DDDF0DA46}
@@ -72,5 +78,6 @@ Global
 		{F090837A-0DA8-4584-877A-BE5A86EABC30} = {EBDF3F0D-FE95-4CE2-9D48-AA96A6607061}
 		{EF0D668A-A423-423A-9C9F-8DC32D4F2940} = {EBDF3F0D-FE95-4CE2-9D48-AA96A6607061}
 		{C7536C6E-ADC2-423C-939E-042B97AEF9CD} = {7B202114-61C6-4AD8-B540-E16DDDF0DA46}
+		{054A8413-5009-446D-9F72-1A307A859B54} = {EBDF3F0D-FE95-4CE2-9D48-AA96A6607061}
 	EndGlobalSection
 EndGlobal
