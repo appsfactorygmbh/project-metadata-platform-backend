@@ -29,7 +29,6 @@ public class UsersController : ControllerBase
     /// <summary>
     ///    Creates a new user.
     /// </summary>
-    /// <param name="userId">Id of the user</param>
     /// <param name="request">Request containing user information</param>
     /// <returns>Statuscode representing the result of user creation</returns>
     /// <response code="201">The user was created successfully.</response>

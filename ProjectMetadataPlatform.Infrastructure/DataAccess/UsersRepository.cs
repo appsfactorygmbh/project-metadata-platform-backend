@@ -33,11 +33,9 @@ public class UsersRepository : RepositoryBase<User>, IUsersRepository
     /// <returns>Id of the created User.</returns>
     public async Task<string> CreateUserAsync(User user, string password)
     {
-
-
         user.Id = ((_context.Users.Select(user => user.Id).ToList().Max(id => ((int?) int.Parse(id))) ?? 0)+1).ToString();
         var identityResult = await _userManager.CreateAsync(user, password);
-        _ = await _context.SaveChangesAsync();
+
         return !identityResult.Succeeded ? throw new ArgumentException("User creation "+identityResult) : user.Id;
     }
 

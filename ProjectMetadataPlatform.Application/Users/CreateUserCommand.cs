@@ -5,7 +5,6 @@ namespace ProjectMetadataPlatform.Application.Users;
 /// <summary>
 ///     Command to create a new user.
 /// </summary>
-/// <param name="UserId">Id of the user.</param>
 /// <param name="Username">Username of the user.</param>
 /// <param name="Name">Name of the user.</param>
 /// <param name="Email">Email of the user.</param>
