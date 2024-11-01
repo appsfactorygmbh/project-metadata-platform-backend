@@ -177,6 +177,13 @@ public class UsersController : ControllerBase
     }
 
 
+    /// <summary>
+    ///    Gets the current authenticated user's information.
+    /// </summary>
+    /// <returns>The current user's information.</returns>
+    /// <response code="200">The user information is returned successfully.</response>
+    /// <response code="500">An internal error occurred.</response>
+    /// <response code="404">The user was not found.</response>
     [HttpGet("Me")]
     public async Task<ActionResult<GetUserResponse>> GetMe()
     {
