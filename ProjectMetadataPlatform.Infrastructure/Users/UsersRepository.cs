@@ -36,6 +36,12 @@ public class UsersRepository : RepositoryBase<User>, IUsersRepository
     {
         return await GetEverything().ToListAsync();
     }
+
+    /// <summary>
+    /// Returns the user with the given username.
+    /// </summary>
+    /// <param name="userName">The username of the user to be searched for.</param>
+    /// <returns>The user with the specified username, or null if not found.</returns>
     public Task<User?> GetUserByUserNameAsync(string userName)
     {
         return _userManager.FindByNameAsync(userName);
