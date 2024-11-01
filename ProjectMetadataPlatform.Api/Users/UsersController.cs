@@ -21,14 +21,15 @@ namespace ProjectMetadataPlatform.Api.Users;
 public class UsersController : ControllerBase
 {
     private readonly IMediator _mediator;
-
+    private readonly IHttpContextAccessor _httpContextAccessor;
     /// <summary>
     ///     Creates a new instance of the <see cref="UsersController" /> class.
     /// </summary>
     /// <param name="mediator">The mediator instance used for sending commands and queries.</param>
-    public UsersController(IMediator mediator)
+    public UsersController(IMediator mediator, IHttpContextAccessor httpContextAccessor)
     {
         _mediator = mediator;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     /// <summary>
@@ -174,4 +175,29 @@ public class UsersController : ControllerBase
         return Ok(response);
     }
 
+
+    [HttpGet("Me")]
+    public async Task<ActionResult<GetUserResponse>> GetMe()
+    {
+        // var query = new GetMeQuery();
+        // User user;
+        // try
+        // {
+        //     user = await _mediator.Send(query);
+        // }
+        // catch (Exception e)
+        // {
+        //     Console.WriteLine(e.Message);
+        //     Console.WriteLine(e.StackTrace);
+        //     return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+        // }
+        // if (user == null)
+        // {
+        //     return NotFound("User not found.");
+        // }
+        //
+        // var response = new GetUserResponse(user.Id, user.Name ?? "", user.UserName ?? "", user.Email ?? "");
+        // return Ok(response);
+        return Ok();
+    }
 }
