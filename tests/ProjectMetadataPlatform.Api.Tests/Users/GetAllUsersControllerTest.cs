@@ -25,7 +25,7 @@ public class GetAllUsersControllerTest
     public void Setup()
     {
         _mediator = new Mock<IMediator>();
-        _controller = new UsersController(_mediator.Object);
+        _controller = new UsersController(_mediator.Object, null!);
     }
 
     [Test]
