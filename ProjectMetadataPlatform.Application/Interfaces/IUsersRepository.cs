@@ -29,6 +29,7 @@ public interface IUsersRepository
     /// <param name="id">The ID of the user to retrieve.</param>
     /// <returns>The User object if found; otherwise, null.</returns>
     Task<User?> GetUserByIdAsync(string id);
+    Task<User?> GetUserByUserNameAsync(string userName);
 
     /// <summary>
     /// Returns the user with the given username.
