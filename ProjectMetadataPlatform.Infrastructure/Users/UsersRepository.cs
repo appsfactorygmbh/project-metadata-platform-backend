@@ -36,6 +36,10 @@ public class UsersRepository : RepositoryBase<User>, IUsersRepository
     {
         return await GetEverything().ToListAsync();
     }
+    public Task<User?> GetUserByUserNameAsync(string userName)
+    {
+        return _userManager.FindByNameAsync(userName);
+    }
 
     /// <summary>
     /// Creates a new user with the given data.

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -179,25 +180,24 @@ public class UsersController : ControllerBase
     [HttpGet("Me")]
     public async Task<ActionResult<GetUserResponse>> GetMe()
     {
-        // var query = new GetMeQuery();
-        // User user;
-        // try
-        // {
-        //     user = await _mediator.Send(query);
-        // }
-        // catch (Exception e)
-        // {
-        //     Console.WriteLine(e.Message);
-        //     Console.WriteLine(e.StackTrace);
-        //     return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-        // }
-        // if (user == null)
-        // {
-        //     return NotFound("User not found.");
-        // }
-        //
-        // var response = new GetUserResponse(user.Id, user.Name ?? "", user.UserName ?? "", user.Email ?? "");
-        // return Ok(response);
-        return Ok();
+        var query = new GetUserByUserNameQuery(_httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.Name).Value);
+        User? user;
+        try
+        {
+            user = await _mediator.Send(query);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            Console.WriteLine(e.StackTrace);
+            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+        }
+        if (user == null)
+        {
+            return NotFound("User not found.");
+        }
+
+        var response = new GetUserResponse(user.Id, user.Name ?? "", user.UserName ?? "", user.Email ?? "");
+        return Ok(response);
     }
 }
