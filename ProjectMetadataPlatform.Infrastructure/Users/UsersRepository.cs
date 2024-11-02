@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using ProjectMetadataPlatform.Application.Interfaces;
@@ -33,6 +35,30 @@ public class UsersRepository : RepositoryBase<User>, IUsersRepository
     public async Task<IEnumerable<User>> GetAllUsersAsync()
     {
         return await GetEverything().ToListAsync();
+    }
+
+    /// <summary>
+    /// Creates a new user with the given data.
+    /// </summary>
+    /// <param name="user">User to be created.</param>
+    /// <param name="password">Password of the user.</param>
+    /// <returns>Id of the created User.</returns>
+    public async Task<string> CreateUserAsync(User user, string password)
+    {
+        user.Id = ((_context.Users.Select(user => user.Id).ToList().Max(id => ((int?) int.Parse(id))) ?? 0)+1).ToString();
+        var identityResult = await _userManager.CreateAsync(user, password);
+
+        return !identityResult.Succeeded ? throw new ArgumentException("User creation "+identityResult) : user.Id;
+    }
+
+    /// <summary>
+    /// Returns the user with the given id.
+    /// </summary>
+    /// <param name="id">Id of the user to be searched for.</param>
+    /// <returns>If found the user otherwise null.</returns>
+    public Task<User?> GetUserByIdAsync(int id)
+    {
+        return _userManager.FindByIdAsync(id.ToString());
     }
 
     /// <summary>
