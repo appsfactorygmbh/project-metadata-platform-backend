@@ -58,7 +58,10 @@ public class GetUserControllerTest
         ActionResult<GetUserResponse> result = await _controller.GetUserById("1");
         Assert.That(result, Is.Not.Null);
 
-        Assert.That(result.Result, Is.InstanceOf<NotFoundResult>());
+        Assert.That(result.Result, Is.InstanceOf<NotFoundObjectResult>());
+
+        var notFoundResult = result.Result as NotFoundObjectResult;
+        Assert.That(notFoundResult.Value, Is.EqualTo("No User with id 1 was found."));
     }
 
     [Test]

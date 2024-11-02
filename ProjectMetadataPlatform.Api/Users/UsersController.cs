@@ -124,13 +124,13 @@ public class UsersController : ControllerBase
 
         if (user == null)
         {
-            return NotFound();
+            return NotFound("No User with id " + userId + " was found.");
         }
 
         var response = new GetUserResponse(
             user.Id,
             user.UserName ?? "",
-            user.Name,
+            user.Name ?? "",
             user.Email ?? ""
             );
         return Ok(response);
