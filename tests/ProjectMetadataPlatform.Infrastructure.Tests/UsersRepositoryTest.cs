@@ -59,6 +59,23 @@ public class UsersRepositoryTest : TestsWithDatabase
     }
 
     [Test]
+    public async Task GetUserByIdAsync_Test()
+    {
+        _context.Users.Add(new User { UserName = "Example Username", Name = "Example Name", Email = "Example Email", Id = "1"});
+        var user = new User { UserName = "Example Username", Name = "Example Name", Email = "Example Email", Id = "1"};
+        _mockUserManager.Setup(m => m.FindByIdAsync(It.IsAny<string>()) ).ReturnsAsync(user);
+        var result = await _repository.GetUserByIdAsync("1");
+        Assert.That(result, Is.EqualTo(user));
+    }
+
+    [Test]
+    public async Task GetUserByIdAsync_Unsuccessful_Test()
+    {
+        _mockUserManager.Setup(m => m.FindByIdAsync(It.IsAny<string>()) ).ReturnsAsync((User?)null);
+        var result = await _repository.GetUserByIdAsync("1");
+        Assert.That(result, Is.Null);
+    }
+    [Test]
     public async Task GetAllUsersAsync_EmptyResponse_Test()
     {
         var result = await _repository.GetAllUsersAsync();
