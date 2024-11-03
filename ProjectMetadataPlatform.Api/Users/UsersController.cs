@@ -220,4 +220,23 @@ public class UsersController : ControllerBase
         var response = new GetUserResponse(user.Id, user.UserName ?? "", user.Name ?? "", user.Email ?? "");
         return Ok(response);
     }
+
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> Delete(string id)
+    {
+        var command = new DeleteUserCommand(id);
+        try
+        {
+            await _mediator.Send(command);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            Console.WriteLine(e.StackTrace);
+            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+        }
+
+        return NoContent();
+    }
+
 }

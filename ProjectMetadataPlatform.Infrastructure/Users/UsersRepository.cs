@@ -100,4 +100,9 @@ public class UsersRepository : RepositoryBase<User>, IUsersRepository
 
         return user;
     }
+    public async Task<User> DeleteUserAsync(User user)
+    {
+        await _userManager.DeleteAsync(user);
+        return user;
+    }
 }
