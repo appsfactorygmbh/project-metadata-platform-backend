@@ -43,6 +43,7 @@ public interface IUsersRepository
     /// <param name="user">The User object to store.</param>
     /// <returns>The stored User object.</returns>
     Task<User> StoreUser(User user);
+
     /// <summary>
     /// Deletes the specified user.
     /// </summary>

@@ -75,7 +75,7 @@ public class UsersController : ControllerBase
         }
         var response = new CreateUserResponse(id);
         var uri = "/Users/" + id;
-        return Created(uri, response);
+        return Created(uri,response);
     }
 
     /// <summary>
@@ -107,15 +107,7 @@ public class UsersController : ControllerBase
     }
 
     /// <summary>
-    ///     Deletes a user by their ID.
-    /// </summary>
-    /// <param name="id">The ID of the user to delete.</param>
-    /// <returns>A status code representing the result of the delete operation.</returns>
-    /// <response code="204">The user was deleted successfully.</response>
-    /// <response code="404">The user was not found.</response>
-    /// <response code="500">An internal error occurred.</response>
-        /// <summary>
-    ///     Gets a user by their ID.
+    /// Gets a user by their ID.
     /// </summary>
     /// <param name="userId">The ID of the user to retrieve.</param>
     /// <returns>The user with the specified ID.</returns>

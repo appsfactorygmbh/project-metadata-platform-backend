@@ -23,7 +23,7 @@ public class UsersRepository : RepositoryBase<User>, IUsersRepository
     /// </summary>
     /// <param name="dbContext">The database context for accessing project data.</param>
     /// <param name="userManager">Manager for users of the type user.</param>
-    public UsersRepository(ProjectMetadataPlatformDbContext dbContext, UserManager<User> userManager) : base(dbContext)
+    public UsersRepository(ProjectMetadataPlatformDbContext dbContext,UserManager<User> userManager) : base(dbContext)
     {
         _userManager = userManager;
         _context = dbContext;
