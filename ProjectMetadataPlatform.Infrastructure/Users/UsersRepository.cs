@@ -104,6 +104,12 @@ public class UsersRepository : RepositoryBase<User>, IUsersRepository
         return user;
         return _userManager.FindByIdAsync(id);
     }
+
+    /// <summary>
+    /// Deletes the specified user asynchronously.
+    /// </summary>
+    /// <param name="user">The user to be deleted.</param>
+    /// <returns>The task result contains the deleted user.</returns>
     public async Task<User> DeleteUserAsync(User user)
     {
         await _userManager.DeleteAsync(user);

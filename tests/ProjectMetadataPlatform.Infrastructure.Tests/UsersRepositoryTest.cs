@@ -183,4 +183,16 @@ public class UsersRepositoryTest : TestsWithDatabase
 
         Assert.That(result, Is.EqualTo(user));
     }
+    [Test]
+    public async Task DeleteUserAsync_Test()
+    {
+        var user = new User { Id = "1" };
+        _mockUserManager.Setup(m => m.FindByIdAsync("1")).ReturnsAsync(user);
+        _mockUserManager.Setup(m => m.DeleteAsync(user)).ReturnsAsync(IdentityResult.Success);
+
+        var result = await _repository.DeleteUserAsync(user);
+
+        Assert.That(result, Is.EqualTo(user));
+    }
+
 }

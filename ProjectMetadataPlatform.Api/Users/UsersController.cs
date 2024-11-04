@@ -107,6 +107,13 @@ public class UsersController : ControllerBase
     }
 
     /// <summary>
+    ///     Deletes a user by their ID.
+    /// </summary>
+    /// <param name="id">The ID of the user to delete.</param>
+    /// <returns>A status code representing the result of the delete operation.</returns>
+    /// <response code="204">The user was deleted successfully.</response>
+    /// <response code="500">An internal error occurred.</response>
+        /// <summary>
     ///     Gets a user by their ID.
     /// </summary>
     /// <param name="userId">The ID of the user to retrieve.</param>
@@ -222,18 +229,24 @@ public class UsersController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<ActionResult> Delete(string id)
+    public async Task<ActionResult> Delete(string userId)
     {
-        var command = new DeleteUserCommand(id);
+        var command = new DeleteUserCommand(userId);
+        User? user;
         try
         {
-            await _mediator.Send(command);
+            user = await _mediator.Send(command);
         }
         catch (Exception e)
         {
             Console.WriteLine(e.Message);
             Console.WriteLine(e.StackTrace);
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+        }
+
+        if (user == null)
+        {
+            return NotFound("No user with id " + userId + " was found.");
         }
 
         return NoContent();
