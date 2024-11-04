@@ -52,16 +52,6 @@ public class UsersRepository : RepositoryBase<User>, IUsersRepository
     }
 
     /// <summary>
-    /// Returns the user with the given id.
-    /// </summary>
-    /// <param name="id">Id of the user to be searched for.</param>
-    /// <returns>If found the user otherwise null.</returns>
-    public Task<User?> GetUserByIdAsync(int id)
-    {
-        return _userManager.FindByIdAsync(id.ToString());
-    }
-
-    /// <summary>
     /// Retrieves a user by their unique identifier.
     /// </summary>
     /// <param name="id">The unique identifier of the user.</param>

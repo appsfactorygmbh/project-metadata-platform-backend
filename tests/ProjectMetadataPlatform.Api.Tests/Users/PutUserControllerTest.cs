@@ -42,7 +42,7 @@ public class PutUserControllerTest
         Assert.That(userResponse, Is.Not.Null);
         Assert.Multiple(() =>
         {
-            Assert.That(userResponse.UserId, Is.EqualTo(1));
+            Assert.That(userResponse.UserId, Is.EqualTo("1"));
 
             Assert.That(createdResult.Location, Is.EqualTo("/Users/1"));
         });

@@ -4,4 +4,4 @@ namespace ProjectMetadataPlatform.Api.Users.Models;
 /// Represents a response to create a new user.
 /// </summary>
 /// <param name="UserId">Id of the user that was created</param>
-public record CreateUserResponse(int UserId);
+public record CreateUserResponse(string UserId);

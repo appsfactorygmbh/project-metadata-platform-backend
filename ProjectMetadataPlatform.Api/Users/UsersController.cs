@@ -65,7 +65,7 @@ public class UsersController : ControllerBase
 
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
-        var response = new CreateUserResponse(int.Parse(id));
+        var response = new CreateUserResponse(id);
         var uri = "/Users/" + id;
         return Created(uri,response);
     }
