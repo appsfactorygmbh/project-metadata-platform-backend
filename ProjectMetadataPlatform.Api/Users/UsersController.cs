@@ -204,7 +204,7 @@ public class UsersController : ControllerBase
             return NotFound("User not found.");
         }
 
-        var response = new GetUserResponse(user.Id, user.Name ?? "", user.UserName ?? "", user.Email ?? "");
+        var response = new GetUserResponse(user.Id, user.UserName ?? "", user.Name ?? "", user.Email ?? "");
         return Ok(response);
     }
 }
