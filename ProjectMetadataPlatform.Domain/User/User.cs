@@ -11,5 +11,5 @@ public class User : IdentityUser
     /// <summary>
     /// Gets or sets the name of the user.
     /// </summary>
-    public string? Name { get; set; }
+    public string Name { get; set; }
 }
