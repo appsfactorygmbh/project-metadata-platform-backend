@@ -27,7 +27,7 @@ public class CreateUserCommandHandlerTest
     [Test]
     public async Task CreateUser_Test()
     {
-        _mockUsersRepo.Setup(m => m.CreateUserAsync(It.IsAny<User>(),It.IsAny<string>())).ReturnsAsync("1");
+        _mockUsersRepo.Setup(m => m.CreateUserAsync(It.IsAny<User>(), It.IsAny<string>())).ReturnsAsync("1");
 
         var result = await _handler.Handle(new CreateUserCommand("Example Username", "Example Name", "Example Email", "Example Password"), It.IsAny<CancellationToken>());
 

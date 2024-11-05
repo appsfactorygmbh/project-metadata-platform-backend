@@ -10,7 +10,7 @@ namespace ProjectMetadataPlatform.Application.Users;
 /// <summary>
 /// Handles the command to patch user information.
 /// </summary>
-public class PatchUserCommandHandler: IRequestHandler<PatchUserCommand, User?>
+public class PatchUserCommandHandler : IRequestHandler<PatchUserCommand, User?>
 {
     private readonly IUsersRepository _usersRepository;
     private readonly IPasswordHasher<User> _passwordHasher;

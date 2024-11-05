@@ -22,7 +22,7 @@ public class UsersRepository : RepositoryBase<User>, IUsersRepository
     /// </summary>
     /// <param name="dbContext">The database context for accessing project data.</param>
     /// <param name="userManager">Manager for users of the type user.</param>
-    public UsersRepository(ProjectMetadataPlatformDbContext dbContext,UserManager<User> userManager) : base(dbContext)
+    public UsersRepository(ProjectMetadataPlatformDbContext dbContext, UserManager<User> userManager) : base(dbContext)
     {
         _userManager = userManager;
         _context = dbContext;
@@ -45,10 +45,10 @@ public class UsersRepository : RepositoryBase<User>, IUsersRepository
     /// <returns>Id of the created User.</returns>
     public async Task<string> CreateUserAsync(User user, string password)
     {
-        user.Id = ((_context.Users.Select(user => user.Id).ToList().Max(id => ((int?) int.Parse(id))) ?? 0)+1).ToString();
+        user.Id = ((_context.Users.Select(user => user.Id).ToList().Max(id => ((int?)int.Parse(id))) ?? 0) + 1).ToString();
         var identityResult = await _userManager.CreateAsync(user, password);
 
-        return !identityResult.Succeeded ? throw new ArgumentException("User creation "+identityResult) : user.Id;
+        return !identityResult.Succeeded ? throw new ArgumentException("User creation " + identityResult) : user.Id;
     }
 
     /// <summary>

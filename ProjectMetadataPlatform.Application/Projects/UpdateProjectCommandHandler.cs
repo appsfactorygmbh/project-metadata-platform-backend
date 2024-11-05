@@ -1,8 +1,12 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using ProjectMetadataPlatform.Application.Interfaces;
+using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.Projects;
 
 namespace ProjectMetadataPlatform.Application.Projects;
@@ -13,14 +17,16 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
 {
     private readonly IProjectsRepository _projectsRepository;
     private readonly IPluginRepository _pluginRepository;
+    private readonly IUnitOfWork _unitOfWork;
+
     /// <summary>
     /// Creates a new instance of <see cref="UpdateProjectCommand"/>.
     /// </summary>
-    /// <param name="projectsRepository"></param>
-    public UpdateProjectCommandHandler(IProjectsRepository projectsRepository, IPluginRepository pluginRepository)
+    public UpdateProjectCommandHandler(IProjectsRepository projectsRepository, IPluginRepository pluginRepository, IUnitOfWork unitOfWork)
     {
         _projectsRepository = projectsRepository;
         _pluginRepository = pluginRepository;
+        _unitOfWork = unitOfWork;
     }
     /// <summary>
     /// Handles the request to update a project.
@@ -30,23 +36,92 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
     /// <returns>Response to the request</returns>
     public async Task<int> Handle(UpdateProjectCommand request, CancellationToken cancellationToken)
     {
-        var project = new Project{ProjectName=request.ProjectName, BusinessUnit=request.BusinessUnit, TeamNumber=request.TeamNumber, Department=request.Department, ClientName=request.ClientName, Id = request.Id, ProjectPlugins = request.Plugins};
+        var project = await _projectsRepository.GetProjectWithPluginsAsync(request.Id)
+                      ?? throw new InvalidOperationException("Project does not exist.");
 
-        if (await _projectsRepository.CheckProjectExists(project.Id))
+        UpdateProjectProperties(request, project);
+
+        var invalidPluginIds = await request.Plugins
+            .Select(plugin => plugin.PluginId)
+            .Distinct()
+            .ToAsyncEnumerable()
+            .WhereAwait(async pluginId => !await _pluginRepository.CheckPluginExists(pluginId))
+            .ToListAsync(cancellationToken);
+
+        if (invalidPluginIds.Count > 0)
         {
-            foreach (var plugin in project.ProjectPlugins)
+            throw new InvalidOperationException(
+                "The Plugins with these ids do not exist: " + string.Join(", ", invalidPluginIds));
+        }
+
+        var currentPlugins = new List<ProjectPlugins>(project.ProjectPlugins!);
+
+        var existingPlugins = currentPlugins
+            .IntersectBy(request.Plugins.Select(GetProjectPluginKey), GetProjectPluginKey)
+            .ToList();
+
+        var newPlugins = request.Plugins
+            .ExceptBy(currentPlugins.Select(GetProjectPluginKey), GetProjectPluginKey)
+            .ToList();
+
+        var removedPlugins = currentPlugins.Except(existingPlugins).ToList();
+
+        foreach (var existingPlugin in existingPlugins)
+        {
+            var requestPlugin = request.Plugins.First(plugin
+                => GetProjectPluginKey(plugin) == GetProjectPluginKey(existingPlugin));
+
+            if (existingPlugin.DisplayName != requestPlugin.DisplayName)
             {
-                if (!(await _pluginRepository.CheckPluginExists(plugin.PluginId)))
-                {
-                   throw new InvalidOperationException("The Plugin with this id does not exist: " + plugin.PluginId);
-                }
+                existingPlugin.DisplayName = requestPlugin.DisplayName;
             }
-            await _projectsRepository.UpdateProject(project,request.Plugins);
         }
-        else
-        {
-            throw new InvalidOperationException("Project does not exist.");
-        }
+
+        project.ProjectPlugins = project.ProjectPlugins!
+            .Except(removedPlugins)
+            .Concat(newPlugins)
+            .ToList();
+
+        await _unitOfWork.CompleteAsync();
+
         return project.Id;
+    }
+
+    private static (int ProjectId, int PluginId, string Url) GetProjectPluginKey(ProjectPlugins projectPlugin)
+        => (projectPlugin.ProjectId, projectPlugin.PluginId, projectPlugin.Url);
+
+    private static void UpdateProjectProperties(UpdateProjectCommand request, Project project)
+    {
+        var changedProperties = new List<(string Name, string Old, string New)>();
+
+        if (project.ProjectName != request.ProjectName)
+        {
+            changedProperties.Add((nameof(Project.ProjectName), project.ProjectName, request.ProjectName));
+            project.ProjectName = request.ProjectName;
+        }
+
+        if (project.BusinessUnit != request.BusinessUnit)
+        {
+            changedProperties.Add((nameof(Project.BusinessUnit), project.BusinessUnit, request.BusinessUnit));
+            project.BusinessUnit = request.BusinessUnit;
+        }
+
+        if (project.TeamNumber != request.TeamNumber)
+        {
+            changedProperties.Add((nameof(Project.TeamNumber), project.TeamNumber.ToString(CultureInfo.InvariantCulture), request.TeamNumber.ToString(CultureInfo.InvariantCulture)));
+            project.TeamNumber = request.TeamNumber;
+        }
+
+        if (project.Department != request.Department)
+        {
+            changedProperties.Add((nameof(Project.Department), project.Department, request.Department));
+            project.Department = request.Department;
+        }
+
+        if (project.ClientName != request.ClientName)
+        {
+            changedProperties.Add((nameof(Project.ClientName), project.ClientName, request.ClientName));
+            project.ClientName = request.ClientName;
+        }
     }
 }

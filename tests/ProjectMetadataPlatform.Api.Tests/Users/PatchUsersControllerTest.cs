@@ -26,7 +26,8 @@ public class PatchUsersControllerTest
     [Test]
     public async Task PatchUser_Test()
     {
-        var user = new User {
+        var user = new User
+        {
             Id = "42",
             Name = "Dr. Peacock",
             UserName = "CC BY-NC",

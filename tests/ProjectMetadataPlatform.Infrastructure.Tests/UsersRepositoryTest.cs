@@ -20,7 +20,7 @@ public class UsersRepositoryTest : TestsWithDatabase
         _mockUserManager = new Mock<UserManager<User>>(new Mock<IUserStore<User>>().Object,
             null, null, null, null, null, null, null, null);
         _context = DbContext();
-        _repository = new UsersRepository(_context,_mockUserManager.Object);
+        _repository = new UsersRepository(_context, _mockUserManager.Object);
 
         ClearData(_context);
     }
@@ -42,18 +42,18 @@ public class UsersRepositoryTest : TestsWithDatabase
     {
         var user = new User { UserName = "Example Username", Name = "Example Name", Email = "Example Email", };
         var password = "test";
-        _mockUserManager.Setup(m => m.CreateAsync(It.IsAny<User>(), It.IsAny<string>()) ).ReturnsAsync(IdentityResult.Success);
-        var id=await _repository.CreateUserAsync(user, password);
+        _mockUserManager.Setup(m => m.CreateAsync(It.IsAny<User>(), It.IsAny<string>())).ReturnsAsync(IdentityResult.Success);
+        var id = await _repository.CreateUserAsync(user, password);
         Assert.That(id, Is.EqualTo("1"));
     }
 
     [Test]
     public async Task CreateUserAsync_InvalidPassword_Test()
     {
-        _context.Users.Add(new User { UserName = "Example Username", Name = "Example Name", Email = "Example Email", Id = "1"});
-        var user = new User { UserName = "Example Username", Name = "Example Name", Email = "Example Email"};
+        _context.Users.Add(new User { UserName = "Example Username", Name = "Example Name", Email = "Example Email", Id = "1" });
+        var user = new User { UserName = "Example Username", Name = "Example Name", Email = "Example Email" };
         var password = "test";
-        _mockUserManager.Setup(m => m.CreateAsync(It.IsAny<User>(), It.IsAny<string>()) ).ReturnsAsync(IdentityResult.Failed());
+        _mockUserManager.Setup(m => m.CreateAsync(It.IsAny<User>(), It.IsAny<string>())).ReturnsAsync(IdentityResult.Failed());
 
         Assert.ThrowsAsync<ArgumentException>(() => _repository.CreateUserAsync(user, password));
     }

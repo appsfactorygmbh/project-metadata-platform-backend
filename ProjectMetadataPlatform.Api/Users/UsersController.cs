@@ -54,9 +54,9 @@ public class UsersController : ControllerBase
         string id;
         try
         {
-            id= await _mediator.Send(command);
+            id = await _mediator.Send(command);
         }
-        catch ( ArgumentException e)
+        catch (ArgumentException e)
         {
             return BadRequest(e.Message);
         }
@@ -69,7 +69,7 @@ public class UsersController : ControllerBase
         }
         var response = new CreateUserResponse(id);
         var uri = "/Users/" + id;
-        return Created(uri,response);
+        return Created(uri, response);
     }
 
     /// <summary>
@@ -100,7 +100,7 @@ public class UsersController : ControllerBase
         return Ok(response);
     }
 
-        /// <summary>
+    /// <summary>
     ///     Gets a user by their ID.
     /// </summary>
     /// <param name="userId">The ID of the user to retrieve.</param>

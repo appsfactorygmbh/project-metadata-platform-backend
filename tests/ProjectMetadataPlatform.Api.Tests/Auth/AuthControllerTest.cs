@@ -29,7 +29,7 @@ public class Tests
     public async Task SuccessfulLoginTest()
     {
         _mediator.Setup(m => m.Send(It.IsAny<LoginQuery>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new JwtTokens{AccessToken = "accessToken", RefreshToken = "refreshToken"});
+            .ReturnsAsync(new JwtTokens { AccessToken = "accessToken", RefreshToken = "refreshToken" });
 
         var request = new LoginRequest("username", "password");
 
@@ -60,7 +60,7 @@ public class Tests
     public async Task SuccessfulRefreshTest()
     {
         _mediator.Setup(m => m.Send(It.IsAny<RefreshTokenQuery>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new JwtTokens{AccessToken = "accessToken", RefreshToken = "refreshToken"});
+            .ReturnsAsync(new JwtTokens { AccessToken = "accessToken", RefreshToken = "refreshToken" });
 
         var request = "Refresh refreshToken";
 

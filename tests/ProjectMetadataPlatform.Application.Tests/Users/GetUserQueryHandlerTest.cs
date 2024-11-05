@@ -37,7 +37,8 @@ public class GetUserQueryHandlerTest
 
         Assert.That(result, Is.Not.Null);
         Assert.That(result, Is.InstanceOf<User>());
-        Assert.Multiple((() => {
+        Assert.Multiple((() =>
+        {
             Assert.That(result.Id, Is.EqualTo("1"));
             Assert.That(result.Name, Is.EqualTo("Hinz"));
         }));

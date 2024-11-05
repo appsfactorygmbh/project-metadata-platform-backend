@@ -13,7 +13,7 @@ namespace ProjectMetadataPlatform.Infrastructure.DataAccess;
 /// <summary>
 /// Handles User Management using the UserManager provided by AspNetCore Identity.
 /// </summary>
-public class AuthRepository : RepositoryBase<RefreshToken>,IAuthRepository
+public class AuthRepository : RepositoryBase<RefreshToken>, IAuthRepository
 {
     private readonly UserManager<User> _userManager;
     private readonly ProjectMetadataPlatformDbContext _context;
@@ -22,7 +22,7 @@ public class AuthRepository : RepositoryBase<RefreshToken>,IAuthRepository
     /// </summary>
     /// <param name="dbContext"></param>
     /// <param name="userManager"></param>
-    public AuthRepository(ProjectMetadataPlatformDbContext dbContext,UserManager<User> userManager) : base(dbContext)
+    public AuthRepository(ProjectMetadataPlatformDbContext dbContext, UserManager<User> userManager) : base(dbContext)
     {
         _userManager = userManager;
         _context = dbContext;
@@ -118,7 +118,7 @@ public class AuthRepository : RepositoryBase<RefreshToken>,IAuthRepository
     {
         var token = GetIf(rt => rt.Token == refreshToken).FirstOrDefaultAsync().Result;
 
-        return (token != null  && token.ExpirationDate > DateTime.UtcNow);
+        return (token != null && token.ExpirationDate > DateTime.UtcNow);
     }
 
     /// <summary>
