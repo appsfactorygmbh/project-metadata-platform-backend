@@ -112,6 +112,7 @@ public class UsersController : ControllerBase
     /// <param name="id">The ID of the user to delete.</param>
     /// <returns>A status code representing the result of the delete operation.</returns>
     /// <response code="204">The user was deleted successfully.</response>
+    /// <response code="404">The user was not found.</response>
     /// <response code="500">An internal error occurred.</response>
         /// <summary>
     ///     Gets a user by their ID.
@@ -228,7 +229,8 @@ public class UsersController : ControllerBase
         return Ok(response);
     }
 
-    [HttpDelete("{id}")]
+
+    [HttpDelete("{userId}")]
     public async Task<ActionResult> Delete(string userId)
     {
         var command = new DeleteUserCommand(userId);
