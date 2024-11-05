@@ -88,9 +88,6 @@ public class UsersRepository : RepositoryBase<User>, IUsersRepository
     /// <param name="user">The user to be stored.</param>
     /// <returns>The stored user.</returns>
     public async Task<User> StoreUser(User user)
-    /// <param name="id">Id of the user to be searched for.</param>
-    /// <returns>If found the user otherwise null.</returns>
-    public Task<User?> GetUserByIdAsync(string id)
     {
         if (user.Id == "")
         {
@@ -102,7 +99,6 @@ public class UsersRepository : RepositoryBase<User>, IUsersRepository
         }
 
         return user;
-        return _userManager.FindByIdAsync(id);
     }
 
     /// <summary>
