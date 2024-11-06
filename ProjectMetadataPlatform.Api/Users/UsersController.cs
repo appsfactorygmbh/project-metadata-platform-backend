@@ -27,6 +27,7 @@ public class UsersController : ControllerBase
     ///     Creates a new instance of the <see cref="UsersController" /> class.
     /// </summary>
     /// <param name="mediator">The mediator instance used for sending commands and queries.</param>
+    /// <param name="httpContextAccessor">The http context accessor instance used for accessing the current user.</param>
     public UsersController(IMediator mediator, IHttpContextAccessor httpContextAccessor)
     {
         _mediator = mediator;
@@ -184,10 +185,19 @@ public class UsersController : ControllerBase
     /// <response code="200">The user information is returned successfully.</response>
     /// <response code="500">An internal error occurred.</response>
     /// <response code="404">The user was not found.</response>
+    /// <response code="401">The user is not authenticated.</response>
     [HttpGet("Me")]
     public async Task<ActionResult<GetUserResponse>> GetMe()
     {
-        var query = new GetUserByUserNameQuery(_httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.Name).Value);
+        var username = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Name)?.Value;
+
+        if (username == null)
+        {
+            return Unauthorized("User not authenticated.");
+        }
+
+        var query = new GetUserByUserNameQuery(username);
+
         User? user;
         try
         {
