@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Application.Projects;
-using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.Projects;
 
 namespace ProjectMetadataPlatform.Infrastructure.DataAccess;
@@ -100,6 +99,18 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     }
 
     /// <summary>
+    ///     Asynchronously retrieves a project and its plugins from the database by its identifier.
+    /// </summary>
+    /// <param name="id">Identification number for a project</param>
+    /// <returns>A task representing the asynchronous operation. When this task completes, it returns one project.</returns>
+    public async Task<Project?> GetProjectWithPluginsAsync(int id)
+    {
+        return await GetIf(p => p.Id == id).AsTracking()
+            .Include(p => p.ProjectPlugins)
+            .FirstOrDefaultAsync();
+    }
+
+    /// <summary>
     ///     Saves project to the database and returns it.
     /// </summary>
     /// <param name="project">Project to be saved in the database</param>
@@ -111,29 +122,6 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
             Create(project);
         }
         _ = await _context.SaveChangesAsync();
-    }
-
-    /// <summary>
-    /// Updates a project in the database and returns it.
-    /// </summary>
-    /// <param name="project">Project to be updated</param>
-    /// <param name="plugins">Plugins of the project</param>
-    /// <returns></returns>
-    public async Task UpdateProject(Project project, List<ProjectPlugins> plugins)
-    {
-        if (GetIf(p => p.Id == project.Id).FirstOrDefault() != null)
-        {
-            var existingProject = await _context.Projects
-                .Include(p => p.ProjectPlugins)
-                .FirstOrDefaultAsync(p => p.Id == project.Id);
-            existingProject!.ProjectName = project.ProjectName;
-            existingProject.Department = project.Department;
-            existingProject.BusinessUnit = project.BusinessUnit;
-            existingProject.TeamNumber = project.TeamNumber;
-            existingProject.ClientName = project.ClientName;
-            existingProject.ProjectPlugins = plugins;
-            _ = await _context.SaveChangesAsync();
-        }
     }
 
     /// <summary>

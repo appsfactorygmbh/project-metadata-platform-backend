@@ -57,7 +57,8 @@ public class GetAllUsersQueryHandlerTest
 
         User[] resultArray = result.ToArray();
         Assert.That(resultArray, Has.Length.EqualTo(1));
-        Assert.Multiple((() => {
+        Assert.Multiple((() =>
+        {
             Assert.That(resultArray[0].Id, Is.EqualTo("1"));
             Assert.That(resultArray[0].Name, Is.EqualTo("Hinz"));
         }));

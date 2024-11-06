@@ -1,0 +1,81 @@
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
+using Moq;
+using NUnit.Framework;
+using ProjectMetadataPlatform.Application.Interfaces;
+using ProjectMetadataPlatform.Application.Users;
+using ProjectMetadataPlatform.Domain.User;
+
+namespace ProjectMetadataPlatform.Application.Tests.Users;
+
+[TestFixture]
+public class PatchUserCommandHandlerTest
+{
+    private PatchUserCommandHandler _handler;
+    private Mock<IUsersRepository> _mockUsersRepo;
+    private Mock<IPasswordHasher<User>> _mockPasswordHasher;
+
+    [SetUp]
+    public void Setup()
+    {
+        _mockUsersRepo = new Mock<IUsersRepository>();
+        _mockPasswordHasher = new Mock<IPasswordHasher<User>>();
+        _handler = new PatchUserCommandHandler(_mockUsersRepo.Object, _mockPasswordHasher.Object);
+    }
+
+    [Test]
+    public async Task PatchUser_Test()
+    {
+        var user = new User { Id = "42", Name = "Culture Candela", UserName = "WTFPL 2", Email = "candela@hip-hop.dancehall" };
+        var newUser = new User { Id = "42", Name = "Culcha Candela", UserName = "WTFPL 2", Email = "candela@hip-hop.dancehall" };
+
+        _mockUsersRepo.Setup(repo => repo.GetUserByIdAsync("42")).ReturnsAsync(user);
+        _mockUsersRepo.Setup(repo => repo.StoreUser(It.IsAny<User>())).ReturnsAsync((User p) => p);
+
+        var result =
+            await _handler.Handle(new PatchUserCommand("42", null, "Culcha Candela"), It.IsAny<CancellationToken>());
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result!.Email, Is.EqualTo(newUser.Email));
+            Assert.That(result.Name, Is.EqualTo(newUser.Name));
+            Assert.That(result.UserName, Is.EqualTo(newUser.UserName));
+            Assert.That(result.Id, Is.EqualTo(newUser.Id));
+        });
+    }
+
+    [Test]
+    public async Task PatchUser_ChangeNothing_Test()
+    {
+        var user = new User { Id = "42", Name = "Coldplay", UserName = "MIT", Email = "cold@play.co.uk" };
+
+        _mockUsersRepo.Setup(repo => repo.GetUserByIdAsync("42")).ReturnsAsync(user);
+        _mockUsersRepo.Setup(repo => repo.StoreUser(It.IsAny<User>())).ReturnsAsync((User p) => p);
+
+        var result =
+            await _handler.Handle(new PatchUserCommand("42"), It.IsAny<CancellationToken>());
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result!.Email, Is.EqualTo(user.Email));
+            Assert.That(result.Name, Is.EqualTo(user.Name));
+            Assert.That(result.UserName, Is.EqualTo(user.UserName));
+            Assert.That(result.Id, Is.EqualTo(user.Id));
+        });
+    }
+
+    [Test]
+    public async Task PatchUser_NotFound_Test()
+    {
+        _mockUsersRepo.Setup(repo => repo.GetUserByIdAsync("42")).ReturnsAsync((User)null!);
+
+        var result =
+            await _handler.Handle(new PatchUserCommand("42"), It.IsAny<CancellationToken>());
+
+        Assert.That(result, Is.Null);
+    }
+
+}

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Application.Projects;
 using ProjectMetadataPlatform.Domain.Projects;
 
@@ -31,19 +30,17 @@ public interface IProjectsRepository
     Task<Project?> GetProjectAsync(int id);
 
     /// <summary>
+    ///     Returns a project.
+    /// </summary>
+    /// <returns>One project or null.</returns>
+    Task<Project?> GetProjectWithPluginsAsync(int id);
+
+    /// <summary>
     ///     Saves a project to the database and returns it.
     /// </summary>
     /// <param name="project"></param>
     /// <returns></returns>
     Task Add(Project project);
-
-    /// <summary>
-    /// Updates a project in the database and returns it.
-    /// </summary>
-    /// <param name="project">Project to be updated</param>
-    /// <param name="plugins">plugins of project</param>
-    /// <returns></returns>
-    Task UpdateProject(Project project, List<ProjectPlugins> plugins);
 
     /// <summary>
     /// Checks if a project exists.

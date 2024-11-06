@@ -1,7 +1,6 @@
 
 using System.Threading.Tasks;
 
-
 namespace ProjectMetadataPlatform.Application.Interfaces;
 
 /// <summary>

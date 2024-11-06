@@ -10,8 +10,30 @@ namespace ProjectMetadataPlatform.Application.Interfaces;
 public interface IUsersRepository
 {
     /// <summary>
+    /// Creates a new user with the given data.
+    /// </summary>
+    /// <param name="user">User to be created.</param>
+    /// <param name="password">Password of the user.</param>
+    /// <returns>Id of the created user.</returns>
+    Task<string> CreateUserAsync(User user, string password);
+
+    /// <summary>
     /// Returns all users.
     /// </summary>
     /// <returns>Enumerable of all User-Objects</returns>
     Task<IEnumerable<User>> GetAllUsersAsync();
+
+    /// <summary>
+    /// Returns a user by their ID.
+    /// </summary>
+    /// <param name="id">The ID of the user to retrieve.</param>
+    /// <returns>The User object if found; otherwise, null.</returns>
+    Task<User?> GetUserByIdAsync(string id);
+
+    /// <summary>
+    /// Stores a user.
+    /// </summary>
+    /// <param name="user">The User object to store.</param>
+    /// <returns>The stored User object.</returns>
+    Task<User> StoreUser(User user);
 }

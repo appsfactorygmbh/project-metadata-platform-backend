@@ -32,12 +32,12 @@ public class RefreshTokenQueryHandler : IRequestHandler<RefreshTokenQuery, JwtTo
     /// <exception cref="AuthenticationException"></exception>
     public async Task<JwtTokens> Handle(RefreshTokenQuery request, CancellationToken cancellationToken)
     {
-        if (! await _authRepository.CheckRefreshTokenRequest( request.RefreshToken))
+        if (!await _authRepository.CheckRefreshTokenRequest(request.RefreshToken))
         {
             throw new AuthenticationException("Invalid refresh token.");
         }
         var username = await _authRepository.GetUserNameByRefreshToken(request.RefreshToken);
         var stringToken = AccessTokenService.CreateAccessToken(username);
-        return new JwtTokens { AccessToken = stringToken, RefreshToken = request.RefreshToken};
+        return new JwtTokens { AccessToken = stringToken, RefreshToken = request.RefreshToken };
     }
 }

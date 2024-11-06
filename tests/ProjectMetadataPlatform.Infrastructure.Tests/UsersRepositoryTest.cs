@@ -1,12 +1,13 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using NUnit.Framework;
-using ProjectMetadataPlatform.Domain.User;
-using ProjectMetadataPlatform.Infrastructure.DataAccess;
-using ProjectMetadataPlatform.Infrastructure.Users;
-using Moq;
 using Microsoft.AspNetCore.Identity;
+using Moq;
+using NUnit.Framework;
+using ProjectMetadataPlatform.Infrastructure.DataAccess;
+using ProjectMetadataPlatform.Domain.User;
+using ProjectMetadataPlatform.Infrastructure.Users;
 
 namespace ProjectMetadataPlatform.Infrastructure.Tests;
 
@@ -19,7 +20,8 @@ public class UsersRepositoryTest : TestsWithDatabase
         _mockUserManager = new Mock<UserManager<User>>(new Mock<IUserStore<User>>().Object,
             null, null, null, null, null, null, null, null);
         _context = DbContext();
-        _repository = new UsersRepository(_context,_mockUserManager.Object);
+        _repository = new UsersRepository(_context, _mockUserManager.Object);
+
         ClearData(_context);
     }
     private ProjectMetadataPlatformDbContext _context;
@@ -33,6 +35,27 @@ public class UsersRepositoryTest : TestsWithDatabase
         using ProjectMetadataPlatformDbContext context = DbContext();
 
         context.Database.EnsureDeleted();
+    }
+
+    [Test]
+    public async Task CreateUserAsync_Test()
+    {
+        var user = new User { UserName = "Example Username", Name = "Example Name", Email = "Example Email", };
+        var password = "test";
+        _mockUserManager.Setup(m => m.CreateAsync(It.IsAny<User>(), It.IsAny<string>())).ReturnsAsync(IdentityResult.Success);
+        var id = await _repository.CreateUserAsync(user, password);
+        Assert.That(id, Is.EqualTo("1"));
+    }
+
+    [Test]
+    public async Task CreateUserAsync_InvalidPassword_Test()
+    {
+        _context.Users.Add(new User { UserName = "Example Username", Name = "Example Name", Email = "Example Email", Id = "1" });
+        var user = new User { UserName = "Example Username", Name = "Example Name", Email = "Example Email" };
+        var password = "test";
+        _mockUserManager.Setup(m => m.CreateAsync(It.IsAny<User>(), It.IsAny<string>())).ReturnsAsync(IdentityResult.Failed());
+
+        Assert.ThrowsAsync<ArgumentException>(() => _repository.CreateUserAsync(user, password));
     }
 
     [Test]
@@ -70,5 +93,60 @@ public class UsersRepositoryTest : TestsWithDatabase
             Assert.That(result.ElementAt(0).Id, Is.EqualTo("1"));
             Assert.That(result.ElementAt(0).Name, Is.EqualTo("Hinz"));
         }));
+    }
+
+    [Test]
+    public async Task GetUserByIdAsync_Test()
+    {
+        var user = new User
+        {
+            Id = "1",
+            Name = "Hinz"
+        };
+        _mockUserManager.Setup(m => m.FindByIdAsync("1")).ReturnsAsync(user);
+
+        var result = await _repository.GetUserByIdAsync("1");
+
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result, Is.InstanceOf<User>());
+        Assert.Multiple((() =>
+        {
+            Assert.That(result.Id, Is.EqualTo("1"));
+            Assert.That(result.Name, Is.EqualTo("Hinz"));
+        }));
+    }
+
+    [Test]
+    public async Task GetUserByIdAsync_NonexistentUser_Test()
+    {
+        _mockUserManager.Setup(m => m.FindByIdAsync("1")).ReturnsAsync((User?)null);
+
+        var result = await _repository.GetUserByIdAsync("1");
+
+        Assert.That(result, Is.Null);
+    }
+
+    [Test]
+    public async Task StoreUser_CreatesUser_Test()
+    {
+        var user = new User { Id = "", Name = "Geordie Greep", UserName = "geordieCreep", Email = "notblackmidi@geordiegreep.com" };
+
+        var result = await _repository.StoreUser(user);
+
+        _mockUserManager.Verify(x => x.CreateAsync(user), Times.Once);
+
+        Assert.That(result, Is.EqualTo(user));
+    }
+
+    [Test]
+    public async Task StoreUser_UpdatesUser_Test()
+    {
+        var user = new User { Id = "13", Name = "Linkin Park", UserName = "Clara Park", Email = "emily.armstrong@linkinpark.leipzig.de" };
+
+        var result = await _repository.StoreUser(user);
+
+        _mockUserManager.Verify(x => x.UpdateAsync(user), Times.Once);
+
+        Assert.That(result, Is.EqualTo(user));
     }
 }

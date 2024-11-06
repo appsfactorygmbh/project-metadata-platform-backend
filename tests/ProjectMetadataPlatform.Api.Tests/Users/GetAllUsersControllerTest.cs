@@ -19,7 +19,7 @@ namespace ProjectMetadataPlatform.Api.Tests.Users;
 public class GetAllUsersControllerTest
 {
     private UsersController _controller;
-    public Mock<IMediator> _mediator;
+    private Mock<IMediator> _mediator;
 
     [SetUp]
     public void Setup()

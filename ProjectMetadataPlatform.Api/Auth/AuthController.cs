@@ -36,7 +36,7 @@ public class AuthController : ControllerBase
     /// <response code="200">Returns the access and refresh tokens.</response>
     /// <response code="400">If the credentials are invalid.</response>
     /// <response code="500">If an unexpected error occurs.</response>
-    [HttpPost ("basic")]
+    [HttpPost("basic")]
     public async Task<ActionResult<LoginResponse>> Post([FromBody] LoginRequest request)
     {
         var query = new LoginQuery(request.Username, request.Password);
@@ -67,7 +67,7 @@ public class AuthController : ControllerBase
     /// <response code="400">If the refresh token or the header format are invalid.</response>
     /// <response code="500">If an unexpected error occurs.</response>
     [HttpGet("refresh")]
-    public async Task<ActionResult<LoginResponse>> Get([FromHeader(Name = "Authorization")] string refreshToken )
+    public async Task<ActionResult<LoginResponse>> Get([FromHeader(Name = "Authorization")] string refreshToken)
     {
 
         if (!refreshToken.StartsWith("Refresh "))

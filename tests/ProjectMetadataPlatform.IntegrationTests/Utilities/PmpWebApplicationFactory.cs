@@ -1,15 +1,13 @@
-﻿using System;
+using System;
 using System.Data.Common;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using NUnit.Framework;
 using ProjectMetadataPlatform.Infrastructure.DataAccess;
 
-namespace ProjectMetadataPlatform.IntegrationTests;
+namespace ProjectMetadataPlatform.IntegrationTests.Utilities;
 
 public class PmpWebApplicationFactory : WebApplicationFactory<Program>
 {
@@ -20,11 +18,11 @@ public class PmpWebApplicationFactory : WebApplicationFactory<Program>
         Environment.SetEnvironmentVariable("PMP_DB_USER", " ");
         Environment.SetEnvironmentVariable("PMP_DB_PASSWORD", " ");
         Environment.SetEnvironmentVariable("PMP_DB_NAME", " ");
-        Environment.SetEnvironmentVariable("JWT_VALID_ISSUER", " ");
-        Environment.SetEnvironmentVariable("JWT_VALID_AUDIENCE", " ");
-        Environment.SetEnvironmentVariable("JWT_ISSUER_SIGNING_KEY", " ");
-        Environment.SetEnvironmentVariable("REFRESH_TOKEN_EXPIRATION_HOURS", " ");
-        Environment.SetEnvironmentVariable("ACCESS_TOKEN_EXPIRATION_MINUTES", " ");
+        Environment.SetEnvironmentVariable("JWT_VALID_ISSUER", "validIssue");
+        Environment.SetEnvironmentVariable("JWT_VALID_AUDIENCE", "validAudience");
+        Environment.SetEnvironmentVariable("JWT_ISSUER_SIGNING_KEY", "superSecretKeyThatIsAtLeast257BitLong");
+        Environment.SetEnvironmentVariable("REFRESH_TOKEN_EXPIRATION_HOURS", "6");
+        Environment.SetEnvironmentVariable("ACCESS_TOKEN_EXPIRATION_MINUTES", "15");
         Environment.SetEnvironmentVariable("PMP_MIGRATE_DB_ON_STARTUP", "true");
 
         builder.ConfigureServices(services =>
