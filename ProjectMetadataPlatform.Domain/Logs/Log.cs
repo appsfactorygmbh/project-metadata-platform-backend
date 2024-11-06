@@ -16,7 +16,7 @@ public class Log
 
     public User.User? User { get; set; }
 
-    public required int? UserId { get; set; }
+    public required string? UserId { get; set; }
 
     /// <summary>
     ///     the Username of the user taking action
