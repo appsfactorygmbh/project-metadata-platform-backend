@@ -4,6 +4,7 @@ using ProjectMetadataPlatform.Domain.Logs;
 using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.Projects;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Domain.User;
 
 namespace ProjectMetadataPlatform.Infrastructure.DataAccess;
