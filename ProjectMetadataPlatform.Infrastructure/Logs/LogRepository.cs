@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -41,7 +42,7 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
     public async Task AddLogForCurrentUser(int projectId, Action action, List<LogChange> changes)
     {
         var username = _httpContextAccessor.HttpContext?.User.Identity?.Name ?? "Unknown user";
-        // User? user = await _usersRepository.GetUserByUserNameAsync(username);
+        // User? user = await _usersRepository.GetUserByUserNameAsync(username); TODO: uncomment when GetUserByUserNameAsync is implemented
         User? user = null;
 
         var log = new Log
@@ -56,5 +57,22 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
         var projects = await _context.Projects.Include(b => b.Logs).FirstAsync(pro => pro.Id == projectId);
         projects.Logs!.Add(log);
         _ = await _context.SaveChangesAsync();
+    }
+
+    public async Task<List<Log>> GetLogsForProject(int projectId)
+    {
+        var projects = await _context.Projects.Include(b => b.Logs).FirstAsync(pro => pro.Id == projectId);
+
+        return projects.Logs != null ? sortByTimestamp([.. projects.Logs]) : [];
+    }
+
+    public async Task<List<Log>> GetAllLogs()
+    {
+        return sortByTimestamp(await GetEverything().ToListAsync());
+    }
+
+    private List<Log> sortByTimestamp(List<Log> logs)
+    {
+        return [.. logs.OrderBy(log => log.TimeStamp)];
     }
 }

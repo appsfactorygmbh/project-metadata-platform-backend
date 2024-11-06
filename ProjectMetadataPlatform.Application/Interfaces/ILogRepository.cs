@@ -18,4 +18,8 @@ public interface ILogRepository
     /// <param name="changes"></param>
     /// <returns></returns>
     Task AddLogForCurrentUser(int  projectId, Action action, List<LogChange> changes);
+
+    Task<List<Log>> GetLogsForProject(int projectId);
+
+    Task<List<Log>> GetAllLogs();
 }
