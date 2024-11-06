@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using ProjectMetadataPlatform.Domain.Projects;
 
 namespace ProjectMetadataPlatform.Domain.Logs;
@@ -12,6 +13,10 @@ public class Log
     ///     The id of the Log
     /// </summary>
     public int Id { get; set; }
+
+    public User.User? User { get; set; }
+
+    public required int? UserId { get; set; }
 
     /// <summary>
     ///     the Username of the user taking action
@@ -41,5 +46,5 @@ public class Log
     /// <summary>
     ///     The changes that were made.
     /// </summary>
-    public string Changes { get; set; }
+    public List<LogChange> Changes { get; set; }
 }

@@ -8,15 +8,18 @@ public enum Action
     /// <summary>
     ///     Something was added
     /// </summary>
-    ADDED,
+    ADDED_PROJECT,
+    ADDED_PROJECT_PLUGIN,
 
     /// <summary>
     ///     Something in the project was updated.
     /// </summary>
-    UPDATED,
+    UPDATED_PROJECT,
+    UPDATED_PROJECT_PLUGIN,
 
     /// <summary>
     ///     The project or something in it was removed
     /// </summary>
-    REMOVED
+    REMOVED_PROJECT_PLUGIN,
+    ARCHIVED_PROJECT
 }
