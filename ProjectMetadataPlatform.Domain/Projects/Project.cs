@@ -12,7 +12,7 @@ public class Project
     ///     Gets or sets the id of the project.
     /// </summary>
     public int Id { get; set; }
-    
+
     /// <summary>
     ///     Gets or sets the name of the project. This property is required.
     /// </summary>
@@ -42,4 +42,9 @@ public class Project
     ///     Is used for the many-to-many relation in EF core.
     /// </summary>
     public ICollection<ProjectPlugins>? ProjectPlugins { get; set; }
+
+    /// <summary>
+    /// A boolean indicating if a plugin is archived/deleted.
+    /// </summary>
+    public bool IsArchived { get; set; }
 }
