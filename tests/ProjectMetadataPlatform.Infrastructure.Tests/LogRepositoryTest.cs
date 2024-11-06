@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Security.Principal;
@@ -11,6 +12,7 @@ using ProjectMetadataPlatform.Domain.Logs;
 using ProjectMetadataPlatform.Domain.Projects;
 using ProjectMetadataPlatform.Infrastructure.DataAccess;
 using ProjectMetadataPlatform.Infrastructure.Logs;
+using Action = ProjectMetadataPlatform.Domain.Logs.Action;
 
 namespace ProjectMetadataPlatform.Infrastructure.Tests;
 
@@ -109,5 +111,121 @@ public class LogRepositoryTest : TestsWithDatabase
             Assert.That(dbLog.Project, Is.EqualTo(exampleProject));
             Assert.That(dbLog.Changes, Has.Count.EqualTo(5));
         });
+    }
+
+    [Test]
+    public async Task GetLogsForProject_Test()
+    {
+        var exampleLog = new Log
+        {
+            Id = 1,
+            UserId = null,
+            Username = "camo",
+            TimeStamp = DateTimeOffset.UtcNow,
+            ProjectId = 301,
+            Action = Action.ADDED_PROJECT,
+            Changes =
+            [
+                new LogChange { OldValue = "", NewValue = "Example Project", Property = "ProjectName" }
+            ]
+        };
+
+        var exampleProject = new Project
+        {
+            ProjectName = "Example Project",
+            BusinessUnit = "Example Business Unit",
+            TeamNumber = 1,
+            Department = "Example Department",
+            ClientName = "Example Client",
+            Logs = new List<Log> { exampleLog }
+        };
+        exampleLog.Project = exampleProject;
+
+        await _context.Projects.AddAsync(exampleProject);
+        await _context.SaveChangesAsync();
+
+        var logs = await _loggingRepository.GetLogsForProject(301);
+
+        Assert.That(logs, Has.Count.EqualTo(1));
+        Assert.That(logs[0], Is.EqualTo(exampleLog));
+    }
+
+    [Test]
+    public async Task GetLogsForProject_Test_NoLogsForProjectReturnsEmptyList()
+    {
+        var exampleProject = new Project
+        {
+            ProjectName = "Example Project",
+            BusinessUnit = "Example Business Unit",
+            TeamNumber = 1,
+            Department = "Example Department",
+            ClientName = "Example Client",
+            Logs = null
+        };
+        await _context.Projects.AddAsync(exampleProject);
+        await _context.SaveChangesAsync();
+
+        var logs = await _loggingRepository.GetLogsForProject(301);
+
+        Assert.That(logs, Has.Count.EqualTo(0));
+    }
+
+    [Test]
+    public async Task GetAllLogs_Test()
+    {
+        var exampleLog1 = new Log
+        {
+            Id = 1,
+            UserId = null,
+            Username = "camo",
+            TimeStamp = DateTimeOffset.UtcNow,
+            ProjectId = 301,
+            Action = Action.ADDED_PROJECT,
+            Changes =
+            [
+                new LogChange { OldValue = "", NewValue = "Example Project", Property = "ProjectName" }
+            ]
+        };
+
+        var exampleProject1 = new Project
+        {
+            ProjectName = "Example Project",
+            BusinessUnit = "Example Business Unit",
+            TeamNumber = 1,
+            Department = "Example Department",
+            ClientName = "Example Client",
+            Logs = new List<Log> { exampleLog1 }
+        };
+
+        var exampleLog2 = new Log
+        {
+            Id = 2,
+            UserId = null,
+            Username = "someUserName",
+            TimeStamp = DateTimeOffset.UtcNow,
+            ProjectId = 302,
+            Action = Action.UPDATED_PROJECT,
+            Changes =
+            [
+                new LogChange { OldValue = "Example Project", NewValue = "Another Project", Property = "ProjectName" }
+            ]
+        };
+
+        var exampleProject2 = new Project
+        {
+            ProjectName = "Another Project",
+            BusinessUnit = "Example Business Unit",
+            TeamNumber = 1,
+            Department = "Example Department",
+            ClientName = "Example Client",
+            Logs = new List<Log> { exampleLog2 }
+        };
+        await _context.Projects.AddAsync(exampleProject1);
+        await _context.Projects.AddAsync(exampleProject2);
+        await _context.SaveChangesAsync();
+
+        var logs = await _loggingRepository.GetAllLogs();
+
+        Assert.That(logs, Has.Count.EqualTo(2));
     }
 }
