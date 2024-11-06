@@ -6,20 +6,32 @@ namespace ProjectMetadataPlatform.Domain.Logs;
 public enum Action
 {
     /// <summary>
-    ///     Something was added
+    /// Represents the action of adding a project.
     /// </summary>
     ADDED_PROJECT,
+
+    /// <summary>
+    /// Represents the action of adding a project plugin.
+    /// </summary>
     ADDED_PROJECT_PLUGIN,
 
     /// <summary>
-    ///     Something in the project was updated.
+    /// Represents the action of updating a project.
     /// </summary>
     UPDATED_PROJECT,
+
+    /// <summary>
+    /// Represents the action of updating a project plugin.
+    /// </summary>
     UPDATED_PROJECT_PLUGIN,
 
     /// <summary>
-    ///     The project or something in it was removed
+    /// Represents the action of removing a project plugin.
     /// </summary>
     REMOVED_PROJECT_PLUGIN,
+
+    /// <summary>
+    /// Represents the action of archiving a project.
+    /// </summary>
     ARCHIVED_PROJECT
 }

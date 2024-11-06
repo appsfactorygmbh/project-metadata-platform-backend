@@ -14,8 +14,14 @@ public class Log
     /// </summary>
     public int Id { get; set; }
 
+    /// <summary>
+    /// Gets or sets the associated user.
+    /// </summary>
     public User.User? User { get; set; }
 
+    /// <summary>
+    /// Gets or sets the ID of the user.
+    /// </summary>
     public required string? UserId { get; set; }
 
     /// <summary>
