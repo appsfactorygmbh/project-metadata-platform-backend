@@ -31,7 +31,7 @@ public class Log
     /// <summary>
     ///     The Project, on wich the action was taken
     /// </summary>
-    public Project? Project { get; set; } = null!;
+    public Project? Project { get; set; }
 
     /// <summary>
     ///     The Project Id of the related Project
