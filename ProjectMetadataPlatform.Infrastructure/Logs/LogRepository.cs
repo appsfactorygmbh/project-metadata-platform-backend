@@ -59,19 +59,26 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
         _ = await _context.SaveChangesAsync();
     }
 
+    ///  <inheritdoc />
     public async Task<List<Log>> GetLogsForProject(int projectId)
     {
         var projects = await _context.Projects.Include(b => b.Logs).FirstAsync(pro => pro.Id == projectId);
 
-        return projects.Logs != null ? sortByTimestamp([.. projects.Logs]) : [];
+        return projects.Logs != null ? SortByTimestamp([.. projects.Logs]) : [];
     }
 
+    ///  <inheritdoc />
     public async Task<List<Log>> GetAllLogs()
     {
-        return sortByTimestamp(await GetEverything().ToListAsync());
+        return SortByTimestamp(await GetEverything().ToListAsync());
     }
 
-    private List<Log> sortByTimestamp(List<Log> logs)
+    /// <summary>
+    /// Sorts a list of logs by their timestamp.
+    /// </summary>
+    /// <param name="logs">The list of logs to be sorted.</param>
+    /// <returns>A list of logs sorted by timestamp.</returns>
+    private static List<Log> SortByTimestamp(List<Log> logs)
     {
         return [.. logs.OrderBy(log => log.TimeStamp)];
     }

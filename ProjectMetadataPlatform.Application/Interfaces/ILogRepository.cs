@@ -19,7 +19,16 @@ public interface ILogRepository
     /// <returns></returns>
     Task AddLogForCurrentUser(int  projectId, Action action, List<LogChange> changes);
 
+    /// <summary>
+    /// Retrieves the logs for a specific project.
+    /// </summary>
+    /// <param name="projectId">The unique identifier of the project.</param>
+    /// <returns>A list of logs associated with the specified project.</returns>
     Task<List<Log>> GetLogsForProject(int projectId);
 
+    /// <summary>
+    /// Retrieves all logs from the database.
+    /// </summary>
+    /// <returns>A list of all logs, sorted by timestamp.</returns>
     Task<List<Log>> GetAllLogs();
 }
