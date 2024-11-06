@@ -17,17 +17,17 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.0" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\ProjectMetadataPlatform.Application\ProjectMetadataPlatform.Application.csproj"/>
-        <ProjectReference Include="..\ProjectMetadataPlatform.Infrastructure\ProjectMetadataPlatform.Infrastructure.csproj"/>
+        <ProjectReference Include="..\ProjectMetadataPlatform.Application\ProjectMetadataPlatform.Application.csproj" />
+        <ProjectReference Include="..\ProjectMetadataPlatform.Infrastructure\ProjectMetadataPlatform.Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>
