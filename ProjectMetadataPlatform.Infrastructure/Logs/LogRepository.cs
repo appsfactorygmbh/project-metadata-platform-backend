@@ -36,17 +36,17 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
     /// <param name="changes"></param>
     public async Task AddLogForCurrentUser(int projectId, Action action, string changes)
     {
-        var username = _httpContextAccessor.HttpContext?.User.Identity?.Name ?? "Unknown user";
-        var log = new Log
-        {
-            Username = username,
-            Action = action,
-            Changes = changes,
-            ProjectId = projectId,
-            TimeStamp = UtcNow
-        };
-        var projects = await _context.Projects.Include(b => b.Logs).FirstAsync(pro => pro.Id == projectId);
-        projects.Logs!.Add(log);
-        _ = await _context.SaveChangesAsync();
+        // var username = _httpContextAccessor.HttpContext?.User.Identity?.Name ?? "Unknown user";
+        // var log = new Log
+        // {
+        //     Username = username,
+        //     Action = action,
+        //     Changes = changes,
+        //     ProjectId = projectId,
+        //     TimeStamp = UtcNow
+        // };
+        // var projects = await _context.Projects.Include(b => b.Logs).FirstAsync(pro => pro.Id == projectId);
+        // projects.Logs!.Add(log);
+        // _ = await _context.SaveChangesAsync();
     }
 }
