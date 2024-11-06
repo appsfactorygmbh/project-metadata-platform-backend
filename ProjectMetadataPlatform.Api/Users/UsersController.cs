@@ -40,6 +40,9 @@ public class UsersController : ControllerBase
     /// <response code="500">An internal error occurred.</response>
     /// <response code="400">The request was invalid.</response>
     [HttpPut]
+    [ProducesResponseType(typeof(CreateUserResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<CreateUserResponse>> Put([FromBody] CreateUserRequest request)
     {
         if (string.IsNullOrWhiteSpace(request.Name)

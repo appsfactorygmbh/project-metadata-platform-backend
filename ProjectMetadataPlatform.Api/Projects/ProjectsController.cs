@@ -144,6 +144,9 @@ public class ProjectsController : ControllerBase
     /// <response code="400">The request data is invalid.</response>
     /// <response code="500">An internal error occurred.</response>
     [HttpPut]
+    [ProducesResponseType(typeof(CreateProjectResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<CreateProjectResponse>> Put([FromBody] CreateProjectRequest project, int? projectId = null)
     {
         try
