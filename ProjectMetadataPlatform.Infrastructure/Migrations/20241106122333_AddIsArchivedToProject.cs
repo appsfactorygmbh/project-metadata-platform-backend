@@ -17,13 +17,6 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
                 nullable: false,
                 defaultValue: false);
 
-            migrationBuilder.AddColumn<string>(
-                name: "Name",
-                table: "AspNetUsers",
-                type: "text",
-                nullable: false,
-                defaultValue: "");
-
             migrationBuilder.UpdateData(
                 table: "Projects",
                 keyColumn: "Id",
@@ -53,9 +46,6 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
                 name: "IsArchived",
                 table: "Projects");
 
-            migrationBuilder.DropColumn(
-                name: "Name",
-                table: "AspNetUsers");
         }
     }
 }
