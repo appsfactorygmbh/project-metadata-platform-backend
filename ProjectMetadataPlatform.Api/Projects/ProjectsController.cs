@@ -61,7 +61,8 @@ public class ProjectsController : ControllerBase
             project.ProjectName,
             project.ClientName,
             project.BusinessUnit,
-            project.TeamNumber));
+            project.TeamNumber,
+            project.IsArchived));
 
         return Ok(response);
     }
@@ -101,7 +102,8 @@ public class ProjectsController : ControllerBase
             project.ClientName,
             project.BusinessUnit,
             project.TeamNumber,
-            project.Department);
+            project.Department,
+            project.IsArchived);
 
         return Ok(response);
     }
