@@ -76,8 +76,26 @@ public class GetMeControllerTest
         });
     }
 
+    [Test]
+    public async Task getMe_Test_Unauthorized()
+    {
+        var controller = new UsersController(_mediator.Object, MockHttpContextAccessor(null));
+
+        var result = await controller.GetMe();
+        var unauthorizedResult = result.Result as UnauthorizedObjectResult;
+        Assert.That(unauthorizedResult, Is.Not.Null);
+        Assert.That(unauthorizedResult.StatusCode, Is.EqualTo(401));
+    }
+
     private static HttpContextAccessor MockHttpContextAccessor(string? username)
     {
+        if (username == null)
+        {
+            return new HttpContextAccessor
+            {
+                HttpContext = null
+            };
+        }
         var claims = new System.Collections.Generic.List<Claim> { new(ClaimTypes.Name, username) };
         var identity = new ClaimsIdentity(claims, "TestAuthType");
         var claimsPrincipal = new ClaimsPrincipal(identity);
