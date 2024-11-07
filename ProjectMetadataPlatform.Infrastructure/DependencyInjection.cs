@@ -109,11 +109,13 @@ public static class DependencyInjection
             return;
         }
 
-        var identityResult = userManager.CreateAsync(new User { UserName = "admin", Name = "admin", Id = "1" }, password).Result;
+        var user = new User { UserName = "admin", Name = "admin", Id = "1" };
+        user.PasswordHash = userManager.PasswordHasher.HashPassword(user, password);
+        var identityResult = userManager.CreateAsync(user).Result;
 
         if (!identityResult.Succeeded)
         {
-            throw new InvalidOperationException("Could not create admin user.");
+            throw new InvalidOperationException("Could not create admin user: " + string.Join(", ", identityResult.Errors.Select(e => e.Description)));
         }
     }
 
