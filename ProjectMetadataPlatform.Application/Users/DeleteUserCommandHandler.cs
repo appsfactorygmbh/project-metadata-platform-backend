@@ -32,12 +32,6 @@ public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand,User?>
     {
         var user = await _usersRepository.GetUserByIdAsync(request.Id);
 
-        if (user == null)
-        {
-            return null;
-        }
-
-        return await _usersRepository.DeleteUserAsync(user);
-
+        return user == null ? null :await _usersRepository.DeleteUserAsync(user);
     }
 }

@@ -175,7 +175,10 @@ public class UsersRepositoryTest : TestsWithDatabase
 
         var result = await _repository.DeleteUserAsync(user);
 
+        _mockUserManager.Verify(x => x.DeleteAsync(user), Times.Once);
+
         Assert.That(result, Is.EqualTo(user));
+
     }
 
 }
