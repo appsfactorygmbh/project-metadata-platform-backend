@@ -27,7 +27,7 @@ public class Log
     /// <summary>
     ///     the Username of the user taking action
     /// </summary>
-    public string Username { get; set; }
+    public required string Username { get; set; }
 
     /// <summary>
     ///     The TImeStamp when the action was taken
@@ -52,5 +52,5 @@ public class Log
     /// <summary>
     ///     The changes that were made.
     /// </summary>
-    public List<LogChange> Changes { get; set; }
+    public List<LogChange> Changes { get; set; } = [];
 }
