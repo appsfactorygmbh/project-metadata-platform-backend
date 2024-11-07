@@ -6,7 +6,7 @@ using System.Linq;
 namespace ProjectMetadataPlatform.Api.Swagger;
 
 /// <summary>
-/// Add to model.Required all properties where Nullable is false.
+/// Makes all non-nullable properties required in the open api schema.
 /// </summary>
 /// <remarks>
 /// This is necessary because Swagger does not automatically detect nullable properties.

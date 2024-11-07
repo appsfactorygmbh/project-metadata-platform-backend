@@ -17,9 +17,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
     options.SchemaFilter<RequireNonNullablePropertiesSchemaFilter>();
-    options.SupportNonNullableReferenceTypes(); // Sets Nullable flags appropriately.
-    // options.UseAllOfToExtendReferenceSchemas(); // Allows $ref enums to be nullable
-    // options.UseAllOfForInheritance();  // Allows $ref objects to be nullable
+    options.SupportNonNullableReferenceTypes();
 
     var xmlDocFiles = Directory.GetFiles(Path.Combine(AppContext.BaseDirectory), "*.xml").ToList();
 
@@ -71,5 +69,6 @@ app.Run();
 /// <summary>
 /// The entry point for the application.
 /// </summary>
-public static partial class Program;
+// ReSharper disable once ClassNeverInstantiated.Global - This is needed for the integration tests to work.
+public partial class Program;
 
