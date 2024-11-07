@@ -256,7 +256,9 @@ public class ProjectsControllerTest
             "Heather",
             "Metatron",
             new List<string> { "666", "777" },
-            new List<int> { 42, 43 }
+            new List<int> { 42, 43 },
+            true
+
         );
 
         _mediator.Setup(m => m.Send(It.IsAny<GetAllProjectsQuery>(), CancellationToken.None))
@@ -269,7 +271,8 @@ public class ProjectsControllerTest
                     BusinessUnit = "666",
                     ClientName = "Metatron",
                     Department = "Mars",
-                    TeamNumber = 42
+                    TeamNumber = 42,
+                    IsArchived = true
                 }
             });
 
@@ -293,6 +296,7 @@ public class ProjectsControllerTest
             Assert.That(response.ToArray()[0].BusinessUnit, Is.EqualTo("666"));
             Assert.That(response.ToArray()[0].ClientName, Is.EqualTo("Metatron"));
             Assert.That(response.ToArray()[0].TeamNumber, Is.EqualTo(42));
+            Assert.That(response.ToArray()[0].IsArchived, Is.EqualTo(true));
         }));
     }
 
@@ -305,7 +309,8 @@ public class ProjectsControllerTest
             "Heather",
             "Gilgamesch",
             new List<string> { "666", "777" },
-            new List<int> { 42, 43 }
+            new List<int> { 42, 43 },
+            false
         );
 
         _mediator.Setup(m => m.Send(It.IsAny<GetAllProjectsQuery>(), CancellationToken.None))
