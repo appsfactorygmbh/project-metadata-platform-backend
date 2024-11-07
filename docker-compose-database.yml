@@ -1,4 +1,4 @@
-﻿# Database service for local development
+# Database service for local development
 services:
   db:
     image: postgres:15
