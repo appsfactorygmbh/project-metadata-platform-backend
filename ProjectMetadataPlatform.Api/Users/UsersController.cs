@@ -224,7 +224,7 @@ public class UsersController : ControllerBase
     /// <summary>
     /// Deletes a user by their userId.
     /// </summary>
-    /// <param name="id">The userId of the user to delete.</param>
+    /// <param name="userId">The userId of the user to delete.</param>
     /// <returns>A status code representing the result of the delete operation.</returns>
     /// <response code="204">The user was deleted successfully.</response>
     /// <response code="404">The user was not found.</response>
