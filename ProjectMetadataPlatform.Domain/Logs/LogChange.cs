@@ -1,5 +1,8 @@
 namespace ProjectMetadataPlatform.Domain.Logs;
 
+/// <summary>
+/// Represents a single Property that was changed.
+/// </summary>
 public class LogChange
 {
     /// <summary>
@@ -20,15 +23,15 @@ public class LogChange
     /// <summary>
     /// Gets or sets the old value of the property.
     /// </summary>
-    public string OldValue { get; set; }
+    public string OldValue { get; set; } = "";
 
     /// <summary>
     /// Gets or sets the new value of the property.
     /// </summary>
-    public string NewValue { get; set; }
+    public string NewValue { get; set; } = "";
 
     /// <summary>
     /// Gets or sets the name of the property that was changed.
     /// </summary>
-    public string Property { get; set; }
+    public required string Property { get; set; }
 }

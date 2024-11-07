@@ -26,6 +26,7 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
     /// </summary>
     /// <param name="dbContext"></param>
     /// <param name="httpContextAccessor"></param>
+    /// <param name="usersRepository"></param>
     public LogRepository(ProjectMetadataPlatformDbContext dbContext, IHttpContextAccessor httpContextAccessor, IUsersRepository usersRepository) : base(dbContext)
     {
         _context = dbContext;
