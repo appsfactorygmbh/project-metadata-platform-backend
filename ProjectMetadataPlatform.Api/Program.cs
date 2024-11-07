@@ -69,5 +69,6 @@ app.Run();
 /// <summary>
 /// The entry point for the application.
 /// </summary>
-public static partial class Program;
+// ReSharper disable once ClassNeverInstantiated.Global - This is needed for the integration tests to work.
+public partial class Program;
 
