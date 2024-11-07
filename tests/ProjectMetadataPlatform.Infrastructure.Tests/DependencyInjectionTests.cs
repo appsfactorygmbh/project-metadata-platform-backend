@@ -3,6 +3,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Moq;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Domain.User;
@@ -47,22 +48,16 @@ public class DependencyInjectionTests : TestsWithDatabase
     [TestCase(null, "admin")]
     public void AdminUserIsAddedCorrectly(string? envPassword, string expectedPassword)
     {
+        var mockUserManager = new Mock<UserManager<User>>(new Mock<IUserStore<User>>().Object, null, null, null, null, null, null, null, null);
         Environment.SetEnvironmentVariable("PMP_ADMIN_PASSWORD", envPassword);
         var services = new ServiceCollection();
-        services.AddScoped<ProjectMetadataPlatformDbContext>(_ => DbContext());
+        services.AddScoped<UserManager<User>>(_ => mockUserManager.Object);
+
+        mockUserManager.Setup(m => m.CreateAsync(It.IsAny<User>(), It.IsAny<string>())).ReturnsAsync(IdentityResult.Success);
 
         services.BuildServiceProvider().AddAdminUser();
 
-        var identityUser = DbContext().Users.First();
-        Assert.Multiple(() =>
-        {
-            Assert.That(identityUser.UserName, Is.EqualTo("admin"));
-            Assert.That(
-                new PasswordHasher<User>().VerifyHashedPassword(identityUser,
-                    identityUser.PasswordHash!,
-                    expectedPassword),
-                Is.EqualTo(PasswordVerificationResult.Success));
-        });
+        mockUserManager.Verify(m => m.CreateAsync(It.Is<User>(u => u.UserName == "admin"), expectedPassword), Times.Once);
     }
 
 }
