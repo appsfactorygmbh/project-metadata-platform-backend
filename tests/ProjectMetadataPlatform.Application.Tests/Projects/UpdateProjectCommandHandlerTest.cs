@@ -271,4 +271,36 @@ public class UpdateProjectCommandHandlerTest
             Assert.That(project.ProjectPlugins.ElementAt(2).DisplayName, Is.EqualTo("Example 2 Plugin"));
         });
     }
+
+    [Test]
+    public async Task UpdateProject_IsArchivedFlag_Test()
+    {
+        var project = new Project
+        {
+            Id = 1,
+            ProjectName = "Db App",
+            ClientName = "DB",
+            BusinessUnit = "Unit 1",
+            TeamNumber = 1,
+            Department = "Department 1",
+            ProjectPlugins = [],
+            IsArchived = false
+        };
+
+        var updateCommand = new UpdateProjectCommand("DB App",
+            "Unit 2",
+            2,
+            "Department 2",
+            "Deutsche Bahn",
+            1,
+            new List<ProjectPlugins>(),
+            true);
+
+        _mockProjectRepo.Setup(repository => repository.GetProjectWithPluginsAsync(1)).ReturnsAsync(project);
+
+        await _handler.Handle(updateCommand, CancellationToken.None);
+
+        _mockUnitOfWork.Verify(unitOfWork => unitOfWork.CompleteAsync());
+        Assert.That(project.IsArchived, Is.True);
+    }
 }

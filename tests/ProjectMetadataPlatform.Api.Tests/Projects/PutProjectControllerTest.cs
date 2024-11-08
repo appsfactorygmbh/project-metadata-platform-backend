@@ -152,4 +152,48 @@ public class PutProjectControllerTest
                 command.Plugins.Single().DisplayName == "PluginName" && command.Plugins.Single().ProjectId == 1),
             It.IsAny<CancellationToken>()));
     }
+
+    [Test]
+    public async Task UpdateProject_IsArchivedFlag_Test()
+    {
+        _mediator.Setup(m => m.Send(It.IsAny<UpdateProjectCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(1);
+        var request = new CreateProjectRequest(
+            "Example Project",
+            "Example Business Unit",
+            1,
+            "Example Department",
+            "Example Client",
+            [new UpdateProjectPluginRequest("Url", "PluginName", 3)],
+            true
+        );
+
+        var result = await _controller.Put(request, 1);
+
+        Assert.That(result, Is.Not.Null);
+        var createdResult = result.Result as CreatedResult;
+        Assert.That(createdResult, Is.Not.Null);
+        Assert.That(createdResult.Value, Is.InstanceOf<CreateProjectResponse>());
+
+        var projectResponse = createdResult.Value as CreateProjectResponse;
+        Assert.That(projectResponse, Is.Not.Null);
+        Assert.Multiple(() =>
+        {
+            Assert.That(projectResponse.Id, Is.EqualTo(1));
+            Assert.That(createdResult.Location, Is.EqualTo("/Projects/1"));
+        });
+
+        _mediator.Verify(mediator => mediator.Send(It.Is<UpdateProjectCommand>(command =>
+                command.Plugins.Count == 1 &&
+                command.ProjectName == "Example Project" &&
+                command.BusinessUnit == "Example Business Unit" &&
+                command.TeamNumber == 1 &&
+                command.Department == "Example Department" &&
+                command.ClientName == "Example Client" &&
+                command.Plugins.Single().PluginId == 3 &&
+                command.Plugins.Single().Url == "Url" &&
+                command.Plugins.Single().DisplayName == "PluginName" &&
+                command.Plugins.Single().ProjectId == 1 &&
+                command.IsArchived == true
+        ), It.IsAny<CancellationToken>()));
+    }
 }
