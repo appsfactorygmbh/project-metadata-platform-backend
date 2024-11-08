@@ -105,7 +105,6 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
 
     /// <summary>
     /// Asynchronously retrieves a project and its plugins from the database by its identifier.
-    ///     Asynchronously retrieves a project and its plugins from the database by its identifier.
     /// </summary>
     /// <param name="id">Identification number for a project</param>
     /// <returns>A task representing the asynchronous operation. When this task completes, it returns one project.</returns>
