@@ -175,7 +175,7 @@ public class ProjectsController : ControllerBase
                         PluginId = p.Id,
                         DisplayName = p.DisplayName,
                         Url = p.Url
-                    }).ToList());
+                    }).ToList(), project.isArchived);
 
             var id = await _mediator.Send(command);
 
