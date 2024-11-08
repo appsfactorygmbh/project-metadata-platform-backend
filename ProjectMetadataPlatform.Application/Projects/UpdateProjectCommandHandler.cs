@@ -123,5 +123,13 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
             changedProperties.Add((nameof(Project.ClientName), project.ClientName, request.ClientName));
             project.ClientName = request.ClientName;
         }
+        if (request.isArchived.HasValue)
+        {
+            if (project.IsArchived != request.isArchived.Value)
+            {
+                changedProperties.Add((nameof(Project.IsArchived), project.IsArchived.ToString(), request.isArchived.Value.ToString()));
+                project.IsArchived = request.isArchived.Value;
+            }
+        }
     }
 }
