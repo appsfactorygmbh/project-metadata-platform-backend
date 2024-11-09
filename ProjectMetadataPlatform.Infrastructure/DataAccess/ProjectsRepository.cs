@@ -74,6 +74,11 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
                     query.Request.TeamNumber.Contains(project.TeamNumber)
                 );
             }
+
+            if(query.Request.IsArchived is not null)
+            {
+                filteredQuery = filteredQuery.Where(project => project.IsArchived == query.Request.IsArchived);
+            }
         }
 
         return await filteredQuery.ToListAsync();

@@ -61,7 +61,8 @@ public class ProjectsRepositoryTests : TestsWithDatabase
             "Heather",
             "Metatron",
             new List<string> { "666", "777" },
-            new List<int> { 42, 43 }
+            new List<int> { 42, 43 },
+            true
         );
         var projects = new List<Project>
         {
@@ -72,7 +73,8 @@ public class ProjectsRepositoryTests : TestsWithDatabase
                 BusinessUnit = "666",
                 ClientName = "Metatron",
                 Department = "Mars",
-                TeamNumber = 42
+                TeamNumber = 42,
+                IsArchived = true
             },
             new Project
             {
@@ -81,7 +83,8 @@ public class ProjectsRepositoryTests : TestsWithDatabase
                 BusinessUnit = "777",
                 ClientName = "Lucifer",
                 Department = "Venus",
-                TeamNumber = 43
+                TeamNumber = 43,
+                IsArchived = true
             },
             new Project
             {
@@ -90,7 +93,8 @@ public class ProjectsRepositoryTests : TestsWithDatabase
                 BusinessUnit = "999",
                 ClientName = "Satan",
                 Department = "Earth",
-                TeamNumber = 44
+                TeamNumber = 44,
+                IsArchived = false
             },
         };
 
@@ -110,6 +114,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
             Assert.That(result.Any(p => p.ClientName == "Metatron"), Is.True);
             Assert.That(result.Any(p => p.BusinessUnit == "666"), Is.True);
             Assert.That(result.Any(p => p.TeamNumber == 42), Is.True);
+            Assert.That(result.Any(p => p.IsArchived), Is.True);
         }));
     }
 
@@ -121,7 +126,8 @@ public class ProjectsRepositoryTests : TestsWithDatabase
             "Heather",
             "Gilgamesch",
             new List<string> { "666", "777" },
-            new List<int> { 42, 43 }
+            new List<int> { 42, 43 },
+            null
         );
         var projects = new List<Project>
         {

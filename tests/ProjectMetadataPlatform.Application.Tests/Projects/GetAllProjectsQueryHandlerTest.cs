@@ -83,7 +83,8 @@ public class GetAllProjectsQueryHandlerTest
             "Heather",
             "Metatron",
             new List<string> { "666", "777" },
-            new List<int> { 42, 43 }
+            new List<int> { 42, 43 },
+            null
         );
         var projects = new List<Project>
         {
@@ -139,7 +140,8 @@ public class GetAllProjectsQueryHandlerTest
             "Heather",
             "Gilgamesh",
             new List<string> { "666", "777" },
-            new List<int> { 42, 43 }
+            new List<int> { 42, 43 },
+            true
         );
         var projects = new List<Project>
         {
@@ -196,7 +198,8 @@ public class GetAllProjectsQueryHandlerTest
             null,
             null,
             new List<string> { "666", "777" },
-            new List<int> { 42, 43 }
+            new List<int> { 42, 43 },
+            false
         );
         var projects = new List<Project>
         {
@@ -207,7 +210,8 @@ public class GetAllProjectsQueryHandlerTest
                 BusinessUnit = "666",
                 ClientName = "Metatron",
                 Department = "Mars",
-                TeamNumber = 42
+                TeamNumber = 42,
+                IsArchived = false
             },
             new Project
             {
@@ -216,7 +220,8 @@ public class GetAllProjectsQueryHandlerTest
                 BusinessUnit = "777",
                 ClientName = "Lucifer",
                 Department = "Venus",
-                TeamNumber = 43
+                TeamNumber = 43,
+                IsArchived = false
             },
             new Project
             {
@@ -225,7 +230,8 @@ public class GetAllProjectsQueryHandlerTest
                 BusinessUnit = "999",
                 ClientName = "Satan",
                 Department = "Earth",
-                TeamNumber = 44
+                TeamNumber = 44,
+                IsArchived = true
             },
         };
 

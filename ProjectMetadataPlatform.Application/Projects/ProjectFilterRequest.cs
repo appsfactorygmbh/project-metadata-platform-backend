@@ -10,4 +10,5 @@ namespace ProjectMetadataPlatform.Application.Projects;
 /// <param name="ClientName">Optional. The name of the client associated with the project to filter by.</param>
 /// <param name="BusinessUnit">Optional. A list of business units to filter the projects by.</param>
 /// <param name="TeamNumber">Optional. A list of team numbers to filter the projects by.</param>
-public record ProjectFilterRequest(string? ProjectName, string? ClientName, List<string>? BusinessUnit, List<int>? TeamNumber);
+/// <param name="IsArchived">Optional. The archival status of the projects to filter by.</param>
+public record ProjectFilterRequest(string? ProjectName, string? ClientName, List<string>? BusinessUnit, List<int>? TeamNumber, bool? IsArchived);
