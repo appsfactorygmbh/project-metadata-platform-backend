@@ -38,13 +38,6 @@ public interface IUsersRepository
     Task<User?> GetUserByUserNameAsync(string userName);
 
     /// <summary>
-    /// Returns the user with the given username.
-    /// </summary>
-    /// <param name="userName">The username of the searched for user.</param>
-    /// <returns>The user that is searched for or null.</returns>
-    Task<User?> GetUserByUserNameAsync(string userName);
-
-    /// <summary>
     /// Stores a user.
     /// </summary>
     /// <param name="user">The User object to store.</param>
