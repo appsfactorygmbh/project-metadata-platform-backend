@@ -48,16 +48,21 @@ public class DependencyInjectionTests : TestsWithDatabase
     [TestCase(null, "admin")]
     public void AdminUserIsAddedCorrectly(string? envPassword, string expectedPassword)
     {
-        var mockUserManager = new Mock<UserManager<User>>(new Mock<IUserStore<User>>().Object, null, null, null, null, null, null, null, null);
-        Environment.SetEnvironmentVariable("PMP_ADMIN_PASSWORD", envPassword);
-        var services = new ServiceCollection();
-        services.AddScoped<UserManager<User>>(_ => mockUserManager.Object);
+                const string hash = "hash";
+                Environment.SetEnvironmentVariable("PMP_ADMIN_PASSWORD", envPassword);
+                var mockPasswordHasher = new Mock<IPasswordHasher<User>>();
+                mockPasswordHasher.Setup(m => m.HashPassword(It.IsAny<User>(), expectedPassword)).Returns(hash);
 
-        mockUserManager.Setup(m => m.CreateAsync(It.IsAny<User>(), It.IsAny<string>())).ReturnsAsync(IdentityResult.Success);
+                var mockUserManager = new Mock<UserManager<User>>(new Mock<IUserStore<User>>().Object, null!, mockPasswordHasher.Object, null!, null!, null!, null!, null!, null!);
+                var services = new ServiceCollection();
+                services.AddScoped<UserManager<User>>(_ => mockUserManager.Object);
 
-        services.BuildServiceProvider().AddAdminUser();
+                mockUserManager.Setup(m => m.CreateAsync(It.IsAny<User>())).ReturnsAsync(IdentityResult.Success);
 
-        mockUserManager.Verify(m => m.CreateAsync(It.Is<User>(u => u.UserName == "admin"), expectedPassword), Times.Once);
+                services.BuildServiceProvider().AddAdminUser();
+
+                mockPasswordHasher.Verify(m => m.HashPassword(It.Is<User>(u => u.UserName == "admin"), expectedPassword), Times.Once);
+                mockUserManager.Verify(m => m.CreateAsync(It.Is<User>(u => u.UserName == "admin" && u.PasswordHash == hash)), Times.Once);
     }
 
 }
