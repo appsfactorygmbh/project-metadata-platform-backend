@@ -109,6 +109,6 @@ public class UsersRepository : RepositoryBase<User>, IUsersRepository
     public async Task<User> DeleteUserAsync(User user)
     {
         var task = await _userManager.DeleteAsync(user);
-        return task.Succeeded ? user : throw new ArgumentException("User deletion failed.");
+        return !task.Succeeded ? throw new ArgumentException("User deletion failed. With id " + user.Id + task) : user;
     }
 }

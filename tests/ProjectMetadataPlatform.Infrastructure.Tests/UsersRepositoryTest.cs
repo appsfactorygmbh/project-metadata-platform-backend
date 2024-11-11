@@ -181,4 +181,14 @@ public class UsersRepositoryTest : TestsWithDatabase
 
     }
 
+    [Test]
+    public async Task DeleteUser_Failed_Test()
+    {
+        var user = new User { Id = "1" };
+        _mockUserManager.Setup(m => m.FindByIdAsync("1")).ReturnsAsync(user);
+        _mockUserManager.Setup(m => m.DeleteAsync(user)).ReturnsAsync(IdentityResult.Failed());
+
+        Assert.ThrowsAsync<ArgumentException>(() => _repository.DeleteUserAsync(user));
+    }
+
 }
