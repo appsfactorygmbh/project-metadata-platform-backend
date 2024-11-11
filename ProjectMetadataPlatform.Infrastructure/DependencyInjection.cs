@@ -101,25 +101,22 @@ public static class DependencyInjection
         }
 
         using var scope = serviceProvider.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<ProjectMetadataPlatformDbContext>();
 
-        if (dbContext.Users.Any())
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+
+        if (userManager.Users.Any())
         {
             return;
         }
 
-        var hasher = new PasswordHasher<User>();
-        var user = new User
-        {
-            UserName = "admin",
-            NormalizedUserName = "admin",
-            Name = "admin",
-            Id = "1"
-        };
-        user.PasswordHash = hasher.HashPassword(user, password);
-        _ = dbContext.Users.Add(user);
+        var user = new User { UserName = "admin", Name = "admin", Id = "1" };
+        user.PasswordHash = userManager.PasswordHasher.HashPassword(user, password);
+        var identityResult = userManager.CreateAsync(user).Result;
 
-        _ = dbContext.SaveChanges();
+        if (!identityResult.Succeeded)
+        {
+            throw new InvalidOperationException("Could not create admin user: " + string.Join(", ", identityResult.Errors.Select(e => e.Description)));
+        }
     }
 
     /// <summary>

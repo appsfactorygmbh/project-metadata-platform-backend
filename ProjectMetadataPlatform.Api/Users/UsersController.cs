@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -21,14 +22,16 @@ namespace ProjectMetadataPlatform.Api.Users;
 public class UsersController : ControllerBase
 {
     private readonly IMediator _mediator;
-
+    private readonly IHttpContextAccessor _httpContextAccessor;
     /// <summary>
     ///     Creates a new instance of the <see cref="UsersController" /> class.
     /// </summary>
     /// <param name="mediator">The mediator instance used for sending commands and queries.</param>
-    public UsersController(IMediator mediator)
+    /// <param name="httpContextAccessor">The http context accessor instance used for accessing the current user.</param>
+    public UsersController(IMediator mediator, IHttpContextAccessor httpContextAccessor)
     {
         _mediator = mediator;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     /// <summary>
@@ -177,4 +180,44 @@ public class UsersController : ControllerBase
         return Ok(response);
     }
 
+
+    /// <summary>
+    ///    Gets the current authenticated user's information.
+    /// </summary>
+    /// <returns>The current user's information.</returns>
+    /// <response code="200">The user information is returned successfully.</response>
+    /// <response code="500">An internal error occurred.</response>
+    /// <response code="404">The user was not found.</response>
+    /// <response code="401">The user is not authenticated.</response>
+    [HttpGet("Me")]
+    public async Task<ActionResult<GetUserResponse>> GetMe()
+    {
+        var username = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Name)?.Value;
+
+        if (username == null)
+        {
+            return Unauthorized("User not authenticated.");
+        }
+
+        var query = new GetUserByUserNameQuery(username);
+
+        User? user;
+        try
+        {
+            user = await _mediator.Send(query);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            Console.WriteLine(e.StackTrace);
+            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+        }
+        if (user == null)
+        {
+            return NotFound("User not found.");
+        }
+
+        var response = new GetUserResponse(user.Id, user.UserName ?? "", user.Name ?? "", user.Email ?? "");
+        return Ok(response);
+    }
 }

@@ -39,6 +39,16 @@ public class UsersRepository : RepositoryBase<User>, IUsersRepository
     }
 
     /// <summary>
+    /// Returns the user with the given username.
+    /// </summary>
+    /// <param name="userName">The username of the user to be searched for.</param>
+    /// <returns>The user with the specified username, or null if not found.</returns>
+    public Task<User?> GetUserByUserNameAsync(string userName)
+    {
+        return _userManager.FindByNameAsync(userName);
+    }
+
+    /// <summary>
     /// Creates a new user with the given data.
     /// </summary>
     /// <param name="user">User to be created.</param>

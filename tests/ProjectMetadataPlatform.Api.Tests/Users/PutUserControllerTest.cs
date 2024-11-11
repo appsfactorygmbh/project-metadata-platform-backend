@@ -20,7 +20,7 @@ public class PutUserControllerTest
     public void Setup()
     {
         _mediator = new Mock<IMediator>();
-        _controller = new UsersController(_mediator.Object);
+        _controller = new UsersController(_mediator.Object, null!);
     }
     private UsersController _controller;
     private Mock<IMediator> _mediator;

@@ -127,6 +127,23 @@ public class UsersRepositoryTest : TestsWithDatabase
     }
 
     [Test]
+    public async Task GetUserByUserNameAsync_Test()
+    {
+        var user = new User { UserName = "bigboss", Name = "Mr. Perkins", Email = "bigboss@bankofevil.com", Id = "1"};
+        _mockUserManager.Setup(m => m.FindByNameAsync(It.IsAny<string>()) ).ReturnsAsync(user);
+        var result = await _repository.GetUserByUserNameAsync("Example Username");
+        Assert.That(result, Is.EqualTo(user));
+    }
+
+    [Test]
+    public async Task GetUserByUserNameAsync_NotFound_Test()
+    {
+        _mockUserManager.Setup(m => m.FindByNameAsync(It.IsAny<string>()) ).ReturnsAsync((User?)null);
+        var result = await _repository.GetUserByUserNameAsync("Eiffel Tower (Vegas)");
+        Assert.That(result, Is.Null);
+    }
+
+    [Test]
     public async Task StoreUser_CreatesUser_Test()
     {
         var user = new User { Id = "", Name = "Geordie Greep", UserName = "geordieCreep", Email = "notblackmidi@geordiegreep.com" };

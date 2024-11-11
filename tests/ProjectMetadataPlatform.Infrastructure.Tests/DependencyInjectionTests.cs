@@ -3,6 +3,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Moq;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Domain.User;
@@ -47,22 +48,21 @@ public class DependencyInjectionTests : TestsWithDatabase
     [TestCase(null, "admin")]
     public void AdminUserIsAddedCorrectly(string? envPassword, string expectedPassword)
     {
-        Environment.SetEnvironmentVariable("PMP_ADMIN_PASSWORD", envPassword);
-        var services = new ServiceCollection();
-        services.AddScoped<ProjectMetadataPlatformDbContext>(_ => DbContext());
+                const string hash = "hash";
+                Environment.SetEnvironmentVariable("PMP_ADMIN_PASSWORD", envPassword);
+                var mockPasswordHasher = new Mock<IPasswordHasher<User>>();
+                mockPasswordHasher.Setup(m => m.HashPassword(It.IsAny<User>(), expectedPassword)).Returns(hash);
 
-        services.BuildServiceProvider().AddAdminUser();
+                var mockUserManager = new Mock<UserManager<User>>(new Mock<IUserStore<User>>().Object, null!, mockPasswordHasher.Object, null!, null!, null!, null!, null!, null!);
+                var services = new ServiceCollection();
+                services.AddScoped<UserManager<User>>(_ => mockUserManager.Object);
 
-        var identityUser = DbContext().Users.First();
-        Assert.Multiple(() =>
-        {
-            Assert.That(identityUser.UserName, Is.EqualTo("admin"));
-            Assert.That(
-                new PasswordHasher<User>().VerifyHashedPassword(identityUser,
-                    identityUser.PasswordHash!,
-                    expectedPassword),
-                Is.EqualTo(PasswordVerificationResult.Success));
-        });
+                mockUserManager.Setup(m => m.CreateAsync(It.IsAny<User>())).ReturnsAsync(IdentityResult.Success);
+
+                services.BuildServiceProvider().AddAdminUser();
+
+                mockPasswordHasher.Verify(m => m.HashPassword(It.Is<User>(u => u.UserName == "admin"), expectedPassword), Times.Once);
+                mockUserManager.Verify(m => m.CreateAsync(It.Is<User>(u => u.UserName == "admin" && u.PasswordHash == hash)), Times.Once);
     }
 
 }
