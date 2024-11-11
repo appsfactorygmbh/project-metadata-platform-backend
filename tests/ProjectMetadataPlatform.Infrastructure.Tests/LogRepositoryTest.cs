@@ -10,6 +10,7 @@ using NUnit.Framework;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Domain.Logs;
 using ProjectMetadataPlatform.Domain.Projects;
+using ProjectMetadataPlatform.Domain.User;
 using ProjectMetadataPlatform.Infrastructure.DataAccess;
 using ProjectMetadataPlatform.Infrastructure.Logs;
 using Action = ProjectMetadataPlatform.Domain.Logs.Action;
@@ -60,6 +61,15 @@ public class LogRepositoryTest : TestsWithDatabase
             ClientName = "Example Client"
         };
         await _context.Projects.AddAsync(exampleProject);
+
+        var user = new User
+        {
+            Id = "42",
+            UserName = "camo",
+            Name = "some user"
+        };
+        await _context.Users.AddAsync(user);
+
         await _context.SaveChangesAsync();
 
         var logChanges = new List<LogChange>
@@ -96,6 +106,8 @@ public class LogRepositoryTest : TestsWithDatabase
             }
         };
 
+        _mockUserRepository.Setup(_ => _.GetUserByUserNameAsync("camo")).ReturnsAsync(user);
+
         await _loggingRepository.AddLogForCurrentUser( exampleProject.Id, Action.ADDED_PROJECT, logChanges);
         var dbLog = await _context.Logs.Include(log => log.User).Include(log => log.Project).Include(log => log.Changes)
             .FirstOrDefaultAsync()!;
@@ -105,8 +117,8 @@ public class LogRepositoryTest : TestsWithDatabase
             Assert.That(dbLog.Id, Is.EqualTo(1));
             Assert.That(dbLog.Action, Is.EqualTo(Action.ADDED_PROJECT));
             Assert.That(dbLog.Username, Is.EqualTo("camo"));
-            Assert.That(dbLog.UserId, Is.Null); // TODO change to actual user id once the user is set by the log repo
-            Assert.That(dbLog.User, Is.Null);
+            Assert.That(dbLog.UserId, Is.EqualTo("42"));
+            Assert.That(dbLog.User, Is.EqualTo(user));
             Assert.That(dbLog.ProjectId, Is.EqualTo(exampleProject.Id));
             Assert.That(dbLog.Project, Is.EqualTo(exampleProject));
             Assert.That(dbLog.Changes, Has.Count.EqualTo(5));

@@ -43,8 +43,7 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
     public async Task AddLogForCurrentUser(int projectId, Action action, List<LogChange> changes)
     {
         var username = _httpContextAccessor.HttpContext?.User.Identity?.Name ?? "Unknown user";
-        // User? user = await _usersRepository.GetUserByUserNameAsync(username); TODO: uncomment when GetUserByUserNameAsync is implemented
-        User? user = null;
+        User? user = await _usersRepository.GetUserByUserNameAsync(username);
 
         var log = new Log
         {
