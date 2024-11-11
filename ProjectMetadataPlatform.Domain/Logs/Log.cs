@@ -27,7 +27,7 @@ public class Log
     /// <summary>
     ///     the Username of the user taking action
     /// </summary>
-    public required string Username { get; set; }
+    public required string? Username { get; set; }
 
     /// <summary>
     ///     The TImeStamp when the action was taken
