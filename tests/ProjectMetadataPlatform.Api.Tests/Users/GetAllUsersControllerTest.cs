@@ -36,7 +36,8 @@ public class GetAllUsersControllerTest
             new User
             {
                 Id = "1",
-                Name = "Hinz"
+                Name = "Hinz",
+                UserName = "und"
             },
             new User
             {
@@ -59,8 +60,10 @@ public class GetAllUsersControllerTest
             Assert.That(response.Count(), Is.EqualTo(2));
             Assert.That(response.ElementAt(0).Id, Is.EqualTo("1"));
             Assert.That(response.ElementAt(0).Name, Is.EqualTo("Hinz"));
+            Assert.That(response.ElementAt(0).Username, Is.EqualTo("und"));
             Assert.That(response.ElementAt(1).Id, Is.EqualTo("2"));
             Assert.That(response.ElementAt(1).Name, Is.EqualTo("Kunz"));
+            Assert.That(response.ElementAt(1).Username, Is.EqualTo(""));
         }));
     }
 

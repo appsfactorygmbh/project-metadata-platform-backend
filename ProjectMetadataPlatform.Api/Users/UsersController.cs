@@ -102,7 +102,9 @@ public class UsersController : ControllerBase
 
         IEnumerable<GetAllUsersResponse> response = users.Select(user => new GetAllUsersResponse(
             user.Id,
-            user.Name));
+            user.Name,
+            user.UserName ?? ""
+            ));
         return Ok(response);
     }
 
