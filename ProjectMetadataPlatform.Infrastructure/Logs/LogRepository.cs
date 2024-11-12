@@ -54,8 +54,7 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
             TimeStamp = UtcNow,
             Changes = changes
         };
-        var projects = await _context.Projects.Include(b => b.Logs).FirstAsync(pro => pro.Id == projectId);
-        projects.Logs!.Add(log);
+        _context.Logs.Add(log);
         _ = await _context.SaveChangesAsync();
     }
 

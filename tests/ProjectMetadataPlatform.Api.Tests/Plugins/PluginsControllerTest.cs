@@ -160,7 +160,7 @@ public class Tests
         {
             Assert.That(resultValue, Is.Not.Null);
             Assert.That(resultValue!.Name, Is.EqualTo("horn ox"));
-            Assert.That(resultValue.Archived, Is.EqualTo(true));
+            Assert.That(resultValue.IsArchived, Is.EqualTo(true));
             Assert.That(resultValue.Id, Is.EqualTo(1));
         });
     }
@@ -223,7 +223,7 @@ public class Tests
         {
             Assert.That(resultObj.Name, Is.EqualTo("plugin 1"));
             Assert.That(resultObj.Id, Is.EqualTo(1));
-            Assert.That(resultObj.Archived, Is.False);
+            Assert.That(resultObj.IsArchived, Is.False);
             Assert.That(resultObj.Keys, Is.EqualTo(System.Array.Empty<string>()));
         });
     }

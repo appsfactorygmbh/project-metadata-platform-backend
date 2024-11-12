@@ -40,6 +40,9 @@ public class PluginsController : ControllerBase
     /// <response code="400">The request data is invalid.</response>
     /// <response code="500">An internal error occurred.</response>
     [HttpPut]
+    [ProducesResponseType(typeof(CreatePluginResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<CreatePluginResponse>> Put([FromBody] CreatePluginRequest request)
     {
         if (string.IsNullOrWhiteSpace(request.PluginName))

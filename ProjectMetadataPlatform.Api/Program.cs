@@ -5,9 +5,11 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
-using ProjectMetadataPlatform.Api.Swagger;
 using ProjectMetadataPlatform.Application;
 using ProjectMetadataPlatform.Infrastructure;
+using ProjectMetadataPlatform.Api.Swagger;
+
+
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -69,4 +71,6 @@ app.Run();
 /// <summary>
 /// The entry point for the application.
 /// </summary>
+// ReSharper disable once ClassNeverInstantiated.Global - This is needed for the integration tests to work.
 public partial class Program;
+

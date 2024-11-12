@@ -52,5 +52,5 @@ public class Log
     /// <summary>
     ///     The changes that were made.
     /// </summary>
-    public List<LogChange> Changes { get; set; } = [];
+    public List<LogChange>? Changes { get; set; }
 }

@@ -7,6 +7,7 @@ using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Domain.User;
 using ProjectMetadataPlatform.Infrastructure.DataAccess;
 using Microsoft.AspNetCore.Identity;
+using System.Globalization;
 
 namespace ProjectMetadataPlatform.Infrastructure.Users;
 
@@ -55,7 +56,17 @@ public class UsersRepository : RepositoryBase<User>, IUsersRepository
     /// <returns>Id of the created User.</returns>
     public async Task<string> CreateUserAsync(User user, string password)
     {
-        user.Id = ((_context.Users.Select(user => user.Id).ToList().Max(id => ((int?)int.Parse(id))) ?? 0) + 1).ToString();
+        var userIds = await _context.Users
+            .Select(u => u.Id)
+            .ToListAsync();
+
+        var maxId = userIds
+            .Select(id => int.TryParse(id, out var parsedId) ? parsedId : 0)
+            .DefaultIfEmpty(0)
+            .Max();
+
+        user.Id = (maxId + 1).ToString(CultureInfo.InvariantCulture);
+
         var identityResult = await _userManager.CreateAsync(user, password);
 
         return !identityResult.Succeeded ? throw new ArgumentException("User creation " + identityResult) : user.Id;
