@@ -123,13 +123,11 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
             changedProperties.Add((nameof(Project.ClientName), project.ClientName, request.ClientName));
             project.ClientName = request.ClientName;
         }
-        if (request.IsArchived.HasValue)
+
+        if (project.IsArchived != request.IsArchived)
         {
-            if (project.IsArchived != request.IsArchived.Value)
-            {
-                changedProperties.Add((nameof(Project.IsArchived), project.IsArchived.ToString(), request.IsArchived.Value.ToString()));
-                project.IsArchived = request.IsArchived.Value;
-            }
+            changedProperties.Add((nameof(Project.IsArchived), project.IsArchived.ToString(), request.IsArchived.ToString()));
+            project.IsArchived = request.IsArchived;
         }
     }
 }
