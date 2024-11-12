@@ -199,7 +199,6 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Username")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -572,7 +571,8 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
 
                     b.HasOne("ProjectMetadataPlatform.Domain.User.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Project");
 
