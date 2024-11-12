@@ -23,5 +23,11 @@ public class LogModelConfig : IEntityTypeConfiguration<Log>
             .WithMany(e => e.Logs)
             .HasForeignKey(e => e.ProjectId)
             .IsRequired();
+
+        _ = builder
+            .HasOne(e => e.User)
+            .WithMany()
+            .HasForeignKey(e => e.UserId)
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }
