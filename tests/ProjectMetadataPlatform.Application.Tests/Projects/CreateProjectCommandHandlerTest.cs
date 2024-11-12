@@ -14,13 +14,15 @@ public class CreateProjectCommandHandlerTest
     private CreateProjectCommandHandler _handler;
     private Mock<IProjectsRepository> _mockProjectRepo;
     private Mock<IPluginRepository> _mockPluginRepo;
+    private Mock<ILogRepository> _mockLogRepo;
 
     [SetUp]
     public void Setup()
     {
         _mockProjectRepo = new Mock<IProjectsRepository>();
         _mockPluginRepo = new Mock<IPluginRepository>();
-        _handler = new CreateProjectCommandHandler(_mockProjectRepo.Object, _mockPluginRepo.Object);
+        _mockLogRepo = new Mock<ILogRepository>();
+        _handler = new CreateProjectCommandHandler(_mockProjectRepo.Object, _mockPluginRepo.Object, _mockLogRepo.Object);
     }
 
     [Test]
