@@ -126,7 +126,6 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
         {
             Create(project);
         }
-        _ = await _context.SaveChangesAsync();
     }
 
     /// <summary>

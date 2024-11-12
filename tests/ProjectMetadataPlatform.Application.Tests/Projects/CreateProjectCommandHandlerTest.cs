@@ -1,9 +1,11 @@
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Application.Projects;
+using ProjectMetadataPlatform.Domain.Logs;
 using ProjectMetadataPlatform.Domain.Projects;
 
 namespace ProjectMetadataPlatform.Application.Tests.Projects;
@@ -15,6 +17,7 @@ public class CreateProjectCommandHandlerTest
     private Mock<IProjectsRepository> _mockProjectRepo;
     private Mock<IPluginRepository> _mockPluginRepo;
     private Mock<ILogRepository> _mockLogRepo;
+    private Mock<IUnitOfWork> _mockUnitOfWork;
 
     [SetUp]
     public void Setup()
@@ -22,7 +25,8 @@ public class CreateProjectCommandHandlerTest
         _mockProjectRepo = new Mock<IProjectsRepository>();
         _mockPluginRepo = new Mock<IPluginRepository>();
         _mockLogRepo = new Mock<ILogRepository>();
-        _handler = new CreateProjectCommandHandler(_mockProjectRepo.Object, _mockPluginRepo.Object, _mockLogRepo.Object);
+        _mockUnitOfWork = new Mock<IUnitOfWork>();
+        _handler = new CreateProjectCommandHandler(_mockProjectRepo.Object, _mockPluginRepo.Object, _mockLogRepo.Object, _mockUnitOfWork.Object);
     }
 
     [Test]
@@ -48,6 +52,7 @@ public class CreateProjectCommandHandlerTest
                     "Example Client", []), It.IsAny<CancellationToken>());
 
         Assert.That(result, Is.EqualTo(1));
+        _mockLogRepo.Verify(m => m.AddLogForCurrentUser(1, Domain.Logs.Action.ADDED_PROJECT,It.IsAny<List<LogChange>>()), Times.Once);
 
     }
 }

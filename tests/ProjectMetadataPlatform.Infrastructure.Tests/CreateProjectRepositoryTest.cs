@@ -39,6 +39,7 @@ public class CreateProjectRepositoryTest : TestsWithDatabase
             ClientName = "Example Client"
         };
         await _repository.Add(exampleProject);
+        await _context.SaveChangesAsync();
         Assert.That(exampleProject, Is.Not.Null);
         Assert.Multiple(() =>
         {
@@ -64,8 +65,10 @@ public class CreateProjectRepositoryTest : TestsWithDatabase
             ClientName = "Example Client"
         };
         await _repository.Add(exampleProject);
+        await _context.SaveChangesAsync();
         IEnumerable<Project> firstresult = await _repository.GetProjectsAsync();
         await _repository.Add(exampleProject);
+        await _context.SaveChangesAsync();
         Assert.That(exampleProject, Is.Not.Null);
         Assert.That(exampleProject.ProjectName, Is.EqualTo("Example Project"));
         Assert.That(exampleProject.BusinessUnit, Is.EqualTo("Example Business Unit"));
@@ -103,6 +106,7 @@ public class CreateProjectRepositoryTest : TestsWithDatabase
         };
         var storedPlugin = await _pluginRepository.StorePlugin(examplePlugin);
         await _repository.Add(exampleProject);
+        await _context.SaveChangesAsync();
         var projectResult = _context.Projects.FirstOrDefault(p => p.Id == exampleProject.Id);
         Assert.That(projectResult, Is.Not.Null);
         Assert.Multiple(() =>

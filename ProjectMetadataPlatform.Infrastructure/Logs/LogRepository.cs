@@ -55,7 +55,7 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
             Changes = changes
         };
         _context.Logs.Add(log);
-        _ = await _context.SaveChangesAsync();
+
     }
 
     ///  <inheritdoc />
