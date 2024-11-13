@@ -23,7 +23,7 @@ public class UsersRepository : RepositoryBase<User>, IUsersRepository
     /// </summary>
     /// <param name="dbContext">The database context for accessing project data.</param>
     /// <param name="userManager">Manager for users of the type user.</param>
-    public UsersRepository(ProjectMetadataPlatformDbContext dbContext, UserManager<User> userManager) : base(dbContext)
+    public UsersRepository(ProjectMetadataPlatformDbContext dbContext,UserManager<User> userManager) : base(dbContext)
     {
         _userManager = userManager;
         _context = dbContext;
@@ -99,5 +99,16 @@ public class UsersRepository : RepositoryBase<User>, IUsersRepository
         }
 
         return user;
+    }
+
+    /// <summary>
+    /// Deletes the specified user asynchronously.
+    /// </summary>
+    /// <param name="user">The user to be deleted.</param>
+    /// <returns>The task result contains the deleted user.</returns>
+    public async Task<User> DeleteUserAsync(User user)
+    {
+        var task = await _userManager.DeleteAsync(user);
+        return !task.Succeeded ? throw new ArgumentException("User deletion failed. With id " + user.Id + task) : user;
     }
 }

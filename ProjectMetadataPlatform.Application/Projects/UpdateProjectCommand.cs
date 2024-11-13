@@ -14,4 +14,5 @@ namespace ProjectMetadataPlatform.Application.Projects;
 /// <param name="ClientName">Name of the client</param>
 /// <param name="Id">Id of the project</param>
 /// <param name="Plugins">List of plugins associated with the project</param>
-public record UpdateProjectCommand(string ProjectName, string BusinessUnit, int TeamNumber, string Department, string ClientName, int Id, List<ProjectPlugins> Plugins): IRequest<int>;
+/// <param name="IsArchived">Indicates if the project is archived</param>
+public record UpdateProjectCommand(string ProjectName, string BusinessUnit, int TeamNumber, string Department, string ClientName, int Id, List<ProjectPlugins> Plugins, bool IsArchived): IRequest<int>;
