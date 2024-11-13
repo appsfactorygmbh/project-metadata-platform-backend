@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -49,6 +50,10 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
             }
         }
         var project = new Project{ProjectName=request.ProjectName, BusinessUnit=request.BusinessUnit, TeamNumber=request.TeamNumber, Department=request.Department, ClientName=request.ClientName, ProjectPlugins = request.Plugins};
+
+        // If we let the database generate the id, we can't use it to log the changes without saving the project first.
+        project.Id = (_projectsRepository.GetProjectsAsync().Result.Max(project1 => (int?) project1.Id) ?? 0) + 1;
+
         await _projectsRepository.Add(project);
 
         var changes = new List<LogChange>
