@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -51,7 +50,7 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
         }
         var project = new Project{ProjectName=request.ProjectName, BusinessUnit=request.BusinessUnit, TeamNumber=request.TeamNumber, Department=request.Department, ClientName=request.ClientName, ProjectPlugins = request.Plugins};
 
-        await _projectsRepository.Add(project);
+        _ = await _projectsRepository.Add(project);
 
         var changes = new List<LogChange>
         {
