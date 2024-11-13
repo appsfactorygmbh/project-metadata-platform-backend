@@ -40,7 +40,7 @@ public interface IProjectsRepository
     /// </summary>
     /// <param name="project"></param>
     /// <returns></returns>
-    Task Add(Project project);
+    Task<int> Add(Project project);
 
     /// <summary>
     /// Checks if a project exists.

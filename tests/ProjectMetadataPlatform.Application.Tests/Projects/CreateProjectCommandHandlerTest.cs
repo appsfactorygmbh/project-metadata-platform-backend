@@ -42,7 +42,7 @@ public class CreateProjectCommandHandlerTest
             ClientName = "Example Client"
         };
         _mockProjectRepo.Setup(m => m.Add(It.IsAny<Project>())).Callback<Project>(p => p.Id = 1)
-            .Returns(Task.CompletedTask);
+            .Returns(Task<int>.FromResult(1));
 
         // act
 
