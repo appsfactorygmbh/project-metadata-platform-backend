@@ -24,6 +24,7 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
     /// <param name="projectsRepository"></param>
     /// <param name="pluginRepository"></param>
     /// <param name="logRepository"></param>
+    /// <param name="unitOfWork"></param>
     public CreateProjectCommandHandler(IProjectsRepository projectsRepository, IPluginRepository pluginRepository, ILogRepository logRepository, IUnitOfWork unitOfWork)
     {
         _projectsRepository = projectsRepository;
@@ -49,6 +50,7 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
         }
         var project = new Project{ProjectName=request.ProjectName, BusinessUnit=request.BusinessUnit, TeamNumber=request.TeamNumber, Department=request.Department, ClientName=request.ClientName, ProjectPlugins = request.Plugins};
         await _projectsRepository.Add(project);
+
         var changes = new List<LogChange>
         {
             new() { OldValue = "", NewValue = project.ProjectName, Property = "ProjectName" },
