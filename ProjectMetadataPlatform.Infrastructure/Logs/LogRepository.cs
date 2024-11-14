@@ -95,7 +95,11 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
     ///  <inheritdoc />
     public async Task<List<Log>> GetAllLogs()
     {
-        return SortByTimestamp(await GetEverything().ToListAsync());
+        return SortByTimestamp(await GetEverything()
+            .Include(log => log.Project)
+            .Include(log => log.User)
+            .Include(log => log.Changes)
+            .ToListAsync());
     }
 
     /// <summary>
