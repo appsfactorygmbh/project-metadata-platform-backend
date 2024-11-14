@@ -26,10 +26,11 @@ public class LogsController: ControllerBase
         _mediator = mediator;
     }
 
+    [HttpGet("{projectId:int}")]
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<GetLogResponse>>> Get()
+    public async Task<ActionResult<IEnumerable<GetLogResponse>>> Get(int? projectId)
     {
-        var query = new GetLogsQuery(0, "");
+        var query = new GetLogsQuery(projectId);
 
         List<Log> logs;
 
@@ -73,7 +74,7 @@ public class LogsController: ControllerBase
     }
 
     private static string BuildAddedProjectMessage(List<LogChange>? changes) {
-        string message = "created a new project";
+        var message = "created a new project";
         if (changes == null) {
             return message;
         }
@@ -83,7 +84,7 @@ public class LogsController: ControllerBase
     }
 
     private static string BuildUpdatedProjectMessage(List<LogChange>? changes) {
-        string message = "updated project properties: ";
+        var message = "updated project properties: ";
         if (changes == null) {
             return message;
         }

@@ -18,6 +18,10 @@ public class GetLogsQueryHandler: IRequestHandler<GetLogsQuery, List<Log>>
 
     public Task<List<Log>> Handle(GetLogsQuery request, CancellationToken cancellationToken)
     {
+        if (request.ProjectId != null)
+        {
+            return _logRepository.GetLogsForProject((int)request.ProjectId!);
+        }
         return _logRepository.GetAllLogs();
     }
 }
