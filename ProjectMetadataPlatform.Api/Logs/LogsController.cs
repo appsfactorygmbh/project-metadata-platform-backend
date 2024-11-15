@@ -1,34 +1,44 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using ProjectMetadataPlatform.Api.Logs.Models;
 using ProjectMetadataPlatform.Application.Logs;
-using ProjectMetadataPlatform.Domain.Logs;
-using Action = ProjectMetadataPlatform.Domain.Logs.Action;
 
 namespace ProjectMetadataPlatform.Api.Logs;
 
+/// <summary>
+/// API controller for managing log entries.
+/// </summary>
 [ApiController]
-// [Authorize]
+[Authorize]
 [Route("[controller]")]
 public class LogsController: ControllerBase
 {
     private readonly IMediator _mediator;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LogsController"/> class.
+    /// </summary>
+    /// <param name="mediator">The mediator instance for handling requests.</param>
     public LogsController(IMediator mediator)
     {
         _mediator = mediator;
     }
 
+    /// <summary>
+    /// Retrieves log entries based on the specified project ID and search criteria.
+    /// </summary>
+    /// <param name="projectId">The ID of the project to filter logs by.</param>
+    /// <param name="search">The search term to filter logs by.</param>
+    /// <returns>A list of log responses.</returns>
+    /// <response code="200">Returns the list of log responses.</response>
+    /// <response code="500">If an error occurs while processing the request.</response>
     [HttpGet("{projectId:int}")]
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<GetLogResponse>>> Get(int? projectId, string? search)
+    public async Task<ActionResult<IEnumerable<LogResponse>>> Get(int? projectId, string? search)
     {
         var query = new GetLogsQuery(projectId, search);
 

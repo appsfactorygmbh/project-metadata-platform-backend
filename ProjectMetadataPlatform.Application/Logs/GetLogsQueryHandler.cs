@@ -10,15 +10,28 @@ using Action = ProjectMetadataPlatform.Domain.Logs.Action;
 
 namespace ProjectMetadataPlatform.Application.Logs;
 
+/// <summary>
+/// Handles the query to retrieve logs based on project ID and search criteria.
+/// </summary>
 public class GetLogsQueryHandler: IRequestHandler<GetLogsQuery, IEnumerable<LogResponse>>
 {
     private readonly ILogRepository _logRepository;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GetLogsQueryHandler"/> class.
+    /// </summary>
+    /// <param name="logRepository">The log repository instance.</param>
     public GetLogsQueryHandler(ILogRepository logRepository)
     {
         _logRepository = logRepository;
     }
 
+    /// <summary>
+    /// Handles the GetLogsQuery request.
+    /// </summary>
+    /// <param name="request">The request containing project ID and search criteria.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A list of log responses.</returns>
     public async Task<IEnumerable<LogResponse>> Handle(GetLogsQuery request, CancellationToken cancellationToken)
     {
         List<Log> logs;
@@ -41,6 +54,11 @@ public class GetLogsQueryHandler: IRequestHandler<GetLogsQuery, IEnumerable<LogR
         return logResponses;
     }
 
+    /// <summary>
+    /// Builds a log message from a log entry.
+    /// </summary>
+    /// <param name="log">The log entry.</param>
+    /// <returns>A log response containing the message and timestamp.</returns>
     private static LogResponse BuildLogMessage(Log log)
     {
         string message;
@@ -68,6 +86,11 @@ public class GetLogsQueryHandler: IRequestHandler<GetLogsQuery, IEnumerable<LogR
         return new LogResponse(message, GetTimestamp(log.TimeStamp));
     }
 
+    /// <summary>
+    /// Builds a message for an added project.
+    /// </summary>
+    /// <param name="changes">The list of changes.</param>
+    /// <returns>The constructed message.</returns>
     private static string BuildAddedProjectMessage(List<LogChange>? changes) {
         var message = "created a new project";
         if (changes == null) {
@@ -78,6 +101,11 @@ public class GetLogsQueryHandler: IRequestHandler<GetLogsQuery, IEnumerable<LogR
         return message;
     }
 
+    /// <summary>
+    /// Builds a message for an updated project.
+    /// </summary>
+    /// <param name="changes">The list of changes.</param>
+    /// <returns>The constructed message.</returns>
     private static string BuildUpdatedProjectMessage(List<LogChange>? changes) {
         var message = "updated project properties: ";
         if (changes == null) {
@@ -87,10 +115,21 @@ public class GetLogsQueryHandler: IRequestHandler<GetLogsQuery, IEnumerable<LogR
         return message;
     }
 
+    /// <summary>
+    /// Builds a message for an archived project.
+    /// </summary>
+    /// <param name="projectName">The name of the project.</param>
+    /// <returns>The constructed message.</returns>
     private static string BuildArchivedProjectMessage(string? projectName) {
         return "archived project " + (projectName ?? "<Unknown Project>");
     }
 
+    /// <summary>
+    /// Builds a message for an added project plugin.
+    /// </summary>
+    /// <param name="projectName">The name of the project.</param>
+    /// <param name="changes">The list of changes.</param>
+    /// <returns>The constructed message.</returns>
     private static string BuildAddedProjectPluginMessage(string? projectName, List<LogChange>? changes) {
         string message = "added a new plugin to project " + (projectName ?? "<Unknown Project>");
         if (changes == null) {
@@ -101,6 +140,12 @@ public class GetLogsQueryHandler: IRequestHandler<GetLogsQuery, IEnumerable<LogR
         return message;
     }
 
+    /// <summary>
+    /// Builds a message for an updated project plugin.
+    /// </summary>
+    /// <param name="projectName">The name of the project.</param>
+    /// <param name="changes">The list of changes.</param>
+    /// <returns>The constructed message.</returns>
     private static string BuildUpdatedProjectPluginMessage(string? projectName, List<LogChange>? changes) {
         string message = "updated plugin properties in project " + (projectName ?? "<Unknown Project>") + ": ";
         if (changes == null) {
@@ -110,6 +155,12 @@ public class GetLogsQueryHandler: IRequestHandler<GetLogsQuery, IEnumerable<LogR
         return message;
     }
 
+    /// <summary>
+    /// Builds a message for a removed project plugin.
+    /// </summary>
+    /// <param name="projectName">The name of the project.</param>
+    /// <param name="changes">The list of changes.</param>
+    /// <returns>The constructed message.</returns>
     private static string BuildRemovedProjectPluginMessage(string? projectName, List<LogChange>? changes) {
         string message = "removed a plugin from project " + (projectName ?? "<Unknown Project>");
         if (changes == null) {
@@ -120,6 +171,11 @@ public class GetLogsQueryHandler: IRequestHandler<GetLogsQuery, IEnumerable<LogR
         return message;
     }
 
+    /// <summary>
+    /// Gets the timestamp in a specific format.
+    /// </summary>
+    /// <param name="value">The DateTimeOffset value.</param>
+    /// <returns>The formatted timestamp.</returns>
     private static string GetTimestamp(DateTimeOffset value)
     {
         return value.ToString("yyyy-MM-ddTHH:mm:ssK");
