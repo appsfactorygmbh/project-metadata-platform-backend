@@ -72,7 +72,7 @@ public class GetLogsQueryHandler: IRequestHandler<GetLogsQuery, IEnumerable<LogR
             message = log.Username ?? "<Deleted User>";
         }
 
-        message += log.Action switch
+        message += " " + log.Action switch
         {
             Action.ADDED_PROJECT => BuildAddedProjectMessage(log.Changes),
             Action.UPDATED_PROJECT => BuildUpdatedProjectMessage(log.Changes),
