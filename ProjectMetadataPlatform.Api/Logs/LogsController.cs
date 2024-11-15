@@ -28,9 +28,9 @@ public class LogsController: ControllerBase
 
     [HttpGet("{projectId:int}")]
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<GetLogResponse>>> Get(int? projectId)
+    public async Task<ActionResult<IEnumerable<GetLogResponse>>> Get(int? projectId, string? search)
     {
-        var query = new GetLogsQuery(projectId);
+        var query = new GetLogsQuery(projectId, search);
 
         IEnumerable<LogResponse> logs;
 

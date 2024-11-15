@@ -31,7 +31,14 @@ public class GetLogsQueryHandler: IRequestHandler<GetLogsQuery, IEnumerable<LogR
             logs = await _logRepository.GetAllLogs();
         }
 
-        return logs.Select(BuildLogMessage);
+        IEnumerable<LogResponse> logResponses = logs.Select(BuildLogMessage);
+
+        if (request.Search != null)
+        {
+            return logResponses.Where(log => log.LogMessage.Contains(request.Search, StringComparison.OrdinalIgnoreCase));
+        }
+
+        return logResponses;
     }
 
     private static LogResponse BuildLogMessage(Log log)
