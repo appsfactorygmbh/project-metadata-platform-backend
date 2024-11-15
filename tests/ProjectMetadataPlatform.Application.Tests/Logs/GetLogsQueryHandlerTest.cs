@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,7 +7,6 @@ using Moq;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Application.Logs;
-using ProjectMetadataPlatform.Application.Users;
 using ProjectMetadataPlatform.Domain.Logs;
 using ProjectMetadataPlatform.Domain.Projects;
 using Action = ProjectMetadataPlatform.Domain.Logs.Action;
@@ -34,7 +32,7 @@ public class GetLogsQueryHandlerTest
         var log = new Log
         {
             Id = 41,
-            TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1)),
+            TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
             UserId = "42",
             Username = "Slartibartfast",
             ProjectId = 43,
@@ -47,7 +45,7 @@ public class GetLogsQueryHandlerTest
         var log2 = new Log
         {
             Id = 42,
-            TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1)),
+            TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
             UserId = "43",
             Username = "Deep Thought",
             ProjectId = 44,
@@ -57,7 +55,7 @@ public class GetLogsQueryHandlerTest
         var log3 = new Log
         {
             Id = 43,
-            TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1)),
+            TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
             UserId = "44",
             Username = "Infinite Improbability Drive",
             ProjectId = 45,
@@ -71,7 +69,7 @@ public class GetLogsQueryHandlerTest
         var log4 = new Log
         {
             Id = 44,
-            TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1)),
+            TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
             UserId = "45",
             Username = "Ground",
             ProjectId = 46,
@@ -85,7 +83,7 @@ public class GetLogsQueryHandlerTest
         var log5 = new Log
         {
             Id = 45,
-            TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1)),
+            TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
             UserId = "46",
             Username = "Prostetnic Vogon Jeltz",
             ProjectId = 47,
@@ -165,7 +163,7 @@ public class GetLogsQueryHandlerTest
         var log = new Log
         {
             Id = 41,
-            TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1)),
+            TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
             UserId = "42",
             Username = "Slartibartfast",
             ProjectId = 43,
@@ -179,7 +177,7 @@ public class GetLogsQueryHandlerTest
         var log2 = new Log
         {
             Id = 42,
-            TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1)),
+            TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
             UserId = "43",
             Username = "Zaphod Beeblebrox",
             ProjectId = 44,
