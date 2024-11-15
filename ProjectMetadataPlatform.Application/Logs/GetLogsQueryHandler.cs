@@ -10,7 +10,7 @@ using Action = ProjectMetadataPlatform.Domain.Logs.Action;
 
 namespace ProjectMetadataPlatform.Application.Logs;
 
-public class GetLogsQueryHandler: IRequestHandler<GetLogsQuery, IEnumerable<String>>
+public class GetLogsQueryHandler: IRequestHandler<GetLogsQuery, IEnumerable<LogResponse>>
 {
     private readonly ILogRepository _logRepository;
 
@@ -19,7 +19,7 @@ public class GetLogsQueryHandler: IRequestHandler<GetLogsQuery, IEnumerable<Stri
         _logRepository = logRepository;
     }
 
-    public async Task<IEnumerable<String>> Handle(GetLogsQuery request, CancellationToken cancellationToken)
+    public async Task<IEnumerable<LogResponse>> Handle(GetLogsQuery request, CancellationToken cancellationToken)
     {
         List<Log> logs;
         if (request.ProjectId != null)
@@ -34,7 +34,7 @@ public class GetLogsQueryHandler: IRequestHandler<GetLogsQuery, IEnumerable<Stri
         return logs.Select(BuildLogMessage);
     }
 
-    private static string BuildLogMessage(Log log)
+    private static LogResponse BuildLogMessage(Log log)
     {
         string message;
 
@@ -47,16 +47,18 @@ public class GetLogsQueryHandler: IRequestHandler<GetLogsQuery, IEnumerable<Stri
             message = log.Username ?? "<Deleted User>";
         }
 
-        return log.Action switch
+        message += log.Action switch
         {
-            Action.ADDED_PROJECT => $"{message} {BuildAddedProjectMessage(log.Changes)}",
-            Action.UPDATED_PROJECT => $"{message} {BuildUpdatedProjectMessage(log.Changes)}",
-            Action.ARCHIVED_PROJECT => $"{message} {BuildArchivedProjectMessage(log.Project?.ProjectName)}",
-            Action.ADDED_PROJECT_PLUGIN => $"{message} {BuildAddedProjectPluginMessage(log.Project?.ProjectName, log.Changes)}",
-            Action.UPDATED_PROJECT_PLUGIN => $"{message} {BuildUpdatedProjectPluginMessage(log.Project?.ProjectName, log.Changes)}",
-            Action.REMOVED_PROJECT_PLUGIN => $"{message} {BuildRemovedProjectPluginMessage(log.Project?.ProjectName, log.Changes)}",
-            _ => message
+            Action.ADDED_PROJECT => BuildAddedProjectMessage(log.Changes),
+            Action.UPDATED_PROJECT => BuildUpdatedProjectMessage(log.Changes),
+            Action.ARCHIVED_PROJECT => BuildArchivedProjectMessage(log.Project?.ProjectName),
+            Action.ADDED_PROJECT_PLUGIN => BuildAddedProjectPluginMessage(log.Project?.ProjectName, log.Changes),
+            Action.UPDATED_PROJECT_PLUGIN => BuildUpdatedProjectPluginMessage(log.Project?.ProjectName, log.Changes),
+            Action.REMOVED_PROJECT_PLUGIN => BuildRemovedProjectPluginMessage(log.Project?.ProjectName, log.Changes),
+            _ => ""
         };
+
+        return new LogResponse(message, GetTimestamp(log.TimeStamp));
     }
 
     private static string BuildAddedProjectMessage(List<LogChange>? changes) {

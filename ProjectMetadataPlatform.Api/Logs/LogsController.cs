@@ -32,7 +32,7 @@ public class LogsController: ControllerBase
     {
         var query = new GetLogsQuery(projectId);
 
-        IEnumerable<string> logs;
+        IEnumerable<LogResponse> logs;
 
         try
         {
