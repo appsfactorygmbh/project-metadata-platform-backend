@@ -21,10 +21,10 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
     /// <summary>
     ///     Creates a new instance of <see cref="CreateProjectCommandHandler" />.
     /// </summary>
-    /// <param name="projectsRepository"></param>
-    /// <param name="pluginRepository"></param>
-    /// <param name="logRepository"></param>
-    /// <param name="unitOfWork"></param>
+    /// <param name="projectsRepository">Repository for Projects</param>
+    /// <param name="pluginRepository">Repository for Plugins</param>
+    /// <param name="logRepository">Repository for Logs</param>
+    /// <param name="unitOfWork"> Used to save changes to the DbContext</param>
     public CreateProjectCommandHandler(IProjectsRepository projectsRepository, IPluginRepository pluginRepository, ILogRepository logRepository, IUnitOfWork unitOfWork)
     {
         _projectsRepository = projectsRepository;
