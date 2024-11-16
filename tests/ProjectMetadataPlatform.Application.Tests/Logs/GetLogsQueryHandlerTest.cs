@@ -158,6 +158,17 @@ public class GetLogsQueryHandlerTest
     }
 
     [Test]
+    public async Task HandleGetLogs_ForProjectNotFound_Test()
+    {
+        _mockLogsRepo.Setup(m => m.GetLogsForProject(It.IsAny<int>())).ThrowsAsync(new InvalidOperationException());
+
+        var request = new GetLogsQuery(42);
+        Assert.ThrowsAsync<InvalidOperationException>(async () => await _handler.Handle(request, It.IsAny<CancellationToken>()));
+
+        _mockLogsRepo.Verify(m => m.GetLogsForProject(42), Times.Once);
+    }
+
+    [Test]
     public async Task HandleGetLogs_ApplySearch_Test()
     {
         var log = new Log

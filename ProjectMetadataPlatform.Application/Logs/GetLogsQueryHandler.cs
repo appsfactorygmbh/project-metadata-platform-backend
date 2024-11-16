@@ -34,16 +34,9 @@ public class GetLogsQueryHandler: IRequestHandler<GetLogsQuery, IEnumerable<LogR
     /// <returns>A list of log responses.</returns>
     public async Task<IEnumerable<LogResponse>> Handle(GetLogsQuery request, CancellationToken cancellationToken)
     {
-        List<Log> logs;
-        if (request.ProjectId != null)
-        {
-            logs = await _logRepository.GetLogsForProject((int)request.ProjectId!);
-        }
-        else
-        {
-            logs = await _logRepository.GetAllLogs();
-        }
-
+        List<Log> logs = request.ProjectId != null
+            ? await _logRepository.GetLogsForProject((int)request.ProjectId!)
+            : await _logRepository.GetAllLogs();
         IEnumerable<LogResponse> logResponses = logs.Select(BuildLogMessage);
 
         if (request.Search != null)
@@ -131,7 +124,7 @@ public class GetLogsQueryHandler: IRequestHandler<GetLogsQuery, IEnumerable<LogR
     /// <param name="changes">The list of changes.</param>
     /// <returns>The constructed message.</returns>
     private static string BuildAddedProjectPluginMessage(string? projectName, List<LogChange>? changes) {
-        string message = "added a new plugin to project " + (projectName ?? "<Unknown Project>");
+        var message = "added a new plugin to project " + (projectName ?? "<Unknown Project>");
         if (changes == null) {
             return message;
         }
@@ -147,7 +140,7 @@ public class GetLogsQueryHandler: IRequestHandler<GetLogsQuery, IEnumerable<LogR
     /// <param name="changes">The list of changes.</param>
     /// <returns>The constructed message.</returns>
     private static string BuildUpdatedProjectPluginMessage(string? projectName, List<LogChange>? changes) {
-        string message = "updated plugin properties in project " + (projectName ?? "<Unknown Project>") + ": ";
+        var message = "updated plugin properties in project " + (projectName ?? "<Unknown Project>") + ": ";
         if (changes == null) {
             return message;
         }
@@ -162,7 +155,7 @@ public class GetLogsQueryHandler: IRequestHandler<GetLogsQuery, IEnumerable<LogR
     /// <param name="changes">The list of changes.</param>
     /// <returns>The constructed message.</returns>
     private static string BuildRemovedProjectPluginMessage(string? projectName, List<LogChange>? changes) {
-        string message = "removed a plugin from project " + (projectName ?? "<Unknown Project>");
+        var message = "removed a plugin from project " + (projectName ?? "<Unknown Project>");
         if (changes == null) {
             return message;
         }

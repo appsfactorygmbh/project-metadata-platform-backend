@@ -35,6 +35,7 @@ public class LogsController: ControllerBase
     /// <param name="search">The search term to filter logs by.</param>
     /// <returns>A list of log responses.</returns>
     /// <response code="200">Returns the list of log responses.</response>
+    /// <response code="404">Not Project with the given id was found.</response>
     /// <response code="500">If an error occurs while processing the request.</response>
     [HttpGet("{projectId:int}")]
     [HttpGet]
@@ -47,6 +48,10 @@ public class LogsController: ControllerBase
         try
         {
             logs = await _mediator.Send(query);
+        }
+        catch (InvalidOperationException)
+        {
+            return NotFound("No project with id " + projectId + " found");
         }
         catch (Exception e)
         {
