@@ -9,6 +9,8 @@ using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Application.Projects;
 using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.Projects;
+using ProjectMetadataPlatform.Domain.Logs;
+using Action = ProjectMetadataPlatform.Domain.Logs.Action;
 
 namespace ProjectMetadataPlatform.Application.Tests.Projects;
 
@@ -18,6 +20,7 @@ public class UpdateProjectCommandHandlerTest
     private Mock<IProjectsRepository> _mockProjectRepo;
     private Mock<IPluginRepository> _mockPluginRepo;
     private Mock<IUnitOfWork> _mockUnitOfWork;
+    private Mock<ILogRepository> _mockLogRepository;
 
     [SetUp]
     public void Setup()
@@ -25,7 +28,8 @@ public class UpdateProjectCommandHandlerTest
         _mockProjectRepo = new Mock<IProjectsRepository>();
         _mockPluginRepo = new Mock<IPluginRepository>();
         _mockUnitOfWork = new Mock<IUnitOfWork>();
-        _handler = new UpdateProjectCommandHandler(_mockProjectRepo.Object, _mockPluginRepo.Object, _mockUnitOfWork.Object);
+        _mockLogRepository = new Mock<ILogRepository>();
+        _handler = new UpdateProjectCommandHandler(_mockProjectRepo.Object, _mockPluginRepo.Object,_mockLogRepository.Object, _mockUnitOfWork.Object);
     }
 
     [Test]
@@ -307,4 +311,297 @@ public class UpdateProjectCommandHandlerTest
         _mockUnitOfWork.Verify(unitOfWork => unitOfWork.CompleteAsync());
         Assert.That(project.IsArchived, Is.True);
     }
+
+    [Test]
+    public async Task LogsChanges_WhenProjectPropertiesAreUpdated()
+    {
+        var project = new Project
+        {
+            Id = 1,
+            ProjectName = "Old Project Name",
+            BusinessUnit = "Old Unit",
+            TeamNumber = 1,
+            Department = "Old Department",
+            ClientName = "Old Client",
+            IsArchived = false
+        };
+
+        var updateCommand = new UpdateProjectCommand(
+            "New Project Name",
+            "New Unit",
+            2,
+            "New Department",
+            "New Client",
+            1,
+            new List<ProjectPlugins>(),
+            false
+        );
+
+        _mockProjectRepo.Setup(repo => repo.GetProjectWithPluginsAsync(1)).ReturnsAsync(project);
+
+        await _handler.Handle(updateCommand, CancellationToken.None);
+
+        _mockLogRepository.Verify(logRepo => logRepo.AddLogForCurrentUser(
+            project.Id,
+            Action.UPDATED_PROJECT,
+            It.Is<List<LogChange>>(changes =>
+                changes.Count == 5 &&
+                changes.Any(change => change.Property == "ProjectName" && change.OldValue == "Old Project Name" && change.NewValue == "New Project Name") &&
+                changes.Any(change => change.Property == "BusinessUnit" && change.OldValue == "Old Unit" && change.NewValue == "New Unit") &&
+                changes.Any(change => change.Property == "TeamNumber" && change.OldValue == "1" && change.NewValue == "2") &&
+                changes.Any(change => change.Property == "Department" && change.OldValue == "Old Department" && change.NewValue == "New Department") &&
+                changes.Any(change => change.Property == "ClientName" && change.OldValue == "Old Client" && change.NewValue == "New Client")
+            )
+        ), Times.Once);
+    }
+
+    [Test]
+    public async Task NoLogging_WhenNoPropertiesAreChanged()
+    {
+        var project = new Project
+        {
+            Id = 1,
+            ProjectName = "No Change Project",
+            ClientName = "Client A",
+            BusinessUnit = "Business Unit A",
+            TeamNumber = 5,
+            Department = "Department A",
+            ProjectPlugins = new List<ProjectPlugins>(),
+            IsArchived = false
+        };
+
+        var updateCommand = new UpdateProjectCommand(
+            project.ProjectName,
+            project.BusinessUnit,
+            project.TeamNumber,
+            project.Department,
+            project.ClientName,
+            project.Id,
+            project.ProjectPlugins.ToList(),
+            project.IsArchived
+        );
+
+        _mockProjectRepo.Setup(repo => repo.GetProjectWithPluginsAsync(project.Id)).ReturnsAsync(project);
+
+        await _handler.Handle(updateCommand, CancellationToken.None);
+
+        _mockLogRepository.Verify(logRepo => logRepo.AddLogForCurrentUser(
+            It.IsAny<int>(),
+            It.IsAny<Action>(),
+            It.IsAny<List<LogChange>>()
+        ), Times.Never);
+    }
+
+    [Test]
+    public async Task LogsOnlyChangedProperties()
+    {
+        var project = new Project
+        {
+            Id = 1,
+            ProjectName = "Partial Update",
+            ClientName = "Client A",
+            BusinessUnit = "Unit 1",
+            TeamNumber = 5,
+            Department = "Department A",
+            ProjectPlugins = new List<ProjectPlugins>(),
+            IsArchived = false
+        };
+
+        var updateCommand = new UpdateProjectCommand(
+            "Partial Update",
+            "Updated Unit",
+            5,
+            "Department A",
+            "Updated Client",
+            1,
+            project.ProjectPlugins.ToList(),
+            false
+        );
+
+        _mockProjectRepo.Setup(repo => repo.GetProjectWithPluginsAsync(project.Id)).ReturnsAsync(project);
+
+        await _handler.Handle(updateCommand, CancellationToken.None);
+
+        _mockLogRepository.Verify(logRepo => logRepo.AddLogForCurrentUser(
+            project.Id,
+            Action.UPDATED_PROJECT,
+            It.Is<List<LogChange>>(changes =>
+                changes.Count == 2 &&
+                changes.Any(change => change.Property == "BusinessUnit" && change.OldValue == "Unit 1" && change.NewValue == "Updated Unit") &&
+                changes.Any(change => change.Property == "ClientName" && change.OldValue == "Client A" && change.NewValue == "Updated Client")
+            )
+        ), Times.Once);
+    }
+
+    [Test]
+    public async Task LogsChanges_HandlesLogRepositoryException()
+    {
+        var project = new Project
+        {
+            Id = 1,
+            ProjectName = "Project With Exception",
+            ClientName = "Client C",
+            BusinessUnit = "Unit 3",
+            TeamNumber = 4,
+            Department = "Department C",
+            IsArchived = false
+        };
+
+        var updateCommand = new UpdateProjectCommand(
+            "New Project Name",
+            "New Unit",
+            5,
+            "New Department",
+            "New Client",
+            project.Id,
+            new List<ProjectPlugins>(),
+            false
+        );
+
+        _mockProjectRepo.Setup(repo => repo.GetProjectWithPluginsAsync(project.Id)).ReturnsAsync(project);
+
+        _mockLogRepository.Setup(logRepo => logRepo.AddLogForCurrentUser(
+            It.IsAny<int>(),
+            It.IsAny<Action>(),
+            It.IsAny<List<LogChange>>()
+        )).Throws(new Exception("Logging error"));
+
+        var exception = Assert.ThrowsAsync<Exception>(async () =>
+            await _handler.Handle(updateCommand, CancellationToken.None)
+        );
+        Assert.That(exception.Message, Is.EqualTo("Logging error"));
+
+        _mockLogRepository.Verify(logRepo => logRepo.AddLogForCurrentUser(
+            It.IsAny<int>(),
+            It.IsAny<Action>(),
+            It.IsAny<List<LogChange>>()
+        ), Times.Once);
+    }
+
+    [Test]
+    public async Task ArchivesProject_WhenIsArchivedFlagIsTrue()
+    {
+        var project = new Project
+        {
+            Id = 1,
+            ProjectName = "Test Project",
+            ClientName = "Test Client",
+            BusinessUnit = "Test Unit",
+            TeamNumber = 1,
+            Department = "Test Department",
+            ProjectPlugins = new List<ProjectPlugins>(),
+            IsArchived = false
+        };
+
+        var updateCommand = new UpdateProjectCommand(
+            project.ProjectName,
+            project.BusinessUnit,
+            project.TeamNumber,
+            project.Department,
+            project.ClientName,
+            project.Id,
+            new List<ProjectPlugins>(),
+            true
+        );
+
+        _mockProjectRepo.Setup(repo => repo.GetProjectWithPluginsAsync(project.Id)).ReturnsAsync(project);
+
+        await _handler.Handle(updateCommand, CancellationToken.None);
+
+        Assert.That(project.IsArchived, Is.True);
+
+        _mockLogRepository.Verify(logRepo => logRepo.AddLogForCurrentUser(
+            project.Id,
+            Action.ARCHIVED_PROJECT,  // Expect Action.ARCHIVED_PROJECT since the project was archived
+            It.Is<List<LogChange>>(changes =>
+                changes.Count == 1 &&
+                changes.Any(change => change.Property == "IsArchived" && change.OldValue == "False" && change.NewValue == "True")
+            )
+        ), Times.Once);
+    }
+
+
+
+    [Test]
+    public async Task UnArchivesProject_WhenIsArchivedFlagIsFalse()
+    {
+        var project = new Project
+        {
+            Id = 1,
+            ProjectName = "Archived Project",
+            ClientName = "Test Client",
+            BusinessUnit = "Test Unit",
+            TeamNumber = 1,
+            Department = "Test Department",
+            ProjectPlugins = new List<ProjectPlugins>(),
+            IsArchived = true
+        };
+
+        var updateCommand = new UpdateProjectCommand(
+            project.ProjectName,
+            project.BusinessUnit,
+            project.TeamNumber,
+            project.Department,
+            project.ClientName,
+            project.Id,
+            new List<ProjectPlugins>(),
+            false
+        );
+
+        _mockProjectRepo.Setup(repo => repo.GetProjectWithPluginsAsync(project.Id)).ReturnsAsync(project);
+
+        await _handler.Handle(updateCommand, CancellationToken.None);
+
+        Assert.That(project.IsArchived, Is.False);
+
+        _mockLogRepository.Verify(logRepo => logRepo.AddLogForCurrentUser(
+            project.Id,
+            Action.UNARCHIVED_PROJECT,
+            It.Is<List<LogChange>>(changes =>
+                changes.Count == 1 &&
+                changes.Any(change => change.Property == "IsArchived" && change.OldValue == "True" && change.NewValue == "False")
+            )
+        ), Times.Once);
+    }
+
+
+    [Test]
+    public async Task DoesNotLogWhenIsArchivedStatusDoesNotChange()
+    {
+        var project = new Project
+        {
+            Id = 1,
+            ProjectName = "Test Project",
+            ClientName = "Test Client",
+            BusinessUnit = "Test Unit",
+            TeamNumber = 1,
+            Department = "Test Department",
+            ProjectPlugins = new List<ProjectPlugins>(),
+            IsArchived = true
+        };
+
+        var updateCommand = new UpdateProjectCommand(
+            project.ProjectName,
+            project.BusinessUnit,
+            project.TeamNumber,
+            project.Department,
+            project.ClientName,
+            project.Id,
+            new List<ProjectPlugins>(),
+            true
+        );
+
+        _mockProjectRepo.Setup(repo => repo.GetProjectWithPluginsAsync(project.Id)).ReturnsAsync(project);
+
+        await _handler.Handle(updateCommand, CancellationToken.None);
+
+        Assert.That(project.IsArchived, Is.True);
+
+        _mockLogRepository.Verify(logRepo => logRepo.AddLogForCurrentUser(
+            project.Id,
+            Action.UPDATED_PROJECT,
+            It.IsAny<List<LogChange>>()
+        ), Times.Never);
+    }
+
 }
