@@ -94,15 +94,25 @@ public class GetLogsQueryHandlerTest
                 new LogChange() { Property = "Earth", OldValue = "intact", NewValue = "destroyed" }
             ]
         };
+        var log6 = new Log
+        {
+            Id = 46,
+            TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
+            UserId = "47",
+            Username = "Earth",
+            ProjectId = 48,
+            Project = new Project{ProjectName = "Ultimate Question of Life, the Universe and Everything", ClientName = "Mice", BusinessUnit = "", TeamNumber = 1, Department = ""},
+            Action = Action.UNARCHIVED_PROJECT,
+        };
 
-        _mockLogsRepo.Setup(m => m.GetAllLogs()).ReturnsAsync([log, log2, log3, log4, log5]);
+        _mockLogsRepo.Setup(m => m.GetAllLogs()).ReturnsAsync([log, log2, log3, log4, log5, log6]);
 
         var request = new GetLogsQuery();
         var result = (await _handler.Handle(request, It.IsAny<CancellationToken>())).ToList();
 
         Assert.That(result, Is.Not.Null);
         Assert.That(result, Is.InstanceOf<IEnumerable<LogResponse>>());
-        Assert.That(result, Has.Count.EqualTo(5));
+        Assert.That(result, Has.Count.EqualTo(6));
 
         LogResponse logResponse = result.First();
         Assert.Multiple(() =>
@@ -136,6 +146,13 @@ public class GetLogsQueryHandlerTest
         Assert.Multiple(() =>
         {
             Assert.That(logResponse.LogMessage, Is.EqualTo("Prostetnic Vogon Jeltz removed a plugin from project Solarsystem with properties: Earth = destroyed"));
+            Assert.That(logResponse.Timestamp, Is.EqualTo("1970-01-01T00:00:00+01:00"));
+        });
+
+        logResponse = result[5];
+        Assert.Multiple(() =>
+        {
+            Assert.That(logResponse.LogMessage, Is.EqualTo("Earth unarchived project Ultimate Question of Life, the Universe and Everything"));
             Assert.That(logResponse.Timestamp, Is.EqualTo("1970-01-01T00:00:00+01:00"));
         });
 

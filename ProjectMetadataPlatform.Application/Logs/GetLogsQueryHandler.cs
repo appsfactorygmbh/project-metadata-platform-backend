@@ -70,6 +70,7 @@ public class GetLogsQueryHandler: IRequestHandler<GetLogsQuery, IEnumerable<LogR
             Action.ADDED_PROJECT => BuildAddedProjectMessage(log.Changes),
             Action.UPDATED_PROJECT => BuildUpdatedProjectMessage(log.Changes),
             Action.ARCHIVED_PROJECT => BuildArchivedProjectMessage(log.Project?.ProjectName),
+            Action.UNARCHIVED_PROJECT => BuildUnArchivedProjectMessage(log.Project?.ProjectName),
             Action.ADDED_PROJECT_PLUGIN => BuildAddedProjectPluginMessage(log.Project?.ProjectName, log.Changes),
             Action.UPDATED_PROJECT_PLUGIN => BuildUpdatedProjectPluginMessage(log.Project?.ProjectName, log.Changes),
             Action.REMOVED_PROJECT_PLUGIN => BuildRemovedProjectPluginMessage(log.Project?.ProjectName, log.Changes),
@@ -115,6 +116,15 @@ public class GetLogsQueryHandler: IRequestHandler<GetLogsQuery, IEnumerable<LogR
     /// <returns>The constructed message.</returns>
     private static string BuildArchivedProjectMessage(string? projectName) {
         return "archived project " + (projectName ?? "<Unknown Project>");
+    }
+
+    /// <summary>
+    /// Builds a message for an unarchived project.
+    /// </summary>
+    /// <param name="projectName">The name of the project.</param>
+    /// <returns>The constructed message.</returns>
+    private static string BuildUnArchivedProjectMessage(string? projectName) {
+        return "unarchived project " + (projectName ?? "<Unknown Project>");
     }
 
     /// <summary>
