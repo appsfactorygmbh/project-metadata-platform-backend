@@ -58,7 +58,7 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
                 "The Plugins with these ids do not exist: " + string.Join(", ", invalidPluginIds));
         }
 
-        var currentPlugins = new List<ProjectPlugins>(project.ProjectPlugins!);
+        var currentPlugins = new List<ProjectPlugins>(project.ProjectPlugins ?? new List<ProjectPlugins>());
 
         var existingPlugins = currentPlugins
             .IntersectBy(request.Plugins.Select(GetProjectPluginKey), GetProjectPluginKey)
@@ -81,9 +81,9 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
             }
         }
 
-        project.ProjectPlugins = project.ProjectPlugins!
-            .Except(removedPlugins)
-            .Concat(newPlugins)
+        project.ProjectPlugins = (project.ProjectPlugins ?? Enumerable.Empty<ProjectPlugins>())
+            .Except(removedPlugins ?? Enumerable.Empty<ProjectPlugins>())
+            .Concat(newPlugins ?? Enumerable.Empty<ProjectPlugins>())
             .ToList();
 
         await _unitOfWork.CompleteAsync();
@@ -160,13 +160,23 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
 
         if (project.IsArchived != request.IsArchived)
         {
+            var archivedChanges = new List<LogChange> {};
+
+            var change = new LogChange()
+            {
+                Property = "IsArchived",
+                OldValue = project.IsArchived.ToString(),
+                NewValue = request.IsArchived.ToString()
+            };
+            archivedChanges.Add(change);
+
             if(!project.IsArchived)
             {
-                await _logRepository.AddLogForCurrentUser(project.Id, Action.ARCHIVED_PROJECT, changes);
+                await _logRepository.AddLogForCurrentUser(project.Id, Action.ARCHIVED_PROJECT, archivedChanges);
             }
             else
             {
-                await _logRepository.AddLogForCurrentUser(project.Id, Action.UNARCHIVED_PROJECT, changes);
+                await _logRepository.AddLogForCurrentUser(project.Id, Action.UNARCHIVED_PROJECT, archivedChanges);
             }
             project.IsArchived = request.IsArchived;
         }
