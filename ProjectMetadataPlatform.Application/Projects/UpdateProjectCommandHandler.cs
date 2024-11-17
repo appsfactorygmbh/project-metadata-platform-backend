@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -58,7 +58,7 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
                 "The Plugins with these ids do not exist: " + string.Join(", ", invalidPluginIds));
         }
 
-        var currentPlugins = new List<ProjectPlugins>(project.ProjectPlugins ?? new List<ProjectPlugins>());
+        var currentPlugins = new List<ProjectPlugins>(project.ProjectPlugins ?? []);
 
         var existingPlugins = currentPlugins
             .IntersectBy(request.Plugins.Select(GetProjectPluginKey), GetProjectPluginKey)
@@ -127,8 +127,8 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
             var change = new LogChange
             {
                 Property = nameof(Project.TeamNumber),
-                OldValue = project.TeamNumber.ToString(),
-                NewValue = request.TeamNumber.ToString()
+                OldValue = project.TeamNumber.ToString(CultureInfo.InvariantCulture),
+                NewValue = request.TeamNumber.ToString(CultureInfo.InvariantCulture)
             };
             changes.Add(change);
             project.TeamNumber = request.TeamNumber;
