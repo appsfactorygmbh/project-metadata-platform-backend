@@ -518,6 +518,7 @@ public class UpdateProjectCommandHandlerTest
                 changes.Any(change => change.Property == "IsArchived" && change.OldValue == "False" && change.NewValue == "True")
             )
         ), Times.Once);
+        _mockLogRepository.VerifyNoOtherCalls();
     }
 
 
@@ -562,6 +563,7 @@ public class UpdateProjectCommandHandlerTest
                 changes.Any(change => change.Property == "IsArchived" && change.OldValue == "True" && change.NewValue == "False")
             )
         ), Times.Once);
+        _mockLogRepository.VerifyNoOtherCalls();
     }
 
 

@@ -102,7 +102,7 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
         {
             var change = new LogChange
             {
-                Property = "ProjectName",
+                Property = nameof(Project.ProjectName),
                 OldValue = project.ProjectName,
                 NewValue = request.ProjectName
             };
@@ -114,7 +114,7 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
         {
             var change = new LogChange
             {
-                Property = "BusinessUnit",
+                Property = nameof(Project.BusinessUnit),
                 OldValue = project.BusinessUnit,
                 NewValue = request.BusinessUnit
             };
@@ -126,7 +126,7 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
         {
             var change = new LogChange
             {
-                Property = "TeamNumber",
+                Property = nameof(Project.TeamNumber),
                 OldValue = project.TeamNumber.ToString(),
                 NewValue = request.TeamNumber.ToString()
             };
@@ -138,7 +138,7 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
         {
             var change = new LogChange
             {
-                Property = "Department",
+                Property = nameof(Project.Department),
                 OldValue = project.Department,
                 NewValue = request.Department
             };
@@ -150,7 +150,7 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
         {
             var change = new LogChange
             {
-                Property = "ClientName",
+                Property = nameof(Project.ClientName),
                 OldValue = project.ClientName,
                 NewValue = request.ClientName
             };
@@ -164,20 +164,13 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
 
             var change = new LogChange()
             {
-                Property = "IsArchived",
+                Property = nameof(Project.IsArchived),
                 OldValue = project.IsArchived.ToString(),
                 NewValue = request.IsArchived.ToString()
             };
             archivedChanges.Add(change);
 
-            if(!project.IsArchived)
-            {
-                await _logRepository.AddLogForCurrentUser(project.Id, Action.ARCHIVED_PROJECT, archivedChanges);
-            }
-            else
-            {
-                await _logRepository.AddLogForCurrentUser(project.Id, Action.UNARCHIVED_PROJECT, archivedChanges);
-            }
+            await _logRepository.AddLogForCurrentUser(project.Id, request.IsArchived ? Action.ARCHIVED_PROJECT : Action.UNARCHIVED_PROJECT, archivedChanges);
             project.IsArchived = request.IsArchived;
         }
 
