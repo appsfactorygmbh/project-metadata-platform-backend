@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Domain.Logs;
+using ProjectMetadataPlatform.Domain.Projects;
 using ProjectMetadataPlatform.Domain.User;
 using ProjectMetadataPlatform.Infrastructure.DataAccess;
 using static System.DateTimeOffset;
@@ -51,6 +52,31 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
             UserId = user?.Id,
             Action = action,
             ProjectId = projectId,
+            TimeStamp = UtcNow,
+            Changes = changes
+        };
+        _context.Logs.Add(log);
+
+    }
+
+    /// <summary>
+    ///     Adds new log into database. Uses the project object instead of the projectId.
+    /// </summary>
+    /// <param name="project"></param>
+    /// <param name="action"></param>
+    /// <param name="changes"></param>
+    public async Task AddLogForCurrentUser(Project project, Action action, List<LogChange> changes)
+    {
+        var username = _httpContextAccessor.HttpContext?.User.Identity?.Name ?? "Unknown user";
+        User? user = await _usersRepository.GetUserByUserNameAsync(username);
+
+        var log = new Log
+        {
+            Username = username,
+            UserId = user?.Id,
+            Action = action,
+            Project = project,
+            ProjectId = project.Id,
             TimeStamp = UtcNow,
             Changes = changes
         };

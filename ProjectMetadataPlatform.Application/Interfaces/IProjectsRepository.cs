@@ -36,11 +36,11 @@ public interface IProjectsRepository
     Task<Project?> GetProjectWithPluginsAsync(int id);
 
     /// <summary>
-    ///     Saves a project to the database and returns it.
+    ///     Saves a project to the database.
     /// </summary>
     /// <param name="project"></param>
     /// <returns></returns>
-    Task<int> Add(Project project);
+    Task Add(Project project);
 
     /// <summary>
     /// Checks if a project exists.

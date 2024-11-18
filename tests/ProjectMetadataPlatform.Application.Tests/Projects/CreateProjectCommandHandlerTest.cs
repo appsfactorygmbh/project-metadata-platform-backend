@@ -6,6 +6,7 @@ using NUnit.Framework;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Application.Projects;
 using ProjectMetadataPlatform.Domain.Logs;
+using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.Projects;
 
 namespace ProjectMetadataPlatform.Application.Tests.Projects;
@@ -33,26 +34,33 @@ public class CreateProjectCommandHandlerTest
     public async Task CreateProject_Test()
     {
         // prepare
+        var plugins = new List<ProjectPlugins>();
+        plugins.Add(new ProjectPlugins
+        {
+            Url = "http://example.com",
+            PluginId = 200
+        });
         var exampleProject = new Project
         {
             ProjectName = "Example Project",
             BusinessUnit = "Example Business Unit",
             TeamNumber = 1,
             Department = "Example Department",
-            ClientName = "Example Client"
+            ClientName = "Example Client",
+            ProjectPlugins = plugins
         };
-        _mockProjectRepo.Setup(m => m.Add(It.IsAny<Project>())).Callback<Project>(p => p.Id = 1)
-            .Returns(Task<int>.FromResult(1));
+        _mockProjectRepo.Setup(m => m.Add(It.IsAny<Project>())).Callback<Project>(p => p.Id = 1);
+        _mockPluginRepo.Setup(m => m.CheckPluginExists(It.IsAny<int>())).ReturnsAsync(true);
 
         // act
 
         int result =
             await _handler.Handle(
                 new CreateProjectCommand("Example Project", "Example Business Unit", 1, "Example Department",
-                    "Example Client", []), It.IsAny<CancellationToken>());
+                    "Example Client", plugins), It.IsAny<CancellationToken>());
 
         Assert.That(result, Is.EqualTo(1));
-        _mockLogRepo.Verify(m => m.AddLogForCurrentUser(1, Domain.Logs.Action.ADDED_PROJECT,It.IsAny<List<LogChange>>()), Times.Once);
-
+        _mockLogRepo.Verify(m => m.AddLogForCurrentUser(It.IsAny<Project>(), Action.ADDED_PROJECT,It.IsAny<List<LogChange>>()), Times.Once);
+        _mockLogRepo.Verify(m => m.AddLogForCurrentUser(It.IsAny<Project>(), Action.ADDED_PROJECT_PLUGIN, It.IsAny<List<LogChange>>()), Times.Once);
     }
 }

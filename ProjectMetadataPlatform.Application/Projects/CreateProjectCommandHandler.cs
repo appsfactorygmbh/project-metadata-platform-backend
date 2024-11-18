@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using MediatR;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Domain.Logs;
+using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.Projects;
 
 namespace ProjectMetadataPlatform.Application.Projects;
@@ -50,28 +51,28 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
         }
         var project = new Project{ProjectName=request.ProjectName, BusinessUnit=request.BusinessUnit, TeamNumber=request.TeamNumber, Department=request.Department, ClientName=request.ClientName, ProjectPlugins = request.Plugins};
 
-        _ = await _projectsRepository.Add(project);
+        await _projectsRepository.Add(project);
 
         var changes = new List<LogChange>
         {
-            new() { OldValue = "", NewValue = project.ProjectName, Property = "ProjectName" },
-            new() { OldValue = "", NewValue = project.BusinessUnit, Property = "BusinessUnit" },
-            new() { OldValue = "", NewValue = project.Department, Property = "Department" },
-            new() { OldValue = "", NewValue = project.ClientName, Property = "ClientName" },
-            new() { OldValue = "", NewValue = project.TeamNumber.ToString(), Property = "TeamNumber" }
+            new() { OldValue = "", NewValue = project.ProjectName, Property = nameof(Project.ProjectName) },
+            new() { OldValue = "", NewValue = project.BusinessUnit, Property = nameof(Project.BusinessUnit) },
+            new() { OldValue = "", NewValue = project.Department, Property = nameof(Project.Department) },
+            new() { OldValue = "", NewValue = project.ClientName, Property = nameof(Project.ClientName) },
+            new() { OldValue = "", NewValue = project.TeamNumber.ToString(), Property = nameof(Project.TeamNumber) }
         };
-        await _logRepository.AddLogForCurrentUser(project.Id, Domain.Logs.Action.ADDED_PROJECT, changes);
+        await _logRepository.AddLogForCurrentUser(project, Domain.Logs.Action.ADDED_PROJECT, changes);
         foreach (var plugin in project.ProjectPlugins)
         {
             var pluginChanges = new List<LogChange>
             {
-                new() { OldValue = "", NewValue = plugin.Url, Property = "Url" }
+                new() { OldValue = "", NewValue = plugin.Url, Property = nameof(ProjectPlugins.Url) }
             };
             if(plugin.DisplayName != null)
             {
-                pluginChanges.Add(new LogChange { OldValue = "", NewValue = plugin.DisplayName, Property = "DisplayName" });
+                pluginChanges.Add(new LogChange { OldValue = "", NewValue = plugin.DisplayName, Property = nameof(ProjectPlugins.DisplayName) });
             }
-            await _logRepository.AddLogForCurrentUser(project.Id, Domain.Logs.Action.ADDED_PROJECT_PLUGIN, pluginChanges);
+            await _logRepository.AddLogForCurrentUser(project, Domain.Logs.Action.ADDED_PROJECT_PLUGIN, pluginChanges);
         }
         await _unitOfWork.CompleteAsync();
         return project.Id;

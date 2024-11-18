@@ -120,17 +120,14 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     /// </summary>
     /// <param name="project">Project to be saved in the database</param>
     /// <returns>Project is returned</returns>
-    public async Task<int> Add(Project project)
+    public async Task Add(Project project)
     {
 
         if (GetIf(p => p.Id == project.Id).FirstOrDefault() == null)
         {
-            // If we let the database generate the id, we can't use it to log the changes without saving the project first.
-            project.Id = (GetEverything().Max(project1 => (int?) project1.Id) ?? 0) + 1;
             Create(project);
         }
 
-        return project.Id;
     }
 
     /// <summary>
