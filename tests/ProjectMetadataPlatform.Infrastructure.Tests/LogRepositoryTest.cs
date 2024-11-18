@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading.Tasks;
@@ -39,6 +40,7 @@ public class LogRepositoryTest : TestsWithDatabase
         httpContextAccessorMock.Setup(_ => _.HttpContext).Returns(httpContext);
 
         _mockUserRepository = new Mock<IUsersRepository>();
+
         _loggingRepository = new LogRepository(_context, httpContextAccessorMock.Object, _mockUserRepository.Object);
     }
 
@@ -108,7 +110,7 @@ public class LogRepositoryTest : TestsWithDatabase
         _mockUserRepository.Setup(_ => _.GetUserByUserNameAsync("camo")).ReturnsAsync(user);
 
         await _loggingRepository.AddLogForCurrentUser( exampleProject.Id, Action.ADDED_PROJECT, logChanges);
-        await _context.SaveChangesAsync();
+        _context.SaveChanges();
         var dbLog = await _context.Logs.Include(log => log.User).Include(log => log.Project).Include(log => log.Changes)
             .FirstOrDefaultAsync()!;
         Assert.That(dbLog, Is.Not.Null);

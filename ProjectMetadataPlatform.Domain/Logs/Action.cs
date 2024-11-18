@@ -33,5 +33,10 @@ public enum Action
     /// <summary>
     /// Represents the action of archiving a project.
     /// </summary>
-    ARCHIVED_PROJECT
+    ARCHIVED_PROJECT,
+
+    /// <summary>
+    /// Represents the action of unarchiving a project.
+    /// </summary>
+    UNARCHIVED_PROJECT
 }
