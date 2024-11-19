@@ -1,27 +1,22 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ProjectMetadataPlatform.Api.Interfaces;
 using ProjectMetadataPlatform.Api.Logs.Models;
 using ProjectMetadataPlatform.Domain.Logs;
 using Action = ProjectMetadataPlatform.Domain.Logs.Action;
 
 namespace ProjectMetadataPlatform.Api.Logs;
 
-/// <summary>
-/// Provides methods to convert log entries into log responses.
-/// </summary>
-public class LogConverter
+/// <inheritdoc />
+public class LogConverter: ILogConverter
 {
-    /// <summary>
-    /// Builds a log message from a log entry.
-    /// </summary>
-    /// <param name="log">The log entry.</param>
-    /// <returns>A log response containing the message and timestamp.</returns>
-    public static LogResponse BuildLogMessage(Log log)
+    /// <inheritdoc />
+    public LogResponse BuildLogMessage(Log log)
     {
         var message = log.User is { UserName: not null }
             ? log.User.UserName
-            : log.Username != null ? log.Username + "(deleted user)" : "<Deleted User>";
+            : log.Username != null ? log.Username + " (deleted user)" : "<Deleted User>";
 
         message += " " + log.Action switch
         {

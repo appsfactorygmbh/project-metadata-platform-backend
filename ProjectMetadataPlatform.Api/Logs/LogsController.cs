@@ -6,6 +6,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ProjectMetadataPlatform.Api.Interfaces;
 using ProjectMetadataPlatform.Api.Logs.Models;
 using ProjectMetadataPlatform.Application.Logs;
 using ProjectMetadataPlatform.Domain.Logs;
@@ -21,14 +22,17 @@ namespace ProjectMetadataPlatform.Api.Logs;
 public class LogsController: ControllerBase
 {
     private readonly IMediator _mediator;
+    private readonly ILogConverter _converter;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LogsController"/> class.
     /// </summary>
     /// <param name="mediator">The mediator instance for handling requests.</param>
-    public LogsController(IMediator mediator)
+    /// <param name="converter">The log converter instance for converting log entries.</param>
+    public LogsController(IMediator mediator, ILogConverter converter)
     {
         _mediator = mediator;
+        _converter = converter;
     }
 
     /// <summary>
@@ -62,6 +66,6 @@ public class LogsController: ControllerBase
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
 
-        return Ok(logs.Select(LogConverter.BuildLogMessage));
+        return Ok(logs.Select(_converter.BuildLogMessage));
     }
 }
