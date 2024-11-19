@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -21,6 +22,18 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
     private readonly ProjectMetadataPlatformDbContext _context;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IUsersRepository _usersRepository;
+
+    // TODO keep in sync with Action enum and the LogConverter in the Api project
+    private static readonly Dictionary<Action, string> ActionMessages = new()
+    {
+        {Action.ADDED_PROJECT, "created a new project with properties: ,"},
+        {Action.UPDATED_PROJECT, "updated project properties: set from to,"},
+        {Action.ARCHIVED_PROJECT, "archived project"},
+        {Action.UNARCHIVED_PROJECT, "unarchived project"},
+        {Action.ADDED_PROJECT_PLUGIN, "added a plugin to project with properties: = ,"},
+        {Action.UPDATED_PROJECT_PLUGIN, "updated a plugin in project: set from to , "},
+        {Action.REMOVED_PROJECT_PLUGIN, "removed a plugin from project with properties: = ,"}
+    };
 
     /// <summary>
     ///     initialising context and httpContextAccessor to provide user information
@@ -95,9 +108,15 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
     ///  <inheritdoc />
     public async Task<List<Log>> GetLogsWithSearch(string search)
     {
-        var res = _context.Logs.Include(l => l.Changes)
+        var actionsToInclude = ActionMessages.Keys.Where(action => ActionMessages[action].Contains(search)).ToList();
+
+        var res = _context.Logs
+            .Include(l => l.Changes)
+            .Include(l => l.Project)
             .Where(log =>
                 (log.Username != null && log.Username.Contains(search))
+                || actionsToInclude.Contains(log.Action)
+                || (log.Project != null && log.Project.ProjectName.Contains(search))
                 || (log.Changes != null && log.Changes.Any(change =>
                     change.Property.Contains(search)
                     || change.OldValue.Contains(search)

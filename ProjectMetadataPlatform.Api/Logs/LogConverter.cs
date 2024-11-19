@@ -11,6 +11,8 @@ namespace ProjectMetadataPlatform.Api.Logs;
 /// <inheritdoc />
 public class LogConverter: ILogConverter
 {
+    // TODO keep in sync with Action enum and the LogRepository in the Infrastructure project
+
     /// <inheritdoc />
     public LogResponse BuildLogMessage(Log log)
     {
