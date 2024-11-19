@@ -98,6 +98,34 @@ public class GetLogsQueryHandlerTest
     }
 
     [Test]
+    public async Task GetLogs_WithSearch_Test()
+    {
+        var log = new Log
+        {
+            Id = 1,
+            TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
+            UserId = "1",
+            Username = "Derivative",
+            ProjectId = 1,
+            Action = Action.UPDATED_PROJECT,
+            Changes =
+            [
+                new LogChange { Property = "d/dx", OldValue = "exp(x)", NewValue = "exp(x)" }
+            ]
+        };
+
+        _mockLogsRepo.Setup(r => r.GetLogsWithSearch("exp(x)")).ReturnsAsync([log]);
+
+        var result = await _handler.Handle(new GetLogsQuery(null, "exp(x)"), CancellationToken.None);
+        var logList = result.ToList();
+
+        Assert.That(logList, Has.Count.EqualTo(1));
+        Assert.That(logList[0], Is.EqualTo(log));
+
+        _mockLogsRepo.Verify(r => r.GetLogsWithSearch("exp(x)"), Times.Once);
+    }
+
+    [Test]
     public async Task GetLogs_ThrowsExceptionWhenProjectNotFound_Test()
     {
         _mockLogsRepo.Setup(m => m.GetLogsForProject(It.IsAny<int>())).ThrowsAsync(new InvalidOperationException());

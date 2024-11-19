@@ -93,6 +93,20 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
     }
 
     ///  <inheritdoc />
+    public async Task<List<Log>> GetLogsWithSearch(string search)
+    {
+        var res = _context.Logs.Include(l => l.Changes)
+            .Where(log =>
+                (log.Username != null && log.Username.Contains(search))
+                || (log.Changes != null && log.Changes.Any(change =>
+                    change.Property.Contains(search)
+                    || change.OldValue.Contains(search)
+                    || change.NewValue.Contains(search))));
+
+        return SortByTimestamp(await res.ToListAsync());
+    }
+
+    ///  <inheritdoc />
     public async Task<List<Log>> GetAllLogs()
     {
         return SortByTimestamp(await GetEverything()

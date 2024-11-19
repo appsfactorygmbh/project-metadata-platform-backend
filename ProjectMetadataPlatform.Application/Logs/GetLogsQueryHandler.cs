@@ -31,10 +31,19 @@ public class GetLogsQueryHandler: IRequestHandler<GetLogsQuery, IEnumerable<Log>
     /// <returns>A list of log responses.</returns>
     public async Task<IEnumerable<Log>> Handle(GetLogsQuery request, CancellationToken cancellationToken)
     {
-        // TODO reimplement search
-        List<Log> logs = request.ProjectId != null
-            ? await _logRepository.GetLogsForProject((int)request.ProjectId!)
-            : await _logRepository.GetAllLogs();
+        List<Log> logs;
+        if (request.ProjectId != null)
+        {
+            logs = await _logRepository.GetLogsForProject((int)request.ProjectId!);
+        }
+        else if (request.Search != null)
+        {
+            logs = await _logRepository.GetLogsWithSearch(request.Search);
+        }
+        else
+        {
+            logs = await _logRepository.GetAllLogs();
+        }
         return logs;
     }
 }
