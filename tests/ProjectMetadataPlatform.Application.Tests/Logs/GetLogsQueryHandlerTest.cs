@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,7 +7,6 @@ using NUnit.Framework;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Application.Logs;
 using ProjectMetadataPlatform.Domain.Logs;
-using ProjectMetadataPlatform.Domain.Projects;
 using Action = ProjectMetadataPlatform.Domain.Logs.Action;
 
 namespace ProjectMetadataPlatform.Application.Tests.Logs;
@@ -27,210 +25,86 @@ public class GetLogsQueryHandlerTest
     }
 
     [Test]
-    public async Task HandleGetLogs_Test()
+    public async Task GetLogs_ReturnsAllLogs_Test()
     {
         var log = new Log
         {
-            Id = 41,
+            Id = 1,
             TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
-            UserId = "42",
-            Username = "Slartibartfast",
-            ProjectId = 43,
+            UserId = "1",
+            Username = "Zitronenfalter",
+            ProjectId = 1,
             Action = Action.UPDATED_PROJECT,
             Changes =
             [
-                new LogChange() { Property = "Fjords", OldValue = "None", NewValue = "Many" }
+                new LogChange { Property = "Zitrone", OldValue = "Ungefaltet", NewValue = "Gefaltet" }
             ]
         };
         var log2 = new Log
         {
-            Id = 42,
+            Id = 2,
             TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
-            UserId = "43",
-            Username = "Deep Thought",
-            ProjectId = 44,
-            Project = new Project{ProjectName = "Ultimate Question of Life, the Universe and Everything", ClientName = "Mice", BusinessUnit = "", TeamNumber = 1, Department = ""},
-            Action = Action.ARCHIVED_PROJECT,
-        };
-        var log3 = new Log
-        {
-            Id = 43,
-            TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
-            UserId = "44",
-            Username = "Infinite Improbability Drive",
-            ProjectId = 45,
-            Project = new Project{ProjectName = "Atmosphere", ClientName = "", BusinessUnit = "", TeamNumber = 1, Department = ""},
-            Action = Action.ADDED_PROJECT_PLUGIN,
+            UserId = "2",
+            Username = "Halbleiter",
+            ProjectId = 2,
+            Action = Action.UPDATED_PROJECT,
             Changes =
             [
-                new LogChange() { Property = "flyingObjects", OldValue = "", NewValue = "Wale" }
+                new LogChange { Property = "Silizium", OldValue = "rein", NewValue = "dotiert" }
             ]
         };
-        var log4 = new Log
-        {
-            Id = 44,
-            TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
-            UserId = "45",
-            Username = "Ground",
-            ProjectId = 46,
-            Project = new Project{ProjectName = "Wale", ClientName = "", BusinessUnit = "", TeamNumber = 1, Department = ""},
-            Action = Action.UPDATED_PROJECT_PLUGIN,
-            Changes =
-            [
-                new LogChange() { Property = "alive", OldValue = "yes", NewValue = "no" }
-            ]
-        };
-        var log5 = new Log
-        {
-            Id = 45,
-            TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
-            UserId = "46",
-            Username = "Prostetnic Vogon Jeltz",
-            ProjectId = 47,
-            Project = new Project{ProjectName = "Solarsystem", ClientName = "Mice", BusinessUnit = "", TeamNumber = 1, Department = ""},
-            Action = Action.REMOVED_PROJECT_PLUGIN,
-            Changes =
-            [
-                new LogChange() { Property = "Earth", OldValue = "intact", NewValue = "destroyed" }
-            ]
-        };
-        var log6 = new Log
-        {
-            Id = 46,
-            TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
-            UserId = "47",
-            Username = "Earth",
-            ProjectId = 48,
-            Project = new Project{ProjectName = "Ultimate Question of Life, the Universe and Everything", ClientName = "Mice", BusinessUnit = "", TeamNumber = 1, Department = ""},
-            Action = Action.UNARCHIVED_PROJECT,
-        };
 
-        _mockLogsRepo.Setup(m => m.GetAllLogs()).ReturnsAsync([log, log2, log3, log4, log5, log6]);
+        _mockLogsRepo.Setup(r => r.GetAllLogs()).ReturnsAsync([log, log2]);
 
-        var request = new GetLogsQuery();
-        var result = (await _handler.Handle(request, It.IsAny<CancellationToken>())).ToList();
+        var result = await _handler.Handle(new GetLogsQuery(), CancellationToken.None);
+        var logList = result.ToList();
 
-        Assert.That(result, Is.Not.Null);
-        Assert.That(result, Is.InstanceOf<IEnumerable<LogResponse>>());
-        Assert.That(result, Has.Count.EqualTo(6));
-
-        LogResponse logResponse = result.First();
+        Assert.That(logList, Has.Count.EqualTo(2));
         Assert.Multiple(() =>
         {
-            Assert.That(logResponse.LogMessage, Is.EqualTo("Slartibartfast updated project properties:  set Fjords from None to Many"));
-            Assert.That(logResponse.Timestamp, Is.EqualTo("1970-01-01T00:00:00+01:00"));
+            Assert.That(logList[0], Is.EqualTo(log));
+            Assert.That(logList[1], Is.EqualTo(log2));
         });
 
-        logResponse = result[1];
-        Assert.Multiple(() =>
-        {
-            Assert.That(logResponse.LogMessage, Is.EqualTo("Deep Thought archived project Ultimate Question of Life, the Universe and Everything"));
-            Assert.That(logResponse.Timestamp, Is.EqualTo("1970-01-01T00:00:00+01:00"));
-        });
-
-        logResponse = result[2];
-        Assert.Multiple(() =>
-        {
-            Assert.That(logResponse.LogMessage, Is.EqualTo("Infinite Improbability Drive added a new plugin to project Atmosphere with properties: flyingObjects = Wale"));
-            Assert.That(logResponse.Timestamp, Is.EqualTo("1970-01-01T00:00:00+01:00"));
-        });
-
-        logResponse = result[3];
-        Assert.Multiple(() =>
-        {
-            Assert.That(logResponse.LogMessage, Is.EqualTo("Ground updated plugin properties in project Wale:  set alive from yes to no"));
-            Assert.That(logResponse.Timestamp, Is.EqualTo("1970-01-01T00:00:00+01:00"));
-        });
-
-        logResponse = result[4];
-        Assert.Multiple(() =>
-        {
-            Assert.That(logResponse.LogMessage, Is.EqualTo("Prostetnic Vogon Jeltz removed a plugin from project Solarsystem with properties: Earth = destroyed"));
-            Assert.That(logResponse.Timestamp, Is.EqualTo("1970-01-01T00:00:00+01:00"));
-        });
-
-        logResponse = result[5];
-        Assert.Multiple(() =>
-        {
-            Assert.That(logResponse.LogMessage, Is.EqualTo("Earth unarchived project Ultimate Question of Life, the Universe and Everything"));
-            Assert.That(logResponse.Timestamp, Is.EqualTo("1970-01-01T00:00:00+01:00"));
-        });
-
-        _mockLogsRepo.Verify(m => m.GetAllLogs(), Times.Once);
+        _mockLogsRepo.Verify(r => r.GetAllLogs(), Times.Once);
     }
 
     [Test]
-    public async Task HandleGetLogs_ForProject_Test()
+    public async Task GetLogs_ReturnsAllLogsForProject_Test()
     {
-        _mockLogsRepo.Setup(m => m.GetLogsForProject(It.IsAny<int>())).ReturnsAsync([]);
+        var log = new Log
+        {
+            Id = 1,
+            TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
+            UserId = "1",
+            Username = "Zitronenfalter",
+            ProjectId = 1,
+            Action = Action.UPDATED_PROJECT,
+            Changes =
+            [
+                new LogChange { Property = "Zitrone", OldValue = "Ungefaltet", NewValue = "Gefaltet" }
+            ]
+        };
 
-        var request = new GetLogsQuery(42);
-        var result = (await _handler.Handle(request, It.IsAny<CancellationToken>())).ToList();
+        _mockLogsRepo.Setup(r => r.GetLogsForProject(1)).ReturnsAsync([log]);
 
-        Assert.That(result, Is.Not.Null);
-        Assert.That(result, Is.InstanceOf<IEnumerable<LogResponse>>());
-        Assert.That(result, Has.Count.EqualTo(0));
+        var result = await _handler.Handle(new GetLogsQuery(1), CancellationToken.None);
+        var logList = result.ToList();
 
-        _mockLogsRepo.Verify(m => m.GetLogsForProject(42), Times.Once);
+        Assert.That(logList, Has.Count.EqualTo(1));
+        Assert.That(logList[0], Is.EqualTo(log));
+
+        _mockLogsRepo.Verify(r => r.GetLogsForProject(1), Times.Once);
     }
 
     [Test]
-    public async Task HandleGetLogs_ForProjectNotFound_Test()
+    public async Task GetLogs_ThrowsExceptionWhenProjectNotFound_Test()
     {
         _mockLogsRepo.Setup(m => m.GetLogsForProject(It.IsAny<int>())).ThrowsAsync(new InvalidOperationException());
 
-        var request = new GetLogsQuery(42);
+        var request = new GetLogsQuery(404);
         Assert.ThrowsAsync<InvalidOperationException>(async () => await _handler.Handle(request, It.IsAny<CancellationToken>()));
 
-        _mockLogsRepo.Verify(m => m.GetLogsForProject(42), Times.Once);
-    }
-
-    [Test]
-    public async Task HandleGetLogs_ApplySearch_Test()
-    {
-        var log = new Log
-        {
-            Id = 41,
-            TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
-            UserId = "42",
-            Username = "Slartibartfast",
-            ProjectId = 43,
-            Action = Action.UPDATED_PROJECT,
-            Changes =
-            [
-                new LogChange() { Property = "Fjords", OldValue = "None", NewValue = "Many" }
-            ]
-        };
-
-        var log2 = new Log
-        {
-            Id = 42,
-            TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
-            UserId = "43",
-            Username = "Zaphod Beeblebrox",
-            ProjectId = 44,
-            Action = Action.ADDED_PROJECT,
-            Changes =
-            [
-                new LogChange() { Property = "ProjectName", OldValue = "", NewValue = "Heart Of Gold" },
-                new LogChange() { Property = "InfiniteImprobabilityDrive", OldValue = "", NewValue = "Yes" }
-            ]
-        };
-
-        _mockLogsRepo.Setup(m => m.GetAllLogs()).ReturnsAsync([log, log2]);
-
-        var request = new GetLogsQuery(null, "gold");
-        var result = (await _handler.Handle(request, It.IsAny<CancellationToken>())).ToList();
-
-        Assert.That(result, Is.Not.Null);
-        Assert.That(result, Is.InstanceOf<IEnumerable<LogResponse>>());
-        Assert.That(result, Has.Count.EqualTo(1));
-
-        LogResponse logResponse = result.First();
-        Assert.Multiple(() =>
-        {
-            Assert.That(logResponse.LogMessage, Is.EqualTo("Zaphod Beeblebrox created a new project with properties: ProjectName = Heart Of Gold, InfiniteImprobabilityDrive = Yes"));
-            Assert.That(logResponse.Timestamp, Is.EqualTo("1970-01-01T00:00:00+01:00"));
-        });
+        _mockLogsRepo.Verify(m => m.GetLogsForProject(404), Times.Once);
     }
 }
