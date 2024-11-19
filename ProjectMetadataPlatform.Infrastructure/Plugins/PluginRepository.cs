@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,7 +20,7 @@ public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
     /// <param name="context"></param>
     public PluginRepository(ProjectMetadataPlatformDbContext context): base(context)
     {
-        _context = context;
+        _context = context ?? throw new ArgumentNullException(nameof(context));
     }
     private readonly ProjectMetadataPlatformDbContext _context;
 
@@ -31,6 +32,18 @@ public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
     public async Task<List<ProjectPlugins>> GetAllPluginsForProjectIdAsync(int id)
     {
         return [.. _context.ProjectPluginsRelation.Where(rel => rel.ProjectId == id).Include(rel => rel.Plugin)];
+    }
+
+    /// <summary>
+    ///     Gets all unarchived plugins for a given project id from database.
+    /// <param name="id">selects the project</param>
+    /// <returns>The data received by the database.</returns>
+    public async Task<List<ProjectPlugins>> GetAllUnarchivedPluginsForProjectIdAsync(int id)
+    {
+        return await _context.ProjectPluginsRelation
+            .Where(rel => rel.ProjectId == id && rel.Plugin != null && !rel.Plugin.IsArchived)
+            .Include(rel => rel.Plugin)
+            .ToListAsync();
     }
 
     /// <summary>

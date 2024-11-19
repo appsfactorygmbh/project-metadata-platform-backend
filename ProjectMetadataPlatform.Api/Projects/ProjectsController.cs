@@ -137,6 +137,40 @@ public class ProjectsController : ControllerBase
     }
 
     /// <summary>
+    ///     Gets all the unarchived plugins of the project with the given id.
+    /// </summary>
+    /// <param name="id">The id of the project.</param>
+    /// <returns>The unarchived plugins of the project.</returns>
+    /// <response code="200">All unarchived plugins of the project are returned successfully.</response>
+    /// <response code="500">An internal error occurred.</response>
+    [HttpGet("{id:int}/unarchivedPlugins")]
+    public async Task<ActionResult<IEnumerable<GetPluginResponse>>> GetUnarchivedPlugins(int id)
+    {
+        var query = new GetAllUnarchivedPluginsForProjectIdQuery(id);
+        IEnumerable<ProjectPlugins> unarchivedProjectPlugins;
+        try
+        {
+            unarchivedProjectPlugins = await _mediator.Send(query);
+        }
+        catch
+        {
+            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+        }
+
+        IEnumerable<GetPluginResponse> response = unarchivedProjectPlugins
+            .Where(plugin => plugin.Plugin != null)
+            .Select(plugin => new GetPluginResponse(
+                plugin.Plugin!.PluginName,
+                plugin.Url,
+                plugin.DisplayName ?? plugin.Plugin.PluginName,
+                plugin.Plugin.Id
+            ));
+
+
+        return Ok(response);
+    }
+
+    /// <summary>
     ///     Creates a new project or updates the one with given id.
     /// </summary>
     /// <param name="project">The data of the new project.</param>
