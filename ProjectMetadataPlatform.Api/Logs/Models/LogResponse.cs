@@ -1,4 +1,4 @@
-namespace ProjectMetadataPlatform.Application.Logs;
+namespace ProjectMetadataPlatform.Api.Logs.Models;
 
 /// <summary>
 /// Represents a response containing a log message and its timestamp.

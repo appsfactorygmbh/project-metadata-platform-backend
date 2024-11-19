@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ProjectMetadataPlatform.Api.Logs.Models;
 using ProjectMetadataPlatform.Application.Logs;
+using ProjectMetadataPlatform.Domain.Logs;
 
 namespace ProjectMetadataPlatform.Api.Logs;
 
@@ -37,13 +40,13 @@ public class LogsController: ControllerBase
     /// <response code="200">Returns the list of log responses.</response>
     /// <response code="404">Not Project with the given id was found.</response>
     /// <response code="500">If an error occurs while processing the request.</response>
-    [HttpGet("{projectId:int}")]
     [HttpGet]
+    [HttpGet("{projectId:int}")]
     public async Task<ActionResult<IEnumerable<LogResponse>>> Get(int? projectId, string? search)
     {
         var query = new GetLogsQuery(projectId, search);
 
-        IEnumerable<LogResponse> logs;
+        IEnumerable<Log> logs;
 
         try
         {
@@ -59,6 +62,6 @@ public class LogsController: ControllerBase
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
 
-        return Ok(logs);
+        return Ok(logs.Select(LogConverter.BuildLogMessage));
     }
 }
