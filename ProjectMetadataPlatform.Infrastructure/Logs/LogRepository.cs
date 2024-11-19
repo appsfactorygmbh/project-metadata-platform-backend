@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -68,7 +67,7 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
             TimeStamp = UtcNow,
             Changes = changes
         };
-        _context.Logs.Add(log);
+        _ = _context.Logs.Add(log);
 
     }
 
@@ -94,7 +93,6 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
             Changes = changes
         };
         _context.Logs.Add(log);
-
     }
 
     ///  <inheritdoc />
