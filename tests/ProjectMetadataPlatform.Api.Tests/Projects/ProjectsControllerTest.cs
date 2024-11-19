@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -330,5 +331,97 @@ public class ProjectsControllerTest
             Assert.That(response, Is.Not.Null);
             Assert.That(response, Is.Empty);
         }));
+    }
+
+    [Test]
+    public async Task GetUnarchivedPlugins_ReturnsOkWithPlugins()
+    {
+        var plugin = new Plugin { Id = 1, PluginName = "plugin 1" };
+        var responseContent = new List<ProjectPlugins>
+        {
+            new() { ProjectId = 1, PluginId = 1, Plugin = plugin, DisplayName = "Gitlab", Url = "Plugin1.com" }
+        };
+
+        _mediator.Setup(m => m.Send(It.IsAny<GetAllUnarchivedPluginsForProjectIdQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(responseContent);
+
+        var result = await _controller.GetUnarchivedPlugins(1);
+
+        Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
+
+        var okResult = result.Result as OkObjectResult;
+        Assert.Multiple(() =>
+        {
+            Assert.That(okResult!.Value, Is.Not.Null);
+            Assert.That(okResult.Value, Is.InstanceOf<IEnumerable<GetPluginResponse>>());
+        });
+
+        var resultValue = (okResult?.Value as IEnumerable<GetPluginResponse>)!.ToList();
+        Assert.That(resultValue, Has.Count.EqualTo(1));
+
+        var resultObj = resultValue[0];
+        Assert.Multiple(() =>
+        {
+            Assert.That(resultObj.Url, Is.EqualTo("Plugin1.com"));
+            Assert.That(resultObj.PluginName, Is.EqualTo("plugin 1"));
+            Assert.That(resultObj.DisplayName, Is.EqualTo("Gitlab"));
+        });
+    }
+
+    [Test]
+    public async Task GetUnarchivedPlugins_WhenMediatorThrows_Returns500()
+    {
+        _mediator.Setup(m => m.Send(It.IsAny<GetAllUnarchivedPluginsForProjectIdQuery>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new Exception("Database error"));
+
+        var result = await _controller.GetUnarchivedPlugins(1);
+
+        Assert.That(result.Result, Is.InstanceOf<StatusCodeResult>());
+
+        var statusCodeResult = result.Result as StatusCodeResult;
+        Assert.That(statusCodeResult!.StatusCode, Is.EqualTo(StatusCodes.Status500InternalServerError));
+    }
+
+    [Test]
+    public async Task GetUnarchivedPlugins_WhenNoPlugins_ReturnsOkWithEmptyList()
+    {
+        var responseContent = new List<ProjectPlugins>(); // No plugins
+        _mediator.Setup(m => m.Send(It.IsAny<GetAllUnarchivedPluginsForProjectIdQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(responseContent);
+
+        var result = await _controller.GetUnarchivedPlugins(1);
+
+        Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
+
+        var okResult = result.Result as OkObjectResult;
+        Assert.Multiple(() =>
+        {
+            Assert.That(okResult!.Value, Is.Not.Null);
+            Assert.That(okResult.Value, Is.InstanceOf<IEnumerable<GetPluginResponse>>());
+        });
+
+        var resultValue = (okResult?.Value as IEnumerable<GetPluginResponse>)!.ToList();
+        Assert.That(resultValue, Is.Empty);
+    }
+
+    [Test]
+    public async Task GetUnarchivedPlugins_WhenPluginIsNull_SkipsNullValues()
+    {
+        var responseContent = new List<ProjectPlugins>
+        {
+            new() { ProjectId = 1, PluginId = 1, Plugin = null, DisplayName = "Gitlab", Url = "Plugin1.com" }
+        };
+
+        _mediator.Setup(m => m.Send(It.IsAny<GetAllUnarchivedPluginsForProjectIdQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(responseContent);
+
+        var result = await _controller.GetUnarchivedPlugins(1);
+
+        Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
+
+        var okResult = result.Result as OkObjectResult;
+        var resultValue = (okResult?.Value as IEnumerable<GetPluginResponse>)!.ToList();
+
+        Assert.That(resultValue, Is.Empty);
     }
 }
