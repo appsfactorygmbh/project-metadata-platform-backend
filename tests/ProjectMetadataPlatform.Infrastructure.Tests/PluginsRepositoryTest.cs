@@ -176,7 +176,6 @@ public class PluginsRepositoryTest : TestsWithDatabase
     [Test]
     public async Task GetAllUnarchivedPluginsForProjectIdAsync_ShouldReturnOnlyUnarchivedPlugins()
     {
-        // Arrange
         var project = new Project
         {
             Id = 1,
@@ -202,15 +201,12 @@ public class PluginsRepositoryTest : TestsWithDatabase
         _context.ProjectPluginsRelation.AddRange(projectPluginRelation1, projectPluginRelation2);
         await _context.SaveChangesAsync();
 
-        // Act
         var result = await _repository.GetAllUnarchivedPluginsForProjectIdAsync(1);
 
-        // Assert
         Assert.That(result, Has.Count.EqualTo(1)); // Only unarchived plugins should be returned
         Assert.That(result[0].Plugin.PluginName, Is.EqualTo("Unarchived Plugin"));
     }
 
-    // Test Case 2: Should return an empty list when no unarchived plugins exist for the project.
     [Test]
     public async Task GetAllUnarchivedPluginsForProjectIdAsync_ShouldReturnEmptyWhenNoUnarchivedPlugins()
     {
@@ -233,14 +229,11 @@ public class PluginsRepositoryTest : TestsWithDatabase
         _context.ProjectPluginsRelation.Add(projectPluginRelation);
         await _context.SaveChangesAsync();
 
-        // Act
         var result = await _repository.GetAllUnarchivedPluginsForProjectIdAsync(1);
 
-        // Assert
         Assert.That(result, Is.Empty); // No unarchived plugins should be returned
     }
 
-    // Test Case 3: Should return an empty list when there are no plugins associated with the project.
     [Test]
     public async Task GetAllUnarchivedPluginsForProjectIdAsync_ShouldReturnEmptyWhenNoPluginsForProject()
     {
@@ -256,14 +249,11 @@ public class PluginsRepositoryTest : TestsWithDatabase
         _context.Projects.Add(project);
         await _context.SaveChangesAsync();
 
-        // Act
         var result = await _repository.GetAllUnarchivedPluginsForProjectIdAsync(1);
 
-        // Assert
         Assert.That(result, Is.Empty); // No plugins should be associated with the project
     }
 
-    // Test Case 4: Should return empty list when all plugins are archived.
     [Test]
     public async Task GetAllUnarchivedPluginsForProjectIdAsync_ShouldReturnEmptyWhenAllPluginsAreArchived()
     {
@@ -293,7 +283,6 @@ public class PluginsRepositoryTest : TestsWithDatabase
         Assert.That(result, Is.Empty); // All plugins are archived, so no results
     }
 
-    // Test Case 5: Should return the correct plugin(s) when there is a mix of archived and unarchived plugins.
     [Test]
     public async Task GetAllUnarchivedPluginsForProjectIdAsync_ShouldReturnOnlyUnarchivedWhenMixOfArchivedAndUnarchived()
     {
@@ -321,15 +310,12 @@ public class PluginsRepositoryTest : TestsWithDatabase
         _context.ProjectPluginsRelation.AddRange(projectPluginRelation1, projectPluginRelation2);
         await _context.SaveChangesAsync();
 
-        // Act
         var result = await _repository.GetAllUnarchivedPluginsForProjectIdAsync(1);
 
-        // Assert
         Assert.That(result, Has.Count.EqualTo(1)); // Only unarchived plugins should be returned
         Assert.That(result[0].Plugin.PluginName, Is.EqualTo("Unarchived Plugin"));
     }
 
-    // Test Case 6: Should return plugins that are not archived, but ensure the plugins belong to the specified project.
     [Test]
     public async Task GetAllUnarchivedPluginsForProjectIdAsync_ShouldReturnPluginsBelongingToTheSpecifiedProject()
     {
@@ -367,26 +353,20 @@ public class PluginsRepositoryTest : TestsWithDatabase
         _context.ProjectPluginsRelation.AddRange(projectPluginRelation1, projectPluginRelation2);
         await _context.SaveChangesAsync();
 
-        // Act
         var result = await _repository.GetAllUnarchivedPluginsForProjectIdAsync(1);
 
-        // Assert
         Assert.That(result, Has.Count.EqualTo(1)); // Only the plugin for project 1 should be returned
         Assert.That(result[0].Plugin.PluginName, Is.EqualTo("Unarchived Plugin"));
     }
 
-    // Test Case 7: Should throw an exception when the database context is unavailable or invalid.
     [Test]
     public void GetAllUnarchivedPluginsForProjectIdAsync_ShouldThrowExceptionWhenDbContextIsNull()
     {
-        // Act & Assert
         var exception = Assert.Throws<ArgumentNullException>(() =>
         {
-            // The exception should be thrown during repository creation
             var repository = new PluginRepository(null);
         });
 
-        // Assert: Check the parameter name in the exception
         Assert.That(exception.ParamName, Is.EqualTo("context"));
     }
 }

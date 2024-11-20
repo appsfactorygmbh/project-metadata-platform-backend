@@ -11,6 +11,7 @@ using ProjectMetadataPlatform.Api.Plugins.Models;
 using ProjectMetadataPlatform.Api.Projects.Models;
 using ProjectMetadataPlatform.Application.Plugins;
 using ProjectMetadataPlatform.Application.Projects;
+using ProjectMetadataPlatform.Domain.Logs;
 using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.Projects;
 
@@ -26,14 +27,13 @@ namespace ProjectMetadataPlatform.Api.Projects;
 public class ProjectsController : ControllerBase
 {
     private readonly IMediator _mediator;
-    private readonly ILogger<ProjectsController> _logger;
+
     /// <summary>
     ///     Creates a new instance of the <see cref="ProjectsController" /> class.
     /// </summary>
-    public ProjectsController(IMediator mediator, ILogger<ProjectsController> logger)
+    public ProjectsController(IMediator mediator)
     {
         _mediator = mediator;
-        _logger = logger;
     }
 
     /// <summary>
@@ -156,19 +156,12 @@ public class ProjectsController : ControllerBase
         try
         {
             unarchivedProjectPlugins = await _mediator.Send(query);
-
-            if (!unarchivedProjectPlugins.Any())
-            {
-                _logger.LogWarning("Project with ID {ProjectId} not found when fetching unarchived plugins", id);
-                return NotFound($"Project with ID {id} not found");
-            }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error occurred while fetching unarchived plugins for project {ProjectId}", id);
+            Console.WriteLine($"Error: Failed to fetch unarchived plugins for project {id}. Exception: {ex.Message}");
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
-
 
         IEnumerable<GetPluginResponse> response = unarchivedProjectPlugins
             .Where(plugin => plugin.Plugin != null)
