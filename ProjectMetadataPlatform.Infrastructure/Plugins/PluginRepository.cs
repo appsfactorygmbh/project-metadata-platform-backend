@@ -44,12 +44,9 @@ public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
     public async Task<List<ProjectPlugins>> GetAllUnarchivedPluginsForProjectIdAsync(int id)
     {
         var project = await _context.Projects
-            .FirstOrDefaultAsync(p => p.Id == id);
+            .FirstOrDefaultAsync(p => p.Id == id)
+                      ?? throw new ArgumentException($"Project with Id {id} does not exist.");
 
-        if (project == null)
-        {
-            throw new ArgumentException($"Project with Id {id} does not exist.");
-        }
         return await _context.ProjectPluginsRelation
             .Where(rel => rel.ProjectId == id && rel.Plugin != null && !rel.Plugin.IsArchived)
             .Include(rel => rel.Plugin)
@@ -65,14 +62,14 @@ public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
     {
         if (plugin.Id == 0)
         {
-            _context.Plugins.Add(plugin);
+            _ = _context.Plugins.Add(plugin);
         }
         else
         {
             Update(plugin);
         }
 
-        await _context.SaveChangesAsync();
+        _ = await _context.SaveChangesAsync();
 
         return plugin;
     }
