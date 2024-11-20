@@ -201,7 +201,7 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
                     b.Property<string>("UserId")
                         .HasColumnType("text");
 
-                    b.Property<string>("Username")
+                    b.Property<string>("Email")
                         .HasColumnType("text");
 
                     b.HasKey("Id");

@@ -50,4 +50,6 @@ public interface IUsersRepository
     /// <param name="user">The user to be deleted.</param>
     /// <returns>The deleted user.</returns>
     Task<User>DeleteUserAsync(User user);
+
+    Task<User?> GetUserByEmailAsync(string email);
 }

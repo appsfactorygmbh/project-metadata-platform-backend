@@ -25,9 +25,9 @@ public class Log
     public required string? UserId { get; set; }
 
     /// <summary>
-    ///     the Username of the user taking action
+    ///     the Email of the user taking action
     /// </summary>
-    public required string? Username { get; set; }
+    public required string? Email { get; set; }
 
     /// <summary>
     ///     The TImeStamp when the action was taken

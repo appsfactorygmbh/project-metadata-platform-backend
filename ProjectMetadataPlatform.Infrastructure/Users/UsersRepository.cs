@@ -111,4 +111,8 @@ public class UsersRepository : RepositoryBase<User>, IUsersRepository
         var task = await _userManager.DeleteAsync(user);
         return !task.Succeeded ? throw new ArgumentException("User deletion failed. With id " + user.Id + task) : user;
     }
+    public Task<User?> GetUserByEmailAsync(string email)
+    {
+        return _userManager.FindByEmailAsync(email);
+    }
 }
