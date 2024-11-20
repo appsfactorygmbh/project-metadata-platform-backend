@@ -424,4 +424,23 @@ public class ProjectsControllerTest
 
         Assert.That(resultValue, Is.Empty);
     }
+
+    [Test]
+    public async Task GetUnarchivedPlugins_ReturnsNotFound_WhenProjectDoesNotExist()
+    {
+        var nonExistentProjectId = 999;  // Assuming this project ID doesn't exist
+
+        _mediator.Setup(m => m.Send(It.Is<GetAllUnarchivedPluginsForProjectIdQuery>(x => x.Id == nonExistentProjectId), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new ArgumentException($"Project with Id {nonExistentProjectId} not found."));  // Throw exception for non-existent project
+
+        var result = await _controller.GetUnarchivedPlugins(nonExistentProjectId);
+
+        Assert.That(result.Result, Is.InstanceOf<NotFoundObjectResult>());  // Check if the response is 404 (NotFound)
+
+        var notFoundResult = result.Result as NotFoundObjectResult;
+        Assert.That(notFoundResult!.StatusCode, Is.EqualTo(404));  // Assert that the status code is 404
+        Assert.That(notFoundResult.Value, Is.EqualTo($"Project with Id {nonExistentProjectId} not found."));  // Ensure the correct message is returned
+    }
+
+
 }

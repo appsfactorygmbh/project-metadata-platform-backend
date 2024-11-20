@@ -369,4 +369,21 @@ public class PluginsRepositoryTest : TestsWithDatabase
 
         Assert.That(exception.ParamName, Is.EqualTo("context"));
     }
+
+    [Test]
+    public async Task TestGetPluginsForNonExistentProjectThrowsException()
+    {
+        int nonExistentProjectId = 999;
+
+        ArgumentException ex = Assert.ThrowsAsync<ArgumentException>(async () =>
+        {
+            await _repository.GetAllUnarchivedPluginsForProjectIdAsync(nonExistentProjectId);
+        });
+
+        Assert.That(ex.Message, Is.EqualTo("Project with Id 999 does not exist."));
+    }
+
+
+
+
 }

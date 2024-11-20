@@ -12,7 +12,7 @@ using ProjectMetadataPlatform.Domain.Projects;
 
 namespace ProjectMetadataPlatform.Application.Tests.Plugins;
 
-public class GetAllUnarchivedPluginsForProjectIdQueryTest
+public class GetAllUnarchivedPluginsForProjectIdQueryHandlerTest
 {
     private GetAllUnarchivedPluginsForProjectIdQueryHandler _handler;
     private Mock<IPluginRepository> _pluginRepositoryMock;
@@ -27,7 +27,6 @@ public class GetAllUnarchivedPluginsForProjectIdQueryTest
     [Test]
     public async Task Handle_WhenUnarchivedPluginsExist_ReturnsPlugins()
     {
-        // Arrange
         var plugins = new List<ProjectPlugins>
         {
             new()
@@ -54,7 +53,6 @@ public class GetAllUnarchivedPluginsForProjectIdQueryTest
         var query = new GetAllUnarchivedPluginsForProjectIdQuery(1);
         var result = await _handler.Handle(query, It.IsAny<CancellationToken>());
 
-        // Assert
         Assert.That(result, Is.Not.Null);
         Assert.That(result, Has.Count.EqualTo(2)); // Expecting two unarchived plugins
         Assert.That(result[0].Plugin.PluginName, Is.EqualTo("Plugin 1"));
@@ -66,7 +64,6 @@ public class GetAllUnarchivedPluginsForProjectIdQueryTest
     [Test]
     public async Task Handle_WhenNoUnarchivedPluginsExist_ReturnsEmptyList()
     {
-        // Arrange
         var plugins = new List<ProjectPlugins>(); // No plugins found
         _pluginRepositoryMock.Setup(r => r.GetAllUnarchivedPluginsForProjectIdAsync(1))
             .ReturnsAsync(plugins);
@@ -74,7 +71,6 @@ public class GetAllUnarchivedPluginsForProjectIdQueryTest
         var query = new GetAllUnarchivedPluginsForProjectIdQuery(1);
         var result = await _handler.Handle(query, It.IsAny<CancellationToken>());
 
-        // Assert
         Assert.That(result, Is.Not.Null);
         Assert.That(result, Has.Count.EqualTo(0)); // Expecting an empty list
     }
@@ -82,38 +78,31 @@ public class GetAllUnarchivedPluginsForProjectIdQueryTest
     [Test]
     public async Task Handle_WhenRepositoryReturnsNull_ReturnsNull()
     {
-        // Arrange
         _pluginRepositoryMock.Setup(r => r.GetAllUnarchivedPluginsForProjectIdAsync(1))
             .ReturnsAsync((List<ProjectPlugins>)null); // Simulating null return from repository
 
         var query = new GetAllUnarchivedPluginsForProjectIdQuery(1);
         var result = await _handler.Handle(query, It.IsAny<CancellationToken>());
 
-        // Assert
         Assert.That(result, Is.Null); // The result should be null
     }
 
     [Test]
     public async Task Handle_WhenCancellationTokenIsTriggered_AbortsOperation()
     {
-        // Arrange
         var cancellationTokenSource = new CancellationTokenSource();
         cancellationTokenSource.Cancel(); // Trigger cancellation immediately
 
         var query = new GetAllUnarchivedPluginsForProjectIdQuery(1);
 
-        // Simulate that the repository doesn't matter in this case because the operation will be cancelled
         _pluginRepositoryMock.Setup(r => r.GetAllUnarchivedPluginsForProjectIdAsync(1))
             .ReturnsAsync(new List<ProjectPlugins>());
 
-        // Act & Assert
-        // The handler should throw an OperationCanceledException when cancellation is triggered
         var ex = Assert.ThrowsAsync<OperationCanceledException>(async () =>
         {
             await _handler.Handle(query, cancellationTokenSource.Token);
         });
 
-        // Assert that the exception is of the expected type
         Assert.That(ex, Is.InstanceOf<OperationCanceledException>());
     }
 
@@ -122,7 +111,6 @@ public class GetAllUnarchivedPluginsForProjectIdQueryTest
     [Test]
     public async Task Handle_WhenSomePluginsAreArchived_ReturnsOnlyUnarchivedPlugins()
     {
-        // Arrange
         var plugins = new List<ProjectPlugins>
         {
             new()
@@ -143,16 +131,29 @@ public class GetAllUnarchivedPluginsForProjectIdQueryTest
             }
         };
 
-        // Ensure the mock only returns unarchived plugins for project ID 1
         _pluginRepositoryMock.Setup(r => r.GetAllUnarchivedPluginsForProjectIdAsync(1))
             .ReturnsAsync(plugins.Where(p => !p.Plugin.IsArchived).ToList());
 
         var query = new GetAllUnarchivedPluginsForProjectIdQuery(1);
         var result = await _handler.Handle(query, It.IsAny<CancellationToken>());
 
-        // Assert that the result contains only 1 unarchived plugin
         Assert.That(result, Has.Count.EqualTo(1)); // Only one unarchived plugin should be returned
         Assert.That(result[0].Plugin.PluginName, Is.EqualTo("Plugin 1")); // Assert the unarchived plugin is "Plugin 1"
     }
 
+    [Test]
+    public async Task Handle_WhenProjectDoesNotExist_ThrowsArgumentException()
+    {
+        _pluginRepositoryMock.Setup(r => r.GetAllUnarchivedPluginsForProjectIdAsync(It.IsAny<int>()))
+            .ThrowsAsync(new ArgumentException("Project with Id 999 does not exist."));
+
+        var query = new GetAllUnarchivedPluginsForProjectIdQuery(999); // Non-existent project ID
+
+        var ex = Assert.ThrowsAsync<ArgumentException>(async () =>
+        {
+            await _handler.Handle(query, It.IsAny<CancellationToken>());
+        });
+
+        Assert.That(ex.Message, Is.EqualTo("Project with Id 999 does not exist."));
+    }
 }

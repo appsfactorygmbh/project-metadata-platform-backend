@@ -6,12 +6,10 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using ProjectMetadataPlatform.Api.Plugins.Models;
 using ProjectMetadataPlatform.Api.Projects.Models;
 using ProjectMetadataPlatform.Application.Plugins;
 using ProjectMetadataPlatform.Application.Projects;
-using ProjectMetadataPlatform.Domain.Logs;
 using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.Projects;
 
@@ -157,9 +155,14 @@ public class ProjectsController : ControllerBase
         {
             unarchivedProjectPlugins = await _mediator.Send(query);
         }
+        catch(ArgumentException ex)
+        {
+            Console.WriteLine(ex.Message);
+            return NotFound($"Project with Id {id} not found.");
+        }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error: Failed to fetch unarchived plugins for project {id}. Exception: {ex.Message}");
+            Console.WriteLine(ex.Message);
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
 
