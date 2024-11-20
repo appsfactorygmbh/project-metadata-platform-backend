@@ -37,7 +37,7 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
         {Action.REMOVED_USER, "removed user"},
         {Action.REMOVED_PROJECT, "removed project"},
         {Action.ADDED_GLOBAL_PLUGIN, "added a new global plugin with properties: = ,"},
-        {Action.UPDATED_PROJECT_PLUGIN, "updated global plugin properties: set from to , "},
+        {Action.UPDATED_GLOBAL_PLUGIN, "updated global plugin properties: set from to , "},
         {Action.ARCHIVED_GLOBAL_PLUGIN, "archived global plugin"},
         {Action.UNARCHIVED_GLOBAL_PLUGIN, "unarchived global plugin"},
         {Action.REMOVED_GLOBAL_PLUGIN, "removed global plugin"},
