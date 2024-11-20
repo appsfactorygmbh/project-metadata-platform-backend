@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
+using ProjectMetadataPlatform.Api;
 using ProjectMetadataPlatform.Application;
 using ProjectMetadataPlatform.Infrastructure;
 using ProjectMetadataPlatform.Api.Swagger;
@@ -43,6 +44,7 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 builder.Services
+    .AddApiDependencies()
     .AddApplicationDependencies()
     .AddInfrastructureDependencies();
 

@@ -243,4 +243,144 @@ public class LogRepositoryTest : TestsWithDatabase
 
         Assert.That(logs, Has.Count.EqualTo(2));
     }
+
+    [Test]
+    public async Task GetLogsWithSearch_Test()
+    {
+        var exampleLog1 = new Log
+        {
+            Id = 1,
+            UserId = null,
+            Username = "camo",
+            TimeStamp = DateTimeOffset.UtcNow,
+            ProjectId = 301,
+            Action = Action.ADDED_PROJECT,
+            Changes =
+            [
+                new LogChange { OldValue = "", NewValue = "Example Project", Property = "ProjectName" }
+            ]
+        };
+
+        var exampleProject1 = new Project
+        {
+            ProjectName = "Example Project",
+            BusinessUnit = "Example Business Unit",
+            TeamNumber = 1,
+            Department = "Example Department",
+            ClientName = "Example Client",
+            Logs = new List<Log> { exampleLog1 }
+        };
+
+        var exampleLog2 = new Log
+        {
+            Id = 2,
+            UserId = null,
+            Username = "someUserName",
+            TimeStamp = DateTimeOffset.UtcNow,
+            ProjectId = 302,
+            Action = Action.UPDATED_PROJECT,
+            Changes =
+            [
+                new LogChange { OldValue = "Example Project", NewValue = "Another Project", Property = "ProjectName" }
+            ]
+        };
+
+        var exampleProject2 = new Project
+        {
+            ProjectName = "Another Project",
+            BusinessUnit = "Example Business Unit",
+            TeamNumber = 1,
+            Department = "Example Department",
+            ClientName = "Example Client",
+            Logs = new List<Log> { exampleLog2 }
+        };
+        await _context.Projects.AddAsync(exampleProject1);
+        await _context.Projects.AddAsync(exampleProject2);
+        await _context.SaveChangesAsync();
+
+        var logs = await _loggingRepository.GetLogsWithSearch("Another Project");
+
+        Assert.That(logs, Has.Count.EqualTo(1));
+
+        var log = logs[0];
+        Assert.Multiple(() =>
+        {
+            Assert.That(log.Id, Is.EqualTo(2));
+            Assert.That(log.UserId, Is.Null);
+            Assert.That(log.Username, Is.EqualTo("someUserName"));
+            Assert.That(log.ProjectId, Is.EqualTo(302));
+            Assert.That(log.Action, Is.EqualTo(Action.UPDATED_PROJECT));
+            Assert.That(log.Changes, Has.Count.EqualTo(1));
+        });
+    }
+
+    [Test]
+    public async Task GetLogsWithSearch_SearchInStaticMessagePartMapsToActionProperty_Test()
+    {
+        var exampleLog1 = new Log
+        {
+            Id = 1,
+            UserId = null,
+            Username = "camo",
+            TimeStamp = DateTimeOffset.UtcNow,
+            ProjectId = 301,
+            Action = Action.ADDED_PROJECT,
+            Changes =
+            [
+                new LogChange { OldValue = "", NewValue = "Example Project", Property = "ProjectName" }
+            ]
+        };
+
+        var exampleProject1 = new Project
+        {
+            ProjectName = "Example Project",
+            BusinessUnit = "Example Business Unit",
+            TeamNumber = 1,
+            Department = "Example Department",
+            ClientName = "Example Client",
+            Logs = new List<Log> { exampleLog1 }
+        };
+
+        var exampleLog2 = new Log
+        {
+            Id = 2,
+            UserId = null,
+            Username = "someUserName",
+            TimeStamp = DateTimeOffset.UtcNow,
+            ProjectId = 302,
+            Action = Action.UPDATED_PROJECT,
+            Changes =
+            [
+                new LogChange { OldValue = "Example Project", NewValue = "Another Project", Property = "ProjectName" }
+            ]
+        };
+
+        var exampleProject2 = new Project
+        {
+            ProjectName = "Another Project",
+            BusinessUnit = "Example Business Unit",
+            TeamNumber = 1,
+            Department = "Example Department",
+            ClientName = "Example Client",
+            Logs = new List<Log> { exampleLog2 }
+        };
+        await _context.Projects.AddAsync(exampleProject1);
+        await _context.Projects.AddAsync(exampleProject2);
+        await _context.SaveChangesAsync();
+
+        var logs = await _loggingRepository.GetLogsWithSearch("updated");
+
+        Assert.That(logs, Has.Count.EqualTo(1));
+
+        var log = logs[0];
+        Assert.Multiple(() =>
+        {
+            Assert.That(log.Id, Is.EqualTo(2));
+            Assert.That(log.UserId, Is.Null);
+            Assert.That(log.Username, Is.EqualTo("someUserName"));
+            Assert.That(log.ProjectId, Is.EqualTo(302));
+            Assert.That(log.Action, Is.EqualTo(Action.UPDATED_PROJECT));
+            Assert.That(log.Changes, Has.Count.EqualTo(1));
+        });
+    }
 }

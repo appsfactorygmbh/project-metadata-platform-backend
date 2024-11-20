@@ -37,6 +37,13 @@ public interface ILogRepository
     Task<List<Log>> GetLogsForProject(int projectId);
 
     /// <summary>
+    /// Retrieves logs that match the specified search term.
+    /// </summary>
+    /// <param name="search">The search term to filter logs.</param>
+    /// <returns>A list of logs that match the search term.</returns>
+    Task<List<Log>> GetLogsWithSearch(string search);
+
+    /// <summary>
     /// Retrieves all logs from the database.
     /// </summary>
     /// <returns>A list of all logs, sorted by timestamp.</returns>
