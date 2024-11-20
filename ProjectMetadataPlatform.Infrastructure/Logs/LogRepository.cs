@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -44,12 +45,14 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
     /// <param name="changes"></param>
     public async Task AddLogForCurrentUser(int projectId, Action action, List<LogChange> changes)
     {
-        var email = _httpContextAccessor.HttpContext?.User.FindFirstValue("Email") ?? "Unknown user";
-        User? user = await _usersRepository.GetUserByEmailAsync(email);
+        var username = _httpContextAccessor.HttpContext?.User.Identity?.Name ?? "Unknown user";
+        User? user = await _usersRepository.GetUserByUserNameAsync(username);
+
+
 
         var log = new Log
         {
-            Email = email,
+            Email = user?.Email,
             UserId = user?.Id,
             Action = action,
             ProjectId = projectId,
@@ -68,12 +71,13 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
     /// <param name="changes"></param>
     public async Task AddLogForCurrentUser(Project project, Action action, List<LogChange> changes)
     {
-        var email = _httpContextAccessor.HttpContext?.User.FindFirstValue("Email") ?? "Unknown user";
-        User? user = await _usersRepository.GetUserByEmailAsync(email);
+        var username = _httpContextAccessor.HttpContext?.User.Identity?.Name ?? "Unknown user";
+        User? user = await _usersRepository.GetUserByUserNameAsync(username);
+
 
         var log = new Log
         {
-            Email = email,
+            Email = user?.Email,
             UserId = user?.Id,
             Action = action,
             Project = project,

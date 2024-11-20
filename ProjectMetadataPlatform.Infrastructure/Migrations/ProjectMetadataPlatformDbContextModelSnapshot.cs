@@ -189,6 +189,9 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
                     b.Property<int>("Action")
                         .HasColumnType("integer");
 
+                    b.Property<string>("Email")
+                        .HasColumnType("text");
+
                     b.Property<int>("ProjectId")
                         .HasColumnType("integer");
 
@@ -196,9 +199,6 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("UserId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Username")
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -459,7 +459,6 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("NormalizedEmail")

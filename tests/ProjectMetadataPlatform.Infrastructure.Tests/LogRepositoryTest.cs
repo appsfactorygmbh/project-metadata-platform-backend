@@ -67,6 +67,7 @@ public class LogRepositoryTest : TestsWithDatabase
         {
             Id = "42",
             UserName = "camo",
+            Email = "camo",
             Name = "some user"
         };
         await _context.Users.AddAsync(user);
@@ -118,7 +119,7 @@ public class LogRepositoryTest : TestsWithDatabase
         {
             Assert.That(dbLog.Id, Is.EqualTo(1));
             Assert.That(dbLog.Action, Is.EqualTo(Action.ADDED_PROJECT));
-            Assert.That(dbLog.Username, Is.EqualTo("camo"));
+            Assert.That(dbLog.Email, Is.EqualTo("camo"));
             Assert.That(dbLog.UserId, Is.EqualTo("42"));
             Assert.That(dbLog.User, Is.EqualTo(user));
             Assert.That(dbLog.ProjectId, Is.EqualTo(exampleProject.Id));
@@ -134,7 +135,7 @@ public class LogRepositoryTest : TestsWithDatabase
         {
             Id = 1,
             UserId = null,
-            Username = "camo",
+            Email = "camo",
             TimeStamp = DateTimeOffset.UtcNow,
             ProjectId = 301,
             Action = Action.ADDED_PROJECT,
@@ -191,7 +192,7 @@ public class LogRepositoryTest : TestsWithDatabase
         {
             Id = 1,
             UserId = null,
-            Username = "camo",
+            Email = "camo",
             TimeStamp = DateTimeOffset.UtcNow,
             ProjectId = 301,
             Action = Action.ADDED_PROJECT,
@@ -215,7 +216,7 @@ public class LogRepositoryTest : TestsWithDatabase
         {
             Id = 2,
             UserId = null,
-            Username = "someUserName",
+            Email = "someEmail",
             TimeStamp = DateTimeOffset.UtcNow,
             ProjectId = 302,
             Action = Action.UPDATED_PROJECT,
