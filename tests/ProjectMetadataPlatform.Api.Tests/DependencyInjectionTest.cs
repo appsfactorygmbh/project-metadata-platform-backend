@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using ProjectMetadataPlatform.Application;
+using ProjectMetadataPlatform.Api.Interfaces;
 
 namespace ProjectMetadataPlatform.Api.Tests;
 
@@ -12,10 +12,10 @@ public class DependencyInjectionTests
     {
         var serviceCollection = new ServiceCollection() as IServiceCollection;
 
-        serviceCollection.AddApplicationDependencies();
+        serviceCollection.AddApiDependencies();
 
-        serviceCollection.BuildServiceProvider();
+        var serviceProvider = serviceCollection.BuildServiceProvider();
 
+        Assert.That(serviceProvider.GetService<ILogConverter>(), Is.Not.Null);
     }
-
 }

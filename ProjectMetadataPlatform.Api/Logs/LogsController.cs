@@ -45,7 +45,6 @@ public class LogsController: ControllerBase
     /// <response code="404">Not Project with the given id was found.</response>
     /// <response code="500">If an error occurs while processing the request.</response>
     [HttpGet]
-    [HttpGet("{projectId:int}")]
     public async Task<ActionResult<IEnumerable<LogResponse>>> Get(int? projectId, string? search)
     {
         var query = new GetLogsQuery(projectId, search);
