@@ -25,9 +25,9 @@ public class LogModelConfig : IEntityTypeConfiguration<Log>
             .IsRequired();
 
         _ = builder
-            .HasOne(e => e.User)
+            .HasOne(e => e.Author)
             .WithMany()
-            .HasForeignKey(e => e.UserId)
+            .HasForeignKey(e => e.AuthorId)
             .OnDelete(DeleteBehavior.SetNull);
     }
 }
