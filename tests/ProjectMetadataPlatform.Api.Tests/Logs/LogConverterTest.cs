@@ -241,4 +241,227 @@ public class LogConverterTest
             Assert.That(logResponse.Timestamp, Is.EqualTo("1970-01-01T00:00:00+01:00"));
         });
     }
+
+    [Test]
+    public async Task ConvertToLogAddedUser_Test()
+    {
+        var log = new Log
+        {
+            Id = 42,
+            TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
+            AuthorId = "42",
+            AuthorUsername = "Infinite Improbability Drive",
+            Author = new User { UserName = "Infinite Improbability Drive" },
+            Action = Action.ADDED_USER,
+            Changes =
+            [
+                new LogChange { Property = "UserName", OldValue = "", NewValue = "Bowl of Petunias" }
+            ]
+        };
+
+        LogResponse logResponse = _logConverter.BuildLogMessage(log);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(logResponse.LogMessage, Is.EqualTo("Infinite Improbability Drive added a new user with properties: UserName = Bowl of Petunias"));
+            Assert.That(logResponse.Timestamp, Is.EqualTo("1970-01-01T00:00:00+01:00"));
+        });
+    }
+
+    [Test]
+    public async Task ConvertToLogUpdatedUser_Test()
+    {
+        var log = new Log
+        {
+            Id = 42,
+            TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
+            AuthorId = "42",
+            AuthorUsername = "Gandalf",
+            Author = new User { UserName = "Gandalf" },
+            Action = Action.UPDATED_USER,
+            Changes =
+            [
+                new LogChange { Property = "UserName", OldValue = "Gandalf the Grey", NewValue = "Gandalf the White" }
+            ]
+        };
+
+        LogResponse logResponse = _logConverter.BuildLogMessage(log);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(logResponse.LogMessage, Is.EqualTo("Gandalf updated user properties: set UserName from Gandalf the Grey to Gandalf the White"));
+            Assert.That(logResponse.Timestamp, Is.EqualTo("1970-01-01T00:00:00+01:00"));
+        });
+    }
+
+    [Test]
+    public async Task ConvertToLogRemovedUser_Test()
+    {
+        var log = new Log
+        {
+            Id = 42,
+            TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
+            AuthorId = "42",
+            AuthorUsername = "Ground",
+            Author = new User { UserName = "Ground" },
+            Action = Action.REMOVED_USER,
+            AffectedUserEmail = "whale@air.com",
+            Changes =
+            [
+                new LogChange { Property = "UserName", OldValue = "Whale", NewValue = "" }
+            ]
+        };
+
+        LogResponse logResponse = _logConverter.BuildLogMessage(log);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(logResponse.LogMessage, Is.EqualTo("Ground removed user whale@air.com"));
+            Assert.That(logResponse.Timestamp, Is.EqualTo("1970-01-01T00:00:00+01:00"));
+        });
+    }
+
+    [Test]
+    public async Task ConvertToLogRemovedProject_Test()
+    {
+        var log = new Log
+        {
+            Id = 42,
+            TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
+            AuthorId = "42",
+            AuthorUsername = "Luke Skywalker",
+            Author = new User { UserName = "Luke Skywalker" },
+            Action = Action.REMOVED_PROJECT,
+            ProjectName = "DeathStar",
+        };
+
+        LogResponse logResponse = _logConverter.BuildLogMessage(log);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(logResponse.LogMessage, Is.EqualTo("Luke Skywalker removed project DeathStar"));
+            Assert.That(logResponse.Timestamp, Is.EqualTo("1970-01-01T00:00:00+01:00"));
+        });
+    }
+
+    [Test]
+    public async Task ConvertToLogAddedGlobalPlugin_Test()
+    {
+        var log = new Log
+        {
+            Id = 42,
+            TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
+            AuthorId = "42",
+            AuthorUsername = "Chancellor Palpatine",
+            Author = new User { UserName = "Chancellor Palpatine" },
+            Action = Action.ADDED_GLOBAL_PLUGIN,
+            Changes =
+            [
+                new LogChange { Property = "PluginName", OldValue = "", NewValue = "Grand Army of the Republic" }
+            ]
+        };
+
+        LogResponse logResponse = _logConverter.BuildLogMessage(log);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(logResponse.LogMessage, Is.EqualTo("Chancellor Palpatine added a new global plugin with properties: PluginName = Grand Army of the Republic"));
+            Assert.That(logResponse.Timestamp, Is.EqualTo("1970-01-01T00:00:00+01:00"));
+        });
+    }
+
+    [Test]
+    public async Task ConvertToLogUpdatedGlobalPlugin_Test()
+    {
+        var log = new Log
+        {
+            Id = 42,
+            TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
+            AuthorId = "42",
+            AuthorUsername = "Darth Sidious",
+            Author = new User { UserName = "Darth Sidious" },
+            Action = Action.UPDATED_GLOBAL_PLUGIN,
+            Changes =
+            [
+                new LogChange { Property = "UserName", OldValue = "Republic", NewValue = "First Galactic Empire" }
+            ]
+        };
+
+        LogResponse logResponse = _logConverter.BuildLogMessage(log);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(logResponse.LogMessage, Is.EqualTo("Darth Sidious updated global plugin properties: set UserName from Republic to First Galactic Empire"));
+            Assert.That(logResponse.Timestamp, Is.EqualTo("1970-01-01T00:00:00+01:00"));
+        });
+    }
+
+    [Test]
+    public async Task ConvertToLogArchivedGlobalPlugin_Test()
+    {
+        var log = new Log
+        {
+            Id = 42,
+            TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
+            AuthorId = "42",
+            AuthorUsername = "Zip",
+            Author = new User { UserName = "Zip" },
+            Action = Action.ARCHIVED_GLOBAL_PLUGIN,
+            GlobalPluginName = "Directory",
+        };
+
+        LogResponse logResponse = _logConverter.BuildLogMessage(log);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(logResponse.LogMessage, Is.EqualTo("Zip archived global plugin Directory"));
+            Assert.That(logResponse.Timestamp, Is.EqualTo("1970-01-01T00:00:00+01:00"));
+        });
+    }
+
+    [Test]
+    public async Task ConvertToLogUnarchivedGlobalPlugin_Test()
+    {
+        var log = new Log
+        {
+            Id = 42,
+            TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
+            AuthorId = "42",
+            AuthorUsername = "Unzip",
+            Author = new User { UserName = "Unzip" },
+            Action = Action.UNARCHIVED_GLOBAL_PLUGIN,
+            GlobalPluginName = "Directory",
+        };
+
+        LogResponse logResponse = _logConverter.BuildLogMessage(log);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(logResponse.LogMessage, Is.EqualTo("Unzip unarchived global plugin Directory"));
+            Assert.That(logResponse.Timestamp, Is.EqualTo("1970-01-01T00:00:00+01:00"));
+        });
+    }
+
+    [Test]
+    public async Task ConvertToLogRemovedGlobalPlugin_Test()
+    {
+        var log = new Log
+        {
+            Id = 42,
+            TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
+            AuthorId = "42",
+            AuthorUsername = "Recursively",
+            Author = new User { UserName = "Recursively" },
+            Action = Action.REMOVED_GLOBAL_PLUGIN,
+            GlobalPluginName = "root"
+        };
+
+        LogResponse logResponse = _logConverter.BuildLogMessage(log);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(logResponse.LogMessage, Is.EqualTo("Recursively removed global plugin root"));
+            Assert.That(logResponse.Timestamp, Is.EqualTo("1970-01-01T00:00:00+01:00"));
+        });
+    }
 }

@@ -45,18 +45,39 @@ public class Log
     /// </summary>
     public int? ProjectId { get; set; }
 
+    /// <summary>
+    /// Gets or sets the name of the project.
+    /// </summary>
     public string? ProjectName { get; set; }
 
+    /// <summary>
+    /// Gets or sets the global plugin associated with the log.
+    /// </summary>
     public Plugin? GlobalPlugin { get; set; }
 
+    /// <summary>
+    /// Gets or sets the ID of the global plugin.
+    /// </summary>
     public int? GlobalPluginId { get; set; }
 
+    /// <summary>
+    /// Gets or sets the name of the global plugin.
+    /// </summary>
     public string? GlobalPluginName { get; set; }
 
+    /// <summary>
+    /// Gets or sets the affected user.
+    /// </summary>
     public User.User? AffectedUser { get; set; }
 
+    /// <summary>
+    /// Gets or sets the ID of the affected user.
+    /// </summary>
     public string? AffectedUserId { get; set; }
 
+    /// <summary>
+    /// Gets or sets the email of the affected user.
+    /// </summary>
     public string? AffectedUserEmail { get; set; }
 
     /// <summary>

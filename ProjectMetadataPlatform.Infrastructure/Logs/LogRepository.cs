@@ -31,7 +31,16 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
         {Action.UNARCHIVED_PROJECT, "unarchived project"},
         {Action.ADDED_PROJECT_PLUGIN, "added a plugin to project with properties: = ,"},
         {Action.UPDATED_PROJECT_PLUGIN, "updated a plugin in project: set from to , "},
-        {Action.REMOVED_PROJECT_PLUGIN, "removed a plugin from project with properties: = ,"}
+        {Action.REMOVED_PROJECT_PLUGIN, "removed a plugin from project with properties: = ,"},
+        {Action.ADDED_USER, "added a new user with properties: = ,"},
+        {Action.UPDATED_USER, "updated user properties: set from to , "},
+        {Action.REMOVED_USER, "removed user"},
+        {Action.REMOVED_PROJECT, "removed project"},
+        {Action.ADDED_GLOBAL_PLUGIN, "added a new global plugin with properties: = ,"},
+        {Action.UPDATED_PROJECT_PLUGIN, "updated global plugin properties: set from to , "},
+        {Action.ARCHIVED_GLOBAL_PLUGIN, "archived global plugin"},
+        {Action.UNARCHIVED_GLOBAL_PLUGIN, "unarchived global plugin"},
+        {Action.REMOVED_GLOBAL_PLUGIN, "removed global plugin"},
     };
 
     /// <summary>
