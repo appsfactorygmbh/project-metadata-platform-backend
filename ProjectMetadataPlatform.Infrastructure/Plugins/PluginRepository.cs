@@ -38,6 +38,7 @@ public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
     ///     Gets all unarchived plugins for a given project id from database.
     /// <param name="id">selects the project</param>
     /// <returns>The data received by the database.</returns>
+    /// </summary>
     public async Task<List<ProjectPlugins>> GetAllUnarchivedPluginsForProjectIdAsync(int id)
     {
         return await _context.ProjectPluginsRelation
@@ -53,7 +54,7 @@ public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
     /// <returns>The saved Plugin</returns>
     public async Task<Plugin> StorePlugin(Plugin plugin)
     {
-        if (plugin.Id == 0) // the plugin is new/has no id
+        if (plugin.Id == 0)
         {
             _context.Plugins.Add(plugin);
             await _context.SaveChangesAsync();

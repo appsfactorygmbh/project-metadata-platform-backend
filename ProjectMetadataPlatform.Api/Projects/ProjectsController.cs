@@ -6,6 +6,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using ProjectMetadataPlatform.Api.Plugins.Models;
 using ProjectMetadataPlatform.Api.Projects.Models;
 using ProjectMetadataPlatform.Application.Plugins;
@@ -25,12 +26,14 @@ namespace ProjectMetadataPlatform.Api.Projects;
 public class ProjectsController : ControllerBase
 {
     private readonly IMediator _mediator;
+    private readonly ILogger<ProjectsController> _logger;
     /// <summary>
     ///     Creates a new instance of the <see cref="ProjectsController" /> class.
     /// </summary>
-    public ProjectsController(IMediator mediator)
+    public ProjectsController(IMediator mediator, ILogger<ProjectsController> logger)
     {
         _mediator = mediator;
+        _logger = logger;
     }
 
     /// <summary>
@@ -141,21 +144,31 @@ public class ProjectsController : ControllerBase
     /// </summary>
     /// <param name="id">The id of the project.</param>
     /// <returns>The unarchived plugins of the project.</returns>
-    /// <response code="200">All unarchived plugins of the project are returned successfully.</response>
-    /// <response code="500">An internal error occurred.</response>
+    /// <response code="200">Returns the list of unarchived plugins for the project</response>
+    /// <response code="404">If the project with the specified ID is not found</response>
+    /// <response code="500">If there was an internal server error while processing the request</response>
     [HttpGet("{id:int}/unarchivedPlugins")]
     public async Task<ActionResult<IEnumerable<GetPluginResponse>>> GetUnarchivedPlugins(int id)
     {
         var query = new GetAllUnarchivedPluginsForProjectIdQuery(id);
         IEnumerable<ProjectPlugins> unarchivedProjectPlugins;
+
         try
         {
             unarchivedProjectPlugins = await _mediator.Send(query);
+
+            if (!unarchivedProjectPlugins.Any())
+            {
+                _logger.LogWarning("Project with ID {ProjectId} not found when fetching unarchived plugins", id);
+                return NotFound($"Project with ID {id} not found");
+            }
         }
-        catch
+        catch (Exception ex)
         {
+            _logger.LogError(ex, "Error occurred while fetching unarchived plugins for project {ProjectId}", id);
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
+
 
         IEnumerable<GetPluginResponse> response = unarchivedProjectPlugins
             .Where(plugin => plugin.Plugin != null)
@@ -166,9 +179,9 @@ public class ProjectsController : ControllerBase
                 plugin.Plugin.Id
             ));
 
-
         return Ok(response);
     }
+
 
     /// <summary>
     ///     Creates a new project or updates the one with given id.
