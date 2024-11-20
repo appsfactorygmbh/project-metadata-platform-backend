@@ -95,7 +95,7 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
             TimeStamp = UtcNow,
             Changes = changes
         };
-        _context.Logs.Add(log);
+        _ =_context.Logs.Add(log);
     }
 
     ///  <inheritdoc />
