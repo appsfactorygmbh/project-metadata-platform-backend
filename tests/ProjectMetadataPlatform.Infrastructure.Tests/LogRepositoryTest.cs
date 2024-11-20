@@ -251,7 +251,7 @@ public class LogRepositoryTest : TestsWithDatabase
         {
             Id = 1,
             UserId = null,
-            Username = "camo",
+            Email = "camo",
             TimeStamp = DateTimeOffset.UtcNow,
             ProjectId = 301,
             Action = Action.ADDED_PROJECT,
@@ -275,7 +275,7 @@ public class LogRepositoryTest : TestsWithDatabase
         {
             Id = 2,
             UserId = null,
-            Username = "someUserName",
+            Email = "someEmail",
             TimeStamp = DateTimeOffset.UtcNow,
             ProjectId = 302,
             Action = Action.UPDATED_PROJECT,
@@ -307,7 +307,7 @@ public class LogRepositoryTest : TestsWithDatabase
         {
             Assert.That(log.Id, Is.EqualTo(2));
             Assert.That(log.UserId, Is.Null);
-            Assert.That(log.Username, Is.EqualTo("someUserName"));
+            Assert.That(log.Email, Is.EqualTo("someEmail"));
             Assert.That(log.ProjectId, Is.EqualTo(302));
             Assert.That(log.Action, Is.EqualTo(Action.UPDATED_PROJECT));
             Assert.That(log.Changes, Has.Count.EqualTo(1));
@@ -321,7 +321,7 @@ public class LogRepositoryTest : TestsWithDatabase
         {
             Id = 1,
             UserId = null,
-            Username = "camo",
+            Email = "camo",
             TimeStamp = DateTimeOffset.UtcNow,
             ProjectId = 301,
             Action = Action.ADDED_PROJECT,
@@ -345,7 +345,7 @@ public class LogRepositoryTest : TestsWithDatabase
         {
             Id = 2,
             UserId = null,
-            Username = "someUserName",
+            Email = "someEmail",
             TimeStamp = DateTimeOffset.UtcNow,
             ProjectId = 302,
             Action = Action.UPDATED_PROJECT,
@@ -377,7 +377,7 @@ public class LogRepositoryTest : TestsWithDatabase
         {
             Assert.That(log.Id, Is.EqualTo(2));
             Assert.That(log.UserId, Is.Null);
-            Assert.That(log.Username, Is.EqualTo("someUserName"));
+            Assert.That(log.Email, Is.EqualTo("someEmail"));
             Assert.That(log.ProjectId, Is.EqualTo(302));
             Assert.That(log.Action, Is.EqualTo(Action.UPDATED_PROJECT));
             Assert.That(log.Changes, Has.Count.EqualTo(1));

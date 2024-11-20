@@ -32,7 +32,7 @@ public class GetLogsQueryHandlerTest
             Id = 1,
             TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
             UserId = "1",
-            Username = "Zitronenfalter",
+            Email = "Zitronenfalter",
             ProjectId = 1,
             Action = Action.UPDATED_PROJECT,
             Changes =
@@ -45,7 +45,7 @@ public class GetLogsQueryHandlerTest
             Id = 2,
             TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
             UserId = "2",
-            Username = "Halbleiter",
+            Email = "Halbleiter",
             ProjectId = 2,
             Action = Action.UPDATED_PROJECT,
             Changes =
@@ -77,7 +77,7 @@ public class GetLogsQueryHandlerTest
             Id = 1,
             TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
             UserId = "1",
-            Username = "Zitronenfalter",
+            Email = "Zitronenfalter",
             ProjectId = 1,
             Action = Action.UPDATED_PROJECT,
             Changes =
@@ -105,7 +105,7 @@ public class GetLogsQueryHandlerTest
             Id = 1,
             TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
             UserId = "1",
-            Username = "Derivative",
+            Email = "Derivative",
             ProjectId = 1,
             Action = Action.UPDATED_PROJECT,
             Changes =

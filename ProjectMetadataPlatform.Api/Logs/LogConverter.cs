@@ -16,9 +16,9 @@ public class LogConverter: ILogConverter
     /// <inheritdoc />
     public LogResponse BuildLogMessage(Log log)
     {
-        var message = log.User is { UserName: not null }
-            ? log.User.UserName
-            : log.Username != null ? log.Username + " (deleted user)" : "<Deleted User>";
+        var message = log.User is { Email: not null }
+            ? log.User.Email
+            : log.Email != null ? log.Email + " (deleted user)" : "<Deleted User>";
 
         message += " " + log.Action switch
         {

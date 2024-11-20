@@ -28,8 +28,8 @@ public class LogConverterTest
             Id = 41,
             TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
             UserId = "42",
-            Username = "Slartibartfast",
-            User = new User { UserName = "Slartibartfast" },
+            Email = "Slartibartfast",
+            User = new User { Email = "Slartibartfast" },
             ProjectId = 43,
             Action = Action.UPDATED_PROJECT,
             Changes =
@@ -56,8 +56,8 @@ public class LogConverterTest
             Id = 42,
             TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
             UserId = "43",
-            Username = "Deep Thought",
-            User = new User { UserName = "Deep Thought" },
+            Email = "Deep Thought",
+            User = new User { Email = "Deep Thought" },
             ProjectId = 44,
             Project = new Project
             {
@@ -87,8 +87,8 @@ public class LogConverterTest
             Id = 43,
             TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
             UserId = "44",
-            Username = "Infinite Improbability Drive",
-            User = new User { UserName = "Infinite Improbability Drive" },
+            Email = "Infinite Improbability Drive",
+            User = new User { Email = "Infinite Improbability Drive" },
             ProjectId = 45,
             Project = new Project
             {
@@ -122,8 +122,8 @@ public class LogConverterTest
             Id = 44,
             TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
             UserId = "45",
-            Username = "Ground",
-            User = new User { UserName = "Ground" },
+            Email = "Ground",
+            User = new User { Email = "Ground" },
             ProjectId = 46,
             Project = new Project
             {
@@ -157,8 +157,8 @@ public class LogConverterTest
             Id = 45,
             TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
             UserId = "46",
-            Username = "Prostetnic Vogon Jeltz",
-            User = new User { UserName = "Prostetnic Vogon Jeltz" },
+            Email = "Prostetnic Vogon Jeltz",
+            User = new User { Email = "Prostetnic Vogon Jeltz" },
             ProjectId = 47,
             Project = new Project
             {
@@ -192,8 +192,8 @@ public class LogConverterTest
             Id = 46,
             TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
             UserId = "47",
-            Username = "Earth",
-            User = new User { UserName = "Earth" },
+            Email = "Earth",
+            User = new User { Email = "Earth" },
             ProjectId = 48,
             Project = new Project
             {
@@ -223,7 +223,7 @@ public class LogConverterTest
             Id = 47,
             TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
             UserId = "48",
-            Username = "Earth Population",
+            Email = "Earth Population",
             ProjectId = 49,
             Action = Action.UPDATED_PROJECT,
             Changes =

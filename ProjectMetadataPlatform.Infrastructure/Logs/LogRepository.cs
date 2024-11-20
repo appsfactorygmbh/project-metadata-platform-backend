@@ -117,7 +117,7 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
             .Include(l => l.Changes)
             .Include(l => l.Project)
             .Where(log =>
-                (log.Username != null && log.Username.Contains(search))
+                (log.Email != null && log.Email.Contains(search))
                 || actionsToInclude.Contains(log.Action)
                 || (log.Project != null && log.Project.ProjectName.Contains(search))
                 || (log.Changes != null && log.Changes.Any(change =>
