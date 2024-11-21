@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -171,4 +172,218 @@ public class PluginsRepositoryTest : TestsWithDatabase
 
         Assert.That(plugin, Is.Empty);
     }
+
+    [Test]
+    public async Task GetAllUnarchivedPluginsForProjectIdAsync_ShouldReturnOnlyUnarchivedPlugins()
+    {
+        var project = new Project
+        {
+            Id = 1,
+            ProjectName = "Test Project",
+            ClientName = "Test Client", // Ensure ClientName is set
+            BusinessUnit = "Test Business",
+            TeamNumber = 42,
+            Department = "Test Department"
+        };
+
+        var unarchivedPlugin = new Plugin { Id = 1, PluginName = "Unarchived Plugin", IsArchived = false };
+        var archivedPlugin = new Plugin { Id = 2, PluginName = "Archived Plugin", IsArchived = true };
+        var projectPluginRelation1 = new ProjectPlugins
+        {
+            ProjectId = 1, PluginId = 1, Plugin = unarchivedPlugin, Project = project, Url = "unarchived.com"
+        };
+        var projectPluginRelation2 = new ProjectPlugins
+        {
+            ProjectId = 1, PluginId = 2, Plugin = archivedPlugin, Project = project, Url = "archived.com"
+        };
+        _context.Projects.Add(project);
+        _context.Plugins.AddRange(unarchivedPlugin, archivedPlugin);
+        _context.ProjectPluginsRelation.AddRange(projectPluginRelation1, projectPluginRelation2);
+        await _context.SaveChangesAsync();
+
+        var result = await _repository.GetAllUnarchivedPluginsForProjectIdAsync(1);
+
+        Assert.That(result, Has.Count.EqualTo(1)); // Only unarchived plugins should be returned
+        Assert.That(result[0].Plugin.PluginName, Is.EqualTo("Unarchived Plugin"));
+    }
+
+    [Test]
+    public async Task GetAllUnarchivedPluginsForProjectIdAsync_ShouldReturnEmptyWhenNoUnarchivedPlugins()
+    {
+        var project = new Project
+        {
+            Id = 1,
+            ProjectName = "Test Project",
+            ClientName = "Test Client", // Make sure this is set
+            BusinessUnit = "Test Business",
+            TeamNumber = 42,
+            Department = "Test Department"
+        };
+        var archivedPlugin = new Plugin { Id = 1, PluginName = "Archived Plugin", IsArchived = true };
+        var projectPluginRelation = new ProjectPlugins
+        {
+            ProjectId = 1, PluginId = 1, Plugin = archivedPlugin, Project = project, Url = "archived.com"
+        };
+        _context.Projects.Add(project);
+        _context.Plugins.Add(archivedPlugin);
+        _context.ProjectPluginsRelation.Add(projectPluginRelation);
+        await _context.SaveChangesAsync();
+
+        var result = await _repository.GetAllUnarchivedPluginsForProjectIdAsync(1);
+
+        Assert.That(result, Is.Empty); // No unarchived plugins should be returned
+    }
+
+    [Test]
+    public async Task GetAllUnarchivedPluginsForProjectIdAsync_ShouldReturnEmptyWhenNoPluginsForProject()
+    {
+        var project = new Project
+        {
+            Id = 1,
+            ProjectName = "Test Project",
+            ClientName = "Test Client", // Make sure this is set
+            BusinessUnit = "Test Business",
+            TeamNumber = 42,
+            Department = "Test Department"
+        };
+        _context.Projects.Add(project);
+        await _context.SaveChangesAsync();
+
+        var result = await _repository.GetAllUnarchivedPluginsForProjectIdAsync(1);
+
+        Assert.That(result, Is.Empty); // No plugins should be associated with the project
+    }
+
+    [Test]
+    public async Task GetAllUnarchivedPluginsForProjectIdAsync_ShouldReturnEmptyWhenAllPluginsAreArchived()
+    {
+        var project = new Project
+        {
+            Id = 1,
+            ProjectName = "Test Project",
+            ClientName = "Test Client", // Make sure this is set
+            BusinessUnit = "Test Business",
+            TeamNumber = 42,
+            Department = "Test Department"
+        };
+        var archivedPlugin = new Plugin { Id = 1, PluginName = "Archived Plugin", IsArchived = true };
+        var projectPluginRelation = new ProjectPlugins
+        {
+            ProjectId = 1, PluginId = 1, Plugin = archivedPlugin, Project = project, Url = "archived.com"
+        };
+        _context.Projects.Add(project);
+        _context.Plugins.Add(archivedPlugin);
+        _context.ProjectPluginsRelation.Add(projectPluginRelation);
+        await _context.SaveChangesAsync();
+
+        // Act
+        var result = await _repository.GetAllUnarchivedPluginsForProjectIdAsync(1);
+
+        // Assert
+        Assert.That(result, Is.Empty); // All plugins are archived, so no results
+    }
+
+    [Test]
+    public async Task GetAllUnarchivedPluginsForProjectIdAsync_ShouldReturnOnlyUnarchivedWhenMixOfArchivedAndUnarchived()
+    {
+        var project = new Project
+        {
+            Id = 1,
+            ProjectName = "Test Project",
+            ClientName = "Test Client", // Make sure this is set
+            BusinessUnit = "Test Business",
+            TeamNumber = 42,
+            Department = "Test Department"
+        };
+        var unarchivedPlugin = new Plugin { Id = 1, PluginName = "Unarchived Plugin", IsArchived = false };
+        var archivedPlugin = new Plugin { Id = 2, PluginName = "Archived Plugin", IsArchived = true };
+        var projectPluginRelation1 = new ProjectPlugins
+        {
+            ProjectId = 1, PluginId = 1, Plugin = unarchivedPlugin, Project = project, Url = "unarchived.com"
+        };
+        var projectPluginRelation2 = new ProjectPlugins
+        {
+            ProjectId = 1, PluginId = 2, Plugin = archivedPlugin, Project = project, Url = "archived.com"
+        };
+        _context.Projects.Add(project);
+        _context.Plugins.AddRange(unarchivedPlugin, archivedPlugin);
+        _context.ProjectPluginsRelation.AddRange(projectPluginRelation1, projectPluginRelation2);
+        await _context.SaveChangesAsync();
+
+        var result = await _repository.GetAllUnarchivedPluginsForProjectIdAsync(1);
+
+        Assert.That(result, Has.Count.EqualTo(1)); // Only unarchived plugins should be returned
+        Assert.That(result[0].Plugin.PluginName, Is.EqualTo("Unarchived Plugin"));
+    }
+
+    [Test]
+    public async Task GetAllUnarchivedPluginsForProjectIdAsync_ShouldReturnPluginsBelongingToTheSpecifiedProject()
+    {
+        var project1 = new Project
+        {
+            Id = 1,
+            ProjectName = "Test Project",
+            ClientName = "Test Client", // Make sure this is set
+            BusinessUnit = "Test Business",
+            TeamNumber = 42,
+            Department = "Test Department"
+        };
+        var project2 = new Project
+        {
+            Id = 2,
+            ProjectName = "Test Project2",
+            ClientName = "Test Client2", // Make sure this is set
+            BusinessUnit = "Test Business2",
+            TeamNumber = 37,
+            Department = "Test Department2"
+        };
+        var unarchivedPlugin = new Plugin { Id = 1, PluginName = "Unarchived Plugin", IsArchived = false };
+
+        var projectPluginRelation1 = new ProjectPlugins
+        {
+            ProjectId = 1, PluginId = 1, Plugin = unarchivedPlugin, Project = project1, Url = "plugin1.com"
+        };
+        var projectPluginRelation2 = new ProjectPlugins
+        {
+            ProjectId = 2, PluginId = 1, Plugin = unarchivedPlugin, Project = project2, Url = "plugin2.com"
+        };
+
+        _context.Projects.AddRange(project1, project2);
+        _context.Plugins.Add(unarchivedPlugin);
+        _context.ProjectPluginsRelation.AddRange(projectPluginRelation1, projectPluginRelation2);
+        await _context.SaveChangesAsync();
+
+        var result = await _repository.GetAllUnarchivedPluginsForProjectIdAsync(1);
+
+        Assert.That(result, Has.Count.EqualTo(1)); // Only the plugin for project 1 should be returned
+        Assert.That(result[0].Plugin.PluginName, Is.EqualTo("Unarchived Plugin"));
+    }
+
+    [Test]
+    public void GetAllUnarchivedPluginsForProjectIdAsync_ShouldThrowExceptionWhenDbContextIsNull()
+    {
+        var exception = Assert.Throws<ArgumentNullException>(() =>
+        {
+            var repository = new PluginRepository(null);
+        });
+
+        Assert.That(exception.ParamName, Is.EqualTo("context"));
+    }
+
+    [Test]
+    public async Task TestGetPluginsForNonExistentProjectThrowsException()
+    {
+        int nonExistentProjectId = 999;
+
+        ArgumentException ex = Assert.ThrowsAsync<ArgumentException>(async () =>
+        {
+            await _repository.GetAllUnarchivedPluginsForProjectIdAsync(nonExistentProjectId);
+        });
+
+        Assert.That(ex.Message, Is.EqualTo("Project with Id 999 does not exist."));
+    }
+
+
+
+
 }

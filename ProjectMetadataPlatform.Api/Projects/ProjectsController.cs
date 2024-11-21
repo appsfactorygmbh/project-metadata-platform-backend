@@ -25,6 +25,7 @@ namespace ProjectMetadataPlatform.Api.Projects;
 public class ProjectsController : ControllerBase
 {
     private readonly IMediator _mediator;
+
     /// <summary>
     ///     Creates a new instance of the <see cref="ProjectsController" /> class.
     /// </summary>
@@ -135,6 +136,48 @@ public class ProjectsController : ControllerBase
 
         return Ok(response);
     }
+
+    /// <summary>
+    ///     Gets all the unarchived plugins of the project with the given id.
+    /// </summary>
+    /// <param name="id">The id of the project.</param>
+    /// <returns>The unarchived plugins of the project.</returns>
+    /// <response code="200">Returns the list of unarchived plugins for the project</response>
+    /// <response code="404">If the project with the specified ID is not found</response>
+    /// <response code="500">If there was an internal server error while processing the request</response>
+    [HttpGet("{id:int}/unarchivedPlugins")]
+    public async Task<ActionResult<IEnumerable<GetPluginResponse>>> GetUnarchivedPlugins(int id)
+    {
+        var query = new GetAllUnarchivedPluginsForProjectIdQuery(id);
+        IEnumerable<ProjectPlugins> unarchivedProjectPlugins;
+
+        try
+        {
+            unarchivedProjectPlugins = await _mediator.Send(query);
+        }
+        catch(ArgumentException ex)
+        {
+            Console.WriteLine(ex.Message);
+            return NotFound($"Project with Id {id} not found.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+        }
+
+        IEnumerable<GetPluginResponse> response = unarchivedProjectPlugins
+            .Where(plugin => plugin.Plugin != null)
+            .Select(plugin => new GetPluginResponse(
+                plugin.Plugin!.PluginName,
+                plugin.Url,
+                plugin.DisplayName ?? plugin.Plugin.PluginName,
+                plugin.Plugin.Id
+            ));
+
+        return Ok(response);
+    }
+
 
     /// <summary>
     ///     Creates a new project or updates the one with given id.

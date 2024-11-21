@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,7 +20,7 @@ public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
     /// <param name="context"></param>
     public PluginRepository(ProjectMetadataPlatformDbContext context): base(context)
     {
-        _context = context;
+        _context = context ?? throw new ArgumentNullException(nameof(context));
     }
     private readonly ProjectMetadataPlatformDbContext _context;
 
@@ -30,7 +31,26 @@ public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
     /// <returns>The data received by the database.</returns>
     public async Task<List<ProjectPlugins>> GetAllPluginsForProjectIdAsync(int id)
     {
-        return [.. _context.ProjectPluginsRelation.Where(rel => rel.ProjectId == id).Include(rel => rel.Plugin)];
+        return [.. _context.ProjectPluginsRelation
+            .Where(rel => rel.ProjectId == id)
+            .Include(rel => rel.Plugin)];
+    }
+
+    /// <summary>
+    ///     Gets all unarchived plugins for a given project id from database.
+    /// <param name="id">selects the project</param>
+    /// <returns>The data received by the database.</returns>
+    /// </summary>
+    public async Task<List<ProjectPlugins>> GetAllUnarchivedPluginsForProjectIdAsync(int id)
+    {
+        var project = await _context.Projects
+            .FirstOrDefaultAsync(p => p.Id == id)
+                      ?? throw new ArgumentException($"Project with Id {id} does not exist.");
+
+        return await _context.ProjectPluginsRelation
+            .Where(rel => rel.ProjectId == id && rel.Plugin != null && !rel.Plugin.IsArchived)
+            .Include(rel => rel.Plugin)
+            .ToListAsync();
     }
 
     /// <summary>
@@ -40,16 +60,16 @@ public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
     /// <returns>The saved Plugin</returns>
     public async Task<Plugin> StorePlugin(Plugin plugin)
     {
-        if (plugin.Id == 0) // the plugin is new/has no id
+        if (plugin.Id == 0)
         {
-            _context.Plugins.Add(plugin);
-            await _context.SaveChangesAsync();
+            _ = _context.Plugins.Add(plugin);
         }
         else
         {
             Update(plugin);
-            await _context.SaveChangesAsync();
         }
+
+        _ = await _context.SaveChangesAsync();
 
         return plugin;
     }
