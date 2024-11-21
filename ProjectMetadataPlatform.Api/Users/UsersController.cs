@@ -252,12 +252,7 @@ public class UsersController : ControllerBase
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
 
-        if (user == null)
-        {
-            return NotFound("No user with id " + userId + " was found.");
-        }
-
-        return NoContent();
+        return user == null ? NotFound("No user with id " + userId + " was found.") : NoContent();
     }
 
 }
