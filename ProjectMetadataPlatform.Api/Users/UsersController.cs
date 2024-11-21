@@ -229,6 +229,7 @@ public class UsersController : ControllerBase
     /// <param name="userId">The userId of the user to delete.</param>
     /// <returns>A status code representing the result of the delete operation.</returns>
     /// <response code="204">The user was deleted successfully.</response>
+    /// <response code="400">The user tried deleting themself. The request is invalid.</response>
     /// <response code="404">The user was not found.</response>
     /// <response code="500">An internal error occurred.</response>
     [HttpDelete("{userId}")]
@@ -239,6 +240,10 @@ public class UsersController : ControllerBase
         try
         {
             user = await _mediator.Send(command);
+        }
+        catch (InvalidOperationException e) when(e.Message == "A User can't delete themself.")
+        {
+            return BadRequest(e.Message);
         }
         catch (Exception e)
         {

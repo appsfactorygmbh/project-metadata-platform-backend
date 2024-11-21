@@ -59,4 +59,17 @@ public class DeleteUserControllerTest
         });
     }
 
+    [Test]
+    public async Task DeleteUser_UserSelfDeletionAttempt_Test()
+    {
+        _mediator.Setup(m => m.Send(It.IsAny<DeleteUserCommand>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new InvalidOperationException("A User can't delete themself."));
+
+        var result = await _controller.Delete("1");
+
+        Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
+        _mediator.Verify(mediator => mediator.Send(It.Is<DeleteUserCommand>(command => command.Id == "1"), It.IsAny<CancellationToken>()));
+
+    }
+
 }

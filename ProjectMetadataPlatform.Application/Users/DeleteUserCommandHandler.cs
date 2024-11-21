@@ -1,8 +1,12 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Domain.User;
+using Microsoft.AspNetCore.Http;
+
+
 
 namespace ProjectMetadataPlatform.Application.Users;
 
@@ -13,15 +17,18 @@ namespace ProjectMetadataPlatform.Application.Users;
 public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand,User?>
 {
     private readonly IUsersRepository _usersRepository;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DeleteUserCommandHandler"/> class.
     /// </summary>
     /// <param name="usersRepository">The users repository.</param>
-    public DeleteUserCommandHandler(IUsersRepository usersRepository)
+    public DeleteUserCommandHandler(IUsersRepository usersRepository, IHttpContextAccessor httpContextAccessor)
     {
         _usersRepository = usersRepository;
+        _httpContextAccessor = httpContextAccessor;
     }
+
     /// <summary>
     /// Handles the <see cref="DeleteUserCommand"/> request.
     /// </summary>
@@ -31,6 +38,12 @@ public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand,User?>
     public async Task<User?> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
     {
         var user = await _usersRepository.GetUserByIdAsync(request.Id);
+        string username = _httpContextAccessor.HttpContext?.User.Identity?.Name ?? "Unknown user";
+        User? activeUser = await _usersRepository.GetUserByUserNameAsync(username);
+        if (user !=null && user == activeUser)
+        {
+            throw new InvalidOperationException("A User can't delete themself.");
+        }
 
         return user == null ? null :await _usersRepository.DeleteUserAsync(user);
     }
