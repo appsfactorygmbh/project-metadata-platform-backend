@@ -300,4 +300,29 @@ public class ProjectsController : ControllerBase
 
         return Ok(response);
     }
+
+    [HttpDelete("{id:int}")]
+    public async Task<ActionResult> Delete(int id)
+    {
+        var command = new DeleteProjectCommand(id);
+        try
+        {
+            var deletedProject = await _mediator.Send(command);
+            if (deletedProject == null)
+            {
+                return NotFound("Project with Id " + id + " not found.");
+            }
+        }
+        catch (InvalidOperationException e)
+        {
+            return BadRequest(e.Message);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.StackTrace);
+            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+        }
+
+        return Ok(NoContent());
+    }
 }
