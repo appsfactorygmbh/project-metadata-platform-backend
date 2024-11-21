@@ -189,7 +189,7 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
                     b.Property<int>("Action")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Email")
+                    b.Property<string>("Username")
                         .HasColumnType("text");
 
                     b.Property<int>("ProjectId")
