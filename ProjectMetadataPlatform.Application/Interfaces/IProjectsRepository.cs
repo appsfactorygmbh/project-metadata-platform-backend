@@ -60,4 +60,6 @@ public interface IProjectsRepository
     /// </summary>
     /// <returns>A task representing the asynchronous operation, which upon completion returns a collection of distinct team numbers.</returns>
     Task<IEnumerable<int>> GetTeamNumbersAsync();
+
+    Task<Project> DeleteProjectAsync(Project project);
 }

@@ -158,4 +158,9 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
         return await _context.Projects.Select(project => project.TeamNumber).Distinct().ToListAsync();
     }
 
+    public async Task<Project> DeleteProjectAsync(Project project)
+    {
+        Delete(project);
+        return project;
+    }
 }
