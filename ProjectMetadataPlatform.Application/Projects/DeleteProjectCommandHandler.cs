@@ -33,11 +33,12 @@ public class DeleteProjectCommandHandler : IRequestHandler<DeleteProjectCommand,
     public async Task<Project?> Handle(DeleteProjectCommand request, CancellationToken cancellationToken)
     {
         var project = await _projectsRepository.GetProjectAsync(request.Id);
-        if (project is not { IsArchived: true })
-        {
-            throw new ArgumentException("Project is not archived.");
-        }
 
-        return await _projectsRepository.DeleteProjectAsync(project);
+        return project switch
+        {
+            null => throw new ArgumentException("Project not found."),
+            { IsArchived: false } => throw new ArgumentException("Project is not archived."),
+            _ => await _projectsRepository.DeleteProjectAsync(project)
+        };
     }
 }

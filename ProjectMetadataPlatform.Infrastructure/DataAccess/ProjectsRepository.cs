@@ -166,7 +166,7 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     public async Task<Project> DeleteProjectAsync(Project project)
     {
         Delete(project);
-        await _context.SaveChangesAsync();
+        _ = await _context.SaveChangesAsync();
         return project;
     }
 }
