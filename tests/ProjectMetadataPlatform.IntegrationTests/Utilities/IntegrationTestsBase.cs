@@ -24,9 +24,11 @@ public class IntegrationTestsBase : IDisposable
         var allEntitiesPlugins = platformDbContext.Plugins.ToList();
         var allEntitiesProjects = platformDbContext.Projects.ToList();
         var allEntitiesProjectsPlugins = platformDbContext.ProjectPluginsRelation.ToList();
+        var allEntitiesLogs = platformDbContext.Logs.ToList();
         platformDbContext.Plugins.RemoveRange(allEntitiesPlugins);
         platformDbContext.Projects.RemoveRange(allEntitiesProjects);
         platformDbContext.ProjectPluginsRelation.RemoveRange(allEntitiesProjectsPlugins);
+        platformDbContext.Logs.RemoveRange(allEntitiesLogs);
 
         await platformDbContext.SaveChangesAsync();
     }

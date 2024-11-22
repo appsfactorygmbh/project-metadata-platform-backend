@@ -31,7 +31,16 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
         {Action.UNARCHIVED_PROJECT, "unarchived project"},
         {Action.ADDED_PROJECT_PLUGIN, "added a plugin to project with properties: = ,"},
         {Action.UPDATED_PROJECT_PLUGIN, "updated a plugin in project: set from to , "},
-        {Action.REMOVED_PROJECT_PLUGIN, "removed a plugin from project with properties: = ,"}
+        {Action.REMOVED_PROJECT_PLUGIN, "removed a plugin from project with properties: = ,"},
+        {Action.ADDED_USER, "added a new user with properties: = ,"},
+        {Action.UPDATED_USER, "updated user properties: set from to , "},
+        {Action.REMOVED_USER, "removed user"},
+        {Action.REMOVED_PROJECT, "removed project"},
+        {Action.ADDED_GLOBAL_PLUGIN, "added a new global plugin with properties: = ,"},
+        {Action.UPDATED_GLOBAL_PLUGIN, "updated global plugin properties: set from to , "},
+        {Action.ARCHIVED_GLOBAL_PLUGIN, "archived global plugin"},
+        {Action.UNARCHIVED_GLOBAL_PLUGIN, "unarchived global plugin"},
+        {Action.REMOVED_GLOBAL_PLUGIN, "removed global plugin"},
     };
 
     /// <summary>
@@ -58,12 +67,10 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
         var username = _httpContextAccessor.HttpContext?.User.Identity?.Name ?? "Unknown user";
         User? user = await _usersRepository.GetUserByUserNameAsync(username);
 
-
-
         var log = new Log
         {
-            Email = user?.Email,
-            UserId = user?.Id,
+            AuthorEmail = user?.Email,
+            AuthorId = user?.Id,
             Action = action,
             ProjectId = projectId,
             TimeStamp = UtcNow,
@@ -84,11 +91,10 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
         var username = _httpContextAccessor.HttpContext?.User.Identity?.Name ?? "Unknown user";
         User? user = await _usersRepository.GetUserByUserNameAsync(username);
 
-
         var log = new Log
         {
-            Email = user?.Email,
-            UserId = user?.Id,
+            AuthorEmail = user?.Email,
+            AuthorId = user?.Id,
             Action = action,
             Project = project,
             ProjectId = project.Id,
@@ -115,7 +121,7 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
             .Include(l => l.Changes)
             .Include(l => l.Project)
             .Where(log =>
-                (log.Email != null && log.Email.Contains(search))
+                (log.AuthorEmail != null && log.AuthorEmail.Contains(search))
                 || actionsToInclude.Contains(log.Action)
                 || (log.Project != null && log.Project.ProjectName.Contains(search))
                 || (log.Changes != null && log.Changes.Any(change =>
@@ -131,7 +137,7 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
     {
         return SortByTimestamp(await GetEverything()
             .Include(log => log.Project)
-            .Include(log => log.User)
+            .Include(log => log.Author)
             .Include(log => log.Changes)
             .ToListAsync());
     }

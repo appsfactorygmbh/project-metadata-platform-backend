@@ -112,16 +112,16 @@ public class LogRepositoryTest : TestsWithDatabase
 
         await _loggingRepository.AddLogForCurrentUser( exampleProject.Id, Action.ADDED_PROJECT, logChanges);
         _context.SaveChanges();
-        var dbLog = await _context.Logs.Include(log => log.User).Include(log => log.Project).Include(log => log.Changes)
+        var dbLog = await _context.Logs.Include(log => log.Author).Include(log => log.Project).Include(log => log.Changes)
             .FirstOrDefaultAsync()!;
         Assert.That(dbLog, Is.Not.Null);
         Assert.Multiple(() =>
         {
             Assert.That(dbLog.Id, Is.EqualTo(1));
             Assert.That(dbLog.Action, Is.EqualTo(Action.ADDED_PROJECT));
-            Assert.That(dbLog.Email, Is.EqualTo("camo"));
-            Assert.That(dbLog.UserId, Is.EqualTo("42"));
-            Assert.That(dbLog.User, Is.EqualTo(user));
+            Assert.That(dbLog.AuthorEmail, Is.EqualTo("camo"));
+            Assert.That(dbLog.AuthorId, Is.EqualTo("42"));
+            Assert.That(dbLog.Author, Is.EqualTo(user));
             Assert.That(dbLog.ProjectId, Is.EqualTo(exampleProject.Id));
             Assert.That(dbLog.Project, Is.EqualTo(exampleProject));
             Assert.That(dbLog.Changes, Has.Count.EqualTo(5));
@@ -134,8 +134,8 @@ public class LogRepositoryTest : TestsWithDatabase
         var exampleLog = new Log
         {
             Id = 1,
-            UserId = null,
-            Email = "camo",
+            AuthorId = null,
+            AuthorEmail = "camo",
             TimeStamp = DateTimeOffset.UtcNow,
             ProjectId = 301,
             Action = Action.ADDED_PROJECT,
@@ -191,8 +191,8 @@ public class LogRepositoryTest : TestsWithDatabase
         var exampleLog1 = new Log
         {
             Id = 1,
-            UserId = null,
-            Email = "camo",
+            AuthorId = null,
+            AuthorEmail = "camo",
             TimeStamp = DateTimeOffset.UtcNow,
             ProjectId = 301,
             Action = Action.ADDED_PROJECT,
@@ -215,8 +215,8 @@ public class LogRepositoryTest : TestsWithDatabase
         var exampleLog2 = new Log
         {
             Id = 2,
-            UserId = null,
-            Email = "someEmail",
+            AuthorId = null,
+            AuthorEmail = "someUserName",
             TimeStamp = DateTimeOffset.UtcNow,
             ProjectId = 302,
             Action = Action.UPDATED_PROJECT,
@@ -250,8 +250,8 @@ public class LogRepositoryTest : TestsWithDatabase
         var exampleLog1 = new Log
         {
             Id = 1,
-            UserId = null,
-            Email = "camo",
+            AuthorId = null,
+            AuthorEmail = "camo",
             TimeStamp = DateTimeOffset.UtcNow,
             ProjectId = 301,
             Action = Action.ADDED_PROJECT,
@@ -274,8 +274,8 @@ public class LogRepositoryTest : TestsWithDatabase
         var exampleLog2 = new Log
         {
             Id = 2,
-            UserId = null,
-            Email = "someEmail",
+            AuthorId = null,
+            AuthorEmail = "someUserName",
             TimeStamp = DateTimeOffset.UtcNow,
             ProjectId = 302,
             Action = Action.UPDATED_PROJECT,
@@ -306,8 +306,8 @@ public class LogRepositoryTest : TestsWithDatabase
         Assert.Multiple(() =>
         {
             Assert.That(log.Id, Is.EqualTo(2));
-            Assert.That(log.UserId, Is.Null);
-            Assert.That(log.Email, Is.EqualTo("someEmail"));
+            Assert.That(log.AuthorId, Is.Null);
+            Assert.That(log.AuthorEmail, Is.EqualTo("someUserName"));
             Assert.That(log.ProjectId, Is.EqualTo(302));
             Assert.That(log.Action, Is.EqualTo(Action.UPDATED_PROJECT));
             Assert.That(log.Changes, Has.Count.EqualTo(1));
@@ -320,8 +320,8 @@ public class LogRepositoryTest : TestsWithDatabase
         var exampleLog1 = new Log
         {
             Id = 1,
-            UserId = null,
-            Email = "camo",
+            AuthorId = null,
+            AuthorEmail = "camo",
             TimeStamp = DateTimeOffset.UtcNow,
             ProjectId = 301,
             Action = Action.ADDED_PROJECT,
@@ -344,8 +344,8 @@ public class LogRepositoryTest : TestsWithDatabase
         var exampleLog2 = new Log
         {
             Id = 2,
-            UserId = null,
-            Email = "someEmail",
+            AuthorId = null,
+            AuthorEmail = "someUserName",
             TimeStamp = DateTimeOffset.UtcNow,
             ProjectId = 302,
             Action = Action.UPDATED_PROJECT,
@@ -376,8 +376,8 @@ public class LogRepositoryTest : TestsWithDatabase
         Assert.Multiple(() =>
         {
             Assert.That(log.Id, Is.EqualTo(2));
-            Assert.That(log.UserId, Is.Null);
-            Assert.That(log.Email, Is.EqualTo("someEmail"));
+            Assert.That(log.AuthorId, Is.Null);
+            Assert.That(log.AuthorEmail, Is.EqualTo("someUserName"));
             Assert.That(log.ProjectId, Is.EqualTo(302));
             Assert.That(log.Action, Is.EqualTo(Action.UPDATED_PROJECT));
             Assert.That(log.Changes, Has.Count.EqualTo(1));

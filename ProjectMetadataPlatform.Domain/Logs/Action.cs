@@ -40,5 +40,50 @@ public enum Action
     /// <summary>
     /// Represents the action of unarchiving a project.
     /// </summary>
-    UNARCHIVED_PROJECT
+    UNARCHIVED_PROJECT,
+
+    /// <summary>
+    /// Represents the action of adding a user.
+    /// </summary>
+    ADDED_USER,
+
+    /// <summary>
+    /// Represents the action of updating a user.
+    /// </summary>
+    UPDATED_USER,
+
+    /// <summary>
+    /// Represents the action of removing a user.
+    /// </summary>
+    REMOVED_USER,
+
+    /// <summary>
+    /// Represents the action of removing a project.
+    /// </summary>
+    REMOVED_PROJECT,
+
+    /// <summary>
+    /// Represents the action of adding a global plugin.
+    /// </summary>
+    ADDED_GLOBAL_PLUGIN,
+
+    /// <summary>
+    /// Represents the action of updating a global plugin.
+    /// </summary>
+    UPDATED_GLOBAL_PLUGIN,
+
+    /// <summary>
+    /// Represents the action of archiving a global plugin.
+    /// </summary>
+    ARCHIVED_GLOBAL_PLUGIN,
+
+    /// <summary>
+    /// Represents the action of unarchiving a global plugin.
+    /// </summary>
+    UNARCHIVED_GLOBAL_PLUGIN,
+
+    /// <summary>
+    /// Represents the action of removing a global plugin.
+    /// </summary>
+    REMOVED_GLOBAL_PLUGIN
 }

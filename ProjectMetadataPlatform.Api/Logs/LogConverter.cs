@@ -16,9 +16,9 @@ public class LogConverter: ILogConverter
     /// <inheritdoc />
     public LogResponse BuildLogMessage(Log log)
     {
-        var message = log.User is { Email: not null }
-            ? log.User.Email
-            : log.Email != null ? log.Email + " (deleted user)" : "<Deleted User>";
+        var message = log.Author is { Email: not null }
+            ? log.Author.Email
+            : log.AuthorEmail != null ? log.AuthorEmail + " (deleted user)" : "<Deleted User>";
 
         message += " " + log.Action switch
         {
@@ -29,6 +29,15 @@ public class LogConverter: ILogConverter
             Action.ADDED_PROJECT_PLUGIN => BuildAddedProjectPluginMessage(log.Project?.ProjectName, log.Changes),
             Action.UPDATED_PROJECT_PLUGIN => BuildUpdatedProjectPluginMessage(log.Project?.ProjectName, log.Changes),
             Action.REMOVED_PROJECT_PLUGIN => BuildRemovedProjectPluginMessage(log.Project?.ProjectName, log.Changes),
+            Action.ADDED_USER => BuildAddedUserMessage(log.Changes),
+            Action.UPDATED_USER => BuildUpdatedUserMessage(log.Changes),
+            Action.REMOVED_USER => BuildRemovedUserMessage(log.AffectedUserEmail ?? "<Unknown User>"),
+            Action.REMOVED_PROJECT => BuildRemovedProjectMessage(log.ProjectName ?? "<Unknown Project>"),
+            Action.ADDED_GLOBAL_PLUGIN => BuildAddedGlobalPluginMessage(log.Changes),
+            Action.UPDATED_GLOBAL_PLUGIN => BuildUpdatedGlobalPluginMessage(log.Changes),
+            Action.ARCHIVED_GLOBAL_PLUGIN => BuildArchivedGlobalPluginMessage(log.GlobalPluginName ?? "<Unknown Plugin>"),
+            Action.UNARCHIVED_GLOBAL_PLUGIN => BuildUnArchivedGlobalPluginMessage(log.GlobalPluginName?? "<Unknown Plugin>"),
+            Action.REMOVED_GLOBAL_PLUGIN => BuildRemovedGlobalPluginMessage(log.GlobalPluginName ?? "<Unknown Plugin>"),
             _ => ""
         };
 
@@ -127,6 +136,109 @@ public class LogConverter: ILogConverter
         message += " with properties: ";
         message += string.Join(", ", changes.Select(change => $"{change.Property} = {change.NewValue}"));
         return message;
+    }
+
+    /// <summary>
+    /// Builds a message for an added user.
+    /// </summary>
+    /// <param name="changes">The list of changes.</param>
+    /// <returns>The constructed message.</returns>
+    private static string BuildAddedUserMessage(List<LogChange>? changes) {
+        var message = "added a new user";
+        if (changes == null) {
+            return message;
+        }
+        message += " with properties: ";
+        message += string.Join(", ", changes.Select(change => $"{change.Property} = {change.NewValue}"));
+        return message;
+    }
+
+    /// <summary>
+    /// Builds a message for an updated user.
+    /// </summary>
+    /// <param name="changes">The list of changes.</param>
+    /// <returns>The constructed message.</returns>
+    private static string BuildUpdatedUserMessage(List<LogChange>? changes) {
+        var message = "updated user properties: ";
+        if (changes == null) {
+            return message;
+        }
+        message += string.Join(", ", changes.Select(change => $"set {change.Property} from {change.OldValue} to {change.NewValue}"));
+        return message;
+    }
+
+    /// <summary>
+    /// Builds a message for a removed user.
+    /// </summary>
+    /// <param name="username">The username of the removed user.</param>
+    /// <returns>The constructed message.</returns>
+    private static string BuildRemovedUserMessage(string username) {
+        return "removed user " + username;
+    }
+
+    /// <summary>
+    /// Builds a message for a removed project.
+    /// </summary>
+    /// <param name="projectName">The name of the removed project.</param>
+    /// <returns>The constructed message.</returns>
+    private static string BuildRemovedProjectMessage(string projectName) {
+        return "removed project " + projectName;
+    }
+
+    /// <summary>
+    /// Builds a message for an added global plugin.
+    /// </summary>
+    /// <param name="changes">The list of changes.</param>
+    /// <returns>The constructed message.</returns>
+    private static string BuildAddedGlobalPluginMessage(List<LogChange>? changes) {
+        var message = "added a new global plugin";
+        if (changes == null) {
+            return message;
+        }
+        message += " with properties: ";
+        message += string.Join(", ", changes.Select(change => $"{change.Property} = {change.NewValue}"));
+        return message;
+    }
+
+    /// <summary>
+    /// Builds a message for an updated global plugin.
+    /// </summary>
+    /// <param name="changes">The list of changes.</param>
+    /// <returns>The constructed message.</returns>
+    private static string BuildUpdatedGlobalPluginMessage(List<LogChange>? changes) {
+        var message = "updated global plugin properties: ";
+        if (changes == null) {
+            return message;
+        }
+        message += string.Join(", ", changes.Select(change => $"set {change.Property} from {change.OldValue} to {change.NewValue}"));
+        return message;
+    }
+
+    /// <summary>
+    /// Builds a message for an archived global plugin.
+    /// </summary>
+    /// <param name="pluginName">The name of the archived global plugin.</param>
+    /// <returns>The constructed message.</returns>
+    private static string BuildArchivedGlobalPluginMessage(string pluginName) {
+        return "archived global plugin " + pluginName;
+    }
+
+    /// <summary>
+    /// Builds a message for an unarchived global plugin.
+    /// </summary>
+    /// <param name="pluginName">The name of the unarchived global plugin.</param>
+    /// <returns>The constructed message.</returns>
+    private static string BuildUnArchivedGlobalPluginMessage(string pluginName) {
+        return "unarchived global plugin " + pluginName;
+    }
+
+    /// <summary>
+    /// Builds a message for a removed global plugin.
+    /// </summary>
+    /// <param name="pluginName">The name of the removed global plugin.</param>
+    /// <returns>The constructed message.</returns>
+    private static string BuildRemovedGlobalPluginMessage(string pluginName) {
+        return "removed global plugin " + pluginName;
     }
 
     /// <summary>

@@ -37,9 +37,9 @@ public class LogsControllerTest
         {
             Id = 42,
             TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
-            UserId = "42",
-            Email = "Slartibartfast",
-            User = new User { Email = "Slartibartfast" },
+            AuthorId = "42",
+            AuthorEmail = "Slartibartfast",
+            Author = new User { Email = "Slartibartfast" },
             ProjectId = 42,
             Action = Action.UPDATED_PROJECT,
             Changes =
@@ -76,9 +76,9 @@ public class LogsControllerTest
         {
             Id = 42,
             TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
-            UserId = "42",
-            Email = "Slartibartfast",
-            User = new User { Email = "Slartibartfast" },
+            AuthorId = "42",
+            AuthorEmail = "Slartibartfast",
+            Author = new User { Email = "Slartibartfast" },
             ProjectId = 42,
             Action = Action.UPDATED_PROJECT,
             Changes =
@@ -115,9 +115,9 @@ public class LogsControllerTest
         {
             Id = 42,
             TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
-            UserId = "42",
-            Email = "Slartibartfast",
-            User = new User { Email = "Slartibartfast" },
+            AuthorId = "42",
+            AuthorEmail = "Slartibartfast",
+            Author = new User { Email = "Slartibartfast" },
             ProjectId = 42,
             Action = Action.UPDATED_PROJECT,
             Changes =
