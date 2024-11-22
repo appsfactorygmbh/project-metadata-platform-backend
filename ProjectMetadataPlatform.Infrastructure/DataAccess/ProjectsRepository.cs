@@ -158,6 +158,11 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
         return await _context.Projects.Select(project => project.TeamNumber).Distinct().ToListAsync();
     }
 
+        /// <summary>
+    /// Asynchronously deletes a project from the database.
+    /// </summary>
+    /// <param name="project">The project to delete.</param>
+    /// <returns>A task representing the asynchronous operation, which upon completion returns the deleted project.</returns>
     public async Task<Project> DeleteProjectAsync(Project project)
     {
         Delete(project);

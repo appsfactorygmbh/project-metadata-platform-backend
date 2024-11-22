@@ -301,6 +301,15 @@ public class ProjectsController : ControllerBase
         return Ok(response);
     }
 
+        /// <summary>
+    /// Deletes the project with the given id.
+    /// </summary>
+    /// <param name="id">The id of the project to delete.</param>
+    /// <returns>An ActionResult indicating the result of the delete operation.</returns>
+    /// <response code="204">The project was deleted successfully.</response>
+    /// <response code="400">The request was invalid.</response>
+    /// <response code="404">The project with the specified id was not found.</response>
+    /// <response code="500">An internal error occurred.</response>
     [HttpDelete("{id:int}")]
     public async Task<ActionResult> Delete(int id)
     {
