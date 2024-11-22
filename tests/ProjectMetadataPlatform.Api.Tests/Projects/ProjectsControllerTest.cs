@@ -442,5 +442,85 @@ public class ProjectsControllerTest
         Assert.That(notFoundResult.Value, Is.EqualTo($"Project with Id {nonExistentProjectId} not found."));  // Ensure the correct message is returned
     }
 
+    [Test]
+    public async Task DeleteProject_ReturnsOk()
+    {
+        var project = new Project
+        {
+            Id = 1,
+            ProjectName = "Heather",
+            ClientName = "Metatron",
+            BusinessUnit = "666",
+            Department = "Silent Hill",
+            TeamNumber = 3,
+            IsArchived = true
+        };
+
+        _mediator.Setup(m => m.Send(It.Is<DeleteProjectCommand>(x => x.Id == 1), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(project);
+
+        var result = await _controller.Delete(1);
+
+        Assert.That(result, Is.InstanceOf<OkObjectResult>());
+    }
+
+    [Test]
+    public async Task DeleteProject_WhenProjectIsNotArchived_ReturnsBadRequest()
+    {
+        var project = new Project
+        {
+            Id = 1,
+            ProjectName = "Heather",
+            ClientName = "Metatron",
+            BusinessUnit = "666",
+            Department = "Silent Hill",
+            TeamNumber = 3,
+            IsArchived = false
+        };
+
+        _mediator
+            .Setup(m => m.Send(It.Is<DeleteProjectCommand>(x => x.Id == 1), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new ArgumentException("Project is not archived."));
+
+        var result = await _controller.Delete(1);
+
+        Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
+        var badRequestResult = result as BadRequestObjectResult;
+        Assert.That(badRequestResult!.Value, Is.EqualTo("Project is not archived."));
+    }
+
+    [Test]
+    public async Task DeleteProject_WhenProjectDoesNotExist_ReturnsNotFound()
+    {
+        var nonExistentProjectId = 999;
+
+        _mediator.Setup(m => m.Send(It.Is<DeleteProjectCommand>(x => x.Id == nonExistentProjectId), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new ArgumentException($"Project with Id {nonExistentProjectId} not found."));
+
+        var result = await _controller.Delete(nonExistentProjectId);
+
+        Assert.That(result, Is.InstanceOf<NotFoundObjectResult>());
+
+        var notFoundResult = result as NotFoundObjectResult;
+        Assert.Multiple(() =>
+        {
+            Assert.That(notFoundResult!.StatusCode, Is.EqualTo(404));
+            Assert.That(notFoundResult.Value, Is.EqualTo($"Project with Id {nonExistentProjectId} not found."));
+        });
+    }
+
+    [Test]
+    public async Task DeleteProject_InternalServerError()
+    {
+        _mediator.Setup(m => m.Send(It.IsAny<DeleteProjectCommand>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new Exception("Database error"));
+
+        var result = await _controller.Delete(1);
+
+        Assert.That(result, Is.InstanceOf<StatusCodeResult>());
+
+        var statusCodeResult = result as StatusCodeResult;
+        Assert.That(statusCodeResult!.StatusCode, Is.EqualTo(StatusCodes.Status500InternalServerError));
+    }
 
 }

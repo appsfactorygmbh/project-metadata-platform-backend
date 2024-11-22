@@ -313,6 +313,14 @@ public class ProjectsController : ControllerBase
                 return NotFound("Project with Id " + id + " not found.");
             }
         }
+        catch (ArgumentException e) when (e.Message.Contains("not found"))
+        {
+            return NotFound(e.Message);
+        }
+        catch (ArgumentException e)
+        {
+            return BadRequest(e.Message);
+        }
         catch (InvalidOperationException e)
         {
             return BadRequest(e.Message);

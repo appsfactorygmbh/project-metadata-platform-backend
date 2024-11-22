@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Application.Projects;
 using ProjectMetadataPlatform.Domain.Projects;
@@ -340,5 +341,33 @@ public class ProjectsRepositoryTests : TestsWithDatabase
         IEnumerable<string> result = await _repository.GetBusinessUnitsAsync();
 
         Assert.That(result, Is.Empty);
+    }
+
+    [Test]
+    public async Task DeleteProjectAsync_ShouldDeleteProject()
+    {
+        var project = new Project
+        {
+            Id = 1,
+            ProjectName = "Regen",
+            ClientName = "Nasa",
+            BusinessUnit = "BuWeather",
+            TeamNumber = 42,
+            Department = "Homelandsecurity"
+        };
+
+        _context.Projects.RemoveRange(_context.Projects);
+        _context.Projects.Add(project);
+        await _context.SaveChangesAsync();
+
+        var deletedProject = await _repository.DeleteProjectAsync(project);
+
+        var remainingProjects = await _context.Projects.ToListAsync();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(remainingProjects, Is.Empty);
+            Assert.That(deletedProject, Is.EqualTo(project));
+        });
     }
 }
