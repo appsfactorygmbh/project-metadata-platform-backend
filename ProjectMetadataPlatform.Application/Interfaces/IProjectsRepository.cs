@@ -61,5 +61,10 @@ public interface IProjectsRepository
     /// <returns>A task representing the asynchronous operation, which upon completion returns a collection of distinct team numbers.</returns>
     Task<IEnumerable<int>> GetTeamNumbersAsync();
 
+        /// <summary>
+    /// Deletes a project from the database.
+    /// </summary>
+    /// <param name="project">The project to delete.</param>
+    /// <returns>A task representing the asynchronous operation, which upon completion returns the deleted project.</returns>
     Task<Project> DeleteProjectAsync(Project project);
 }
