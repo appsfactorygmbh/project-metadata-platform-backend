@@ -133,6 +133,10 @@ public class AuthRepository : RepositoryBase<RefreshToken>, IAuthRepository
 
         return user?.UserName;
     }
+    public Task<string?> GetEmailByUserName(string username)
+    {
+        return _userManager.Users.Where(u => u.UserName == username).Select(u => u.Email).FirstOrDefaultAsync();
+    }
 
 
 }

@@ -60,4 +60,6 @@ public interface IAuthRepository
     /// <param name="refreshToken">a refresh Token</param>
     /// <returns>a username</returns>
     Task<string?> GetUserNameByRefreshToken(string refreshToken);
+
+    Task<string?> GetEmailByUserName(string username);
 }
