@@ -36,9 +36,7 @@ public class LoginQueryHandler : IRequestHandler<LoginQuery, JwtTokens>
         {
             throw new InvalidOperationException("Invalid login credentials.");
         }
-
-        var email = await _authRepository.GetEmailByUserName(request.Username);
-        var stringToken = AccessTokenService.CreateAccessToken(email);
+        var stringToken = AccessTokenService.CreateAccessToken(request.Username);
         var refreshToken = Guid.NewGuid().ToString();
         if (await _authRepository.CheckRefreshTokenExists(request.Username))
         {

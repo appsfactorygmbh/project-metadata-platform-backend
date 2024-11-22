@@ -16,7 +16,7 @@ public static class AccessTokenService
     /// </summary>
     /// <param name="username">Username for user the access token belongs to</param>
     /// <returns>access token value as a string</returns>
-    public static string CreateAccessToken(string email)
+    public static string CreateAccessToken(string username)
     {
         var tokenDescriptorInformation = TokenDescriptorInformation.ReadFromEnvVariables();
         var issuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(tokenDescriptorInformation.IssuerSigningKey));
@@ -25,8 +25,7 @@ public static class AccessTokenService
         {
             Subject = new ClaimsIdentity(
             [
-
-                new Claim(ClaimTypes.Email, email)
+                new Claim(ClaimTypes.Name, username)
             ]),
             Expires = DateTime.UtcNow.AddMinutes(expirationTime),
             Issuer = tokenDescriptorInformation.ValidIssuer,

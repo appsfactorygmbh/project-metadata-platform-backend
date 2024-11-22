@@ -1,5 +1,4 @@
 using System;
-using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -40,7 +39,7 @@ public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand,User?>
     public async Task<User?> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
     {
         var user = await _usersRepository.GetUserByIdAsync(request.Id);
-        var username = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.Email) ?? "Unknown user";
+        var username = _httpContextAccessor.HttpContext?.User.Identity?.Name ?? "Unknown user";
         User? activeUser = await _usersRepository.GetUserByUserNameAsync(username);
         return user !=null && user == activeUser
             ? throw new InvalidOperationException("A User can't delete themself.")

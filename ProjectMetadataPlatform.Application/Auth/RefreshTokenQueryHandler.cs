@@ -37,8 +37,7 @@ public class RefreshTokenQueryHandler : IRequestHandler<RefreshTokenQuery, JwtTo
             throw new AuthenticationException("Invalid refresh token.");
         }
         var username = await _authRepository.GetUserNameByRefreshToken(request.RefreshToken);
-        var email = await _authRepository.GetEmailByUserName(username);
-        var stringToken = AccessTokenService.CreateAccessToken(email);
+        var stringToken = AccessTokenService.CreateAccessToken(username);
         return new JwtTokens { AccessToken = stringToken, RefreshToken = request.RefreshToken };
     }
 }
