@@ -61,4 +61,14 @@ public class DeleteProjectCommandHandlerTest
         var ex = Assert.ThrowsAsync<ArgumentException>(() => _handler.Handle(new DeleteProjectCommand(1), It.IsAny<CancellationToken>()));
         Assert.That(ex.Message, Is.EqualTo("Project is not archived."));
     }
+
+    [Test]
+    public void DeleteProject_NotFound_Test()
+    {
+        _mockProjectRepo.Setup(m => m.GetProjectAsync(It.IsAny<int>())).ReturnsAsync((Project?)null);
+
+        var ex = Assert.ThrowsAsync<ArgumentException>(() => _handler.Handle(new DeleteProjectCommand(1), It.IsAny<CancellationToken>()));
+        Assert.That(ex.Message, Is.EqualTo("Project not found."));
+    }
+
 }
