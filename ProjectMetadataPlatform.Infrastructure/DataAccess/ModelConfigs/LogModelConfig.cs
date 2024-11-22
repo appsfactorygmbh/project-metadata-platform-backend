@@ -22,12 +22,28 @@ public class LogModelConfig : IEntityTypeConfiguration<Log>
             .HasOne(e => e.Project)
             .WithMany(e => e.Logs)
             .HasForeignKey(e => e.ProjectId)
-            .IsRequired();
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.SetNull);
 
         _ = builder
             .HasOne(e => e.Author)
             .WithMany()
             .HasForeignKey(e => e.AuthorId)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        _ = builder
+            .HasOne(e => e.AffectedUser)
+            .WithMany()
+            .HasForeignKey(e => e.AffectedUserId)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        _ = builder
+            .HasOne(e => e.GlobalPlugin)
+            .WithMany()
+            .HasForeignKey(e => e.GlobalPluginId)
+            .IsRequired(false)
             .OnDelete(DeleteBehavior.SetNull);
     }
 }

@@ -250,12 +250,12 @@ public class LogConverterTest
             Id = 42,
             TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
             AuthorId = "42",
-            AuthorUsername = "Infinite Improbability Drive",
-            Author = new User { UserName = "Infinite Improbability Drive" },
+            AuthorEmail = "Infinite Improbability Drive",
+            Author = new User { Email = "Infinite Improbability Drive" },
             Action = Action.ADDED_USER,
             Changes =
             [
-                new LogChange { Property = "UserName", OldValue = "", NewValue = "Bowl of Petunias" }
+                new LogChange { Property = "Email", OldValue = "", NewValue = "Bowl of Petunias" }
             ]
         };
 
@@ -263,7 +263,7 @@ public class LogConverterTest
 
         Assert.Multiple(() =>
         {
-            Assert.That(logResponse.LogMessage, Is.EqualTo("Infinite Improbability Drive added a new user with properties: UserName = Bowl of Petunias"));
+            Assert.That(logResponse.LogMessage, Is.EqualTo("Infinite Improbability Drive added a new user with properties: Email = Bowl of Petunias"));
             Assert.That(logResponse.Timestamp, Is.EqualTo("1970-01-01T00:00:00+01:00"));
         });
     }
@@ -276,12 +276,12 @@ public class LogConverterTest
             Id = 42,
             TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
             AuthorId = "42",
-            AuthorUsername = "Gandalf",
-            Author = new User { UserName = "Gandalf" },
+            AuthorEmail = "Gandalf",
+            Author = new User { Email = "Gandalf" },
             Action = Action.UPDATED_USER,
             Changes =
             [
-                new LogChange { Property = "UserName", OldValue = "Gandalf the Grey", NewValue = "Gandalf the White" }
+                new LogChange { Property = "Email", OldValue = "Gandalf the Grey", NewValue = "Gandalf the White" }
             ]
         };
 
@@ -289,7 +289,7 @@ public class LogConverterTest
 
         Assert.Multiple(() =>
         {
-            Assert.That(logResponse.LogMessage, Is.EqualTo("Gandalf updated user properties: set UserName from Gandalf the Grey to Gandalf the White"));
+            Assert.That(logResponse.LogMessage, Is.EqualTo("Gandalf updated user properties: set Email from Gandalf the Grey to Gandalf the White"));
             Assert.That(logResponse.Timestamp, Is.EqualTo("1970-01-01T00:00:00+01:00"));
         });
     }
@@ -302,13 +302,13 @@ public class LogConverterTest
             Id = 42,
             TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
             AuthorId = "42",
-            AuthorUsername = "Ground",
-            Author = new User { UserName = "Ground" },
+            AuthorEmail = "Ground",
+            Author = new User { Email = "Ground" },
             Action = Action.REMOVED_USER,
             AffectedUserEmail = "whale@air.com",
             Changes =
             [
-                new LogChange { Property = "UserName", OldValue = "Whale", NewValue = "" }
+                new LogChange { Property = "Email", OldValue = "Whale", NewValue = "" }
             ]
         };
 
@@ -329,8 +329,8 @@ public class LogConverterTest
             Id = 42,
             TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
             AuthorId = "42",
-            AuthorUsername = "Luke Skywalker",
-            Author = new User { UserName = "Luke Skywalker" },
+            AuthorEmail = "Luke Skywalker",
+            Author = new User { Email = "Luke Skywalker" },
             Action = Action.REMOVED_PROJECT,
             ProjectName = "DeathStar",
         };
@@ -352,8 +352,8 @@ public class LogConverterTest
             Id = 42,
             TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
             AuthorId = "42",
-            AuthorUsername = "Chancellor Palpatine",
-            Author = new User { UserName = "Chancellor Palpatine" },
+            AuthorEmail = "Chancellor Palpatine",
+            Author = new User { Email = "Chancellor Palpatine" },
             Action = Action.ADDED_GLOBAL_PLUGIN,
             Changes =
             [
@@ -378,12 +378,12 @@ public class LogConverterTest
             Id = 42,
             TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
             AuthorId = "42",
-            AuthorUsername = "Darth Sidious",
-            Author = new User { UserName = "Darth Sidious" },
+            AuthorEmail = "Darth Sidious",
+            Author = new User { Email = "Darth Sidious" },
             Action = Action.UPDATED_GLOBAL_PLUGIN,
             Changes =
             [
-                new LogChange { Property = "UserName", OldValue = "Republic", NewValue = "First Galactic Empire" }
+                new LogChange { Property = "Email", OldValue = "Republic", NewValue = "First Galactic Empire" }
             ]
         };
 
@@ -391,7 +391,7 @@ public class LogConverterTest
 
         Assert.Multiple(() =>
         {
-            Assert.That(logResponse.LogMessage, Is.EqualTo("Darth Sidious updated global plugin properties: set UserName from Republic to First Galactic Empire"));
+            Assert.That(logResponse.LogMessage, Is.EqualTo("Darth Sidious updated global plugin properties: set Email from Republic to First Galactic Empire"));
             Assert.That(logResponse.Timestamp, Is.EqualTo("1970-01-01T00:00:00+01:00"));
         });
     }
@@ -404,8 +404,8 @@ public class LogConverterTest
             Id = 42,
             TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
             AuthorId = "42",
-            AuthorUsername = "Zip",
-            Author = new User { UserName = "Zip" },
+            AuthorEmail = "Zip",
+            Author = new User { Email = "Zip" },
             Action = Action.ARCHIVED_GLOBAL_PLUGIN,
             GlobalPluginName = "Directory",
         };
@@ -427,8 +427,8 @@ public class LogConverterTest
             Id = 42,
             TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
             AuthorId = "42",
-            AuthorUsername = "Unzip",
-            Author = new User { UserName = "Unzip" },
+            AuthorEmail = "Unzip",
+            Author = new User { Email = "Unzip" },
             Action = Action.UNARCHIVED_GLOBAL_PLUGIN,
             GlobalPluginName = "Directory",
         };
@@ -450,8 +450,8 @@ public class LogConverterTest
             Id = 42,
             TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
             AuthorId = "42",
-            AuthorUsername = "Recursively",
-            Author = new User { UserName = "Recursively" },
+            AuthorEmail = "Recursively",
+            Author = new User { Email = "Recursively" },
             Action = Action.REMOVED_GLOBAL_PLUGIN,
             GlobalPluginName = "root"
         };
