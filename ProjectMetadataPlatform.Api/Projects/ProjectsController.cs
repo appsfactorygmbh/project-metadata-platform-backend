@@ -316,15 +316,7 @@ public class ProjectsController : ControllerBase
         var command = new DeleteProjectCommand(id);
         try
         {
-            var deletedProject = await _mediator.Send(command);
-            if (deletedProject == null)
-            {
-                return NotFound("Project with Id " + id + " not found.");
-            }
-        }
-        catch (ArgumentException e) when (e.Message.Contains("not found"))
-        {
-            return NotFound(e.Message);
+            _ = await _mediator.Send(command);
         }
         catch (ArgumentException e)
         {
