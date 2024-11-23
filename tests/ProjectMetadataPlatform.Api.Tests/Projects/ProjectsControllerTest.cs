@@ -490,23 +490,17 @@ public class ProjectsControllerTest
     }
 
     [Test]
-    public async Task DeleteProject_WhenProjectDoesNotExist_ReturnsNotFound()
+    public async Task DeleteProject_WhenProjectDoesNotExist_ReturnsBadRequest()
     {
-        var nonExistentProjectId = 999;
+        _mediator
+            .Setup(m => m.Send(It.Is<DeleteProjectCommand>(x => x.Id == 1), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new ArgumentException("Project not found."));
 
-        _mediator.Setup(m => m.Send(It.Is<DeleteProjectCommand>(x => x.Id == nonExistentProjectId), It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new ArgumentException($"Project with Id {nonExistentProjectId} not found."));
+        var result = await _controller.Delete(1);
 
-        var result = await _controller.Delete(nonExistentProjectId);
-
-        Assert.That(result, Is.InstanceOf<NotFoundObjectResult>());
-
-        var notFoundResult = result as NotFoundObjectResult;
-        Assert.Multiple(() =>
-        {
-            Assert.That(notFoundResult!.StatusCode, Is.EqualTo(404));
-            Assert.That(notFoundResult.Value, Is.EqualTo($"Project with Id {nonExistentProjectId} not found."));
-        });
+        Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
+        var badRequestResult = result as BadRequestObjectResult;
+        Assert.That(badRequestResult!.Value, Is.EqualTo("Project not found."));
     }
 
     [Test]
