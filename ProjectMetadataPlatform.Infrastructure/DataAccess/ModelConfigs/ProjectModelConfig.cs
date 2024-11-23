@@ -22,11 +22,5 @@ public class ProjectModelConfig : IEntityTypeConfiguration<Project>
         _ = builder.HasMany(p => p.ProjectPlugins)
             .WithOne(pp => pp.Project)
             .HasForeignKey(pp => pp.ProjectId);
-
-        _ = builder.HasMany(e => e.Logs)
-                               .WithOne(e => e.Project)
-                               .HasForeignKey(e => e.ProjectId)
-                               .IsRequired();
-
     }
 }

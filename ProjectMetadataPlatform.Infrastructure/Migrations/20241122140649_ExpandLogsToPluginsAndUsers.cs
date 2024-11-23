@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -25,12 +25,12 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
             migrationBuilder.RenameColumn(
                 name: "UserId",
                 table: "Logs",
-                newName: "ProjectName");
+                newName: "AuthorId");
 
             migrationBuilder.RenameColumn(
                 name: "Email",
                 table: "Logs",
-                newName: "GlobalPluginName");
+                newName: "AuthorEmail");
 
             migrationBuilder.AddColumn<string>(
                 name: "AffectedUserEmail",
@@ -45,13 +45,13 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
-                name: "AuthorEmail",
+                name: "GlobalPluginName",
                 table: "Logs",
                 type: "text",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
-                name: "AuthorId",
+                name: "ProjectName",
                 table: "Logs",
                 type: "text",
                 nullable: true);
@@ -150,11 +150,11 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
                 table: "Logs");
 
             migrationBuilder.DropColumn(
-                name: "AuthorEmail",
+                name: "GlobalPluginName",
                 table: "Logs");
 
             migrationBuilder.DropColumn(
-                name: "AuthorId",
+                name: "ProjectName",
                 table: "Logs");
 
             migrationBuilder.DropColumn(
@@ -162,12 +162,12 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
                 table: "Logs");
 
             migrationBuilder.RenameColumn(
-                name: "ProjectName",
+                name: "AuthorId",
                 table: "Logs",
                 newName: "UserId");
 
             migrationBuilder.RenameColumn(
-                name: "GlobalPluginName",
+                name: "AuthorEmail",
                 table: "Logs",
                 newName: "Email");
 
