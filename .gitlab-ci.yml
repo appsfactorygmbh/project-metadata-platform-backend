@@ -44,6 +44,7 @@ code-quality:
     - "dotnet tool restore"
     - "dotnet build --no-incremental --configuration Release --packages ./.nuget/"
     - "export DIR=file://$(pwd)"
+    - "echo $DIR"
     - "dotnet tool run cq sarif ProjectMetadataPlatform.Domain/bin/codeanalysis.sarif.json gl-code-quality-report1.json $DIR"
     - "dotnet tool run cq sarif ProjectMetadataPlatform.Application/bin/codeanalysis.sarif.json gl-code-quality-report2.json $DIR"
     - "dotnet tool run cq sarif ProjectMetadataPlatform.Infrastructure/bin/codeanalysis.sarif.json gl-code-quality-report3.json $DIR"
