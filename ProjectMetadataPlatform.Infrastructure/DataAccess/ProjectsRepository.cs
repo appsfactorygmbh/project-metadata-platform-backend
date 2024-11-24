@@ -40,6 +40,7 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
                                                   || project.ClientName.ToLower().Contains(lowerTextSearch)
                                                   || project.BusinessUnit.ToLower().Contains(lowerTextSearch)
                                                   || project.TeamNumber.ToString().Contains(lowerTextSearch));
+
         }
 
         if (query.Request != null)
@@ -50,6 +51,7 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
                 filteredQuery = filteredQuery.Where(project =>
                     project.ProjectName.ToLower().Contains(lowerProjectNameSearch)
                 );
+
             }
 
             if (!string.IsNullOrWhiteSpace(query.Request.ClientName))
@@ -58,6 +60,7 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
                 filteredQuery = filteredQuery.Where(project =>
                     project.ClientName.ToLower().Contains(lowerClientNameSearch)
                 );
+
             }
 
             if (query.Request.BusinessUnit is { Count: > 0 })
@@ -66,6 +69,7 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
                 filteredQuery = filteredQuery.Where(project =>
                     lowerBusinessUnits.Contains(project.BusinessUnit.ToLower())
                 );
+
             }
 
             if (query.Request.TeamNumber is { Count: > 0 })
