@@ -40,7 +40,7 @@ code-quality:
   image: mcr.microsoft.com/dotnet/sdk:8.0
   variables:
     DOTNET_ROLL_FORWARD: Major
-    DIR: ''
+    DIR: '$CI_BUILDS_DIR/$CI_PROJECT_PATH'
   script:
     - "dotnet tool restore"
     - "dotnet build --no-incremental --configuration Release --packages ./.nuget/"
