@@ -36,6 +36,7 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
         if (!string.IsNullOrWhiteSpace(query.Search))
         {
             var lowerTextSearch = query.Search.ToLower();
+            
             filteredQuery = filteredQuery.Where(project => project.ProjectName.ToLower().Contains(lowerTextSearch)
                                                   || project.ClientName.ToLower().Contains(lowerTextSearch)
                                                   || project.BusinessUnit.ToLower().Contains(lowerTextSearch)
