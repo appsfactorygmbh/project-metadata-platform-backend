@@ -9,7 +9,7 @@ using ProjectMetadataPlatform.Domain.Projects;
 namespace ProjectMetadataPlatform.Infrastructure.DataAccess;
 
 /// <summary>
-///     Repository for accessing and managing project data in the database.
+/// Repository for accessing and managing project data in the database.
 /// </summary>
 public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
 {
