@@ -126,6 +126,63 @@ public class GetLogsQueryHandlerTest
     }
 
     [Test]
+    public async Task GetLogs_ForAffectedUser_Test()
+    {
+        var log = new Log
+        {
+            Id = 1,
+            TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
+            AuthorId = "1",
+            AuthorEmail = "Newton",
+            AffectedUserId = "Newton",
+            Action = Action.UPDATED_USER,
+            Changes =
+            [
+                new LogChange { Property = "flying", OldValue = "yes", NewValue = "no" }
+            ]
+        };
+
+        _mockLogsRepo.Setup(r => r.GetLogsForUser("Newton")).ReturnsAsync([log]);
+
+        var result = await _handler.Handle(new GetLogsQuery(null, null, "Newton"), CancellationToken.None);
+        var logList = result.ToList();
+
+        Assert.That(logList, Has.Count.EqualTo(1));
+        Assert.That(logList[0], Is.EqualTo(log));
+
+        _mockLogsRepo.Verify(r => r.GetLogsForUser("Newton"), Times.Once);
+    }
+
+    [Test]
+    public async Task GetLogs_ForGlobalPlugin_Test()
+    {
+        var log = new Log
+        {
+            Id = 1,
+            TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
+            AuthorId = "1",
+            AuthorEmail = "Newton",
+            Action = Action.UPDATED_GLOBAL_PLUGIN,
+            GlobalPluginId = 42,
+            GlobalPluginName = "Gravity",
+            Changes =
+            [
+                new LogChange { Property = "discovered", OldValue = "no", NewValue = "yes" }
+            ]
+        };
+
+        _mockLogsRepo.Setup(r => r.GetLogsForGlobalPlugin(42)).ReturnsAsync([log]);
+
+        var result = await _handler.Handle(new GetLogsQuery(null, null, null, 42), CancellationToken.None);
+        var logList = result.ToList();
+
+        Assert.That(logList, Has.Count.EqualTo(1));
+        Assert.That(logList[0], Is.EqualTo(log));
+
+        _mockLogsRepo.Verify(r => r.GetLogsForGlobalPlugin(42), Times.Once);
+    }
+
+    [Test]
     public async Task GetLogs_ThrowsExceptionWhenProjectNotFound_Test()
     {
         _mockLogsRepo.Setup(m => m.GetLogsForProject(It.IsAny<int>())).ThrowsAsync(new InvalidOperationException());

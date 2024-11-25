@@ -40,14 +40,16 @@ public class LogsController: ControllerBase
     /// </summary>
     /// <param name="projectId">The ID of the project to filter logs by.</param>
     /// <param name="search">The search term to filter logs by.</param>
+    /// <param name="userId">The ID of the affected user to filter logs by.</param>
+    /// <param name="globalPluginId">The ID of the global plugin to filter logs by.</param>
     /// <returns>A list of log responses.</returns>
     /// <response code="200">Returns the list of log responses.</response>
     /// <response code="404">Not Project with the given id was found.</response>
     /// <response code="500">If an error occurs while processing the request.</response>
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<LogResponse>>> Get(int? projectId, string? search)
+    public async Task<ActionResult<IEnumerable<LogResponse>>> Get(int? projectId, string? search, string? userId, int? globalPluginId)
     {
-        var query = new GetLogsQuery(projectId, search);
+        var query = new GetLogsQuery(projectId, search, userId, globalPluginId);
 
         IEnumerable<Log> logs;
 

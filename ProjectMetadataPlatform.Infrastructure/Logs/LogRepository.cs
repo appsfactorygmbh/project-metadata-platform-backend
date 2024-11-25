@@ -107,9 +107,12 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
     ///  <inheritdoc />
     public async Task<List<Log>> GetLogsForProject(int projectId)
     {
-        var projects = await _context.Projects.Include(b => b.Logs).FirstAsync(pro => pro.Id == projectId);
-
-        return projects.Logs != null ? SortByTimestamp([.. projects.Logs]) : [];
+        var res = _context.Logs
+            .Include(l => l.Changes)
+            .Include(l => l.Project)
+            .Include(l => l.Author)
+            .Where(log => log.ProjectId == projectId);
+        return SortByTimestamp(await res.ToListAsync());
     }
 
     ///  <inheritdoc />
@@ -120,8 +123,13 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
         var res = _context.Logs
             .Include(l => l.Changes)
             .Include(l => l.Project)
+            .Include(l => l.Author)
+            .Include(l => l.AffectedUser)
+            .Include(l => l.GlobalPlugin)
             .Where(log =>
                 (log.AuthorEmail != null && log.AuthorEmail.Contains(search))
+                || (log.AffectedUserEmail != null && log.AffectedUserEmail.Contains(search))
+                || (log.GlobalPluginName != null && log.GlobalPluginName.Contains(search))
                 || actionsToInclude.Contains(log.Action)
                 || (log.Project != null && log.Project.ProjectName.Contains(search))
                 || (log.Changes != null && log.Changes.Any(change =>
@@ -129,6 +137,28 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
                     || change.OldValue.Contains(search)
                     || change.NewValue.Contains(search))));
 
+        return SortByTimestamp(await res.ToListAsync());
+    }
+
+    ///  <inheritdoc />
+    public async Task<List<Log>> GetLogsForUser(string userId)
+    {
+        var res = _context.Logs
+            .Include(l => l.Changes)
+            .Include(l => l.AffectedUser)
+            .Include(l => l.Author)
+            .Where(log => log.AffectedUserId == userId);
+        return SortByTimestamp(await res.ToListAsync());
+    }
+
+    ///  <inheritdoc />
+    public async Task<List<Log>> GetLogsForGlobalPlugin(int globalPluginId)
+    {
+        var res = _context.Logs
+            .Include(l => l.Changes)
+            .Include(l => l.GlobalPlugin)
+            .Include(l => l.Author)
+            .Where(log => log.GlobalPluginId == globalPluginId);
         return SortByTimestamp(await res.ToListAsync());
     }
 

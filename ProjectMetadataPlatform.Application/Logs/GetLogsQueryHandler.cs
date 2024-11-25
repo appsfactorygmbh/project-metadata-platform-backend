@@ -40,6 +40,14 @@ public class GetLogsQueryHandler: IRequestHandler<GetLogsQuery, IEnumerable<Log>
         {
             logs = await _logRepository.GetLogsWithSearch(request.Search);
         }
+        else if (request.UserId != null)
+        {
+            logs = await _logRepository.GetLogsForUser(request.UserId!);
+        }
+        else if (request.GlobalPluginId != null)
+        {
+            logs = await _logRepository.GetLogsForGlobalPlugin((int)request.GlobalPluginId!);
+        }
         else
         {
             logs = await _logRepository.GetAllLogs();

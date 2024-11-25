@@ -10,6 +10,7 @@ using Moq;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Domain.Logs;
+using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.Projects;
 using ProjectMetadataPlatform.Domain.User;
 using ProjectMetadataPlatform.Infrastructure.DataAccess;
@@ -163,6 +164,17 @@ public class LogRepositoryTest : TestsWithDatabase
 
         Assert.That(logs, Has.Count.EqualTo(1));
         Assert.That(logs[0], Is.EqualTo(exampleLog));
+
+        var log = logs[0];
+        Assert.Multiple(() =>
+        {
+            Assert.That(log.Id, Is.EqualTo(1));
+            Assert.That(log.AuthorId, Is.Null);
+            Assert.That(log.AuthorEmail, Is.EqualTo("camo"));
+            Assert.That(log.ProjectId, Is.EqualTo(301));
+            Assert.That(log.Action, Is.EqualTo(Action.ADDED_PROJECT));
+            Assert.That(log.Changes, Has.Count.EqualTo(1));
+        });
     }
 
     [Test]
@@ -380,6 +392,133 @@ public class LogRepositoryTest : TestsWithDatabase
             Assert.That(log.AuthorEmail, Is.EqualTo("someUserName"));
             Assert.That(log.ProjectId, Is.EqualTo(302));
             Assert.That(log.Action, Is.EqualTo(Action.UPDATED_PROJECT));
+            Assert.That(log.Changes, Has.Count.EqualTo(1));
+        });
+    }
+
+    [Test]
+    public async Task GetLogsForAffectedUser_Test()
+    {
+        var exampleLog1 = new Log
+        {
+            Id = 1,
+            AuthorId = null,
+            AuthorEmail = "camo",
+            TimeStamp = DateTimeOffset.UtcNow,
+            ProjectId = null,
+            Action = Action.REMOVED_PROJECT,
+            Changes =
+            [
+                new LogChange { OldValue = "", NewValue = "Example Project", Property = "ProjectName" }
+            ]
+        };
+
+        var exampleUser = new User
+        {
+            Id = "Newton",
+            Name = "Newton",
+            UserName = "Newton",
+            Email = "newton@royalastronomicalsociety.co.uk"
+        };
+
+        var exampleLog2 = new Log
+        {
+            Id = 2,
+            AuthorId = null,
+            AuthorEmail = "someUserName",
+            TimeStamp = DateTimeOffset.UtcNow,
+            Action = Action.UPDATED_USER,
+            AffectedUserId = "Newton",
+            AffectedUserEmail = "Newton@royalastronomicalsociety.co.uk",
+            AffectedUser = exampleUser,
+            Changes =
+            [
+                new LogChange { OldValue = "yes", NewValue = "no", Property = "flying" }
+            ]
+        };
+
+        await _context.Users.AddAsync(exampleUser);
+        await _context.Logs.AddAsync(exampleLog1);
+        await _context.Logs.AddAsync(exampleLog2);
+        await _context.SaveChangesAsync();
+
+        var logs = await _loggingRepository.GetLogsForUser("Newton");
+
+        Assert.That(logs, Has.Count.EqualTo(1));
+
+        var log = logs[0];
+        Assert.Multiple(() =>
+        {
+            Assert.That(log.Id, Is.EqualTo(2));
+            Assert.That(log.AuthorId, Is.Null);
+            Assert.That(log.AuthorEmail, Is.EqualTo("someUserName"));
+            Assert.That(log.Action, Is.EqualTo(Action.UPDATED_USER));
+            Assert.That(log.AffectedUserEmail, Is.EqualTo("Newton@royalastronomicalsociety.co.uk"));
+            Assert.That(log.AffectedUserId, Is.EqualTo("Newton"));
+            Assert.That(log.AffectedUser, Is.EqualTo(exampleUser));
+            Assert.That(log.AffectedUserId, Is.EqualTo("Newton"));
+            Assert.That(log.Changes, Has.Count.EqualTo(1));
+        });
+    }
+
+    [Test]
+    public async Task GetLogsForGlobalPlugin_Test()
+    {
+        var exampleLog1 = new Log
+        {
+            Id = 1,
+            AuthorId = null,
+            AuthorEmail = "camo",
+            TimeStamp = DateTimeOffset.UtcNow,
+            ProjectId = null,
+            Action = Action.REMOVED_PROJECT,
+            Changes =
+            [
+                new LogChange { OldValue = "", NewValue = "Example Project", Property = "ProjectName" }
+            ]
+        };
+
+        var examplePlugin = new Plugin
+        {
+            Id = 42,
+            PluginName = "Gravity"
+        };
+
+        var exampleLog2 = new Log
+        {
+            Id = 2,
+            AuthorId = null,
+            AuthorEmail = "someUserName",
+            TimeStamp = DateTimeOffset.UtcNow,
+            Action = Action.UPDATED_GLOBAL_PLUGIN,
+            GlobalPluginId = 42,
+            GlobalPluginName = "Gravity",
+            GlobalPlugin = examplePlugin,
+            Changes =
+            [
+                new LogChange { OldValue = "no", NewValue = "yes", Property = "discovered" }
+            ]
+        };
+
+        await _context.Plugins.AddAsync(examplePlugin);
+        await _context.Logs.AddAsync(exampleLog1);
+        await _context.Logs.AddAsync(exampleLog2);
+        await _context.SaveChangesAsync();
+
+        var logs = await _loggingRepository.GetLogsForGlobalPlugin(42);
+
+        Assert.That(logs, Has.Count.EqualTo(1));
+
+        var log = logs[0];
+        Assert.Multiple(() =>
+        {
+            Assert.That(log.Id, Is.EqualTo(2));
+            Assert.That(log.AuthorId, Is.Null);
+            Assert.That(log.AuthorEmail, Is.EqualTo("someUserName"));
+            Assert.That(log.Action, Is.EqualTo(Action.UPDATED_GLOBAL_PLUGIN));
+            Assert.That(log.GlobalPluginId, Is.EqualTo(42));
+            Assert.That(log.GlobalPluginName, Is.EqualTo("Gravity"));
+            Assert.That(log.GlobalPlugin, Is.EqualTo(examplePlugin));
             Assert.That(log.Changes, Has.Count.EqualTo(1));
         });
     }

@@ -44,6 +44,20 @@ public interface ILogRepository
     Task<List<Log>> GetLogsWithSearch(string search);
 
     /// <summary>
+    /// Retrieves the logs for a specific project.
+    /// </summary>
+    /// <param name="userId">The unique identifier of the user.</param>
+    /// <returns> A list of logs associated with the specified user.</returns>
+    Task<List<Log>> GetLogsForUser(string userId);
+
+    /// <summary>
+    /// Retrieves the logs for a specific project.
+    /// </summary>
+    /// <param name="globalPluginId">The unique identifier of the global plugin.</param>
+    /// <returns> A list of logs associated with the specified global plugin.</returns>
+    Task<List<Log>> GetLogsForGlobalPlugin(int globalPluginId);
+
+    /// <summary>
     /// Retrieves all logs from the database.
     /// </summary>
     /// <returns>A list of all logs, sorted by timestamp.</returns>
