@@ -37,6 +37,9 @@ public class LogsController: ControllerBase
 
     /// <summary>
     /// Retrieves log entries based on the specified project ID and search criteria.
+    /// Filters are optional and can *not* be used in combination.
+    /// if multiple filters are used, the first one will be used.
+    /// projectId > search > userId > globalPluginId
     /// </summary>
     /// <param name="projectId">The ID of the project to filter logs by.</param>
     /// <param name="search">The search term to filter logs by.</param>
