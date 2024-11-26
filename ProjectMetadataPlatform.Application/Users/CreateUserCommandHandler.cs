@@ -1,7 +1,9 @@
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using ProjectMetadataPlatform.Application.Interfaces;
+using ProjectMetadataPlatform.Domain.Logs;
 using ProjectMetadataPlatform.Domain.User;
 
 namespace ProjectMetadataPlatform.Application.Users;
@@ -14,15 +16,20 @@ namespace ProjectMetadataPlatform.Application.Users;
 public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, string>
 {
     private readonly IUsersRepository _usersRepository;
+    private readonly ILogRepository _logRepository;
     private readonly IUnitOfWork _unitOfWork;
+
+
     /// <summary>
-    ///    Creates a new instance of<see cref="CreateUserCommandHandler" />.
+    ///    Creates a new instance of <see cref="CreateUserCommandHandler" />.
     /// </summary>
     /// <param name="usersRepository">Repository for accessing user data.</param>
-    /// <param name="unitOfWork">Unit of work</param>
-    public CreateUserCommandHandler(IUsersRepository usersRepository, IUnitOfWork unitOfWork)
+    /// <param name="logRepository">Repository for logging data.</param>
+    /// <param name="unitOfWork">Unit of work for managing transactions.</param>
+    public CreateUserCommandHandler(IUsersRepository usersRepository,ILogRepository logRepository, IUnitOfWork unitOfWork)
     {
         _usersRepository = usersRepository;
+        _logRepository = logRepository;
         _unitOfWork = unitOfWork;
     }
 
@@ -36,6 +43,13 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, strin
     {
         var user = new User { Name = request.Name, UserName = request.Username, Email = request.Email };
         var result = await _usersRepository.CreateUserAsync(user, request.Password);
+
+        var changes = new List<LogChange>
+        {
+            new() { OldValue = "", NewValue = user.Email, Property = nameof(User.Email) }
+        };
+        await _logRepository.AddUserLogForCurrentUser(user, Action.ADDED_USER, changes);
+
         await _unitOfWork.CompleteAsync();
         return result;
     }
