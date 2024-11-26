@@ -166,10 +166,12 @@ public class Tests
     }
 
     [Test]
-    public async Task UpdateGlobalPlugin_PluginNotFound_Test()
+    public async Task Patch_PluginNotFound_ReturnsNotFound()
     {
-        _mediator.Setup(m => m.Send(It.IsAny<PatchGlobalPluginCommand>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Plugin)null!);
+        var exceptionMessage = "Plugin not found.";
+        _mediator
+            .Setup(m => m.Send(It.IsAny<PatchGlobalPluginCommand>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new InvalidOperationException(exceptionMessage));
 
         var request = new PatchGlobalPluginRequest(null, true);
 
@@ -179,8 +181,9 @@ public class Tests
 
         var notFoundResult = result.Result as NotFoundObjectResult;
         Assert.That(notFoundResult, Is.Not.Null);
-        Assert.That(notFoundResult.Value, Is.EqualTo("No Plugin with id 1 was found."));
+        Assert.That(notFoundResult!.Value, Is.EqualTo(exceptionMessage));
     }
+
 
     [Test]
     public async Task GetGlobalPlugins_EmptyResponseList_Test()

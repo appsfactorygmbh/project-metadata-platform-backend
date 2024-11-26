@@ -43,11 +43,11 @@ public class PatchGlobalPluginCommandHandler : IRequestHandler<PatchGlobalPlugin
     {
         var plugin = await _pluginRepository.GetPluginByIdAsync(request.Id) ?? throw new InvalidOperationException("Plugin not found.");
 
-        // Initialize list for changes
         var changes = new List<LogChange>();
 
-        // Handle PluginName changes
-        if (!string.Equals(plugin.PluginName, request.PluginName, StringComparison.Ordinal) && request.PluginName != null)
+        var archivedStateChanges = new List<LogChange>();
+
+        if (request.PluginName != null && !string.Equals(plugin.PluginName, request.PluginName, StringComparison.Ordinal))
         {
             changes.Add(new LogChange
             {
@@ -57,12 +57,14 @@ public class PatchGlobalPluginCommandHandler : IRequestHandler<PatchGlobalPlugin
             });
 
             plugin.PluginName = request.PluginName;
+
+            await _logRepository.AddLogForCurrentUser(plugin, Action.UPDATED_GLOBAL_PLUGIN, changes);
+
         }
 
-        // Handle IsArchived changes
-        if (request.IsArchived.HasValue && plugin.IsArchived != request.IsArchived.Value)
+        if (request.IsArchived != null && plugin.IsArchived != request.IsArchived.Value)
         {
-            changes.Add(new LogChange
+            archivedStateChanges.Add(new LogChange
             {
                 Property = nameof(plugin.IsArchived),
                 OldValue = plugin.IsArchived.ToString(),
@@ -70,15 +72,17 @@ public class PatchGlobalPluginCommandHandler : IRequestHandler<PatchGlobalPlugin
             });
 
             plugin.IsArchived = request.IsArchived.Value;
+
+            if (plugin.IsArchived)
+            {
+                await _logRepository.AddLogForCurrentUser(plugin, Action.ARCHIVED_GLOBAL_PLUGIN, archivedStateChanges);
+            }
+            else
+            {
+                await _logRepository.AddLogForCurrentUser(plugin, Action.UNARCHIVED_GLOBAL_PLUGIN, archivedStateChanges);
+            }
         }
 
-        // Add log if any changes were made
-        if (changes.Count > 0)
-        {
-            await _logRepository.AddLogForCurrentUser(plugin, Action.UPDATED_GLOBAL_PLUGIN, changes);
-        }
-
-        // Store the updated plugin and complete the operation
         Plugin updatedPlugin = await _pluginRepository.StorePlugin(plugin);
         await _unitOfWork.CompleteAsync();
 
