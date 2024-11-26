@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Moq;
@@ -12,24 +11,31 @@ namespace ProjectMetadataPlatform.Application.Tests.Plugins;
 [TestFixture]
 public class CreatePluginCommandHandlerTest
 {
+    private CreatePluginCommandHandler _handler;
+    private Mock<IPluginRepository> _mockPluginRepo;
+    private Mock<ILogRepository> _mockLogRepo;
+    private Mock<IUnitOfWork> _mockUnitOfWork;
 
     [SetUp]
     public void Setup()
     {
         _mockPluginRepo = new Mock<IPluginRepository>();
-        _handler = new CreatePluginCommandHandler(_mockPluginRepo.Object);
+        _mockLogRepo = new Mock<ILogRepository>();
+        _mockUnitOfWork = new Mock<IUnitOfWork>();
+        _handler = new CreatePluginCommandHandler(_mockPluginRepo.Object, _mockLogRepo.Object, _mockUnitOfWork.Object);
     }
-    private CreatePluginCommandHandler _handler;
-    private Mock<IPluginRepository> _mockPluginRepo;
 
     [Test]
     public async Task CreatePlugin_Test()
     {
         var examplePlugin = new Plugin { PluginName = "Airlock", Id = 13, ProjectPlugins = [] };
-        _mockPluginRepo.Setup(m => m.StorePlugin(It.IsAny<Plugin>())).ReturnsAsync(examplePlugin);
+        _mockPluginRepo.Setup(m => m.StorePlugin(It.IsAny<Plugin>())).Callback<Plugin>(p => p.Id = 13);
 
-        var result = await _handler.Handle(new CreatePluginCommand("Airlock", true, new List<string>()), It.IsAny<CancellationToken>());
-
-        Assert.That(result, Is.EqualTo(13));
+        int result = await _handler.Handle(new CreatePluginCommand("Airlock", true, []), It.IsAny<CancellationToken>());
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.EqualTo(13));
+            Assert.That(examplePlugin.PluginName, Is.EqualTo("Airlock"));
+        });
     }
 }
