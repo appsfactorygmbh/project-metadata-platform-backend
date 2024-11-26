@@ -27,21 +27,19 @@ public class PatchUserCommandHandlerTest
     [Test]
     public async Task PatchUser_Test()
     {
-        var user = new User { Id = "42", Name = "Culture Candela", UserName = "WTFPL 2", Email = "candela@hip-hop.dancehall" };
-        var newUser = new User { Id = "42", Name = "Culcha Candela", UserName = "WTFPL 2", Email = "candela@hip-hop.dancehall" };
+        var user = new User { Id = "42",  Email = "candela@hip-hop.dancehall" };
+        var newUser = new User { Id = "42", Email = "angela@hip-hop.dancehall" };
 
         _mockUsersRepo.Setup(repo => repo.GetUserByIdAsync("42")).ReturnsAsync(user);
         _mockUsersRepo.Setup(repo => repo.StoreUser(It.IsAny<User>())).ReturnsAsync((User p) => p);
 
         var result =
-            await _handler.Handle(new PatchUserCommand("42", null, "Culcha Candela"), It.IsAny<CancellationToken>());
+            await _handler.Handle(new PatchUserCommand("42","angela@hip-hop.dancehall" , "Culcha Candela"), It.IsAny<CancellationToken>());
 
         Assert.Multiple(() =>
         {
             Assert.That(result, Is.Not.Null);
-            Assert.That(result!.Email, Is.EqualTo(newUser.Email));
-            Assert.That(result.Name, Is.EqualTo(newUser.Name));
-            Assert.That(result.UserName, Is.EqualTo(newUser.UserName));
+            Assert.That(result.Email, Is.EqualTo(newUser.Email));
             Assert.That(result.Id, Is.EqualTo(newUser.Id));
         });
     }
@@ -49,7 +47,7 @@ public class PatchUserCommandHandlerTest
     [Test]
     public async Task PatchUser_ChangeNothing_Test()
     {
-        var user = new User { Id = "42", Name = "Coldplay", UserName = "MIT", Email = "cold@play.co.uk" };
+        var user = new User { Id = "42", Email = "cold@play.co.uk" };
 
         _mockUsersRepo.Setup(repo => repo.GetUserByIdAsync("42")).ReturnsAsync(user);
         _mockUsersRepo.Setup(repo => repo.StoreUser(It.IsAny<User>())).ReturnsAsync((User p) => p);
@@ -61,8 +59,6 @@ public class PatchUserCommandHandlerTest
         {
             Assert.That(result, Is.Not.Null);
             Assert.That(result!.Email, Is.EqualTo(user.Email));
-            Assert.That(result.Name, Is.EqualTo(user.Name));
-            Assert.That(result.UserName, Is.EqualTo(user.UserName));
             Assert.That(result.Id, Is.EqualTo(user.Id));
         });
     }

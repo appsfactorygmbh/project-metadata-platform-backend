@@ -175,7 +175,6 @@ public class UsersController : ControllerBase
         var response = new GetUserResponse(user.Id,  user.Email ?? "");
         return Ok(response);
     }
-//TODO
 
     /// <summary>
     ///    Gets the current authenticated user's information.
@@ -188,6 +187,7 @@ public class UsersController : ControllerBase
     [HttpGet("Me")]
     public async Task<ActionResult<GetUserResponse>> GetMe()
     {
+        //TODO change this so an Email claim can be found
         var username = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Name)?.Value;
 
         if (username == null)

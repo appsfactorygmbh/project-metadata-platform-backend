@@ -26,7 +26,7 @@ public class GetMeControllerTest
     [Test]
     public async Task getMe_Test()
     {
-        var user = new User{Id = "42", Name = "Gru", UserName = "moonstealer", Email = "moonstealer@gruhq.com"};
+        var user = new User{Id = "42", Email = "moonstealer@gruhq.com"};
 
         _mediator.Setup(m => m.Send(It.IsAny<GetUserByUserNameQuery>(), It.IsAny<System.Threading.CancellationToken>()))
             .ReturnsAsync(user);
@@ -41,8 +41,6 @@ public class GetMeControllerTest
         Assert.Multiple(() =>
         {
             Assert.That(response.Id, Is.EqualTo("42"));
-            Assert.That(response.Name, Is.EqualTo("Gru"));
-            Assert.That(response.Username, Is.EqualTo("moonstealer"));
             Assert.That(response.Email, Is.EqualTo("moonstealer@gruhq.com"));
         });
     }
