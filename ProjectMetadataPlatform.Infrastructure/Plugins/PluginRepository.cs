@@ -66,11 +66,10 @@ public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
         }
         else
         {
-            Update(plugin);
+            _ = _context.Plugins.Update(plugin);
         }
 
-        _ = await _context.SaveChangesAsync();
-
+        await _context.SaveChangesAsync();
         return plugin;
     }
 

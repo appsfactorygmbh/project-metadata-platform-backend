@@ -1,8 +1,12 @@
+using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using ProjectMetadataPlatform.Application.Interfaces;
+using ProjectMetadataPlatform.Domain.Logs;
 using ProjectMetadataPlatform.Domain.Plugins;
+using Action = ProjectMetadataPlatform.Domain.Logs.Action;
 
 namespace ProjectMetadataPlatform.Application.Plugins;
 
@@ -12,15 +16,20 @@ namespace ProjectMetadataPlatform.Application.Plugins;
 public class PatchGlobalPluginCommandHandler : IRequestHandler<PatchGlobalPluginCommand, Plugin?>
 {
     private readonly IPluginRepository _pluginRepository;
-    
+    private readonly ILogRepository _logRepository;
+    private readonly IUnitOfWork _unitOfWork;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="PatchGlobalPluginCommandHandler"/> class.
     /// </summary>
     /// <param name="pluginRepository">The plugin repository to use for plugin operations.</param>
-    public PatchGlobalPluginCommandHandler(IPluginRepository pluginRepository)
+    public PatchGlobalPluginCommandHandler(IPluginRepository pluginRepository, ILogRepository logRepository, IUnitOfWork unitOfWork)
     {
         _pluginRepository = pluginRepository;
+        _logRepository = logRepository;
+        _unitOfWork = unitOfWork;
     }
+
 
     /// <summary>
     /// Handles the PatchGlobalPluginCommand request.
@@ -31,15 +40,51 @@ public class PatchGlobalPluginCommandHandler : IRequestHandler<PatchGlobalPlugin
     public async Task<Plugin?> Handle(PatchGlobalPluginCommand request, CancellationToken cancellationToken)
     {
         var plugin = await _pluginRepository.GetPluginByIdAsync(request.Id);
-        
+
         if (plugin == null)
         {
-            return null;
+            throw new InvalidOperationException("Plugin not found.");
         }
-        
-        plugin.PluginName = request.PluginName ?? plugin.PluginName;
-        plugin.IsArchived = request.IsArchived ?? plugin.IsArchived;
 
-        return await _pluginRepository.StorePlugin(plugin);
+        // Initialize list for changes
+        var changes = new List<LogChange>();
+
+        // Handle PluginName changes
+        if (!string.Equals(plugin.PluginName, request.PluginName, StringComparison.Ordinal) && request.PluginName != null)
+        {
+            changes.Add(new LogChange
+            {
+                Property = nameof(plugin.PluginName),
+                OldValue = plugin.PluginName,
+                NewValue = request.PluginName
+            });
+
+            plugin.PluginName = request.PluginName;
+        }
+
+        // Handle IsArchived changes
+        if (request.IsArchived.HasValue && plugin.IsArchived != request.IsArchived.Value)
+        {
+            changes.Add(new LogChange
+            {
+                Property = nameof(plugin.IsArchived),
+                OldValue = plugin.IsArchived.ToString(),
+                NewValue = request.IsArchived.Value.ToString()
+            });
+
+            plugin.IsArchived = request.IsArchived.Value;
+        }
+
+        // Add log if any changes were made
+        if (changes.Count > 0)
+        {
+            await _logRepository.AddLogForCurrentUser(plugin, Action.UPDATED_GLOBAL_PLUGIN, changes);
+        }
+
+        // Store the updated plugin and complete the operation
+        Plugin updatedPlugin = await _pluginRepository.StorePlugin(plugin);
+        await _unitOfWork.CompleteAsync();
+
+        return updatedPlugin;
     }
 }
