@@ -110,7 +110,7 @@ public class LogRepositoryTest : TestsWithDatabase
 
         _mockUserRepository.Setup(_ => _.GetUserByUserNameAsync("camo")).ReturnsAsync(user);
 
-        await _loggingRepository.AddLogForCurrentUser(exampleProject, Action.ADDED_PROJECT, logChanges);
+        await _loggingRepository.AddProjectLogForCurrentUser(exampleProject, Action.ADDED_PROJECT, logChanges);
         await _context.SaveChangesAsync();
         var dbLog = await _context.Logs.Include(log => log.Author).Include(log => log.Project).Include(log => log.Changes)
             .FirstOrDefaultAsync()!;

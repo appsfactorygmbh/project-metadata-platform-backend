@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Domain.Logs;
+using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.Projects;
 using ProjectMetadataPlatform.Domain.User;
 using ProjectMetadataPlatform.Infrastructure.DataAccess;
@@ -56,28 +57,62 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
         _usersRepository = usersRepository;
     }
 
+    ///  <inheritdoc />
+    public async Task AddProjectLogForCurrentUser(Project project, Action action, List<LogChange> changes)
+    {
+        var log = await PrepareGenericLogForCurrentUser(action, changes);
+
+        log.Project = project;
+        log.ProjectId = project.Id;
+        log.ProjectName = project.ProjectName;
+
+        _ =_context.Logs.Add(log);
+    }
+
+    ///  <inheritdoc />
+    public async Task AddUserLogForCurrentUser(User affectedUser, Action action, List<LogChange> changes)
+    {
+        var log = await PrepareGenericLogForCurrentUser(action, changes);
+
+        log.AffectedUser = affectedUser;
+        log.AffectedUserId = affectedUser.Id;
+        log.AffectedUserEmail = affectedUser.Email;
+
+        _ =_context.Logs.Add(log);
+    }
+
+    ///  <inheritdoc />
+    public async Task AddGlobalPluginLogForCurrentUser(Plugin globalPlugin, Action action, List<LogChange> changes)
+    {
+        var log = await PrepareGenericLogForCurrentUser(action, changes);
+
+        log.GlobalPlugin = globalPlugin;
+        log.GlobalPluginId = globalPlugin.Id;
+        log.GlobalPluginName = globalPlugin.PluginName;
+
+        _ =_context.Logs.Add(log);
+    }
+
     /// <summary>
-    ///     Adds new log into database. Uses the project object instead of the projectId.
+    /// Prepares a generic log entry for the current user.
     /// </summary>
-    /// <param name="project"></param>
-    /// <param name="action"></param>
-    /// <param name="changes"></param>
-    public async Task AddLogForCurrentUser(Project project, Action action, List<LogChange> changes)
+    /// <param name="action">The action performed by the user.</param>
+    /// <param name="changes">The list of changes associated with the action.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the prepared log entry.</returns>
+    private async Task<Log> PrepareGenericLogForCurrentUser(Action action, List<LogChange> changes)
     {
         var username = _httpContextAccessor.HttpContext?.User.Identity?.Name ?? "Unknown user";
-        User? user = await _usersRepository.GetUserByUserNameAsync(username);
+        User? author = await _usersRepository.GetUserByUserNameAsync(username);
 
         var log = new Log
         {
-            AuthorEmail = user?.Email,
-            AuthorId = user?.Id,
+            AuthorEmail = author?.Email,
+            AuthorId = author?.Id,
             Action = action,
-            Project = project,
-            ProjectId = project.Id,
             TimeStamp = UtcNow,
             Changes = changes
         };
-        _ =_context.Logs.Add(log);
+        return log;
     }
 
     ///  <inheritdoc />
