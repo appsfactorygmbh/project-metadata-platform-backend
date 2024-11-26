@@ -93,6 +93,7 @@ public class PluginsRepositoryTest : TestsWithDatabase
         Plugin pluginOne = await _repository.StorePlugin(pluginMethane);
         Plugin pluginTwo = await _repository.StorePlugin(pluginOxygen);
 
+        _context.SaveChangesAsync();
         Assert.Multiple(() =>
         {
             Assert.That(pluginOne, Is.Not.Null);

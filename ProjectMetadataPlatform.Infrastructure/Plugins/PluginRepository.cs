@@ -60,18 +60,15 @@ public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
     /// <returns>The saved Plugin</returns>
     public async Task<Plugin> StorePlugin(Plugin plugin)
     {
-        _ = plugin.Id == 0 ? _context.Plugins.Add(plugin) : _context.Plugins.Update(plugin);
-
-        if(plugin.Id == 0)
+        if (plugin.Id == 0)
         {
-            _ = _context.SaveChangesAsync();
+            _context.Plugins.Add(plugin);
         }
         else
         {
             Update(plugin);
         }
 
-        _ = await _context.SaveChangesAsync();
         return plugin;
     }
 

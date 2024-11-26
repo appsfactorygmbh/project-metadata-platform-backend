@@ -41,11 +41,14 @@ public class PatchGlobalPluginCommandHandler : IRequestHandler<PatchGlobalPlugin
     /// <returns>A task that represents the asynchronous operation. The task result contains the Plugin that was updated.</returns>
     public async Task<Plugin?> Handle(PatchGlobalPluginCommand request, CancellationToken cancellationToken)
     {
-        var plugin = await _pluginRepository.GetPluginByIdAsync(request.Id) ?? throw new InvalidOperationException("Plugin not found.");
+        var plugin = await _pluginRepository.GetPluginByIdAsync(request.Id);
+        if(plugin == null)
+        {
+            return null;
+        }
 
         var changes = new List<LogChange>();
-
-        var archivedStateChanges = new List<LogChange>();
+        var archivedStateChangesEmpty = new List<LogChange>();
 
         if (request.PluginName != null && !string.Equals(plugin.PluginName, request.PluginName, StringComparison.Ordinal))
         {
@@ -58,28 +61,20 @@ public class PatchGlobalPluginCommandHandler : IRequestHandler<PatchGlobalPlugin
 
             plugin.PluginName = request.PluginName;
 
-            await _logRepository.AddLogForCurrentUser(plugin, Action.UPDATED_GLOBAL_PLUGIN, changes);
-
+            await _logRepository.AddGlobalPluginLogForCurrentUser(plugin, Action.UPDATED_GLOBAL_PLUGIN, changes);
         }
 
         if (request.IsArchived != null && plugin.IsArchived != request.IsArchived.Value)
         {
-            archivedStateChanges.Add(new LogChange
-            {
-                Property = nameof(plugin.IsArchived),
-                OldValue = plugin.IsArchived.ToString(),
-                NewValue = request.IsArchived.Value.ToString()
-            });
-
             plugin.IsArchived = request.IsArchived.Value;
 
             if (plugin.IsArchived)
             {
-                await _logRepository.AddLogForCurrentUser(plugin, Action.ARCHIVED_GLOBAL_PLUGIN, archivedStateChanges);
+                await _logRepository.AddGlobalPluginLogForCurrentUser(plugin, Action.ARCHIVED_GLOBAL_PLUGIN, archivedStateChangesEmpty);
             }
             else
             {
-                await _logRepository.AddLogForCurrentUser(plugin, Action.UNARCHIVED_GLOBAL_PLUGIN, archivedStateChanges);
+                await _logRepository.AddGlobalPluginLogForCurrentUser(plugin, Action.UNARCHIVED_GLOBAL_PLUGIN, archivedStateChangesEmpty);
             }
         }
 

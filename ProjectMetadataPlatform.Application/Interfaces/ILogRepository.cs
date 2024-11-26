@@ -40,15 +40,6 @@ public interface ILogRepository
     Task AddGlobalPluginLogForCurrentUser(Plugin globalPlugin, Action action, List<LogChange> changes);
 
     /// <summary>
-    ///     Adds new log for user. Uses a plugin object.
-    /// </summary>
-    /// <param name="plugin"></param>
-    /// <param name="action"></param>
-    /// <param name="changes"></param>
-    /// <returns></returns>
-    Task AddLogForCurrentUser(Plugin plugin, Action action, List<LogChange> changes);
-
-    /// <summary>
     /// Retrieves the logs for a specific project.
     /// </summary>
     /// <param name="projectId">The unique identifier of the project.</param>

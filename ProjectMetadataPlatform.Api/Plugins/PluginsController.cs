@@ -91,10 +91,6 @@ public class PluginsController : ControllerBase
         {
             plugin = await _mediator.Send(command);
         }
-        catch (InvalidOperationException ex)
-        {
-            return NotFound(ex.Message);
-        }
         catch (Exception e)
         {
             Console.WriteLine(e.Message);

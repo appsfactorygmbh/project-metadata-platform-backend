@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -157,36 +158,6 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
         };
         return log;
     }
-
-    /// <summary>
-    ///     Adds new log into database. Uses the plugin object.
-    /// </summary>
-    /// <param name="plugin"></param>
-    /// <param name="action"></param>
-    /// <param name="changes"></param>
-    public async Task AddLogForCurrentUser(Plugin plugin, Action action, List<LogChange> changes)
-    {
-        if (changes.Count == 0)
-        {
-            return;
-        }
-        var username = _httpContextAccessor.HttpContext?.User.Identity?.Name ?? "Unknown user";
-        User? user = await _usersRepository.GetUserByUserNameAsync(username);
-
-        var log = new Log
-        {
-            AuthorEmail = user?.Email,
-            AuthorId = user?.Id,
-            Action = action,
-            GlobalPlugin = plugin,
-            GlobalPluginId = plugin.Id,
-            TimeStamp = UtcNow,
-            Changes = changes
-        };
-        _ = _context.Logs.Add(log);
-        await _context.SaveChangesAsync();
-    }
-
 
     ///  <inheritdoc />
     public async Task<List<Log>> GetLogsForProject(int projectId)
