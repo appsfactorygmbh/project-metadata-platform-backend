@@ -34,7 +34,7 @@ public class PatchUserCommandHandlerTest
         _mockUsersRepo.Setup(repo => repo.StoreUser(It.IsAny<User>())).ReturnsAsync((User p) => p);
 
         var result =
-            await _handler.Handle(new PatchUserCommand("42","angela@hip-hop.dancehall" , "Culcha Candela"), It.IsAny<CancellationToken>());
+            await _handler.Handle(new PatchUserCommand("42","angela@hip-hop.dancehall"), It.IsAny<CancellationToken>());
 
         Assert.Multiple(() =>
         {
