@@ -32,15 +32,16 @@ public class AuthRepository : RepositoryBase<RefreshToken>, IAuthRepository
     /// <summary>
     /// Checks if the given login credentials are correct.
     /// </summary>
-    /// <param name="username">Username of the user</param>
+    /// <param name="email">Email of the user</param>
     /// <param name="password">Password of the user</param>
     /// <returns>True, if the credentials are correct</returns>
-    public async Task<bool> CheckLogin(string username, string password)
+    public async Task<bool> CheckLogin(string email, string password)
     {
-        var user = await _userManager.Users.FirstOrDefaultAsync(a => a.UserName == username);
+        var user = await _userManager.Users.FirstOrDefaultAsync(a => a.Email == email);
         return user != null && await _userManager.CheckPasswordAsync(user, password);
     }
 
+    //TODO remove this
     /// <summary>
     /// Creates a new user with the given username and password.
     /// </summary>
@@ -56,12 +57,12 @@ public class AuthRepository : RepositoryBase<RefreshToken>, IAuthRepository
     /// <summary>
     /// Saves a refresh Token to the database.
     /// </summary>
-    /// <param name="username">associated Username</param>
+    /// <param name="email">associated Email</param>
     /// <param name="refreshToken">Value of the Token</param>
     /// <returns></returns>
-    public async Task StoreRefreshToken(string username, string refreshToken)
+    public async Task StoreRefreshToken(string email, string refreshToken)
     {
-        var user = await _userManager.Users.FirstOrDefaultAsync(a => a.UserName == username);
+        var user = await _userManager.Users.FirstOrDefaultAsync(a => a.Email == email);
         var expirationTime = int.Parse(EnvironmentUtils.GetEnvVarOrLoadFromFile("REFRESH_TOKEN_EXPIRATION_HOURS"));
         var token = new RefreshToken
         {
@@ -79,12 +80,12 @@ public class AuthRepository : RepositoryBase<RefreshToken>, IAuthRepository
     /// <summary>
     /// updates an existing refresh Token.
     /// </summary>
-    /// <param name="username">associates Username</param>
+    /// <param name="email">associates Email</param>
     /// <param name="refreshToken">Values of the Token</param>
     /// <returns></returns>
-    public async Task UpdateRefreshToken(string username, string refreshToken)
+    public async Task UpdateRefreshToken(string email, string refreshToken)
     {
-        var user = await _userManager.Users.FirstOrDefaultAsync(a => a.UserName == username);
+        var user = await _userManager.Users.FirstOrDefaultAsync(a => a.Email == email);
         var token = GetIf(rt => user != null && rt.UserId == user.Id).FirstOrDefaultAsync().Result;
         var expirationTime = int.Parse(EnvironmentUtils.GetEnvVarOrLoadFromFile("REFRESH_TOKEN_EXPIRATION_HOURS"));
         if (token != null)
@@ -101,12 +102,12 @@ public class AuthRepository : RepositoryBase<RefreshToken>, IAuthRepository
     /// <summary>
     /// Checks for the existence of a refresh Token for a specific user.
     /// </summary>
-    /// <param name="username">name of a user</param>
+    /// <param name="email">Email of a user</param>
     /// <returns>True if a token exists; False if no token exists</returns>
-    public async Task<bool> CheckRefreshTokenExists(string username)
+    public async Task<bool> CheckRefreshTokenExists(string email)
     {
 
-        return GetIf(rt => rt.User != null && rt.User.UserName == username).Any();
+        return GetIf(rt => rt.User != null && rt.User.Email == email).Any();
     }
 
     /// <summary>
@@ -122,16 +123,16 @@ public class AuthRepository : RepositoryBase<RefreshToken>, IAuthRepository
     }
 
     /// <summary>
-    /// Gets the username related to a refresh Token.
+    /// Gets the email related to a refresh Token.
     /// </summary>
     /// <param name="refreshToken">a refresh Token</param>
     /// <returns>a username</returns>
-    public async Task<string?> GetUserNameByRefreshToken(string refreshToken)
+    public async Task<string?> GetEmailByRefreshToken(string refreshToken)
     {
         var token = GetIf(rt => rt.Token == refreshToken).FirstOrDefaultAsync().Result;
         var user = await _userManager.Users.FirstOrDefaultAsync(a => token != null && a.Id == token.UserId);
 
-        return user?.UserName;
+        return user?.Email;
     }
 
 

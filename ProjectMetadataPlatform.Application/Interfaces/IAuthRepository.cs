@@ -55,9 +55,9 @@ public interface IAuthRepository
     Task<bool> CheckRefreshTokenRequest(string refreshToken);
 
     /// <summary>
-    /// Gets the username related to a refresh Token.
+    /// Gets the email related to a refresh Token.
     /// </summary>
     /// <param name="refreshToken">a refresh Token</param>
-    /// <returns>a username</returns>
-    Task<string?> GetUserNameByRefreshToken(string refreshToken);
+    /// <returns>a email</returns>
+    Task<string?> GetEmailByRefreshToken(string refreshToken);
 }

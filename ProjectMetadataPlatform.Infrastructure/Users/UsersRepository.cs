@@ -38,6 +38,7 @@ public class UsersRepository : RepositoryBase<User>, IUsersRepository
         return await GetEverything().ToListAsync();
     }
 
+    //TODO remove this
     /// <summary>
     /// Returns the user with the given username.
     /// </summary>
