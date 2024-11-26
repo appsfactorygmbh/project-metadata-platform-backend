@@ -29,8 +29,6 @@ public class PatchUsersControllerTest
         var user = new User
         {
             Id = "42",
-            Name = "Dr. Peacock",
-            UserName = "CC BY-NC",
             Email = "dr@core.fr",
             PasswordHash = "someHash"
         };
@@ -46,8 +44,6 @@ public class PatchUsersControllerTest
         Assert.Multiple(() =>
         {
             Assert.That(resultValue, Is.Not.Null);
-            Assert.That(resultValue!.Username, Is.EqualTo("CC BY-NC"));
-            Assert.That(resultValue.Name, Is.EqualTo("Dr. Peacock"));
             Assert.That(resultValue.Email, Is.EqualTo("dr@core.fr"));
             Assert.That(resultValue.Id, Is.EqualTo("42"));
         });

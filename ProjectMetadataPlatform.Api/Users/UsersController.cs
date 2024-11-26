@@ -139,7 +139,7 @@ public class UsersController : ControllerBase
             );
         return Ok(response);
     }
-//TODO
+
     /// <summary>
     /// Patches the user information.
     /// </summary>
@@ -152,7 +152,7 @@ public class UsersController : ControllerBase
     [HttpPatch("{userId}")]
     public async Task<ActionResult<GetUserResponse>> Patch(string userId, [FromBody] PatchUserRequest request)
     {
-        var command = new PatchUserCommand(userId, request.Username, request.Name, request.Email, request.Password);
+        var command = new PatchUserCommand(userId, request.Email, request.Password);
 
         User? user;
         try
@@ -175,7 +175,7 @@ public class UsersController : ControllerBase
         var response = new GetUserResponse(user.Id,  user.Email ?? "");
         return Ok(response);
     }
-
+//TODO
 
     /// <summary>
     ///    Gets the current authenticated user's information.

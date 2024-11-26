@@ -41,8 +41,6 @@ public class PatchUserCommandHandler : IRequestHandler<PatchUserCommand, User?>
             return null;
         }
 
-        user.UserName = request.Username ?? user.UserName;
-        user.Name = request.Name ?? user.Name;
         user.Email = request.Email ?? user.Email;
         user.PasswordHash = request.Password != null ? _passwordHasher.HashPassword(user, request.Password) : user.PasswordHash;
 
