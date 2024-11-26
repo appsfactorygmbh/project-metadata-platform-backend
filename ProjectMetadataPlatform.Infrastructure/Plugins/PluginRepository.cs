@@ -62,16 +62,17 @@ public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
     {
         if (plugin.Id == 0)
         {
-            _ = _context.Plugins.Add(plugin);
+            _context.Plugins.Add(plugin);
         }
         else
         {
-            _ = _context.Plugins.Update(plugin);
+            _context.Plugins.Update(plugin);
         }
 
         await _context.SaveChangesAsync();
         return plugin;
     }
+
 
     /// <summary>
     /// Asynchronously retrieves a plugin by its unique identifier.

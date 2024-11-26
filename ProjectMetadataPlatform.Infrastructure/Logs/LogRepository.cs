@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -167,7 +166,7 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
     /// <param name="changes"></param>
     public async Task AddLogForCurrentUser(Plugin plugin, Action action, List<LogChange> changes)
     {
-        if (changes == null || changes.Count == 0)
+        if (changes.Count == 0)
         {
             return;
         }

@@ -40,7 +40,7 @@ public interface ILogRepository
     Task AddGlobalPluginLogForCurrentUser(Plugin globalPlugin, Action action, List<LogChange> changes);
 
     /// <summary>
-    ///     Adds new log for user. Uses a plugin object.</summary>
+    ///     Adds new log for user. Uses a plugin object.
     /// </summary>
     /// <param name="plugin"></param>
     /// <param name="action"></param>

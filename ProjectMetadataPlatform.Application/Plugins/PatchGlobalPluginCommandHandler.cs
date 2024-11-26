@@ -23,6 +23,8 @@ public class PatchGlobalPluginCommandHandler : IRequestHandler<PatchGlobalPlugin
     /// Initializes a new instance of the <see cref="PatchGlobalPluginCommandHandler"/> class.
     /// </summary>
     /// <param name="pluginRepository">The plugin repository to use for plugin operations.</param>
+    /// <param name="logRepository">The log repository to use for logging operations.</param>
+    /// <param name="unitOfWork">The unit of work to use for transactional operations.</param>
     public PatchGlobalPluginCommandHandler(IPluginRepository pluginRepository, ILogRepository logRepository, IUnitOfWork unitOfWork)
     {
         _pluginRepository = pluginRepository;
@@ -39,12 +41,7 @@ public class PatchGlobalPluginCommandHandler : IRequestHandler<PatchGlobalPlugin
     /// <returns>A task that represents the asynchronous operation. The task result contains the Plugin that was updated.</returns>
     public async Task<Plugin?> Handle(PatchGlobalPluginCommand request, CancellationToken cancellationToken)
     {
-        var plugin = await _pluginRepository.GetPluginByIdAsync(request.Id);
-
-        if (plugin == null)
-        {
-            throw new InvalidOperationException("Plugin not found.");
-        }
+        var plugin = await _pluginRepository.GetPluginByIdAsync(request.Id) ?? throw new InvalidOperationException("Plugin not found.");
 
         // Initialize list for changes
         var changes = new List<LogChange>();
