@@ -31,7 +31,7 @@ public class GetUserControllerTest
         var user = new User
         {
             Id = "1",
-            Name = "Hinz"
+            Email = "Hinz"
         };
         _mediator.Setup(m => m.Send(It.IsAny<GetUserQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
@@ -46,7 +46,7 @@ public class GetUserControllerTest
         Assert.Multiple((() =>
         {
             Assert.That(response.Id, Is.EqualTo("1"));
-            Assert.That(response.Name, Is.EqualTo("Hinz"));
+            Assert.That(response.Email, Is.EqualTo("Hinz"));
         }));
     }
 

@@ -68,7 +68,7 @@ public class UsersRepository : RepositoryBase<User>, IUsersRepository
         user.Id = (maxId + 1).ToString(CultureInfo.InvariantCulture);
 
         var identityResult = await _userManager.CreateAsync(user, password);
-
+        // TODO: change Duplicate Username to Duplicate Email Error
         return !identityResult.Succeeded ? throw new ArgumentException("User creation " + identityResult) : user.Id;
     }
 

@@ -135,13 +135,11 @@ public class UsersController : ControllerBase
 
         var response = new GetUserResponse(
             user.Id,
-            user.UserName ?? "",
-            user.Name ?? "",
             user.Email ?? ""
             );
         return Ok(response);
     }
-
+//TODO
     /// <summary>
     /// Patches the user information.
     /// </summary>
@@ -174,7 +172,7 @@ public class UsersController : ControllerBase
             return NotFound("No user with id " + userId + " was found.");
         }
 
-        var response = new GetUserResponse(user.Id, user.UserName ?? "", user.Name, user.Email ?? "");
+        var response = new GetUserResponse(user.Id,  user.Email ?? "");
         return Ok(response);
     }
 
@@ -215,7 +213,7 @@ public class UsersController : ControllerBase
             return NotFound("User not found.");
         }
 
-        var response = new GetUserResponse(user.Id, user.UserName ?? "", user.Name ?? "", user.Email ?? "");
+        var response = new GetUserResponse(user.Id,  user.Email ?? "");
         return Ok(response);
     }
 
