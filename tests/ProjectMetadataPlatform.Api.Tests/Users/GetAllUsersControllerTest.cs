@@ -36,13 +36,13 @@ public class GetAllUsersControllerTest
             new User
             {
                 Id = "1",
-                Name = "Hinz",
-                UserName = "und"
+                Email = "Hinz",
+
             },
             new User
             {
                 Id = "2",
-                Name = "Kunz"
+                Email = "Kunz"
             }
         };
         _mediator.Setup(m => m.Send(It.IsAny<GetAllUsersQuery>(), It.IsAny<CancellationToken>()))
@@ -59,11 +59,10 @@ public class GetAllUsersControllerTest
         {
             Assert.That(response.Count(), Is.EqualTo(2));
             Assert.That(response.ElementAt(0).Id, Is.EqualTo("1"));
-            Assert.That(response.ElementAt(0).Name, Is.EqualTo("Hinz"));
-            Assert.That(response.ElementAt(0).Username, Is.EqualTo("und"));
+            Assert.That(response.ElementAt(0).Email, Is.EqualTo("Hinz"));
             Assert.That(response.ElementAt(1).Id, Is.EqualTo("2"));
-            Assert.That(response.ElementAt(1).Name, Is.EqualTo("Kunz"));
-            Assert.That(response.ElementAt(1).Username, Is.EqualTo(""));
+            Assert.That(response.ElementAt(1).Email, Is.EqualTo("Kunz"));
+
         }));
     }
 

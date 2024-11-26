@@ -32,7 +32,8 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, strin
     /// <param name="cancellationToken"></param>
     public async Task<string> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
-        var user = new User { Email = request.Email };
+        // Uses Email as Username because: Username cant be empty + Username cant be duplicate.
+        var user = new User { Email = request.Email, UserName = request.Email};
         var result = await _usersRepository.CreateUserAsync(user, request.Password);
         return result;
     }
