@@ -29,7 +29,7 @@ public class CreateUserCommandHandlerTest
     {
         _mockUsersRepo.Setup(m => m.CreateUserAsync(It.IsAny<User>(), It.IsAny<string>())).ReturnsAsync("1");
 
-        var result = await _handler.Handle(new CreateUserCommand("Example Username", "Example Name", "Example Email", "Example Password"), It.IsAny<CancellationToken>());
+        var result = await _handler.Handle(new CreateUserCommand( "Example Email", "Example Password"), It.IsAny<CancellationToken>());
 
         Assert.That(result, Is.EqualTo("1"));
     }

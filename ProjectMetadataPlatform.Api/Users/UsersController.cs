@@ -48,15 +48,12 @@ public class UsersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<CreateUserResponse>> Put([FromBody] CreateUserRequest request)
     {
-        if (string.IsNullOrWhiteSpace(request.Name)
-            || string.IsNullOrWhiteSpace(request.Username)
-            || string.IsNullOrWhiteSpace(request.Email)
-            || string.IsNullOrWhiteSpace(request.Password))
+        if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
         {
-            return BadRequest("name, username, email and password must not be empty.");
+            return BadRequest("email and password can't be empty.");
         }
 
-        var command = new CreateUserCommand(request.Username, request.Name, request.Email, request.Password);
+        var command = new CreateUserCommand( request.Email, request.Password);
         string id;
         try
         {
