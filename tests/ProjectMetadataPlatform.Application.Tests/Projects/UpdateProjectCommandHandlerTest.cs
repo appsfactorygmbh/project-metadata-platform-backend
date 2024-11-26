@@ -966,4 +966,54 @@ public class UpdateProjectCommandHandlerTest
         ), Times.Once);
     }
 
+    [Test]
+    public async Task NoLogsWhenNoProjectPluginChanged()
+    {
+        var project = new Project
+        {
+            Id = 1,
+            ProjectName = "Test Project",
+            ClientName = "Test Client",
+            BusinessUnit = "Test Unit",
+            TeamNumber = 1,
+            Department = "Test Department",
+            ProjectPlugins = new List<ProjectPlugins>
+            {
+                new ProjectPlugins
+                {
+                    PluginId = 1,
+                    Url = "http://example.com",
+                    DisplayName = "Example Plugin"
+                }
+            },
+            IsArchived = false
+        };
+
+        var updateCommand = new UpdateProjectCommand(
+            project.ProjectName,
+            project.BusinessUnit,
+            project.TeamNumber,
+            project.Department,
+            project.ClientName,
+            project.Id,
+            new List<ProjectPlugins>
+            {
+                new ProjectPlugins
+                {
+                    PluginId = 1,
+                    Url = "http://example.com",
+                    DisplayName = "Example Plugin"
+                }
+            },
+            false
+        );
+
+        _mockProjectRepo.Setup(repo => repo.GetProjectWithPluginsAsync(project.Id)).ReturnsAsync(project);
+        _mockPluginRepo.Setup(repo => repo.CheckPluginExists(1)).ReturnsAsync(true);
+
+        await _handler.Handle(updateCommand, CancellationToken.None);
+
+
+    }
+
 }
