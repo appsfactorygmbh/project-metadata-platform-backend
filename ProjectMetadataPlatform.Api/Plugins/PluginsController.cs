@@ -103,6 +103,11 @@ public class PluginsController : ControllerBase
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
 
+        if (plugin == null)
+        {
+            return NotFound("No Plugin with id " + pluginId + " was found.");
+        }
+
         var response = new GetGlobalPluginResponse(plugin.PluginName, plugin.Id, plugin.IsArchived, []);
         return Ok(response);
     }
