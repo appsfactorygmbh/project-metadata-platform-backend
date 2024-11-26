@@ -241,8 +241,15 @@ public class LogRepositoryTest : TestsWithDatabase
         });
     }
 
-    [Test]
-    public async Task ProjectLogTest_RejectsActionNotInWhitelist()
+    [TestCase (Action.ADDED_USER)]
+    [TestCase (Action.UPDATED_USER)]
+    [TestCase (Action.REMOVED_USER)]
+    [TestCase (Action.ADDED_GLOBAL_PLUGIN)]
+    [TestCase (Action.UPDATED_GLOBAL_PLUGIN)]
+    [TestCase (Action.ARCHIVED_GLOBAL_PLUGIN)]
+    [TestCase (Action.UNARCHIVED_GLOBAL_PLUGIN)]
+    [TestCase (Action.REMOVED_GLOBAL_PLUGIN)]
+    public async Task ProjectLogTest_RejectsActionNotInWhitelist(Action action)
     {
         var exampleProject = new Project
         {
@@ -270,11 +277,23 @@ public class LogRepositoryTest : TestsWithDatabase
             new() { OldValue = "", NewValue = "Example Project", Property = "ProjectName" },
         };
 
-        Assert.ThrowsAsync<ArgumentException>(() => _loggingRepository.AddProjectLogForCurrentUser(exampleProject, Action.ADDED_USER, logChanges));
+        Assert.ThrowsAsync<ArgumentException>(() => _loggingRepository.AddProjectLogForCurrentUser(exampleProject, action, logChanges));
     }
 
-    [Test]
-    public async Task UserLogTest_RejectsActionNotInWhitelist()
+    [TestCase (Action.ADDED_PROJECT)]
+    [TestCase (Action.ADDED_PROJECT_PLUGIN)]
+    [TestCase (Action.UPDATED_PROJECT)]
+    [TestCase (Action.UPDATED_PROJECT_PLUGIN)]
+    [TestCase (Action.REMOVED_PROJECT_PLUGIN)]
+    [TestCase (Action.ARCHIVED_PROJECT)]
+    [TestCase (Action.UNARCHIVED_PROJECT)]
+    [TestCase (Action.REMOVED_PROJECT)]
+    [TestCase (Action.ADDED_GLOBAL_PLUGIN)]
+    [TestCase (Action.UPDATED_GLOBAL_PLUGIN)]
+    [TestCase (Action.ARCHIVED_GLOBAL_PLUGIN)]
+    [TestCase (Action.UNARCHIVED_GLOBAL_PLUGIN)]
+    [TestCase (Action.REMOVED_GLOBAL_PLUGIN)]
+    public async Task UserLogTest_RejectsActionNotInWhitelist(Action action)
     {
 
         var author = new User
@@ -307,11 +326,21 @@ public class LogRepositoryTest : TestsWithDatabase
             },
         };
 
-        Assert.ThrowsAsync<ArgumentException>(() => _loggingRepository.AddUserLogForCurrentUser(affectedUser, Action.ADDED_GLOBAL_PLUGIN, logChanges));
+        Assert.ThrowsAsync<ArgumentException>(() => _loggingRepository.AddUserLogForCurrentUser(affectedUser, action, logChanges));
     }
 
-    [Test]
-    public async Task GlobalPluginLogTest_RejectsActionNotInWhitelist()
+    [TestCase (Action.ADDED_USER)]
+    [TestCase (Action.UPDATED_USER)]
+    [TestCase (Action.REMOVED_USER)]
+    [TestCase (Action.ADDED_PROJECT)]
+    [TestCase (Action.ADDED_PROJECT_PLUGIN)]
+    [TestCase (Action.UPDATED_PROJECT)]
+    [TestCase (Action.UPDATED_PROJECT_PLUGIN)]
+    [TestCase (Action.REMOVED_PROJECT_PLUGIN)]
+    [TestCase (Action.ARCHIVED_PROJECT)]
+    [TestCase (Action.UNARCHIVED_PROJECT)]
+    [TestCase (Action.REMOVED_PROJECT)]
+    public async Task GlobalPluginLogTest_RejectsActionNotInWhitelist(Action action)
     {
         var author = new User
         {
@@ -341,7 +370,7 @@ public class LogRepositoryTest : TestsWithDatabase
             },
         };
 
-        Assert.ThrowsAsync<ArgumentException>(() => _loggingRepository.AddGlobalPluginLogForCurrentUser(globalPlugin, Action.UPDATED_PROJECT, logChanges));
+        Assert.ThrowsAsync<ArgumentException>(() => _loggingRepository.AddGlobalPluginLogForCurrentUser(globalPlugin, action, logChanges));
     }
 
     [Test]
