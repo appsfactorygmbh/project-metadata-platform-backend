@@ -37,8 +37,9 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, strin
     /// <summary>
     ///    Creates a new User with the given data.
     /// </summary>
-    /// <param name="request">Request for user creation. </param>
-    /// <param name="cancellationToken"></param>
+    /// <param name="request">Request for user creation.</param>
+    /// <param name="cancellationToken">Token to monitor for cancellation requests.</param>
+    /// <returns>The ID of the created user.</returns>
     public async Task<string> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
         var user = new User { Name = request.Name, UserName = request.Username, Email = request.Email };
@@ -51,6 +52,4 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, strin
         await _logRepository.AddUserLogForCurrentUser(user, Action.ADDED_USER, changes);
 
         await _unitOfWork.CompleteAsync();
-        return result;
-    }
 }
