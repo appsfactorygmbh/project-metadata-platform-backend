@@ -51,7 +51,7 @@ public class LogRepositoryTest : TestsWithDatabase
     }
 
     [Test]
-    public async Task CreateLogTest()
+    public async Task CreateProjectLogTest()
     {
         var exampleProject = new Project
         {
@@ -125,6 +125,119 @@ public class LogRepositoryTest : TestsWithDatabase
             Assert.That(dbLog.ProjectId, Is.EqualTo(exampleProject.Id));
             Assert.That(dbLog.Project, Is.EqualTo(exampleProject));
             Assert.That(dbLog.Changes, Has.Count.EqualTo(5));
+        });
+    }
+
+    [Test]
+    public async Task UpdateUserLogTest()
+    {
+
+        var author = new User
+        {
+            Id = "42",
+            UserName = "camo",
+            Email = "camo",
+            Name = "some user"
+        };
+
+        var affectedUser = new User
+        {
+            Id = "12",
+            UserName = "RocketMan",
+            Email = "gagarin@vostok.su",
+            Name = "Yuri Gagarin"
+        };
+        await _context.Users.AddAsync(author);
+        await _context.Users.AddAsync(affectedUser);
+
+        await _context.SaveChangesAsync();
+
+        var logChanges = new List<LogChange>
+        {
+            new()
+            {
+                OldValue = "no",
+                NewValue = "yes",
+                Property = "isAstronaut"
+            },
+        };
+
+        _mockUserRepository.Setup(_ => _.GetUserByUserNameAsync("camo")).ReturnsAsync(author);
+
+        await _loggingRepository.AddUserLogForCurrentUser(affectedUser, Action.UPDATED_USER, logChanges);
+        await _context.SaveChangesAsync();
+        var dbLog = await _context.Logs
+            .Include(log => log.Author)
+            .Include(log => log.Changes)
+            .Include(log => log.AffectedUser)
+            .FirstOrDefaultAsync()!;
+        Assert.That(dbLog, Is.Not.Null);
+        Assert.Multiple(() =>
+        {
+            Assert.That(dbLog.Id, Is.EqualTo(1));
+            Assert.That(dbLog.Action, Is.EqualTo(Action.UPDATED_USER));
+            Assert.That(dbLog.AuthorEmail, Is.EqualTo("camo"));
+            Assert.That(dbLog.AuthorId, Is.EqualTo("42"));
+            Assert.That(dbLog.Author, Is.EqualTo(author));
+            Assert.That(dbLog.AffectedUserId, Is.EqualTo("12"));
+            Assert.That(dbLog.AffectedUser, Is.EqualTo(affectedUser));
+            Assert.That(dbLog.Changes, Has.Count.EqualTo(1));
+        });
+    }
+
+    [Test]
+    public async Task UpdateGlobalPluginLogTest()
+    {
+
+        var author = new User
+        {
+            Id = "42",
+            UserName = "camo",
+            Email = "camo",
+            Name = "some user"
+        };
+        await _context.Users.AddAsync(author);
+
+        var globalPlugin = new Plugin
+        {
+            PluginName = "Canadarm2",
+            Id = 13
+        };
+        await _context.Plugins.AddAsync(globalPlugin);
+
+        await _context.SaveChangesAsync();
+
+        var logChanges = new List<LogChange>
+        {
+            new()
+            {
+                OldValue = "in storage",
+                NewValue = "installed",
+                Property = "status"
+            },
+        };
+
+        _mockUserRepository.Setup(_ => _.GetUserByUserNameAsync("camo")).ReturnsAsync(author);
+
+        await _loggingRepository.AddGlobalPluginLogForCurrentUser(globalPlugin, Action.UPDATED_GLOBAL_PLUGIN, logChanges);
+        await _context.SaveChangesAsync();
+        var dbLog = await _context.Logs
+            .Include(log => log.Author)
+            .Include(log => log.Changes)
+            .Include(log => log.GlobalPlugin)
+            .FirstOrDefaultAsync()!;
+        Assert.That(dbLog, Is.Not.Null);
+        Assert.Multiple(() =>
+        {
+            Assert.That(dbLog.Id, Is.EqualTo(1));
+            Assert.That(dbLog.Action, Is.EqualTo(Action.UPDATED_GLOBAL_PLUGIN));
+            Assert.That(dbLog.AuthorEmail, Is.EqualTo("camo"));
+            Assert.That(dbLog.AuthorId, Is.EqualTo("42"));
+            Assert.That(dbLog.Author, Is.EqualTo(author));
+            Assert.That(dbLog.GlobalPluginId, Is.EqualTo(13));
+            Assert.That(dbLog.GlobalPlugin, Is.EqualTo(globalPlugin));
+            Assert.That(dbLog.GlobalPluginName, Is.EqualTo("Canadarm2"));
+            Assert.That(dbLog.Changes, Has.Count.EqualTo(1));
         });
     }
 
