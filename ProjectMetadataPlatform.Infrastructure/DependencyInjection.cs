@@ -9,6 +9,7 @@ using ProjectMetadataPlatform.Infrastructure.DataAccess;
 using ProjectMetadataPlatform.Infrastructure.Logs;
 using ProjectMetadataPlatform.Infrastructure.Plugins;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using ProjectMetadataPlatform.Application;
 using ProjectMetadataPlatform.Application.Auth;
@@ -63,6 +64,16 @@ public static class DependencyInjection
     /// <param name="serviceCollection"></param>
     private static void ConfigureAuth(this IServiceCollection serviceCollection)
     {
+        _ = serviceCollection.AddScoped<IUserStore<User>>(provider =>
+        {
+            var userStore = new UserStore<User, IdentityRole, ProjectMetadataPlatformDbContext, string>(
+                provider.GetRequiredService<ProjectMetadataPlatformDbContext>())
+            {
+                AutoSaveChanges = false
+            };
+            return userStore;
+        });
+
         _ = serviceCollection.AddIdentity<User, IdentityRole>()
             .AddEntityFrameworkStores<ProjectMetadataPlatformDbContext>()
             .AddDefaultTokenProviders();
