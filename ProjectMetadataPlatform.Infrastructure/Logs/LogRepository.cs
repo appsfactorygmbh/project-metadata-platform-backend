@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -60,6 +61,23 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
     ///  <inheritdoc />
     public async Task AddProjectLogForCurrentUser(Project project, Action action, List<LogChange> changes)
     {
+        var actionWhiteList = new List<Action>
+        {
+            Action.ADDED_PROJECT,
+            Action.ADDED_PROJECT_PLUGIN,
+            Action.UPDATED_PROJECT,
+            Action.UPDATED_PROJECT_PLUGIN,
+            Action.REMOVED_PROJECT_PLUGIN,
+            Action.ARCHIVED_PROJECT,
+            Action.UNARCHIVED_PROJECT,
+            Action.REMOVED_PROJECT
+        };
+
+        if (!actionWhiteList.Contains(action))
+        {
+            throw new ArgumentException("Invalid action for project log");
+        }
+
         var log = await PrepareGenericLogForCurrentUser(action, changes);
 
         log.Project = project;
@@ -72,6 +90,18 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
     ///  <inheritdoc />
     public async Task AddUserLogForCurrentUser(User affectedUser, Action action, List<LogChange> changes)
     {
+        var actionWhiteList = new List<Action>
+        {
+            Action.ADDED_USER,
+            Action.UPDATED_USER,
+            Action.REMOVED_USER
+        };
+
+        if (!actionWhiteList.Contains(action))
+        {
+            throw new ArgumentException("Invalid action for user log");
+        }
+
         var log = await PrepareGenericLogForCurrentUser(action, changes);
 
         log.AffectedUser = affectedUser;
@@ -84,6 +114,20 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
     ///  <inheritdoc />
     public async Task AddGlobalPluginLogForCurrentUser(Plugin globalPlugin, Action action, List<LogChange> changes)
     {
+        var actionWhiteList = new List<Action>
+        {
+            Action.ADDED_GLOBAL_PLUGIN,
+            Action.UPDATED_GLOBAL_PLUGIN,
+            Action.ARCHIVED_GLOBAL_PLUGIN,
+            Action.UNARCHIVED_GLOBAL_PLUGIN,
+            Action.REMOVED_GLOBAL_PLUGIN
+        };
+
+        if (!actionWhiteList.Contains(action))
+        {
+            throw new ArgumentException("Invalid action for GlobalPlugin log");
+        }
+
         var log = await PrepareGenericLogForCurrentUser(action, changes);
 
         log.GlobalPlugin = globalPlugin;

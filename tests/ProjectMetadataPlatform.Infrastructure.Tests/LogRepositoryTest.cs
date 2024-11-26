@@ -242,6 +242,109 @@ public class LogRepositoryTest : TestsWithDatabase
     }
 
     [Test]
+    public async Task ProjectLogTest_RejectsActionNotInWhitelist()
+    {
+        var exampleProject = new Project
+        {
+            ProjectName = "Example Project",
+            BusinessUnit = "Example Business Unit",
+            TeamNumber = 1,
+            Department = "Example Department",
+            ClientName = "Example Client"
+        };
+        await _context.Projects.AddAsync(exampleProject);
+
+        var user = new User
+        {
+            Id = "42",
+            UserName = "camo",
+            Email = "camo",
+            Name = "some user"
+        };
+
+        await _context.Users.AddAsync(user);
+        await _context.SaveChangesAsync();
+
+        var logChanges = new List<LogChange>
+        {
+            new() { OldValue = "", NewValue = "Example Project", Property = "ProjectName" },
+        };
+
+        Assert.ThrowsAsync<ArgumentException>(() => _loggingRepository.AddProjectLogForCurrentUser(exampleProject, Action.ADDED_USER, logChanges));
+    }
+
+    [Test]
+    public async Task UserLogTest_RejectsActionNotInWhitelist()
+    {
+
+        var author = new User
+        {
+            Id = "42",
+            UserName = "camo",
+            Email = "camo",
+            Name = "some user"
+        };
+
+        var affectedUser = new User
+        {
+            Id = "12",
+            UserName = "RocketMan",
+            Email = "gagarin@vostok.su",
+            Name = "Yuri Gagarin"
+        };
+        await _context.Users.AddAsync(author);
+        await _context.Users.AddAsync(affectedUser);
+
+        await _context.SaveChangesAsync();
+
+        var logChanges = new List<LogChange>
+        {
+            new()
+            {
+                OldValue = "no",
+                NewValue = "yes",
+                Property = "isAstronaut"
+            },
+        };
+
+        Assert.ThrowsAsync<ArgumentException>(() => _loggingRepository.AddUserLogForCurrentUser(affectedUser, Action.ADDED_GLOBAL_PLUGIN, logChanges));
+    }
+
+    [Test]
+    public async Task GlobalPluginLogTest_RejectsActionNotInWhitelist()
+    {
+        var author = new User
+        {
+            Id = "42",
+            UserName = "camo",
+            Email = "camo",
+            Name = "some user"
+        };
+        await _context.Users.AddAsync(author);
+
+        var globalPlugin = new Plugin
+        {
+            PluginName = "Canadarm2",
+            Id = 13
+        };
+        await _context.Plugins.AddAsync(globalPlugin);
+
+        await _context.SaveChangesAsync();
+
+        var logChanges = new List<LogChange>
+        {
+            new()
+            {
+                OldValue = "in storage",
+                NewValue = "installed",
+                Property = "status"
+            },
+        };
+
+        Assert.ThrowsAsync<ArgumentException>(() => _loggingRepository.AddGlobalPluginLogForCurrentUser(globalPlugin, Action.UPDATED_PROJECT, logChanges));
+    }
+
+    [Test]
     public async Task GetLogsForProject_Test()
     {
         var exampleLog = new Log
