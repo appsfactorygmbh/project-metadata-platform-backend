@@ -10,16 +10,6 @@ namespace ProjectMetadataPlatform.Application.Interfaces;
 /// </summary>
 public interface ILogRepository
 {
-
-    /// <summary>
-    ///     Adds new log for user.
-    /// </summary>
-    /// <param name="projectId"></param>
-    /// <param name="action"></param>
-    /// <param name="changes"></param>
-    /// <returns></returns>
-    Task AddLogForCurrentUser(int  projectId, Action action, List<LogChange> changes);
-
     /// <summary>
     ///     Adds new log for user. Uses a project object instead of a project id.
     /// </summary>

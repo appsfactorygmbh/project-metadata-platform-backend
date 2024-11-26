@@ -57,30 +57,6 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
     }
 
     /// <summary>
-    ///     Adds new log into database.
-    /// </summary>
-    /// <param name="projectId"></param>
-    /// <param name="action"></param>
-    /// <param name="changes"></param>
-    public async Task AddLogForCurrentUser(int projectId, Action action, List<LogChange> changes)
-    {
-        var username = _httpContextAccessor.HttpContext?.User.Identity?.Name ?? "Unknown user";
-        User? user = await _usersRepository.GetUserByUserNameAsync(username);
-
-        var log = new Log
-        {
-            AuthorEmail = user?.Email,
-            AuthorId = user?.Id,
-            Action = action,
-            ProjectId = projectId,
-            TimeStamp = UtcNow,
-            Changes = changes
-        };
-        _ = _context.Logs.Add(log);
-
-    }
-
-    /// <summary>
     ///     Adds new log into database. Uses the project object instead of the projectId.
     /// </summary>
     /// <param name="project"></param>

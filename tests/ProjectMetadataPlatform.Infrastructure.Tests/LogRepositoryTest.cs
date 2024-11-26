@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading.Tasks;
@@ -111,8 +110,8 @@ public class LogRepositoryTest : TestsWithDatabase
 
         _mockUserRepository.Setup(_ => _.GetUserByUserNameAsync("camo")).ReturnsAsync(user);
 
-        await _loggingRepository.AddLogForCurrentUser( exampleProject.Id, Action.ADDED_PROJECT, logChanges);
-        _context.SaveChanges();
+        await _loggingRepository.AddLogForCurrentUser(exampleProject, Action.ADDED_PROJECT, logChanges);
+        await _context.SaveChangesAsync();
         var dbLog = await _context.Logs.Include(log => log.Author).Include(log => log.Project).Include(log => log.Changes)
             .FirstOrDefaultAsync()!;
         Assert.That(dbLog, Is.Not.Null);
