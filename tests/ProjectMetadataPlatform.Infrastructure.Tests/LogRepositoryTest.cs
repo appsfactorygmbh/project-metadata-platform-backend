@@ -24,6 +24,7 @@ public class LogRepositoryTest : TestsWithDatabase
     private ProjectMetadataPlatformDbContext _context;
     private LogRepository _loggingRepository;
     private Mock<IUsersRepository> _mockUserRepository;
+    private Mock<IHttpContextAccessor> _httpContextAccessor;
 
     [SetUp]
     public void Setup()
@@ -32,7 +33,7 @@ public class LogRepositoryTest : TestsWithDatabase
         var httpContextAccessorMock = new Mock<IHttpContextAccessor>();
 
         var identity = new GenericIdentity("camo", "test");
-        var contextUser = new ClaimsPrincipal(identity); //add claims as needed
+        var contextUser = new ClaimsPrincipal(identity);
         var httpContext = new DefaultHttpContext
         {
             User = contextUser
@@ -639,6 +640,129 @@ public class LogRepositoryTest : TestsWithDatabase
             Assert.That(log.Changes, Has.Count.EqualTo(1));
         });
     }
+
+    [Test]
+    public async Task AddLogForCurrentUser_ValidPluginAndChanges_LogCreatedSuccessfully()
+    {
+        // Arrange
+        var plugin = new Plugin { Id = 1, PluginName = "Mercury Atlas", IsArchived = false };
+        _context.Plugins.Add(plugin);
+
+        var changes = new List<LogChange> { new LogChange { Property = "PluginName", OldValue = "Mercury Redstone", NewValue = "Mercury Atlas" } };
+
+        var user = new User { Id = 1.ToString(), Email = "camo@example.com" };
+        _context.Users.Add(user);
+
+        await _context.SaveChangesAsync();
+
+        _mockUserRepository.Setup(repo => repo.GetUserByUserNameAsync("camo")).ReturnsAsync(user);
+
+        // Act
+        await _loggingRepository.AddLogForCurrentUser(plugin, Action.UPDATED_GLOBAL_PLUGIN, changes);
+        await _context.SaveChangesAsync();  // Ensure the log is saved to the database
+
+        var log = await _context.Logs.FirstOrDefaultAsync(l => l.GlobalPluginId == plugin.Id);
+
+        TestContext.Out.WriteLine($"[Debug] Log found: {log}");
+
+        // Assert
+        Assert.NotNull(log, "Log was not created successfully");
+        Assert.AreEqual(user.Email, log.AuthorEmail);
+        Assert.AreEqual(user.Id, log.AuthorId);
+        Assert.AreEqual(Action.UPDATED_GLOBAL_PLUGIN, log.Action);
+        Assert.AreEqual(plugin.Id, log.GlobalPluginId);
+        Assert.AreEqual(changes, log.Changes);
+    }
+
+    [Test]
+    public async Task AddLogForCurrentUser_UserNotFound_LogCreatedWithNullEmailAndId()
+    {
+        // Arrange
+        var plugin = new Plugin
+        {
+            Id = 1,
+            PluginName = "Mercury Atlas",
+        };
+        var action = Action.UPDATED_GLOBAL_PLUGIN;
+        var changes = new List<LogChange>
+        {
+            new LogChange { OldValue = "oldValue", NewValue = "newValue", Property = "PluginName" }
+        };
+
+        // Mock GetUserByUserNameAsync to return null for non-existent user
+        _mockUserRepository.Setup(x => x.GetUserByUserNameAsync("nonExistentUser")).ReturnsAsync((User?)null);
+
+        // Act
+        await _loggingRepository.AddLogForCurrentUser(plugin, action, changes);
+
+        // Assert
+        var log = _context.Logs.FirstOrDefault();
+        Assert.NotNull(log);
+        Assert.IsNull(log.AuthorEmail);
+        Assert.IsNull(log.AuthorId);
+        Assert.AreEqual(action, log.Action);
+        Assert.AreEqual(plugin.Id, log.GlobalPluginId);
+        Assert.AreEqual(changes, log.Changes);
+    }
+
+    [Test]
+    public async Task AddLogForCurrentUser_AnonymousUser_LogCreatedWithUnknownUser()
+    {
+        // Arrange
+        var plugin = new Plugin
+        {
+            Id = 1,
+            PluginName = "Mercury Atlas",
+        };
+        var action = Action.UPDATED_GLOBAL_PLUGIN;
+        var changes = new List<LogChange>
+        {
+            new LogChange { OldValue = "oldValue", NewValue = "newValue", Property = "PluginName" }
+        };
+
+        // Act
+        await _loggingRepository.AddLogForCurrentUser(plugin, action, changes);
+
+        // Assert
+        var log = _context.Logs.FirstOrDefault();
+        Assert.NotNull(log);
+        Assert.IsNull(log.AuthorEmail);
+        Assert.IsNull(log.AuthorId);
+        Assert.AreEqual(action, log.Action);
+        Assert.AreEqual(plugin.Id, log.GlobalPluginId);
+        Assert.AreEqual(changes, log.Changes);
+    }
+
+    [Test]
+    public async Task AddLogForCurrentUser_EmptyChanges_NoLogAdded()
+    {
+        // Arrange
+        var plugin = new Plugin
+        {
+            Id = 1,
+            PluginName = "Mercury Atlas",
+        };
+        var action = Action.UPDATED_GLOBAL_PLUGIN;
+        var changes = new List<LogChange>(); // Empty list of changes
+
+        var mockUser = new User { Id = 1.ToString(), Email = "user@example.com" };
+        _mockUserRepository.Setup(x => x.GetUserByUserNameAsync("existingUser")).ReturnsAsync(mockUser);
+
+        // Act
+        await _loggingRepository.AddLogForCurrentUser(plugin, action, changes);
+
+        // Assert
+        // Ensure no log was added to the database
+        var log = _context.Logs.FirstOrDefault();
+        Assert.IsNull(log); // No log should be added since changes list is empty
+
+        // Ensure SaveChangesAsync was not called by checking DbContext
+        var logCount = _context.Logs.Count();
+        Assert.AreEqual(0, logCount); // There should be no logs in the context
+    }
+
+
+
 
     [Test]
     public async Task GetLogsForAffectedUser_Test()

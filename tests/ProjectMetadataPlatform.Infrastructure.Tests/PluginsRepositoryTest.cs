@@ -384,6 +384,4 @@ public class PluginsRepositoryTest : TestsWithDatabase
     }
 
 
-
-
 }
