@@ -32,7 +32,6 @@ public class CreatePluginCommandHandlerTest
     public async Task CreatePlugin_Test()
     {
         _mockPluginRepo.Setup(m => m.StorePlugin(It.IsAny<Plugin>())).Callback<Plugin>(p => p.Id = 13);
-        _mockLogRepo.Setup(m => m.AddGlobalPluginLogForCurrentUser(It.IsAny<Plugin>(), It.IsAny<Action>(), It.IsAny<List<LogChange>>()));
 
         int result = await _handler.Handle(new CreatePluginCommand("Airlock", true, []), It.IsAny<CancellationToken>());
         Assert.Multiple(() =>

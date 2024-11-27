@@ -47,7 +47,7 @@ public class CreatePluginCommandHandler : IRequestHandler<CreatePluginCommand, i
             ProjectPlugins = []
         };
 
-        var logs = new List<LogChange>
+        var logChanges = new List<LogChange>
         {
             new ()
             {
@@ -62,10 +62,10 @@ public class CreatePluginCommandHandler : IRequestHandler<CreatePluginCommand, i
                 NewValue = request.IsArchived.ToString()
             }
         };
-        logs.AddRange(request.Keys.Select((t, i) => new LogChange { Property = "Keys[" + i + "]", OldValue = "", NewValue = t }));
+        logChanges.AddRange(request.Keys.Select((t, i) => new LogChange { Property = "Keys[" + i + "]", OldValue = "", NewValue = t }));
 
         _ = await _pluginRepository.StorePlugin(plugin);
-        await _logRepository.AddGlobalPluginLogForCurrentUser(plugin, Action.ADDED_GLOBAL_PLUGIN, logs);
+        await _logRepository.AddGlobalPluginLogForCurrentUser(plugin, Action.ADDED_GLOBAL_PLUGIN, logChanges);
         await _unitOfWork.CompleteAsync();
 
         return plugin.Id;
