@@ -47,17 +47,17 @@ public class PatchGlobalPluginCommandHandler : IRequestHandler<PatchGlobalPlugin
             return null;
         }
 
-        var changes = new List<LogChange>();
-        var archivedStateChangesEmpty = new List<LogChange>();
-
         if (request.PluginName != null && !string.Equals(plugin.PluginName, request.PluginName, StringComparison.Ordinal))
         {
-            changes.Add(new LogChange
+            var changes = new List<LogChange>
             {
-                Property = nameof(plugin.PluginName),
-                OldValue = plugin.PluginName,
-                NewValue = request.PluginName
-            });
+                new()
+                {
+                    Property = nameof(plugin.PluginName),
+                    OldValue = plugin.PluginName,
+                    NewValue = request.PluginName
+                }
+            };
 
             plugin.PluginName = request.PluginName;
 
@@ -67,15 +67,7 @@ public class PatchGlobalPluginCommandHandler : IRequestHandler<PatchGlobalPlugin
         if (request.IsArchived != null && plugin.IsArchived != request.IsArchived.Value)
         {
             plugin.IsArchived = request.IsArchived.Value;
-
-            if (plugin.IsArchived)
-            {
-                await _logRepository.AddGlobalPluginLogForCurrentUser(plugin, Action.ARCHIVED_GLOBAL_PLUGIN, archivedStateChangesEmpty);
-            }
-            else
-            {
-                await _logRepository.AddGlobalPluginLogForCurrentUser(plugin, Action.UNARCHIVED_GLOBAL_PLUGIN, archivedStateChangesEmpty);
-            }
+            await _logRepository.AddGlobalPluginLogForCurrentUser(plugin, plugin.IsArchived ? Action.ARCHIVED_GLOBAL_PLUGIN : Action.UNARCHIVED_GLOBAL_PLUGIN, []);
         }
 
         Plugin updatedPlugin = await _pluginRepository.StorePlugin(plugin);
