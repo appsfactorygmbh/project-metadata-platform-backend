@@ -65,6 +65,7 @@ public class CreatePluginCommandHandler : IRequestHandler<CreatePluginCommand, i
         logs.AddRange(request.Keys.Select((t, i) => new LogChange { Property = "Keys[" + i + "]", OldValue = "", NewValue = t }));
 
         _ = await _pluginRepository.StorePlugin(plugin);
+        await _logRepository.AddGlobalPluginLogForCurrentUser(plugin, Action.ADDED_GLOBAL_PLUGIN, logs);
         await _unitOfWork.CompleteAsync();
 
         return plugin.Id;
