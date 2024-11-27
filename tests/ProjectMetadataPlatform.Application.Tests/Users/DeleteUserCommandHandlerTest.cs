@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading;
@@ -8,7 +9,10 @@ using Moq;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Application.Users;
+using ProjectMetadataPlatform.Domain.Logs;
+using UserAction = ProjectMetadataPlatform.Domain.Logs.Action;
 using ProjectMetadataPlatform.Domain.User;
+using Action = System.Action;
 
 namespace ProjectMetadataPlatform.Application.Tests.Users;
 
@@ -40,12 +44,21 @@ public class DeleteUserCommandHandlerTest
     [Test]
     public async Task DeleteUser_Test()
     {
-        var user = new User { Id = "1" };
+        var user = new User { Id = "1", Email = "user@example.com"};
         _mockUsersRepo.Setup(m => m.GetUserByIdAsync("1")).ReturnsAsync(user);
         _mockUsersRepo.Setup(m => m.DeleteUserAsync(user)).ReturnsAsync(user);
-
         var result = await _handler.Handle(new DeleteUserCommand("1"), CancellationToken.None);
-
+        _mockLogRepository.Verify(
+            m => m.AddUserLogForCurrentUser(
+                It.Is<User>(u => u.Id == "1"),
+                UserAction.REMOVED_USER,
+                It.Is<List<LogChange>>(changes => changes.Count == 1 &&
+                                                  changes[0].OldValue == "user@example.com" &&
+                                                  changes[0].NewValue == "" &&
+                                                  changes[0].Property == nameof(User.Email))
+            ),
+            Times.Once
+        );
         Assert.That(result, Is.EqualTo(user));
     }
 
