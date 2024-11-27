@@ -1,11 +1,14 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Application.Projects;
+using ProjectMetadataPlatform.Domain.Logs;
 using ProjectMetadataPlatform.Domain.Projects;
+using Action = ProjectMetadataPlatform.Domain.Logs.Action;
 
 namespace ProjectMetadataPlatform.Application.Tests.Projects;
 
@@ -14,12 +17,16 @@ public class DeleteProjectCommandHandlerTest
 {
     private DeleteProjectCommandHandler _handler;
     private Mock<IProjectsRepository> _mockProjectRepo;
+    private Mock<ILogRepository> _mockLogRepo;
+    private Mock<IUnitOfWork> _mockUnitOfWork;
 
     [SetUp]
     public void Setup()
     {
         _mockProjectRepo = new Mock<IProjectsRepository>();
-        _handler = new DeleteProjectCommandHandler(_mockProjectRepo.Object);
+        _mockLogRepo = new Mock<ILogRepository>();
+        _mockUnitOfWork = new Mock<IUnitOfWork>();
+        _handler = new DeleteProjectCommandHandler(_mockProjectRepo.Object, _mockLogRepo.Object, _mockUnitOfWork.Object);
     }
 
     [Test]
@@ -41,6 +48,8 @@ public class DeleteProjectCommandHandlerTest
         var result = await _handler.Handle(new DeleteProjectCommand(1), It.IsAny<CancellationToken>());
 
         Assert.That(project, Is.EqualTo(result));
+
+        _mockLogRepo.Verify(m => m.AddProjectLogForCurrentUser(It.IsAny<Project>(), Action.REMOVED_PROJECT,It.IsAny<List<LogChange>>()), Times.Once);
     }
 
     [Test]
