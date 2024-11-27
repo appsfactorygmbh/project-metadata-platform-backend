@@ -17,14 +17,6 @@ public interface IAuthRepository
     Task<bool> CheckLogin(string username, string password);
 
     /// <summary>
-    /// Creates a new user with the given username and password.
-    /// </summary>
-    /// <param name="username">Username of the user</param>
-    /// <param name="password">Password of the user</param>
-    /// <returns></returns>
-    Task<string?> CreateUser(string username, string password);
-
-    /// <summary>
     /// Saves a refresh Token to the database.
     /// </summary>
     /// <param name="username">associated Username</param>

@@ -68,7 +68,7 @@ public static class DependencyInjection
             .AddDefaultTokenProviders();
 
         var tokenDescriptorInformation = TokenDescriptorInformation.ReadFromEnvVariables();
-
+        serviceCollection.Configure<IdentityOptions>(options => options.User.RequireUniqueEmail = true);
         _ = serviceCollection.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -111,7 +111,7 @@ public static class DependencyInjection
             return;
         }
 
-        var user = new User { UserName = "admin", Email = "admin", Id = "1" };
+        var user = new User { UserName = "admin", Email = "admin@admin.admin", Id = "1" };
         user.PasswordHash = userManager.PasswordHasher.HashPassword(user, password);
         var identityResult = userManager.CreateAsync(user).Result;
 

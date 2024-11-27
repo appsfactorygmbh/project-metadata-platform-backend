@@ -41,19 +41,6 @@ public class AuthRepository : RepositoryBase<RefreshToken>, IAuthRepository
         return user != null && await _userManager.CheckPasswordAsync(user, password);
     }
 
-    //TODO remove this
-    /// <summary>
-    /// Creates a new user with the given username and password.
-    /// </summary>
-    /// <param name="username">Username of the user</param>
-    /// <param name="password">Password of the user</param>
-    /// <returns></returns>
-    public async Task<string?> CreateUser(string username, string password)
-    {
-        var user = new User { UserName = username };
-        var result = await _userManager.CreateAsync(user, password);
-        return result.Succeeded ? user.Id : null;
-    }
     /// <summary>
     /// Saves a refresh Token to the database.
     /// </summary>
