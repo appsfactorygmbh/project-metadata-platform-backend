@@ -57,6 +57,9 @@ public class DependencyInjectionTests : TestsWithDatabase
                 var services = new ServiceCollection();
                 services.AddScoped<UserManager<User>>(_ => mockUserManager.Object);
 
+                var mockUnitOfWork = new Mock<IUnitOfWork>();
+                services.AddScoped(_ => mockUnitOfWork.Object);
+
                 mockUserManager.Setup(m => m.CreateAsync(It.IsAny<User>())).ReturnsAsync(IdentityResult.Success);
 
                 services.BuildServiceProvider().AddAdminUser();

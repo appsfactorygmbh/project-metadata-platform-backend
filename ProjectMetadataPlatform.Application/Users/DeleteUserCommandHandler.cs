@@ -5,7 +5,8 @@ using MediatR;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Domain.User;
 using Microsoft.AspNetCore.Http;
-
+using ProjectMetadataPlatform.Domain.Logs;
+using Action = ProjectMetadataPlatform.Domain.Logs.Action;
 
 
 namespace ProjectMetadataPlatform.Application.Users;
@@ -18,16 +19,22 @@ public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand,User?>
 {
     private readonly IUsersRepository _usersRepository;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly ILogRepository _logRepository;
+    private readonly IUnitOfWork _unitOfWork;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DeleteUserCommandHandler"/> class.
     /// </summary>
     /// <param name="usersRepository">The users repository.</param>
     /// <param name="httpContextAccessor">Provides Access to the current Http Context.</param>
-    public DeleteUserCommandHandler(IUsersRepository usersRepository, IHttpContextAccessor httpContextAccessor)
+    /// <param name="logRepository">The log repository.</param>
+    /// <param name="unitOfWork">Unit of Work</param>
+    public DeleteUserCommandHandler(IUsersRepository usersRepository, IHttpContextAccessor httpContextAccessor, ILogRepository logRepository, IUnitOfWork unitOfWork)
     {
         _usersRepository = usersRepository;
         _httpContextAccessor = httpContextAccessor;
+        _logRepository = logRepository;
+        _unitOfWork = unitOfWork;
     }
 
     /// <summary>
@@ -41,8 +48,21 @@ public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand,User?>
         var user = await _usersRepository.GetUserByIdAsync(request.Id);
         var username = _httpContextAccessor.HttpContext?.User.Identity?.Name ?? "Unknown user";
         User? activeUser = await _usersRepository.GetUserByUserNameAsync(username);
-        return user !=null && user == activeUser
-            ? throw new InvalidOperationException("A User can't delete themself.")
-            : user == null ? null :await _usersRepository.DeleteUserAsync(user);
+        if (user == null)
+        {
+            return null;
+        }
+        else if (user == activeUser)
+        {
+            throw new InvalidOperationException("A User can't delete themself.");
+        }
+        else
+        {
+            var change = new LogChange() { OldValue = user.Email!, NewValue = "", Property = nameof(User.Email) };
+            await _logRepository.AddUserLogForCurrentUser(user,Action.REMOVED_USER,[change]);
+            var response =  await _usersRepository.DeleteUserAsync(user);
+            await _unitOfWork.CompleteAsync();
+            return response;
+        }
     }
 }

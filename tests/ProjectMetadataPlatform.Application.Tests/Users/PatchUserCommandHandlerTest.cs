@@ -15,13 +15,15 @@ public class PatchUserCommandHandlerTest
     private PatchUserCommandHandler _handler;
     private Mock<IUsersRepository> _mockUsersRepo;
     private Mock<IPasswordHasher<User>> _mockPasswordHasher;
+    private Mock<IUnitOfWork> _unitOfWork;
 
     [SetUp]
     public void Setup()
     {
         _mockUsersRepo = new Mock<IUsersRepository>();
         _mockPasswordHasher = new Mock<IPasswordHasher<User>>();
-        _handler = new PatchUserCommandHandler(_mockUsersRepo.Object, _mockPasswordHasher.Object);
+        _unitOfWork = new Mock<IUnitOfWork>();
+        _handler = new PatchUserCommandHandler(_mockUsersRepo.Object, _mockPasswordHasher.Object, _unitOfWork.Object);
     }
 
     [Test]

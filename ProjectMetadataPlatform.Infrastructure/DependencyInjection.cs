@@ -130,6 +130,9 @@ public static class DependencyInjection
         {
             throw new InvalidOperationException("Could not create admin user: " + string.Join(", ", identityResult.Errors.Select(e => e.Description)));
         }
+
+        var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+        unitOfWork.CompleteAsync();
     }
 
     /// <summary>

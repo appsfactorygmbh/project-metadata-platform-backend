@@ -27,11 +27,15 @@ public class DeleteUserCommandHandlerTest
             User = contextUser
         };
         httpContextAccessorMock.Setup(_ => _.HttpContext).Returns(httpContext);
-        _handler = new DeleteUserCommandHandler(_mockUsersRepo.Object, httpContextAccessorMock.Object);
+        _mockUnitOfWork = new Mock<IUnitOfWork>();
+        _mockLogRepository = new Mock<ILogRepository>();
+        _handler = new DeleteUserCommandHandler(_mockUsersRepo.Object, httpContextAccessorMock.Object,_mockLogRepository.Object,_mockUnitOfWork.Object);
     }
     private DeleteUserCommandHandler _handler;
     private Mock<IUsersRepository> _mockUsersRepo;
     private Mock<IHttpContextAccessor> httpContextAccessorMock;
+    private Mock<IUnitOfWork> _mockUnitOfWork;
+    private Mock<ILogRepository> _mockLogRepository;
 
     [Test]
     public async Task DeleteUser_Test()
