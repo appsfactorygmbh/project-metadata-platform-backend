@@ -31,7 +31,7 @@ public static class DependencyInjection
     public static IServiceCollection AddInfrastructureDependencies(this IServiceCollection serviceCollection)
     {
         serviceCollection.AddDbContextWithPostgresConnection();
-        serviceCollection.AddScoped<IUnitOfWork>(provider =>
+        _ = serviceCollection.AddScoped<IUnitOfWork>(provider =>
             provider.GetRequiredService<ProjectMetadataPlatformDbContext>());
         serviceCollection.ConfigureAuth();
         _ = serviceCollection.AddScoped<IPluginRepository, PluginRepository>();
@@ -132,7 +132,7 @@ public static class DependencyInjection
         }
 
         var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
-        unitOfWork.CompleteAsync();
+        _ = unitOfWork.CompleteAsync();
     }
 
     /// <summary>

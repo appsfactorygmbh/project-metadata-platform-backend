@@ -21,6 +21,7 @@ public class PatchUserCommandHandler : IRequestHandler<PatchUserCommand, User?>
     /// </summary>
     /// <param name="usersRepository">The repository for accessing user data.</param>
     /// <param name="passwordHasher">The service for hashing user passwords.</param>
+    /// <param name="unitOfWork">Unit of work</param>
     public PatchUserCommandHandler(IUsersRepository usersRepository, IPasswordHasher<User> passwordHasher, IUnitOfWork unitOfWork)
     {
         _usersRepository = usersRepository;
