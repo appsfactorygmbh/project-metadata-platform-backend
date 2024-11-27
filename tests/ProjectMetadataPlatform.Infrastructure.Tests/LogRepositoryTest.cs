@@ -24,7 +24,6 @@ public class LogRepositoryTest : TestsWithDatabase
     private ProjectMetadataPlatformDbContext _context;
     private LogRepository _loggingRepository;
     private Mock<IUsersRepository> _mockUserRepository;
-    private Mock<IHttpContextAccessor> _httpContextAccessor;
 
     [SetUp]
     public void Setup()

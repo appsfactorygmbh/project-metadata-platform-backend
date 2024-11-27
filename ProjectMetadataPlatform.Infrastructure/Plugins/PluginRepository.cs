@@ -62,7 +62,7 @@ public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
     {
         if (plugin.Id == 0)
         {
-            _context.Plugins.Add(plugin);
+            _ = _context.Plugins.Add(plugin);
         }
         else
         {
