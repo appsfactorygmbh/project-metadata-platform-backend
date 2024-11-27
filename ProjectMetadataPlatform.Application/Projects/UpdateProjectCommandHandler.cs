@@ -163,17 +163,17 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
 
         if (addedPluginChanges.Count > 0)
         {
-            await _logRepository.AddLogForCurrentUser(project.Id, Action.ADDED_PROJECT_PLUGIN, addedPluginChanges);
+            await _logRepository.AddProjectLogForCurrentUser(project, Action.ADDED_PROJECT_PLUGIN, addedPluginChanges);
         }
 
         if (removedPluginChanges.Count > 0)
         {
-            await _logRepository.AddLogForCurrentUser(project.Id, Action.REMOVED_PROJECT_PLUGIN, removedPluginChanges);
+            await _logRepository.AddProjectLogForCurrentUser(project, Action.REMOVED_PROJECT_PLUGIN, removedPluginChanges);
         }
 
         if (updatedPluginChanges.Count > 0)
         {
-            await _logRepository.AddLogForCurrentUser(project.Id, Action.UPDATED_PROJECT_PLUGIN, updatedPluginChanges);
+            await _logRepository.AddProjectLogForCurrentUser(project, Action.UPDATED_PROJECT_PLUGIN, updatedPluginChanges);
         }
 
         await _unitOfWork.CompleteAsync();

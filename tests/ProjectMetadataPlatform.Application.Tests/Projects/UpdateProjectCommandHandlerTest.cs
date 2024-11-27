@@ -644,8 +644,8 @@ public class UpdateProjectCommandHandlerTest
 
         await _handler.Handle(updateCommand, CancellationToken.None);
 
-        _mockLogRepository.Verify(logRepo => logRepo.AddLogForCurrentUser(
-            project.Id,
+        _mockLogRepository.Verify(logRepo => logRepo.AddProjectLogForCurrentUser(
+            project,
             Action.REMOVED_PROJECT_PLUGIN,
             It.Is<List<LogChange>>(changes =>
                 changes.Any(change => change.Property == "PluginId" && change.OldValue == "1" && change.NewValue == String.Empty) &&
@@ -694,8 +694,8 @@ public class UpdateProjectCommandHandlerTest
 
         await _handler.Handle(updateCommand, CancellationToken.None);
 
-        _mockLogRepository.Verify(logRepo => logRepo.AddLogForCurrentUser(
-            project.Id,
+        _mockLogRepository.Verify(logRepo => logRepo.AddProjectLogForCurrentUser(
+            project,
             Action.ADDED_PROJECT_PLUGIN,
             It.Is<List<LogChange>>(changes =>
                 changes.Any(change => change.Property == "PluginId" && change.OldValue == String.Empty && change.NewValue == "1") &&
@@ -752,8 +752,8 @@ public class UpdateProjectCommandHandlerTest
 
         await _handler.Handle(updateCommand, CancellationToken.None);
 
-        _mockLogRepository.Verify(logRepo => logRepo.AddLogForCurrentUser(
-            project.Id,
+        _mockLogRepository.Verify(logRepo => logRepo.AddProjectLogForCurrentUser(
+            project,
             Action.UPDATED_PROJECT_PLUGIN,
             It.Is<List<LogChange>>(changes =>
                 changes.Any(change => change.Property == "DisplayName" && change.OldValue == "Example Plugin" && change.NewValue == "Updated Plugin")
@@ -808,8 +808,8 @@ public class UpdateProjectCommandHandlerTest
 
         await _handler.Handle(updateCommand, CancellationToken.None);
 
-        _mockLogRepository.Verify(logRepo => logRepo.AddLogForCurrentUser(
-            It.IsAny<int>(),
+        _mockLogRepository.Verify(logRepo => logRepo.AddProjectLogForCurrentUser(
+            It.IsAny<Project>(),
             It.IsAny<Action>(),
             It.IsAny<List<LogChange>>()
         ), Times.Never);
