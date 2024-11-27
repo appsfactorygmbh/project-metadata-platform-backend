@@ -52,4 +52,6 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, strin
         await _logRepository.AddUserLogForCurrentUser(user, Action.ADDED_USER, changes);
 
         await _unitOfWork.CompleteAsync();
+        return result;
+    }
 }
