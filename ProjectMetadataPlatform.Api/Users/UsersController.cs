@@ -187,15 +187,14 @@ public class UsersController : ControllerBase
     [HttpGet("Me")]
     public async Task<ActionResult<GetUserResponse>> GetMe()
     {
-        //TODO change this so an Email claim can be found
-        var username = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Name)?.Value;
+        var email = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.Email);
 
-        if (username == null)
+        if (email == null)
         {
             return Unauthorized("User not authenticated.");
         }
 
-        var query = new GetUserByUserNameQuery(username);
+        var query = new GetUserByEmailQuery(email);
 
         User? user;
         try

@@ -127,26 +127,26 @@ public class UsersRepositoryTest : TestsWithDatabase
     }
 
     [Test]
-    public async Task GetUserByUserNameAsync_Test()
+    public async Task GetUserByEmailAsync_Test()
     {
-        var user = new User { UserName = "bigboss", Name = "Mr. Perkins", Email = "bigboss@bankofevil.com", Id = "1"};
-        _mockUserManager.Setup(m => m.FindByNameAsync(It.IsAny<string>()) ).ReturnsAsync(user);
-        var result = await _repository.GetUserByUserNameAsync("Example Username");
+        var user = new User {  Email = "bigboss@bankofevil.com", Id = "1"};
+        _mockUserManager.Setup(m => m.FindByEmailAsync(It.IsAny<string>()) ).ReturnsAsync(user);
+        var result = await _repository.GetUserByEmailAsync("bigboss@bankofevil.com");
         Assert.That(result, Is.EqualTo(user));
     }
 
     [Test]
     public async Task GetUserByUserNameAsync_NotFound_Test()
     {
-        _mockUserManager.Setup(m => m.FindByNameAsync(It.IsAny<string>()) ).ReturnsAsync((User?)null);
-        var result = await _repository.GetUserByUserNameAsync("Eiffel Tower (Vegas)");
+        _mockUserManager.Setup(m => m.FindByEmailAsync(It.IsAny<string>()) ).ReturnsAsync((User?)null);
+        var result = await _repository.GetUserByEmailAsync("Eiffel Tower (Vegas)");
         Assert.That(result, Is.Null);
     }
 
     [Test]
     public async Task StoreUser_CreatesUser_Test()
     {
-        var user = new User { Id = "", Name = "Geordie Greep", UserName = "geordieCreep", Email = "notblackmidi@geordiegreep.com" };
+        var user = new User { Id = "", Email = "notblackmidi@geordiegreep.com" };
 
         var result = await _repository.StoreUser(user);
 
@@ -158,7 +158,7 @@ public class UsersRepositoryTest : TestsWithDatabase
     [Test]
     public async Task StoreUser_UpdatesUser_Test()
     {
-        var user = new User { Id = "13", Name = "Linkin Park", UserName = "Clara Park", Email = "emily.armstrong@linkinpark.leipzig.de" };
+        var user = new User { Id = "13", Email = "emily.armstrong@linkinpark.leipzig.de" };
 
         var result = await _repository.StoreUser(user);
 

@@ -32,7 +32,7 @@ public class LogRepositoryTest : TestsWithDatabase
         _context = DbContext();
         var httpContextAccessorMock = new Mock<IHttpContextAccessor>();
 
-        var identity = new GenericIdentity("camo", "test");
+        var identity = new ClaimsIdentity(new[] { new Claim(ClaimTypes.Email, "camo") }, "TestAuth");
         var contextUser = new ClaimsPrincipal(identity); //add claims as needed
         var httpContext = new DefaultHttpContext
         {
@@ -67,9 +67,7 @@ public class LogRepositoryTest : TestsWithDatabase
         var user = new User
         {
             Id = "42",
-            UserName = "camo",
             Email = "camo",
-            Name = "some user"
         };
         await _context.Users.AddAsync(user);
 
@@ -109,7 +107,7 @@ public class LogRepositoryTest : TestsWithDatabase
             }
         };
 
-        _mockUserRepository.Setup(_ => _.GetUserByUserNameAsync("camo")).ReturnsAsync(user);
+        _mockUserRepository.Setup(_ => _.GetUserByEmailAsync("camo")).ReturnsAsync(user);
 
         await _loggingRepository.AddLogForCurrentUser( exampleProject.Id, Action.ADDED_PROJECT, logChanges);
         _context.SaveChanges();

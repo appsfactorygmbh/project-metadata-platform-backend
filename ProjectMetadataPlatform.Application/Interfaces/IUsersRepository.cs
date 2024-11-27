@@ -31,11 +31,11 @@ public interface IUsersRepository
     Task<User?> GetUserByIdAsync(string id);
 
     /// <summary>
-    /// Returns the user with the given username.
+    /// Returns the user with the given email.
     /// </summary>
-    /// <param name="userName">The username of the searched for user.</param>
+    /// <param name="email">The email of the searched for user.</param>
     /// <returns>The user that is searched for or null.</returns>
-    Task<User?> GetUserByUserNameAsync(string userName);
+    Task<User?> GetUserByEmailAsync(string email);
 
     /// <summary>
     /// Stores a user.

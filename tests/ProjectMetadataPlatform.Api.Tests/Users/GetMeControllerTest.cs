@@ -28,9 +28,9 @@ public class GetMeControllerTest
     {
         var user = new User{Id = "42", Email = "moonstealer@gruhq.com"};
 
-        _mediator.Setup(m => m.Send(It.IsAny<GetUserByUserNameQuery>(), It.IsAny<System.Threading.CancellationToken>()))
+        _mediator.Setup(m => m.Send(It.IsAny<GetUserByEmailQuery>(), It.IsAny<System.Threading.CancellationToken>()))
             .ReturnsAsync(user);
-        var controller = new UsersController(_mediator.Object, MockHttpContextAccessor("moonstealer"));
+        var controller = new UsersController(_mediator.Object, MockHttpContextAccessor("moonstealer@gruhq.com"));
 
         var result = await controller.GetMe();
         var okResult = result.Result as OkObjectResult;
@@ -48,7 +48,7 @@ public class GetMeControllerTest
     [Test]
     public async Task getMe_Test_NotFound()
     {
-        _mediator.Setup(m => m.Send(It.IsAny<GetUserByUserNameQuery>(), It.IsAny<System.Threading.CancellationToken>()))
+        _mediator.Setup(m => m.Send(It.IsAny<GetUserByEmailQuery>(), It.IsAny<System.Threading.CancellationToken>()))
             .ReturnsAsync((User)null!);
         var controller = new UsersController(_mediator.Object, MockHttpContextAccessor("moonstealer"));
 
@@ -61,7 +61,7 @@ public class GetMeControllerTest
     [Test]
     public async Task getMe_Test_InternalError()
     {
-        _mediator.Setup(m => m.Send(It.IsAny<GetUserByUserNameQuery>(), It.IsAny<System.Threading.CancellationToken>()))
+        _mediator.Setup(m => m.Send(It.IsAny<GetUserByEmailQuery>(), It.IsAny<System.Threading.CancellationToken>()))
             .ThrowsAsync(new InvalidOperationException("Internal error"));
         var controller = new UsersController(_mediator.Object, MockHttpContextAccessor("Dr. Nefario"));
 
@@ -85,16 +85,16 @@ public class GetMeControllerTest
         Assert.That(unauthorizedResult.StatusCode, Is.EqualTo(401));
     }
 
-    private static HttpContextAccessor MockHttpContextAccessor(string? username)
+    private static HttpContextAccessor MockHttpContextAccessor(string? email)
     {
-        if (username == null)
+        if (email == null)
         {
             return new HttpContextAccessor
             {
                 HttpContext = null
             };
         }
-        var claims = new System.Collections.Generic.List<Claim> { new(ClaimTypes.Name, username) };
+        var claims = new System.Collections.Generic.List<Claim> { new(ClaimTypes.Email, email) };
         var identity = new ClaimsIdentity(claims, "TestAuthType");
         var claimsPrincipal = new ClaimsPrincipal(identity);
 

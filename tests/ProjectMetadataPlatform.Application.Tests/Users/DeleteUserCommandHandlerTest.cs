@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading;
@@ -20,13 +21,15 @@ public class DeleteUserCommandHandlerTest
     {
         _mockUsersRepo = new Mock<IUsersRepository>();
         var httpContextAccessorMock = new Mock<IHttpContextAccessor>();
-        var identity = new GenericIdentity("camo", "test");
+        var identity = new ClaimsIdentity(new[] { new Claim(ClaimTypes.Email, "camo") }, "TestAuth");
         var contextUser = new ClaimsPrincipal(identity); //add claims as needed
+
         var httpContext = new DefaultHttpContext
         {
             User = contextUser
         };
         httpContextAccessorMock.Setup(_ => _.HttpContext).Returns(httpContext);
+        httpContextAccessorMock.Setup(_ => _.HttpContext.User).Returns(contextUser);
         _handler = new DeleteUserCommandHandler(_mockUsersRepo.Object, httpContextAccessorMock.Object);
     }
     private DeleteUserCommandHandler _handler;
@@ -58,9 +61,9 @@ public class DeleteUserCommandHandlerTest
     [Test]
     public async Task DeleteUser_SelfDeletionAttempt_Test()
     {
-        var user = new User {UserName = "camo", Id = "1"};
+        var user = new User {Email = "camo", Id = "1"};
         _mockUsersRepo.Setup(m => m.GetUserByIdAsync("1")).ReturnsAsync(user);
-        _mockUsersRepo.Setup(m => m.GetUserByUserNameAsync("camo")).ReturnsAsync(user);
+        _mockUsersRepo.Setup(m => m.GetUserByEmailAsync("camo")).ReturnsAsync(user);
         Assert.ThrowsAsync<InvalidOperationException>(() => _handler.Handle(new DeleteUserCommand("1"), CancellationToken.None));
     }
 }

@@ -40,13 +40,13 @@ public class UsersRepository : RepositoryBase<User>, IUsersRepository
 
     //TODO remove this
     /// <summary>
-    /// Returns the user with the given username.
+    /// Returns the user with the given email.
     /// </summary>
-    /// <param name="userName">The username of the user to be searched for.</param>
-    /// <returns>The user with the specified username, or null if not found.</returns>
-    public Task<User?> GetUserByUserNameAsync(string userName)
+    /// <param name="email">The email of the user to be searched for.</param>
+    /// <returns>The user with the specified email, or null if not found.</returns>
+    public Task<User?> GetUserByEmailAsync(string email)
     {
-        return _userManager.FindByNameAsync(userName);
+        return _userManager.FindByEmailAsync(email);
     }
 
     /// <summary>
