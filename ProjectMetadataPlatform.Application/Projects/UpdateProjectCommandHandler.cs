@@ -76,54 +76,57 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
 
         foreach (var newPlugin in newPlugins)
         {
-            addedPluginChanges.AddRange(new List<LogChange>
-            {
-                new()
+            addedPluginChanges.AddRange(
+            [
+                new LogChange
                 {
                     Property = nameof(ProjectPlugins.PluginId),
                     OldValue = string.Empty,
                     NewValue = newPlugin.PluginId.ToString()
                 },
-                new()
+                new LogChange
                 {
                     Property = nameof(ProjectPlugins.ProjectId),
                     OldValue = string.Empty,
                     NewValue = newPlugin.ProjectId.ToString()
                 },
-                new()
+                new LogChange
                 {
                     Property = nameof(ProjectPlugins.DisplayName),
                     OldValue = string.Empty,
                     NewValue = newPlugin.DisplayName ?? string.Empty
                 },
-                new() { Property = nameof(ProjectPlugins.Url), OldValue = string.Empty, NewValue = newPlugin.Url }
-            });
+                new LogChange { Property =nameof(ProjectPlugins.Url), OldValue = string.Empty, NewValue = newPlugin.Url }
+            ]);
         }
 
         foreach (var removedPlugin in removedPlugins)
         {
-            removedPluginChanges.AddRange(new List<LogChange>
-            {
-                new()
+            removedPluginChanges.AddRange(
+            [
+                new LogChange
                 {
                     Property = nameof(ProjectPlugins.PluginId),
                     OldValue = removedPlugin.PluginId.ToString(),
                     NewValue = string.Empty
                 },
-                new()
+                new LogChange
                 {
                     Property = nameof(ProjectPlugins.ProjectId),
                     OldValue = removedPlugin.ProjectId.ToString(),
                     NewValue = string.Empty
                 },
-                new()
+                new LogChange
                 {
                     Property = nameof(ProjectPlugins.DisplayName),
                     OldValue = removedPlugin.DisplayName ?? string.Empty,
                     NewValue = string.Empty
                 },
-                new() { Property = nameof(ProjectPlugins.Url), OldValue = removedPlugin.Url, NewValue = string.Empty }
-            });
+                new LogChange
+                {
+                    Property = nameof(ProjectPlugins.Url), OldValue = removedPlugin.Url, NewValue = string.Empty
+                }
+            ]);
         }
 
         foreach (var existingPlugin in existingPlugins)

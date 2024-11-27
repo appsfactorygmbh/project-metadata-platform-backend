@@ -648,7 +648,9 @@ public class UpdateProjectCommandHandlerTest
             project.Id,
             Action.REMOVED_PROJECT_PLUGIN,
             It.Is<List<LogChange>>(changes =>
-                changes.Any(change => change.Property == "PluginId" && change.OldValue == "1" && change.NewValue == String.Empty)
+                changes.Any(change => change.Property == "PluginId" && change.OldValue == "1" && change.NewValue == String.Empty) &&
+                changes.Any(change => change.Property == "Url" && change.OldValue == "http://example.com" && change.NewValue == String.Empty) &&
+                changes.Any(change => change.Property == "DisplayName" && change.OldValue == "Example Plugin" && change.NewValue == String.Empty)
             )
         ), Times.Once);
     }
@@ -696,7 +698,9 @@ public class UpdateProjectCommandHandlerTest
             project.Id,
             Action.ADDED_PROJECT_PLUGIN,
             It.Is<List<LogChange>>(changes =>
-                changes.Any(change => change.Property == "PluginId" && change.OldValue == String.Empty && change.NewValue == "1")
+                changes.Any(change => change.Property == "PluginId" && change.OldValue == String.Empty && change.NewValue == "1") &&
+                changes.Any(change => change.Property == "Url" && change.OldValue == String.Empty && change.NewValue == "http://example.com") &&
+                changes.Any(change => change.Property == "DisplayName" && change.OldValue == String.Empty && change.NewValue == "Example Plugin")
             )
         ), Times.Once);
     }
@@ -804,7 +808,11 @@ public class UpdateProjectCommandHandlerTest
 
         await _handler.Handle(updateCommand, CancellationToken.None);
 
-
+        _mockLogRepository.Verify(logRepo => logRepo.AddLogForCurrentUser(
+            It.IsAny<int>(),
+            It.IsAny<Action>(),
+            It.IsAny<List<LogChange>>()
+        ), Times.Never);
     }
 
 }
