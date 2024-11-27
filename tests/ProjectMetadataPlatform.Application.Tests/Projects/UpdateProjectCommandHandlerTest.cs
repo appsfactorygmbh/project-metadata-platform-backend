@@ -341,8 +341,8 @@ public class UpdateProjectCommandHandlerTest
 
         await _handler.Handle(updateCommand, CancellationToken.None);
 
-        _mockLogRepository.Verify(logRepo => logRepo.AddLogForCurrentUser(
-            project.Id,
+        _mockLogRepository.Verify(logRepo => logRepo.AddProjectLogForCurrentUser(
+            project,
             Action.UPDATED_PROJECT,
             It.Is<List<LogChange>>(changes =>
                 changes.Count == 5 &&
@@ -385,8 +385,8 @@ public class UpdateProjectCommandHandlerTest
 
         await _handler.Handle(updateCommand, CancellationToken.None);
 
-        _mockLogRepository.Verify(logRepo => logRepo.AddLogForCurrentUser(
-            It.IsAny<int>(),
+        _mockLogRepository.Verify(logRepo => logRepo.AddProjectLogForCurrentUser(
+            It.IsAny<Project>(),
             It.IsAny<Action>(),
             It.IsAny<List<LogChange>>()
         ), Times.Never);
@@ -422,8 +422,8 @@ public class UpdateProjectCommandHandlerTest
 
         await _handler.Handle(updateCommand, CancellationToken.None);
 
-        _mockLogRepository.Verify(logRepo => logRepo.AddLogForCurrentUser(
-            project.Id,
+        _mockLogRepository.Verify(logRepo => logRepo.AddProjectLogForCurrentUser(
+            project,
             Action.UPDATED_PROJECT,
             It.Is<List<LogChange>>(changes =>
                 changes.Count == 2 &&
@@ -460,8 +460,8 @@ public class UpdateProjectCommandHandlerTest
 
         _mockProjectRepo.Setup(repo => repo.GetProjectWithPluginsAsync(project.Id)).ReturnsAsync(project);
 
-        _mockLogRepository.Setup(logRepo => logRepo.AddLogForCurrentUser(
-            It.IsAny<int>(),
+        _mockLogRepository.Setup(logRepo => logRepo.AddProjectLogForCurrentUser(
+            It.IsAny<Project>(),
             It.IsAny<Action>(),
             It.IsAny<List<LogChange>>()
         )).Throws(new Exception("Logging error"));
@@ -471,8 +471,8 @@ public class UpdateProjectCommandHandlerTest
         );
         Assert.That(exception.Message, Is.EqualTo("Logging error"));
 
-        _mockLogRepository.Verify(logRepo => logRepo.AddLogForCurrentUser(
-            It.IsAny<int>(),
+        _mockLogRepository.Verify(logRepo => logRepo.AddProjectLogForCurrentUser(
+            It.IsAny<Project>(),
             It.IsAny<Action>(),
             It.IsAny<List<LogChange>>()
         ), Times.Once);
@@ -510,8 +510,8 @@ public class UpdateProjectCommandHandlerTest
 
         Assert.That(project.IsArchived, Is.True);
 
-        _mockLogRepository.Verify(logRepo => logRepo.AddLogForCurrentUser(
-            project.Id,
+        _mockLogRepository.Verify(logRepo => logRepo.AddProjectLogForCurrentUser(
+            project,
             Action.ARCHIVED_PROJECT,  // Expect Action.ARCHIVED_PROJECT since the project was archived
             It.Is<List<LogChange>>(changes =>
                 changes.Count == 1 &&
@@ -555,8 +555,8 @@ public class UpdateProjectCommandHandlerTest
 
         Assert.That(project.IsArchived, Is.False);
 
-        _mockLogRepository.Verify(logRepo => logRepo.AddLogForCurrentUser(
-            project.Id,
+        _mockLogRepository.Verify(logRepo => logRepo.AddProjectLogForCurrentUser(
+            project,
             Action.UNARCHIVED_PROJECT,
             It.Is<List<LogChange>>(changes =>
                 changes.Count == 1 &&
@@ -599,8 +599,8 @@ public class UpdateProjectCommandHandlerTest
 
         Assert.That(project.IsArchived, Is.True);
 
-        _mockLogRepository.Verify(logRepo => logRepo.AddLogForCurrentUser(
-            project.Id,
+        _mockLogRepository.Verify(logRepo => logRepo.AddProjectLogForCurrentUser(
+            project,
             Action.UPDATED_PROJECT,
             It.IsAny<List<LogChange>>()
         ), Times.Never);

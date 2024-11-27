@@ -5,7 +5,9 @@ namespace ProjectMetadataPlatform.Domain.Logs;
 /// </summary>
 public enum Action
 {
-    // TODO keep in sync with the LogRepository in the Infrastructure project and the LogConverter in the Api project
+    // TODO keep in sync with:
+    // - LogRepository in the Infrastructure project (ActionMessages and ActionWhiteLists)
+    // - the LogConverter in the Api project
 
     /// <summary>
     /// Represents the action of adding a project.
