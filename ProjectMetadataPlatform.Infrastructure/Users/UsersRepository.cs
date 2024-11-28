@@ -68,11 +68,9 @@ public class UsersRepository : RepositoryBase<User>, IUsersRepository
         user.Id = (maxId + 1).ToString(CultureInfo.InvariantCulture);
 
         var identityResult = await _userManager.CreateAsync(user, password);
-        if(identityResult.Errors.Any(e => e.Code == "DuplicateUserName"))
-        {
-            throw new ArgumentException("User creation Failed : DuplicateEmail");
-        }
-        return !identityResult.Succeeded ? throw new ArgumentException("User creation " + identityResult) : user.Id;
+        return identityResult.Errors.Any(e => e.Code == "DuplicateUserName")
+            ? throw new ArgumentException("User creation Failed : DuplicateEmail")
+            : !identityResult.Succeeded ? throw new ArgumentException("User creation " + identityResult) : user.Id;
     }
 
     /// <summary>
@@ -94,11 +92,11 @@ public class UsersRepository : RepositoryBase<User>, IUsersRepository
     {
         if (user.Id == "")
         {
-            await _userManager.CreateAsync(user);
+            _ = await _userManager.CreateAsync(user);
         }
         else
         {
-            await _userManager.UpdateAsync(user);
+            _ = await _userManager.UpdateAsync(user);
         }
 
         return user;

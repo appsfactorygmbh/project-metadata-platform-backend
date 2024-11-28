@@ -68,7 +68,7 @@ public static class DependencyInjection
             .AddDefaultTokenProviders();
 
         var tokenDescriptorInformation = TokenDescriptorInformation.ReadFromEnvVariables();
-        serviceCollection.Configure<IdentityOptions>(options => options.User.RequireUniqueEmail = true);
+        _ = serviceCollection.Configure<IdentityOptions>(options => options.User.RequireUniqueEmail = true);
         _ = serviceCollection.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
