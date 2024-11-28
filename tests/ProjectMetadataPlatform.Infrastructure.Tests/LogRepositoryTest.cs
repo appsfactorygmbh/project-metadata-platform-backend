@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
-using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -133,17 +132,13 @@ public class LogRepositoryTest : TestsWithDatabase
         var author = new User
         {
             Id = "42",
-            UserName = "camo",
             Email = "camo",
-            Name = "some user"
         };
 
         var affectedUser = new User
         {
             Id = "12",
-            UserName = "RocketMan",
             Email = "gagarin@vostok.su",
-            Name = "Yuri Gagarin"
         };
         await _context.Users.AddAsync(author);
         await _context.Users.AddAsync(affectedUser);
@@ -190,9 +185,8 @@ public class LogRepositoryTest : TestsWithDatabase
         var author = new User
         {
             Id = "42",
-            UserName = "camo",
             Email = "camo",
-            Name = "some user"
+
         };
         await _context.Users.AddAsync(author);
 
@@ -262,9 +256,7 @@ public class LogRepositoryTest : TestsWithDatabase
         var user = new User
         {
             Id = "42",
-            UserName = "camo",
             Email = "camo",
-            Name = "some user"
         };
 
         await _context.Users.AddAsync(user);
@@ -297,17 +289,13 @@ public class LogRepositoryTest : TestsWithDatabase
         var author = new User
         {
             Id = "42",
-            UserName = "camo",
             Email = "camo",
-            Name = "some user"
         };
 
         var affectedUser = new User
         {
             Id = "12",
-            UserName = "RocketMan",
             Email = "gagarin@vostok.su",
-            Name = "Yuri Gagarin"
         };
         await _context.Users.AddAsync(author);
         await _context.Users.AddAsync(affectedUser);
@@ -343,9 +331,7 @@ public class LogRepositoryTest : TestsWithDatabase
         var author = new User
         {
             Id = "42",
-            UserName = "camo",
             Email = "camo",
-            Name = "some user"
         };
         await _context.Users.AddAsync(author);
 
