@@ -160,7 +160,7 @@ public class LogRepositoryTest : TestsWithDatabase
             },
         };
 
-        _mockUserRepository.Setup(_ => _.GetUserByUserNameAsync("camo")).ReturnsAsync(author);
+        _mockUserRepository.Setup(_ => _.GetUserByEmailAsync("camo")).ReturnsAsync(author);
 
         await _loggingRepository.AddUserLogForCurrentUser(affectedUser, Action.UPDATED_USER, logChanges);
         await _context.SaveChangesAsync();
@@ -215,7 +215,7 @@ public class LogRepositoryTest : TestsWithDatabase
             },
         };
 
-        _mockUserRepository.Setup(_ => _.GetUserByUserNameAsync("camo")).ReturnsAsync(author);
+        _mockUserRepository.Setup(_ => _.GetUserByEmailAsync("camo")).ReturnsAsync(author);
 
         await _loggingRepository.AddGlobalPluginLogForCurrentUser(globalPlugin, Action.UPDATED_GLOBAL_PLUGIN, logChanges);
         await _context.SaveChangesAsync();

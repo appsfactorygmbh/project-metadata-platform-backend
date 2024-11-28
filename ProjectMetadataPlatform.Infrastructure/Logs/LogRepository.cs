@@ -147,7 +147,7 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
     private async Task<Log> PrepareGenericLogForCurrentUser(Action action, List<LogChange> changes)
     {
         var email = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.Email) ?? "Unknown user";
-        User? user = await _usersRepository.GetUserByEmailAsync(email);
+        User? author = await _usersRepository.GetUserByEmailAsync(email);
 
         var log = new Log
         {
