@@ -31,9 +31,6 @@ public class CreateUserCommandHandlerTest
         _mockUnitOfWork = new Mock<IUnitOfWork>();
         _handler = new CreateUserCommandHandler(_mockUsersRepo.Object,_mockLogRepo.Object, _mockUnitOfWork.Object);
     }
-    private CreateUserCommandHandler _handler;
-    private Mock<IUnitOfWork> _mockUnitOfWork;
-    private Mock<IUsersRepository> _mockUsersRepo;
 
     [Test]
     public async Task CreateUser_Test()
