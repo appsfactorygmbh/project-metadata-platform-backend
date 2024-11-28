@@ -70,12 +70,9 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
 
         var removedPlugins = currentPlugins.Except(existingPlugins).ToList();
 
-        var addedPluginChanges = new List<LogChange>();
-        var removedPluginChanges = new List<LogChange>();
-        var updatedPluginChanges = new List<LogChange>();
-
         foreach (var newPlugin in newPlugins)
         {
+            var addedPluginChanges = new List<LogChange>();
             addedPluginChanges.AddRange(new List<LogChange>
             {
                 new()
@@ -103,6 +100,7 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
 
         foreach (var removedPlugin in removedPlugins)
         {
+            var removedPluginChanges = new List<LogChange>();
             removedPluginChanges.AddRange(new List<LogChange>
             {
                 new()
@@ -130,6 +128,8 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
 
         foreach (var existingPlugin in existingPlugins)
         {
+            var updatedPluginChanges = new List<LogChange>();
+
             var requestPlugin = request.Plugins.First(plugin
                 => GetProjectPluginKey(plugin) == GetProjectPluginKey(existingPlugin));
 
