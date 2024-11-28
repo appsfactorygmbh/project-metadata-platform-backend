@@ -14,14 +14,16 @@ namespace ProjectMetadataPlatform.Application.Users;
 public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, string>
 {
     private readonly IUsersRepository _usersRepository;
-
+    private readonly IUnitOfWork _unitOfWork;
     /// <summary>
     ///    Creates a new instance of<see cref="CreateUserCommandHandler" />.
     /// </summary>
     /// <param name="usersRepository">Repository for accessing user data.</param>
-    public CreateUserCommandHandler(IUsersRepository usersRepository)
+    /// <param name="unitOfWork">Unit of work</param>
+    public CreateUserCommandHandler(IUsersRepository usersRepository, IUnitOfWork unitOfWork)
     {
         _usersRepository = usersRepository;
+        _unitOfWork = unitOfWork;
     }
 
 
@@ -35,6 +37,7 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, strin
         // Uses Email as Username because: Username cant be empty + Username cant be duplicate.
         var user = new User { Email = request.Email, UserName = request.Email};
         var result = await _usersRepository.CreateUserAsync(user, request.Password);
+        await _unitOfWork.CompleteAsync();
         return result;
     }
 }

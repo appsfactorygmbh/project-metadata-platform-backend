@@ -9,6 +9,7 @@ using ProjectMetadataPlatform.Infrastructure.DataAccess;
 using ProjectMetadataPlatform.Infrastructure.Logs;
 using ProjectMetadataPlatform.Infrastructure.Plugins;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using ProjectMetadataPlatform.Application;
 using ProjectMetadataPlatform.Application.Auth;
@@ -30,7 +31,7 @@ public static class DependencyInjection
     public static IServiceCollection AddInfrastructureDependencies(this IServiceCollection serviceCollection)
     {
         serviceCollection.AddDbContextWithPostgresConnection();
-        serviceCollection.AddScoped<IUnitOfWork>(provider =>
+        _ = serviceCollection.AddScoped<IUnitOfWork>(provider =>
             provider.GetRequiredService<ProjectMetadataPlatformDbContext>());
         serviceCollection.ConfigureAuth();
         _ = serviceCollection.AddScoped<IPluginRepository, PluginRepository>();
@@ -63,6 +64,16 @@ public static class DependencyInjection
     /// <param name="serviceCollection"></param>
     private static void ConfigureAuth(this IServiceCollection serviceCollection)
     {
+        _ = serviceCollection.AddScoped<IUserStore<User>>(provider =>
+        {
+            var userStore = new UserStore<User, IdentityRole, ProjectMetadataPlatformDbContext, string>(
+                provider.GetRequiredService<ProjectMetadataPlatformDbContext>())
+            {
+                AutoSaveChanges = false
+            };
+            return userStore;
+        });
+
         _ = serviceCollection.AddIdentity<User, IdentityRole>()
             .AddEntityFrameworkStores<ProjectMetadataPlatformDbContext>()
             .AddDefaultTokenProviders();
@@ -119,6 +130,9 @@ public static class DependencyInjection
         {
             throw new InvalidOperationException("Could not create admin user: " + string.Join(", ", identityResult.Errors.Select(e => e.Description)));
         }
+
+        var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+        _ = unitOfWork.CompleteAsync();
     }
 
     /// <summary>

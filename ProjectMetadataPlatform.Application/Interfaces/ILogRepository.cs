@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using ProjectMetadataPlatform.Domain.Logs;
+using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.Projects;
+using ProjectMetadataPlatform.Domain.User;
 
 namespace ProjectMetadataPlatform.Application.Interfaces;
 
@@ -10,24 +12,32 @@ namespace ProjectMetadataPlatform.Application.Interfaces;
 /// </summary>
 public interface ILogRepository
 {
+    /// <summary>
+    /// Adds Logs for changes made to a project. Sets the current User as the Author.
+    /// </summary>
+    /// <param name="project">The Project changes were made to.</param>
+    /// <param name="action">The type of change that was made.</param>
+    /// <param name="changes">A list of the changed properties.</param>
+    /// <returns></returns>
+    Task AddProjectLogForCurrentUser(Project  project, Action action, List<LogChange> changes);
 
     /// <summary>
-    ///     Adds new log for user.
+    /// Adds Logs for changes made to a User. Sets the current User as the Author.
     /// </summary>
-    /// <param name="projectId"></param>
-    /// <param name="action"></param>
-    /// <param name="changes"></param>
+    /// <param name="affectedUser">The User changes were made to.</param>
+    /// <param name="action">The type of change that was made.</param>
+    /// <param name="changes">A list of the changed properties.</param>
     /// <returns></returns>
-    Task AddLogForCurrentUser(int  projectId, Action action, List<LogChange> changes);
+    Task AddUserLogForCurrentUser(User affectedUser, Action action, List<LogChange> changes);
 
     /// <summary>
-    ///     Adds new log for user. Uses a project object instead of a project id.
+    /// Adds Logs for changes made to a GlobalPlugin. Sets the current User as the Author.
     /// </summary>
-    /// <param name="project"></param>
-    /// <param name="action"></param>
-    /// <param name="changes"></param>
+    /// <param name="globalPlugin">The GlobalPlugin changes were made to.</param>
+    /// <param name="action">The type of change that was made.</param>
+    /// <param name="changes">A list of the changed properties.</param>
     /// <returns></returns>
-    Task AddLogForCurrentUser(Project  project, Action action, List<LogChange> changes);
+    Task AddGlobalPluginLogForCurrentUser(Plugin globalPlugin, Action action, List<LogChange> changes);
 
     /// <summary>
     /// Retrieves the logs for a specific project.

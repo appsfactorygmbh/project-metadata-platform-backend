@@ -14,16 +14,19 @@ public class PatchUserCommandHandler : IRequestHandler<PatchUserCommand, User?>
 {
     private readonly IUsersRepository _usersRepository;
     private readonly IPasswordHasher<User> _passwordHasher;
+    private readonly IUnitOfWork _unitOfWork;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PatchUserCommandHandler"/> class.
     /// </summary>
     /// <param name="usersRepository">The repository for accessing user data.</param>
     /// <param name="passwordHasher">The service for hashing user passwords.</param>
-    public PatchUserCommandHandler(IUsersRepository usersRepository, IPasswordHasher<User> passwordHasher)
+    /// <param name="unitOfWork">Unit of work</param>
+    public PatchUserCommandHandler(IUsersRepository usersRepository, IPasswordHasher<User> passwordHasher, IUnitOfWork unitOfWork)
     {
         _usersRepository = usersRepository;
         _passwordHasher = passwordHasher;
+        _unitOfWork = unitOfWork;
     }
 
     /// <summary>
@@ -44,7 +47,8 @@ public class PatchUserCommandHandler : IRequestHandler<PatchUserCommand, User?>
         user.Email = request.Email ?? user.Email;
         user.UserName = user.Email;
         user.PasswordHash = request.Password != null ? _passwordHasher.HashPassword(user, request.Password) : user.PasswordHash;
-
-        return await _usersRepository.StoreUser(user);
+        var response = await _usersRepository.StoreUser(user);
+        await _unitOfWork.CompleteAsync();
+        return response;
     }
 }

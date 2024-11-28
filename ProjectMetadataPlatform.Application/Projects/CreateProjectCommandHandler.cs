@@ -61,7 +61,7 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
             new() { OldValue = "", NewValue = project.ClientName, Property = nameof(Project.ClientName) },
             new() { OldValue = "", NewValue = project.TeamNumber.ToString(), Property = nameof(Project.TeamNumber) }
         };
-        await _logRepository.AddLogForCurrentUser(project, Domain.Logs.Action.ADDED_PROJECT, changes);
+        await _logRepository.AddProjectLogForCurrentUser(project, Domain.Logs.Action.ADDED_PROJECT, changes);
         foreach (var plugin in project.ProjectPlugins)
         {
             var pluginChanges = new List<LogChange>
@@ -72,7 +72,7 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
             {
                 pluginChanges.Add(new LogChange { OldValue = "", NewValue = plugin.DisplayName, Property = nameof(ProjectPlugins.DisplayName) });
             }
-            await _logRepository.AddLogForCurrentUser(project, Domain.Logs.Action.ADDED_PROJECT_PLUGIN, pluginChanges);
+            await _logRepository.AddProjectLogForCurrentUser(project, Domain.Logs.Action.ADDED_PROJECT_PLUGIN, pluginChanges);
         }
         await _unitOfWork.CompleteAsync();
         return project.Id;

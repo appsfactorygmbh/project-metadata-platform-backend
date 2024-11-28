@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Security.Claims;
 using System.Security.Principal;
@@ -9,7 +10,10 @@ using Moq;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Application.Users;
+using ProjectMetadataPlatform.Domain.Logs;
+using UserAction = ProjectMetadataPlatform.Domain.Logs.Action;
 using ProjectMetadataPlatform.Domain.User;
+using Action = System.Action;
 
 namespace ProjectMetadataPlatform.Application.Tests.Users;
 
@@ -29,22 +33,36 @@ public class DeleteUserCommandHandlerTest
             User = contextUser
         };
         httpContextAccessorMock.Setup(_ => _.HttpContext).Returns(httpContext);
+        _mockUnitOfWork = new Mock<IUnitOfWork>();
+        _mockLogRepository = new Mock<ILogRepository>();
+        _handler = new DeleteUserCommandHandler(_mockUsersRepo.Object, httpContextAccessorMock.Object,_mockLogRepository.Object,_mockUnitOfWork.Object);
         httpContextAccessorMock.Setup(_ => _.HttpContext.User).Returns(contextUser);
-        _handler = new DeleteUserCommandHandler(_mockUsersRepo.Object, httpContextAccessorMock.Object);
+
     }
     private DeleteUserCommandHandler _handler;
     private Mock<IUsersRepository> _mockUsersRepo;
     private Mock<IHttpContextAccessor> httpContextAccessorMock;
+    private Mock<IUnitOfWork> _mockUnitOfWork;
+    private Mock<ILogRepository> _mockLogRepository;
 
     [Test]
     public async Task DeleteUser_Test()
     {
-        var user = new User { Id = "1" };
+        var user = new User { Id = "1", Email = "user@example.com"};
         _mockUsersRepo.Setup(m => m.GetUserByIdAsync("1")).ReturnsAsync(user);
         _mockUsersRepo.Setup(m => m.DeleteUserAsync(user)).ReturnsAsync(user);
-
         var result = await _handler.Handle(new DeleteUserCommand("1"), CancellationToken.None);
-
+        _mockLogRepository.Verify(
+            m => m.AddUserLogForCurrentUser(
+                It.Is<User>(u => u.Id == "1"),
+                UserAction.REMOVED_USER,
+                It.Is<List<LogChange>>(changes => changes.Count == 1 &&
+                                                  changes[0].OldValue == "user@example.com" &&
+                                                  changes[0].NewValue == "" &&
+                                                  changes[0].Property == nameof(User.Email))
+            ),
+            Times.Once
+        );
         Assert.That(result, Is.EqualTo(user));
     }
 

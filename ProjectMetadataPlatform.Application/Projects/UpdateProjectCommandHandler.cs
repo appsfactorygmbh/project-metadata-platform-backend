@@ -170,13 +170,13 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
             };
             archivedChanges.Add(change);
 
-            await _logRepository.AddLogForCurrentUser(project.Id, request.IsArchived ? Action.ARCHIVED_PROJECT : Action.UNARCHIVED_PROJECT, archivedChanges);
+            await _logRepository.AddProjectLogForCurrentUser(project, request.IsArchived ? Action.ARCHIVED_PROJECT : Action.UNARCHIVED_PROJECT, archivedChanges);
             project.IsArchived = request.IsArchived;
         }
 
         if (changes.Count > 0)
         {
-            await _logRepository.AddLogForCurrentUser(project.Id, Action.UPDATED_PROJECT, changes);
+            await _logRepository.AddProjectLogForCurrentUser(project, Action.UPDATED_PROJECT, changes);
         }
     }
 }
