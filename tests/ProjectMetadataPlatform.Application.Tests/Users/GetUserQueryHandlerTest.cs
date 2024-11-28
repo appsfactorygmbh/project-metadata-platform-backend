@@ -26,7 +26,7 @@ public class GetUserQueryHandlerTest
         var userResponseContent = new User
         {
             Id = "1",
-            Name = "Hinz"
+            Email = "Hinz"
         };
 
         _mockUserRepo.Setup(m => m.GetUserByIdAsync("1")).ReturnsAsync(userResponseContent);
@@ -38,7 +38,7 @@ public class GetUserQueryHandlerTest
         Assert.Multiple((() =>
         {
             Assert.That(result.Id, Is.EqualTo("1"));
-            Assert.That(result.Name, Is.EqualTo("Hinz"));
+            Assert.That(result.Email, Is.EqualTo("Hinz"));
         }));
     }
 

@@ -40,7 +40,7 @@ public class UsersRepositoryTest : TestsWithDatabase
     [Test]
     public async Task CreateUserAsync_Test()
     {
-        var user = new User { UserName = "Example Username", Name = "Example Name", Email = "Example Email", };
+        var user = new User {  Email = "Example Email", };
         var password = "test";
         _mockUserManager.Setup(m => m.CreateAsync(It.IsAny<User>(), It.IsAny<string>())).ReturnsAsync(IdentityResult.Success);
         var id = await _repository.CreateUserAsync(user, password);
@@ -50,12 +50,24 @@ public class UsersRepositoryTest : TestsWithDatabase
     [Test]
     public async Task CreateUserAsync_InvalidPassword_Test()
     {
-        _context.Users.Add(new User { UserName = "Example Username", Name = "Example Name", Email = "Example Email", Id = "1" });
-        var user = new User { UserName = "Example Username", Name = "Example Name", Email = "Example Email" };
+        _context.Users.Add(new User {  Email = "Example Email", Id = "1" });
+        var user = new User {  Email = "Example Email" };
         var password = "test";
         _mockUserManager.Setup(m => m.CreateAsync(It.IsAny<User>(), It.IsAny<string>())).ReturnsAsync(IdentityResult.Failed());
 
         Assert.ThrowsAsync<ArgumentException>(() => _repository.CreateUserAsync(user, password));
+    }
+
+    [Test]
+    public async Task CreateUserAsync_DuplicateEmail_Test()
+    {
+        _context.Users.Add(new User {  Email = "Example Email", Id = "1" });
+        var user = new User { Email = "Example Email" };
+        var password = "test";
+        _mockUserManager.Setup(m => m.CreateAsync(It.IsAny<User>(), It.IsAny<string>())).ReturnsAsync(IdentityResult.Failed(new IdentityError{ Code = "DuplicateUserName"}));
+
+        var exception =Assert.ThrowsAsync<ArgumentException>(() => _repository.CreateUserAsync(user, password));
+        Assert.That(exception.Message, Is.EqualTo("User creation Failed : DuplicateEmail"));
     }
 
     [Test]
@@ -76,7 +88,7 @@ public class UsersRepositoryTest : TestsWithDatabase
             new()
             {
                 Id = "1",
-                Name = "Hinz"
+                Email = "Hinz"
             }
         };
 
@@ -91,7 +103,7 @@ public class UsersRepositoryTest : TestsWithDatabase
         {
             Assert.That(result.Count(), Is.EqualTo(1));
             Assert.That(result.ElementAt(0).Id, Is.EqualTo("1"));
-            Assert.That(result.ElementAt(0).Name, Is.EqualTo("Hinz"));
+            Assert.That(result.ElementAt(0).Email, Is.EqualTo("Hinz"));
         }));
     }
 
@@ -101,7 +113,7 @@ public class UsersRepositoryTest : TestsWithDatabase
         var user = new User
         {
             Id = "1",
-            Name = "Hinz"
+            Email = "Hinz"
         };
         _mockUserManager.Setup(m => m.FindByIdAsync("1")).ReturnsAsync(user);
 
@@ -112,7 +124,7 @@ public class UsersRepositoryTest : TestsWithDatabase
         Assert.Multiple((() =>
         {
             Assert.That(result.Id, Is.EqualTo("1"));
-            Assert.That(result.Name, Is.EqualTo("Hinz"));
+            Assert.That(result.Email, Is.EqualTo("Hinz"));
         }));
     }
 
@@ -136,7 +148,7 @@ public class UsersRepositoryTest : TestsWithDatabase
     }
 
     [Test]
-    public async Task GetUserByUserNameAsync_NotFound_Test()
+    public async Task GetUserByEmailAsync_NotFound_Test()
     {
         _mockUserManager.Setup(m => m.FindByEmailAsync(It.IsAny<string>()) ).ReturnsAsync((User?)null);
         var result = await _repository.GetUserByEmailAsync("Eiffel Tower (Vegas)");

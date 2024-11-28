@@ -27,7 +27,7 @@ public class DeleteUserControllerTest
     [Test]
     public async Task DeleteUser_Test()
     {
-        var user = new User { Id = "1", Name = "John" };
+        var user = new User { Id = "1", Email = "John" };
         _mediator.Setup(m => m.Send(It.IsAny<DeleteUserCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(user);;
         ActionResult result = await _controller.Delete("1");
         Assert.That(result, Is.InstanceOf<NoContentResult>());

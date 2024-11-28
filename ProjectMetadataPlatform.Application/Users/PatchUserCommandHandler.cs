@@ -42,6 +42,7 @@ public class PatchUserCommandHandler : IRequestHandler<PatchUserCommand, User?>
         }
 
         user.Email = request.Email ?? user.Email;
+        user.UserName = user.Email;
         user.PasswordHash = request.Password != null ? _passwordHasher.HashPassword(user, request.Password) : user.PasswordHash;
 
         return await _usersRepository.StoreUser(user);

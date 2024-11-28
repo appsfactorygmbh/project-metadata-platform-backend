@@ -44,7 +44,7 @@ public class GetAllUsersQueryHandlerTest
             new()
             {
                 Id = "1",
-                Name = "Hinz"
+                Email = "Hinz"
             }
         };
 
@@ -60,7 +60,7 @@ public class GetAllUsersQueryHandlerTest
         Assert.Multiple((() =>
         {
             Assert.That(resultArray[0].Id, Is.EqualTo("1"));
-            Assert.That(resultArray[0].Name, Is.EqualTo("Hinz"));
+            Assert.That(resultArray[0].Email, Is.EqualTo("Hinz"));
         }));
     }
 }

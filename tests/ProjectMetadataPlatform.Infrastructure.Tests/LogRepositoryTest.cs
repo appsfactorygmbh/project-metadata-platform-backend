@@ -414,8 +414,6 @@ public class LogRepositoryTest : TestsWithDatabase
         var exampleUser = new User
         {
             Id = "Newton",
-            Name = "Newton",
-            UserName = "Newton",
             Email = "newton@royalastronomicalsociety.co.uk"
         };
 
