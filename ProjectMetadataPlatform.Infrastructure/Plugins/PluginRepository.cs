@@ -69,10 +69,9 @@ public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
             Update(plugin);
         }
 
-        _ = await _context.SaveChangesAsync();
-
         return plugin;
     }
+
 
     /// <summary>
     /// Asynchronously retrieves a plugin by its unique identifier.
