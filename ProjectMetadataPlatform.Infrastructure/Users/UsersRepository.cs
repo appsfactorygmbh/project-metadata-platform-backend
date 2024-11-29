@@ -90,14 +90,7 @@ public class UsersRepository : RepositoryBase<User>, IUsersRepository
     /// <returns>The stored user.</returns>
     public async Task<User> StoreUser(User user)
     {
-        if (user.Id == "")
-        {
-            _ = await _userManager.CreateAsync(user);
-        }
-        else
-        {
-            _ = await _userManager.UpdateAsync(user);
-        }
+        _ = user.Id == "" ? await _userManager.CreateAsync(user) : await _userManager.UpdateAsync(user);
 
         return user;
     }
