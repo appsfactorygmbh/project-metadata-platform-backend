@@ -51,7 +51,7 @@ public class CreateUserCommandHandlerTest
         _mockUnitOfWork.Setup(m => m.CompleteAsync()).Returns(Task.CompletedTask);
         _mockLogRepo.Setup(m => m.AddUserLogForCurrentUser(It.IsAny<User>(), It.IsAny<Action>(), It.IsAny<List<LogChange>>())).Returns(Task.CompletedTask);
 
-        Assert.ThrowsAsync<Exception>(() => _handler.Handle(new CreateUserCommand("Example Username", "Example Name", "Example Email", "Example Password"), It.IsAny<CancellationToken>()));
+        Assert.ThrowsAsync<Exception>(() => _handler.Handle(new CreateUserCommand( "Example Email", "Example Password"), It.IsAny<CancellationToken>()));
     }
 
     [Test]
@@ -59,7 +59,7 @@ public class CreateUserCommandHandlerTest
     {
         _mockUsersRepo.Setup(m => m.CreateUserAsync(It.IsAny<User>(), It.IsAny<string>())).ReturnsAsync("1");
         _mockUnitOfWork.Setup(m => m.CompleteAsync()).Returns(Task.CompletedTask);
-        var result = await _handler.Handle(new CreateUserCommand("Example Username", "Example Name", "thetruestrepairmanwillrepairmen@greendale.edu", ""), It.IsAny<CancellationToken>());
+        var result = await _handler.Handle(new CreateUserCommand( "thetruestrepairmanwillrepairmen@greendale.edu", ""), It.IsAny<CancellationToken>());
 
         _mockLogRepo.Verify(m => m.AddUserLogForCurrentUser(It.Is<User>(user => user.Email == "thetruestrepairmanwillrepairmen@greendale.edu"), Action.ADDED_USER, It.Is<List<LogChange>>(
                 changes => changes.Any(change => change.Property == "Email" && change.OldValue == "" && change.NewValue == "thetruestrepairmanwillrepairmen@greendale.edu")
