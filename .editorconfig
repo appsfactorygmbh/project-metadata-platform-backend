@@ -68,7 +68,7 @@ dotnet_diagnostic.IDE0290.severity = none
 
 # Modifier preferences
 dotnet_style_require_accessibility_modifiers = for_non_interface_members:warning
-csharp_preferred_modifier_order = public, private, protected, internal, static, extern, new, virtual, abstract, sealed, override, readonly, unsafe, volatile, async:warning
+csharp_preferred_modifier_order = public,private,protected,internal,static,extern,new,virtual,abstract,sealed,override,readonly,unsafe,volatile,async:warning
 dotnet_style_readonly_field = true:warning
 
 # Parentheses preferences
@@ -108,16 +108,17 @@ dotnet_style_namespace_match_folder = true:warning
 # C# Style Rules
 # https://docs.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/language-rules#c-style-rules
 
-# var preferences
+# variable preferences
 csharp_style_var_for_built_in_types = true:suggestion
 csharp_style_var_when_type_is_apparent = true:suggestion
 csharp_style_var_elsewhere = false:silent
 dotnet_diagnostic.IDE0008.severity = none # Use explicit type instead of var
+csharp_style_unused_value_expression_statement_preference = discard_variable:none
 
 # Expression-bodied members
 csharp_style_expression_bodied_constructors = false:suggestion
 csharp_style_expression_bodied_methods = false:none
-csharp_style_expression_bodied_operators = false:suggestion
+csharp_style_expression_bodied_operators = when_on_single_line:suggestion
 csharp_style_expression_bodied_properties = true:suggestion
 csharp_style_expression_bodied_indexers = true:suggestion
 csharp_style_expression_bodied_accessors = true:suggestion
@@ -175,7 +176,7 @@ dotnet_diagnostic.IDE0059.severity = suggestion # Remove unnecessary value assig
 # https://docs.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/formatting-rules#net-formatting-rules
 
 # IDE0055: Fix formatting
-dotnet_diagnostic.IDE0055.severity = none
+dotnet_diagnostic.IDE0055.severity = warning
 
 # Organize usings
 dotnet_sort_system_directives_first = true
@@ -276,11 +277,11 @@ dotnet_naming_style.prefix_private_field_with_underscore_style.capitalization = 
 dotnet_naming_style.prefix_private_field_with_underscore_style.required_prefix = _
 
 # disallowed_style - Anything that has this style applied is marked as disallowed
-dotnet_naming_style.disallowed_style.capitalization = pascal_case
+dotnet_naming_style.disallowed_style.capitalization  = pascal_case
 dotnet_naming_style.disallowed_style.required_prefix = ____RULE_VIOLATION____
 dotnet_naming_style.disallowed_style.required_suffix = ____RULE_VIOLATION____
 # internal_error_style - This style should never occur... if it does, it indicates a bug in file or in the parser using the file
-dotnet_naming_style.internal_error_style.capitalization = pascal_case
+dotnet_naming_style.internal_error_style.capitalization  = pascal_case
 dotnet_naming_style.internal_error_style.required_prefix = ____INTERNAL_ERROR____
 dotnet_naming_style.internal_error_style.required_suffix = ____INTERNAL_ERROR____
 
@@ -292,54 +293,54 @@ dotnet_naming_style.internal_error_style.required_suffix = ____INTERNAL_ERROR___
 # All constant fields must be ALL_UPPER
 # https://docs.microsoft.com/dotnet/standard/design-guidelines/field
 dotnet_naming_symbols.public_protected_constant_fields_group.applicable_accessibilities = public, internal, protected_internal, protected, private_protected, private
-dotnet_naming_symbols.public_protected_constant_fields_group.required_modifiers = const
-dotnet_naming_symbols.public_protected_constant_fields_group.applicable_kinds = field
-dotnet_naming_rule.public_protected_constant_fields_must_be_pascal_case_rule.symbols = public_protected_constant_fields_group
-dotnet_naming_rule.public_protected_constant_fields_must_be_pascal_case_rule.style = all_upper_style
-dotnet_naming_rule.public_protected_constant_fields_must_be_pascal_case_rule.severity = warning
+dotnet_naming_symbols.public_protected_constant_fields_group.required_modifiers         = const
+dotnet_naming_symbols.public_protected_constant_fields_group.applicable_kinds           = field
+dotnet_naming_rule.public_protected_constant_fields_must_be_pascal_case_rule.symbols    = public_protected_constant_fields_group
+dotnet_naming_rule.public_protected_constant_fields_must_be_pascal_case_rule.style      = all_upper_style
+dotnet_naming_rule.public_protected_constant_fields_must_be_pascal_case_rule.severity   = warning
 dotnet_diagnostic.CA1707.severity = none
 
 
 # All static readonly fields must be PascalCase
 # https://docs.microsoft.com/dotnet/standard/design-guidelines/field
 dotnet_naming_symbols.public_protected_static_readonly_fields_group.applicable_accessibilities = public, internal, protected_internal, protected, private_protected, private
-dotnet_naming_symbols.public_protected_static_readonly_fields_group.required_modifiers = static, readonly
-dotnet_naming_symbols.public_protected_static_readonly_fields_group.applicable_kinds = field
-dotnet_naming_rule.public_protected_static_readonly_fields_must_be_pascal_case_rule.symbols = public_protected_static_readonly_fields_group
-dotnet_naming_rule.public_protected_static_readonly_fields_must_be_pascal_case_rule.style = pascal_case_style
-dotnet_naming_rule.public_protected_static_readonly_fields_must_be_pascal_case_rule.severity = warning
+dotnet_naming_symbols.public_protected_static_readonly_fields_group.required_modifiers         = static, readonly
+dotnet_naming_symbols.public_protected_static_readonly_fields_group.applicable_kinds           = field
+dotnet_naming_rule.public_protected_static_readonly_fields_must_be_pascal_case_rule.symbols    = public_protected_static_readonly_fields_group
+dotnet_naming_rule.public_protected_static_readonly_fields_must_be_pascal_case_rule.style      = pascal_case_style
+dotnet_naming_rule.public_protected_static_readonly_fields_must_be_pascal_case_rule.severity   = warning
 
 # No non-private instance fields are allowed
 # https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1401.md
 dotnet_naming_symbols.fields_must_be_private_group.applicable_accessibilities = public, internal, protected_internal, protected, private_protected
-dotnet_naming_symbols.fields_must_be_private_group.applicable_kinds = field
-dotnet_naming_rule.instance_fields_must_be_private_rule.symbols = fields_must_be_private_group
-dotnet_naming_rule.instance_fields_must_be_private_rule.style = disallowed_style
-dotnet_naming_rule.instance_fields_must_be_private_rule.severity = warning
+dotnet_naming_symbols.fields_must_be_private_group.applicable_kinds           = field
+dotnet_naming_rule.instance_fields_must_be_private_rule.symbols               = fields_must_be_private_group
+dotnet_naming_rule.instance_fields_must_be_private_rule.style                 = disallowed_style
+dotnet_naming_rule.instance_fields_must_be_private_rule.severity              = warning
 
 # Private fields must be _camelCase
 # https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1306.md
 dotnet_naming_symbols.private_fields_group.applicable_accessibilities = private
-dotnet_naming_symbols.private_fields_group.applicable_kinds = field
-dotnet_naming_rule.private_fields_must_be_camel_case_rule.symbols = private_fields_group
-dotnet_naming_rule.private_fields_must_be_camel_case_rule.style = prefix_private_field_with_underscore_style
-dotnet_naming_rule.private_fields_must_be_camel_case_rule.severity = warning
+dotnet_naming_symbols.private_fields_group.applicable_kinds           = field
+dotnet_naming_rule.private_fields_must_be_camel_case_rule.symbols     = private_fields_group
+dotnet_naming_rule.private_fields_must_be_camel_case_rule.style       = prefix_private_field_with_underscore_style
+dotnet_naming_rule.private_fields_must_be_camel_case_rule.severity    = warning
 
 # Local variables must be camelCase
 # https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1312.md
 dotnet_naming_symbols.local_fields_group.applicable_accessibilities = local
-dotnet_naming_symbols.local_fields_group.applicable_kinds = local
-dotnet_naming_rule.local_fields_must_be_camel_case_rule.symbols = local_fields_group
-dotnet_naming_rule.local_fields_must_be_camel_case_rule.style = camel_case_style
-dotnet_naming_rule.local_fields_must_be_camel_case_rule.severity = warning
+dotnet_naming_symbols.local_fields_group.applicable_kinds           = local
+dotnet_naming_rule.local_fields_must_be_camel_case_rule.symbols     = local_fields_group
+dotnet_naming_rule.local_fields_must_be_camel_case_rule.style       = camel_case_style
+dotnet_naming_rule.local_fields_must_be_camel_case_rule.severity    = warning
 
 # This rule should never fire.  However, it's included for at least two purposes:
 # First, it helps to understand, reason about, and root-case certain types of issues, such as bugs in .editorconfig parsers.
 # Second, it helps to raise immediate awareness if a new field type is added (as occurred recently in C#).
 dotnet_naming_symbols.sanity_check_uncovered_field_case_group.applicable_accessibilities = *
-dotnet_naming_symbols.sanity_check_uncovered_field_case_group.applicable_kinds = field
-dotnet_naming_rule.sanity_check_uncovered_field_case_rule.symbols = sanity_check_uncovered_field_case_group
-dotnet_naming_rule.sanity_check_uncovered_field_case_rule.style = internal_error_style
+dotnet_naming_symbols.sanity_check_uncovered_field_case_group.applicable_kinds           = field
+dotnet_naming_rule.sanity_check_uncovered_field_case_rule.symbols  = sanity_check_uncovered_field_case_group
+dotnet_naming_rule.sanity_check_uncovered_field_case_rule.style    = internal_error_style
 dotnet_naming_rule.sanity_check_uncovered_field_case_rule.severity = error
 
 ##########################################
@@ -359,39 +360,39 @@ dotnet_naming_rule.sanity_check_uncovered_field_case_rule.severity = error
 #   https://docs.microsoft.com/dotnet/standard/design-guidelines/names-of-type-members
 dotnet_naming_symbols.element_group.applicable_kinds = namespace, class, enum, struct, delegate, event, method, property
 dotnet_naming_rule.element_rule.import_to_resharper = as_predefined
-dotnet_naming_rule.element_rule.symbols = element_group
-dotnet_naming_rule.element_rule.style = pascal_case_style
-dotnet_naming_rule.element_rule.severity = warning
+dotnet_naming_rule.element_rule.symbols              = element_group
+dotnet_naming_rule.element_rule.style                = pascal_case_style
+dotnet_naming_rule.element_rule.severity             = warning
 
 # Interfaces use PascalCase and are prefixed with uppercase 'I'
 # https://docs.microsoft.com/dotnet/standard/design-guidelines/names-of-classes-structs-and-interfaces
 dotnet_naming_symbols.interface_group.applicable_kinds = interface
 dotnet_naming_rule.interface_rule.import_to_resharper = as_predefined
-dotnet_naming_rule.interface_rule.symbols = interface_group
-dotnet_naming_rule.interface_rule.style = prefix_interface_with_i_style
-dotnet_naming_rule.interface_rule.severity = warning
+dotnet_naming_rule.interface_rule.symbols              = interface_group
+dotnet_naming_rule.interface_rule.style                = prefix_interface_with_i_style
+dotnet_naming_rule.interface_rule.severity             = warning
 
 # Generics Type Parameters use PascalCase and are prefixed with uppercase 'T'
 # https://docs.microsoft.com/dotnet/standard/design-guidelines/names-of-classes-structs-and-interfaces
 dotnet_naming_symbols.type_parameter_group.applicable_kinds = type_parameter
 dotnet_naming_rule.type_parameter_rule.import_to_resharper = as_predefined
-dotnet_naming_rule.type_parameter_rule.symbols = type_parameter_group
-dotnet_naming_rule.type_parameter_rule.style = prefix_type_parameters_with_t_style
-dotnet_naming_rule.type_parameter_rule.severity = warning
+dotnet_naming_rule.type_parameter_rule.symbols              = type_parameter_group
+dotnet_naming_rule.type_parameter_rule.style                = prefix_type_parameters_with_t_style
+dotnet_naming_rule.type_parameter_rule.severity             = warning
 
 # Function parameters use camelCase
 # https://docs.microsoft.com/dotnet/standard/design-guidelines/naming-parameters
 dotnet_naming_symbols.parameters_group.applicable_kinds = parameter
 dotnet_naming_rule.parameters_rule.import_to_resharper = as_predefined
-dotnet_naming_rule.parameters_rule.symbols = parameters_group
-dotnet_naming_rule.parameters_rule.style = camel_case_style
-dotnet_naming_rule.parameters_rule.severity = warning
+dotnet_naming_rule.parameters_rule.symbols              = parameters_group
+dotnet_naming_rule.parameters_rule.style                = camel_case_style
+dotnet_naming_rule.parameters_rule.severity             = warning
 ##########################################
 # Meziantou Analyzer Configuration
 # Package: Meziantou.Analyzer
 # URLs: https://github.com/meziantou/Meziantou.Analyzer?tab=readme-ov-file
 ##########################################
-# Note: We only use the Rules: MA0045; MA0125; MA0126; MA0137; MA0138; MA0139;
+# Note: We only use the Rules: MA0045; MA0125; MA0126; MA0138; MA0139;
 ##########################################
 # Do not use blocking calls in a sync method (need to make calling method async)
 dotnet_diagnostic.MA0045.severity = warning
@@ -401,13 +402,12 @@ dotnet_diagnostic.MA0124.severity = error
 dotnet_diagnostic.MA0125.severity = warning
 # The list of log parameter types contains a duplicate (for the analyzer config)
 dotnet_diagnostic.MA0126.severity = warning
-# Use 'Async' suffix when a method returns an awaitable type
-dotnet_diagnostic.MA0137.severity = warning
 # Do not use 'Async' suffix when a method does not return an awaitable type
 dotnet_diagnostic.MA0138.severity = warning
 # Log parameter type is not valid (Serilog)
 dotnet_diagnostic.MA0139.severity = error
 ##########################################
+dotnet_diagnostic.MA0137.severity = none
 dotnet_diagnostic.MA0001.severity = none
 dotnet_diagnostic.MA0002.severity = none
 dotnet_diagnostic.MA0003.severity = none
@@ -621,9 +621,7 @@ resharper_wrap_linq_expressions = chop_if_long
 resharper_wrap_object_and_collection_initializer_style = chop_if_long
 resharper_csharp_wrap_after_declaration_lpar = true
 resharper_csharp_wrap_parameters_style = chop_if_long
-
-[resharper_]
-csharp_keep_existing_declaration_parens_arrangement = false
+resharper_csharp_keep_existing_declaration_parens_arrangement = false
 
 # ReSharper inspection severities
 resharper_arrange_constructor_or_destructor_body_highlighting = hint
@@ -693,8 +691,13 @@ dotnet_diagnostic.SA1011.severity = none
 dotnet_diagnostic.SA1028.severity = none # Will be fixed by formatter anyway
 # PrefixLocalCallsWithThis
 dotnet_diagnostic.SA1101.severity = none
+#CodeMustNotContainEmptyStatements
+dotnet_diagnostic.SA1106.severity = none
+
 # UsingDirectivesMustBePlacedCorrectly
 dotnet_diagnostic.SA1200.severity = none
+# StaticElementsMustAppearBeforeInstanceElements
+dotnet_diagnostic.SA1204.severity = none
 # DeclarationKeywordsMustFollowOrder
 dotnet_diagnostic.SA1206.severity = none # handled by other analyzers (and better!)
 # FieldNamesMustNotBeginWithUnderscore
@@ -723,6 +726,43 @@ dotnet_diagnostic.CS8618.severity = silent
 dotnet_diagnostic.CS1591.severity = silent
 dotnet_diagnostic.CA1859.severity = none
 
+# Style Cop
+# ----------------------------------------------------------------------------------------------------------------------
+
+# SA1122: UseStringEmptyForEmptyStrings
+#   See: https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1122.md
+#   Justification: "" improves readability
+dotnet_diagnostic.SA1122.severity = none
+
+# SA1201: ElementsMustAppearInTheCorrectOrder
+#   See: https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1201.md
+#   Justification: Does not match with the way we structure our tests
+dotnet_diagnostic.SA1201.severity = none
+
+# SA1202: ElementsMustBeOrderedByAccess
+#   See: https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1202.md
+#   Justification: Does not match with the way we structure our tests
+dotnet_diagnostic.SA1202.severity = none
+
+# SA1204: StaticElementsMustAppearBeforeInstanceElements
+#   See: https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1204.md
+#   Justification: Does not match with the way we structure our tests
+dotnet_diagnostic.SA1204.severity = none
+
+# SA1600: ElementsMustBeDocumented
+#   See: https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1600.md
+#   Justification: We don't need comments on test classes and methods
+dotnet_diagnostic.SA1600.severity = none
+
+# Meziantou
+# ----------------------------------------------------------------------------------------------------------------------
+
+# MA0137: Use 'Async' suffix when a method returns an awaitable type
+#   See: https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0137.md
+#   Justification: Test methods name readability is improved by not using the 'Async' suffix
+dotnet_diagnostic.MA0137.severity = none
+[**Migrations/*.cs]
+generated_code = true
 ##########################################
 # License
 ##########################################
