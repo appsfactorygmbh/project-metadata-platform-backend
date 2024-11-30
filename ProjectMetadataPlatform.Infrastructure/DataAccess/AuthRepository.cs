@@ -37,7 +37,7 @@ public class AuthRepository : RepositoryBase<RefreshToken>, IAuthRepository
     /// <returns>True, if the credentials are correct</returns>
     public async Task<bool> CheckLogin(string email, string password)
     {
-        var user = await _userManager.Users.FirstOrDefaultAsync(a => a.Email == email);
+        var user = await _userManager.FindByEmailAsync(email);
         return user != null && await _userManager.CheckPasswordAsync(user, password);
     }
 
@@ -49,7 +49,7 @@ public class AuthRepository : RepositoryBase<RefreshToken>, IAuthRepository
     /// <returns></returns>
     public async Task StoreRefreshToken(string email, string refreshToken)
     {
-        var user = await _userManager.Users.FirstOrDefaultAsync(a => a.Email == email);
+        var user = await _userManager.FindByEmailAsync(email);
         var expirationTime = int.Parse(EnvironmentUtils.GetEnvVarOrLoadFromFile("REFRESH_TOKEN_EXPIRATION_HOURS"));
         var token = new RefreshToken
         {
@@ -72,7 +72,7 @@ public class AuthRepository : RepositoryBase<RefreshToken>, IAuthRepository
     /// <returns></returns>
     public async Task UpdateRefreshToken(string email, string refreshToken)
     {
-        var user = await _userManager.Users.FirstOrDefaultAsync(a => a.Email == email);
+        var user = await _userManager.FindByEmailAsync(email);
         var token = GetIf(rt => user != null && rt.UserId == user.Id).FirstOrDefaultAsync().Result;
         var expirationTime = int.Parse(EnvironmentUtils.GetEnvVarOrLoadFromFile("REFRESH_TOKEN_EXPIRATION_HOURS"));
         if (token != null)

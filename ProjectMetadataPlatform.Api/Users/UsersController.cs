@@ -82,7 +82,7 @@ public class UsersController : ControllerBase
     /// <response code="200">The users are returned successfully.</response>
     /// <response code="500">An internal error occurred.</response>
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<GetAllUsersResponse>>> Get()
+    public async Task<ActionResult<IEnumerable<GetUserResponse>>> Get()
     {
         var query = new GetAllUsersQuery();
         IEnumerable<User> users;
@@ -97,7 +97,7 @@ public class UsersController : ControllerBase
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
 
-        IEnumerable<GetAllUsersResponse> response = users.Select(user => new GetAllUsersResponse(
+        IEnumerable<GetUserResponse> response = users.Select(user => new GetUserResponse(
             user.Id,
             user.Email ?? ""
             ));

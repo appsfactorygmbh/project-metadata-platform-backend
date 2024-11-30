@@ -53,7 +53,7 @@ public class GetAllUsersControllerTest
         var okResult = result.Result as OkObjectResult;
         Assert.That(okResult, Is.Not.Null);
         Assert.That(okResult.StatusCode, Is.EqualTo(200));
-        var response = okResult.Value as IEnumerable<GetAllUsersResponse>;
+        var response = okResult.Value as IEnumerable<GetUserResponse>;
         Assert.That(response, Is.Not.Null);
         Assert.Multiple((() =>
         {
@@ -77,7 +77,7 @@ public class GetAllUsersControllerTest
         var okResult = result.Result as OkObjectResult;
         Assert.That(okResult, Is.Not.Null);
         Assert.That(okResult.StatusCode, Is.EqualTo(200));
-        var response = okResult.Value as IEnumerable<GetAllUsersResponse>;
+        var response = okResult.Value as IEnumerable<GetUserResponse>;
         Assert.That(response, Is.Not.Null);
         Assert.That(response.Count(), Is.EqualTo(0));
     }

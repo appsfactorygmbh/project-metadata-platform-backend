@@ -64,8 +64,8 @@ public class DependencyInjectionTests : TestsWithDatabase
 
                 services.BuildServiceProvider().AddAdminUser();
 
-                mockPasswordHasher.Verify(m => m.HashPassword(It.Is<User>(u => u.UserName == "admin"), expectedPassword), Times.Once);
-                mockUserManager.Verify(m => m.CreateAsync(It.Is<User>(u => u.UserName == "admin" && u.PasswordHash == hash)), Times.Once);
+                mockPasswordHasher.Verify(m => m.HashPassword(It.Is<User>(u => u.UserName == "admin@admin.admin" && u.Email == "admin@admin.admin"), expectedPassword), Times.Once);
+                mockUserManager.Verify(m => m.CreateAsync(It.Is<User>(u => u.UserName == "admin@admin.admin" && u.PasswordHash == hash && u.Email == "admin@admin.admin")), Times.Once);
     }
 
 }
