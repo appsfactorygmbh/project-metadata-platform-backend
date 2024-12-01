@@ -429,8 +429,11 @@ public class PluginsRepositoryTest : TestsWithDatabase
         _context.Plugins.Add(archivedPlugin);
         _context.ProjectPluginsRelation.AddRange(projectPluginRelation1, projectPluginRelation2);
         await _context.SaveChangesAsync();
-        bool returnVal = await _repository.DeleteGlobalPlugin(archivedPlugin);
-        Assert.That(returnVal, Is.True);
+        bool returnValDeleteGlobalPlugin = await _repository.DeleteGlobalPlugin(archivedPlugin);
+        Assert.That(returnValDeleteGlobalPlugin, Is.True);
+
+        var projectRet = _context.Projects.ToList().FirstOrDefault();
+        Assert.That(projectRet.ProjectPlugins, Is.Empty);
     }
 
 
