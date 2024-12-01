@@ -4,6 +4,6 @@ namespace ProjectMetadataPlatform.Api.Plugins.Models;
 /// Response for deleting a plugin.
 /// </summary>
 /// <param name="PluginId">The id of the plugin.</param>
-/// <param name="IsArchived">The status whether the plugin is archived.</param>
-public record DeleteGlobalPluginResponse(int PluginId, bool IsArchived);
+/// <param name="Success">Wether the plugin was deleted or not</param>
+public record DeleteGlobalPluginResponse(int PluginId, bool? Success);
 

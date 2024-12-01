@@ -101,4 +101,20 @@ public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
     {
         return _context.Plugins.Any(plugin => plugin.Id == id);
     }
+    public async Task<bool> DeleteGlobalPlugin(Plugin plugin)
+    {
+        try
+        {
+            _context.Plugins.Remove(plugin);
+            _ = await _context.SaveChangesAsync();
+            return true;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+
+
+    }
 }

@@ -236,9 +236,9 @@ public class Tests
     [Test]
     public async Task DeleteGlobalPlugin_Test()
     {
-        var plugin = new Plugin { Id = 37, PluginName = "Three-Body-Problem", IsArchived = true };
+        //var plugin = new Plugin { Id = 37, PluginName = "Three-Body-Problem", IsArchived = true };
         _mediator.Setup(m => m.Send(It.IsAny<DeleteGlobalPluginCommand>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(plugin);
+            .ReturnsAsync(true);
 
         ActionResult<DeleteGlobalPluginResponse> result = await _controller.Delete(37);
 
@@ -249,7 +249,6 @@ public class Tests
         Assert.Multiple(() =>
         {
             Assert.That(resultValue, Is.Not.Null);
-            Assert.That(resultValue!.IsArchived, Is.EqualTo(true));
             Assert.That(resultValue!.PluginId, Is.EqualTo(37));
         });
     }
@@ -258,7 +257,7 @@ public class Tests
     public async Task DeleteGlobalPlugin_PluginNotFound_Test()
     {
         _mediator.Setup(m => m.Send(It.IsAny<DeleteGlobalPluginCommand>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Plugin)null!);
+            .ReturnsAsync((bool?)(null));
 
         ActionResult<DeleteGlobalPluginResponse> result = await _controller.Delete(37);
 

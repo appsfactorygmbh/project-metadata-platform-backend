@@ -393,5 +393,45 @@ public class PluginsRepositoryTest : TestsWithDatabase
         Assert.That(ex.Message, Is.EqualTo("Project with Id 999 does not exist."));
     }
 
+    [Test]
+    public async Task TestDeletePlugins()
+    {
+        var project1 = new Project
+        {
+            Id = 1,
+            ProjectName = "Test Project",
+            ClientName = "Test Client", // Make sure this is set
+            BusinessUnit = "Test Business",
+            TeamNumber = 42,
+            Department = "Test Department"
+        };
+        var project2 = new Project
+        {
+            Id = 2,
+            ProjectName = "Test Project2",
+            ClientName = "Test Client2", // Make sure this is set
+            BusinessUnit = "Test Business2",
+            TeamNumber = 37,
+            Department = "Test Department2"
+        };
+        var archivedPlugin = new Plugin { Id = 1, PluginName = "Unarchived Plugin", IsArchived = true };
+
+        var projectPluginRelation1 = new ProjectPlugins
+        {
+            ProjectId = 1, PluginId = 1, Plugin = archivedPlugin, Project = project1, Url = "plugin1.com"
+        };
+        var projectPluginRelation2 = new ProjectPlugins
+        {
+            ProjectId = 2, PluginId = 1, Plugin = archivedPlugin, Project = project2, Url = "plugin2.com"
+        };
+
+        _context.Projects.AddRange(project1, project2);
+        _context.Plugins.Add(archivedPlugin);
+        _context.ProjectPluginsRelation.AddRange(projectPluginRelation1, projectPluginRelation2);
+        await _context.SaveChangesAsync();
+        bool returnVal = await _repository.DeleteGlobalPlugin(archivedPlugin);
+        Assert.That(returnVal, Is.True);
+    }
+
 
 }

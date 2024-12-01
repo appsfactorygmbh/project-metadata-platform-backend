@@ -163,11 +163,16 @@ public class PluginsController : ControllerBase
 
         try
         {
-            var plugin = await _mediator.Send(command);
-            if (plugin == null)
+            var success = await _mediator.Send(command);
+            if (success == null)
             {
                 return NotFound("No Plugin with id " + pluginId + " was found.");
             }
+            else if ((bool)!success)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,"Perhaps the pluin was not archived");
+            }
+            return Ok(new DeleteGlobalPluginResponse(pluginId, success));
         }
         catch (Exception e)
         {
@@ -176,9 +181,5 @@ public class PluginsController : ControllerBase
 
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
-
-        var response = new DeleteGlobalPluginResponse(pluginId, true);
-
-        return Ok(response);
     }
 }
