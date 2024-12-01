@@ -1,18 +1,18 @@
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ProjectMetadataPlatform.Domain.Logs;
 using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.Projects;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using ProjectMetadataPlatform.Application.Interfaces;
-using ProjectMetadataPlatform.Domain.User;
 
 namespace ProjectMetadataPlatform.Infrastructure.DataAccess;
 
 /// <summary>
 ///     DbContext for the project metadata platform database.
 /// </summary>
-public sealed class ProjectMetadataPlatformDbContext : IdentityDbContext<User>, IUnitOfWork
+public sealed class ProjectMetadataPlatformDbContext : IdentityDbContext<IdentityUser>, IUnitOfWork
 {
     /// <summary>
     ///     Represents the table for the relation between Project and Plugin entities.

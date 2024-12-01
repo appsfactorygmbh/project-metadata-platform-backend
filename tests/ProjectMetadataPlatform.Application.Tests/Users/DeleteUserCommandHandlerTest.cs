@@ -6,13 +6,13 @@ using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Moq;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Application.Users;
 using ProjectMetadataPlatform.Domain.Logs;
 using UserAction = ProjectMetadataPlatform.Domain.Logs.Action;
-using ProjectMetadataPlatform.Domain.User;
 using Action = System.Action;
 
 namespace ProjectMetadataPlatform.Application.Tests.Users;
@@ -48,18 +48,18 @@ public class DeleteUserCommandHandlerTest
     [Test]
     public async Task DeleteUser_Test()
     {
-        var user = new User { Id = "1", Email = "user@example.com"};
+        var user = new IdentityUser { Id = "1", Email = "user@example.com"};
         _mockUsersRepo.Setup(m => m.GetUserByIdAsync("1")).ReturnsAsync(user);
         _mockUsersRepo.Setup(m => m.DeleteUserAsync(user)).ReturnsAsync(user);
         var result = await _handler.Handle(new DeleteUserCommand("1"), CancellationToken.None);
         _mockLogRepository.Verify(
             m => m.AddUserLogForCurrentUser(
-                It.Is<User>(u => u.Id == "1"),
+                It.Is<IdentityUser>(u => u.Id == "1"),
                 UserAction.REMOVED_USER,
                 It.Is<List<LogChange>>(changes => changes.Count == 1 &&
                                                   changes[0].OldValue == "user@example.com" &&
                                                   changes[0].NewValue == "" &&
-                                                  changes[0].Property == nameof(User.Email))
+                                                  changes[0].Property == nameof(IdentityUser.Email))
             ),
             Times.Once
         );
@@ -69,7 +69,7 @@ public class DeleteUserCommandHandlerTest
     [Test]
     public async Task DeleteUser_InvalidUser_Test()
     {
-        _mockUsersRepo.Setup(m => m.GetUserByIdAsync("1")).ReturnsAsync((User)null);
+        _mockUsersRepo.Setup(m => m.GetUserByIdAsync("1")).ReturnsAsync((IdentityUser)null);
 
         var result = await _handler.Handle(new DeleteUserCommand("1"), CancellationToken.None);
 
@@ -79,7 +79,7 @@ public class DeleteUserCommandHandlerTest
     [Test]
     public async Task DeleteUser_SelfDeletionAttempt_Test()
     {
-        var user = new User {Email = "camo", Id = "1"};
+        var user = new IdentityUser {Email = "camo", Id = "1"};
         _mockUsersRepo.Setup(m => m.GetUserByIdAsync("1")).ReturnsAsync(user);
         _mockUsersRepo.Setup(m => m.GetUserByEmailAsync("camo")).ReturnsAsync(user);
         Assert.ThrowsAsync<InvalidOperationException>(() => _handler.Handle(new DeleteUserCommand("1"), CancellationToken.None));

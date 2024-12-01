@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ProjectMetadataPlatform.Api.Users.Models;
 using ProjectMetadataPlatform.Application.Users;
-using ProjectMetadataPlatform.Domain.User;
+using Microsoft.AspNetCore.Identity;
 
 namespace ProjectMetadataPlatform.Api.Users;
 
@@ -85,7 +85,7 @@ public class UsersController : ControllerBase
     public async Task<ActionResult<IEnumerable<GetUserResponse>>> Get()
     {
         var query = new GetAllUsersQuery();
-        IEnumerable<User> users;
+        IEnumerable<IdentityUser> users;
         try
         {
             users = await _mediator.Send(query);
@@ -116,7 +116,7 @@ public class UsersController : ControllerBase
     public async Task<ActionResult<GetUserResponse>> GetUserById(string userId)
     {
         var query = new GetUserQuery(userId);
-        User? user;
+        IdentityUser? user;
         try
         {
             user = await _mediator.Send(query);
@@ -154,7 +154,7 @@ public class UsersController : ControllerBase
     {
         var command = new PatchUserCommand(userId, request.Email, request.Password);
 
-        User? user;
+        IdentityUser? user;
         try
         {
             user = await _mediator.Send(command);
@@ -196,7 +196,7 @@ public class UsersController : ControllerBase
 
         var query = new GetUserByEmailQuery(email);
 
-        User? user;
+        IdentityUser? user;
         try
         {
             user = await _mediator.Send(query);
@@ -229,7 +229,7 @@ public class UsersController : ControllerBase
     public async Task<ActionResult> Delete(string userId)
     {
         var command = new DeleteUserCommand(userId);
-        User? user;
+        IdentityUser? user;
         try
         {
             user = await _mediator.Send(command);

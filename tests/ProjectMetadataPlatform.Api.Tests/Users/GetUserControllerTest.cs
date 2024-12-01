@@ -6,9 +6,9 @@ using Moq;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Api.Users;
 using ProjectMetadataPlatform.Application.Users;
-using ProjectMetadataPlatform.Domain.User;
 using ProjectMetadataPlatform.Api.Users.Models;
 using System.IO;
+using Microsoft.AspNetCore.Identity;
 
 namespace ProjectMetadataPlatform.Api.Tests.Users;
 
@@ -28,7 +28,7 @@ public class GetUserControllerTest
     [Test]
     public async Task Get_ReturnsUser()
     {
-        var user = new User
+        var user = new IdentityUser
         {
             Id = "1",
             Email = "Hinz"
@@ -54,7 +54,7 @@ public class GetUserControllerTest
     public async Task GetUserById_NonexistentUser_Test()
     {
         _mediator.Setup(m => m.Send(It.Is<GetUserQuery>(q => q.UserId == "1"), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((User?)null);
+            .ReturnsAsync((IdentityUser?)null);
         ActionResult<GetUserResponse> result = await _controller.GetUserById("1");
         Assert.That(result, Is.Not.Null);
 

@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Moq;
 using NUnit.Framework;
-using ProjectMetadataPlatform.Domain.User;
 using ProjectMetadataPlatform.Infrastructure.DataAccess;
 
 namespace ProjectMetadataPlatform.Infrastructure.Tests;
@@ -13,13 +12,13 @@ public class AuthRepositoryTest : TestsWithDatabase
 {
     private ProjectMetadataPlatformDbContext _context;
     private AuthRepository _repository;
-    private Mock<UserManager<User>> _mockUserManager;
+    private Mock<UserManager<IdentityUser>> _mockUserManager;
 
 
     [SetUp]
     public void Setup()
     {
-        _mockUserManager = new Mock<UserManager<User>>(new Mock<IUserStore<User>>().Object,
+        _mockUserManager = new Mock<UserManager<IdentityUser>>(new Mock<IUserStore<IdentityUser>>().Object,
             null, null, null, null, null, null, null, null);
         _context = DbContext();
         _repository = new AuthRepository(_context, _mockUserManager.Object);
@@ -40,8 +39,8 @@ public class AuthRepositoryTest : TestsWithDatabase
         var email = "test";
         var password = "test";
 
-        _mockUserManager.Setup(m => m.FindByEmailAsync(It.IsAny<String>())).ReturnsAsync(new User { Email = email});
-        _mockUserManager.Setup(m => m.CheckPasswordAsync(It.IsAny<User>(), It.IsAny<string>())).ReturnsAsync(true);
+        _mockUserManager.Setup(m => m.FindByEmailAsync(It.IsAny<String>())).ReturnsAsync(new IdentityUser { Email = email});
+        _mockUserManager.Setup(m => m.CheckPasswordAsync(It.IsAny<IdentityUser>(), It.IsAny<string>())).ReturnsAsync(true);
 
         var result = await _repository.CheckLogin(email, password);
         Assert.That(result, Is.True);
@@ -56,8 +55,8 @@ public class AuthRepositoryTest : TestsWithDatabase
         var password = "test";
 
 
-        _mockUserManager.Setup(m => m.FindByEmailAsync(It.IsAny<String>())).ReturnsAsync(new User { Email = email});
-        _mockUserManager.Setup(m => m.CheckPasswordAsync(It.IsAny<User>(), It.IsAny<string>())).ReturnsAsync(false);
+        _mockUserManager.Setup(m => m.FindByEmailAsync(It.IsAny<String>())).ReturnsAsync(new IdentityUser { Email = email});
+        _mockUserManager.Setup(m => m.CheckPasswordAsync(It.IsAny<IdentityUser>(), It.IsAny<string>())).ReturnsAsync(false);
 
         var result = await _repository.CheckLogin(email, password);
         Assert.That(result, Is.False);
@@ -72,7 +71,7 @@ public class AuthRepositoryTest : TestsWithDatabase
         var token = "test";
         Environment.SetEnvironmentVariable("REFRESH_TOKEN_EXPIRATION_HOURS", "6");
 
-        _mockUserManager.Setup(m => m.FindByEmailAsync(It.IsAny<String>())).ReturnsAsync(new User { Email = email});
+        _mockUserManager.Setup(m => m.FindByEmailAsync(It.IsAny<String>())).ReturnsAsync(new IdentityUser { Email = email});
 
         await _repository.StoreRefreshToken(email, token);
         var result = _repository.GetIf(rt => rt.User.Email == email).FirstOrDefault();
@@ -88,7 +87,7 @@ public class AuthRepositoryTest : TestsWithDatabase
         var email = "test";
         var token = "test";
         Environment.SetEnvironmentVariable("REFRESH_TOKEN_EXPIRATION_HOURS", "6");
-        _mockUserManager.Setup(m => m.FindByEmailAsync(It.IsAny<String>())).ReturnsAsync(new User { Email = email});
+        _mockUserManager.Setup(m => m.FindByEmailAsync(It.IsAny<String>())).ReturnsAsync(new IdentityUser { Email = email});
         await _repository.StoreRefreshToken(email, "oldToken");
         var count = _repository.GetEverything().Count();
         _context.ChangeTracker.Clear();
@@ -107,7 +106,7 @@ public class AuthRepositoryTest : TestsWithDatabase
         var email = "test";
         var token = "test";
         Environment.SetEnvironmentVariable("REFRESH_TOKEN_EXPIRATION_HOURS", "6");
-        _mockUserManager.Setup(m => m.FindByEmailAsync(It.IsAny<String>())).ReturnsAsync(new User { Email = email});
+        _mockUserManager.Setup(m => m.FindByEmailAsync(It.IsAny<String>())).ReturnsAsync(new IdentityUser { Email = email});
         await _repository.StoreRefreshToken(email, token);
         var result = await _repository.CheckRefreshTokenExists(email);
         Assert.That(result, Is.True);
@@ -120,7 +119,7 @@ public class AuthRepositoryTest : TestsWithDatabase
     {
         var email = "test";
         Environment.SetEnvironmentVariable("REFRESH_TOKEN_EXPIRATION_HOURS", "6");
-        _mockUserManager.Setup(m => m.FindByEmailAsync(It.IsAny<String>())).ReturnsAsync((User?)null);
+        _mockUserManager.Setup(m => m.FindByEmailAsync(It.IsAny<String>())).ReturnsAsync((IdentityUser?)null);
 
         var result = await _repository.CheckRefreshTokenExists(email);
         Assert.That(result, Is.False);
@@ -134,7 +133,7 @@ public class AuthRepositoryTest : TestsWithDatabase
         var email = "test";
         var token = "test";
         Environment.SetEnvironmentVariable("REFRESH_TOKEN_EXPIRATION_HOURS", "6");
-        _context.Users.Add(new User { Email=email });
+        _context.Users.Add(new IdentityUser { Email=email });
         await _context.SaveChangesAsync();
 
         _mockUserManager.Setup(m => m.Users).Returns(_context.Users);
@@ -151,7 +150,7 @@ public class AuthRepositoryTest : TestsWithDatabase
         var email = "test";
         var token = "test";
         Environment.SetEnvironmentVariable("REFRESH_TOKEN_EXPIRATION_HOURS", "6");
-        _mockUserManager.Setup(m => m.FindByEmailAsync(It.IsAny<String>())).ReturnsAsync(new User { Email = email});
+        _mockUserManager.Setup(m => m.FindByEmailAsync(It.IsAny<String>())).ReturnsAsync(new IdentityUser { Email = email});
 
         var result = await _repository.CheckRefreshTokenRequest(token);
         Assert.That(result, Is.False);
@@ -165,7 +164,7 @@ public class AuthRepositoryTest : TestsWithDatabase
         var email = "test";
         var token = "test";
         Environment.SetEnvironmentVariable("REFRESH_TOKEN_EXPIRATION_HOURS", "0");
-        _mockUserManager.Setup(m => m.FindByEmailAsync(It.IsAny<String>())).ReturnsAsync(new User { Email = email});
+        _mockUserManager.Setup(m => m.FindByEmailAsync(It.IsAny<String>())).ReturnsAsync(new IdentityUser { Email = email});
         await _repository.StoreRefreshToken(email, token);
         var result = await _repository.CheckRefreshTokenRequest(token);
         Assert.That(result, Is.False);
@@ -179,11 +178,11 @@ public class AuthRepositoryTest : TestsWithDatabase
         var email = "test";
         var token = "test";
         Environment.SetEnvironmentVariable("REFRESH_TOKEN_EXPIRATION_HOURS", "0");
-        _context.Users.Add(new User { Email = email });
+        _context.Users.Add(new IdentityUser { Email = email });
         await _context.SaveChangesAsync();
 
         _mockUserManager.Setup(m => m.Users).Returns(_context.Users);
-        _mockUserManager.Setup(m => m.FindByEmailAsync(It.IsAny<String>())).ReturnsAsync(new User { Email = email});
+        _mockUserManager.Setup(m => m.FindByEmailAsync(It.IsAny<String>())).ReturnsAsync(new IdentityUser { Email = email});
         await _repository.StoreRefreshToken(email, token);
         var result = await _repository.GetEmailByRefreshToken(token);
         Assert.That(result, Is.EqualTo(email));

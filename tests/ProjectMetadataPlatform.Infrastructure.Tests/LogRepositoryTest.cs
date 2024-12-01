@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using NUnit.Framework;
@@ -10,7 +11,6 @@ using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Domain.Logs;
 using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.Projects;
-using ProjectMetadataPlatform.Domain.User;
 using ProjectMetadataPlatform.Infrastructure.DataAccess;
 using ProjectMetadataPlatform.Infrastructure.Logs;
 using Action = ProjectMetadataPlatform.Domain.Logs.Action;
@@ -62,7 +62,7 @@ public class LogRepositoryTest : TestsWithDatabase
         };
         await _context.Projects.AddAsync(exampleProject);
 
-        var user = new User
+        var user = new IdentityUser
         {
             Id = "42",
             Email = "camo",
@@ -129,13 +129,13 @@ public class LogRepositoryTest : TestsWithDatabase
     public async Task UpdateUserLogTest()
     {
 
-        var author = new User
+        var author = new IdentityUser
         {
             Id = "42",
             Email = "camo",
         };
 
-        var affectedUser = new User
+        var affectedUser = new IdentityUser
         {
             Id = "12",
             Email = "gagarin@vostok.su",
@@ -182,7 +182,7 @@ public class LogRepositoryTest : TestsWithDatabase
     public async Task UpdateGlobalPluginLogTest()
     {
 
-        var author = new User
+        var author = new IdentityUser
         {
             Id = "42",
             Email = "camo",
@@ -253,7 +253,7 @@ public class LogRepositoryTest : TestsWithDatabase
         };
         await _context.Projects.AddAsync(exampleProject);
 
-        var user = new User
+        var user = new IdentityUser
         {
             Id = "42",
             Email = "camo",
@@ -286,13 +286,13 @@ public class LogRepositoryTest : TestsWithDatabase
     public async Task UserLogTest_RejectsActionNotInWhitelist(Action action)
     {
 
-        var author = new User
+        var author = new IdentityUser
         {
             Id = "42",
             Email = "camo",
         };
 
-        var affectedUser = new User
+        var affectedUser = new IdentityUser
         {
             Id = "12",
             Email = "gagarin@vostok.su",
@@ -328,7 +328,7 @@ public class LogRepositoryTest : TestsWithDatabase
     [TestCase (Action.REMOVED_PROJECT)]
     public async Task GlobalPluginLogTest_RejectsActionNotInWhitelist(Action action)
     {
-        var author = new User
+        var author = new IdentityUser
         {
             Id = "42",
             Email = "camo",
@@ -641,7 +641,7 @@ public class LogRepositoryTest : TestsWithDatabase
             ]
         };
 
-        var exampleUser = new User
+        var exampleUser = new IdentityUser
         {
             Id = "Newton",
             Email = "newton@royalastronomicalsociety.co.uk"

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Identity;
 using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.Projects;
 
@@ -18,7 +19,7 @@ public class Log
     /// <summary>
     /// Gets or sets the associated user.
     /// </summary>
-    public User.User? Author { get; set; }
+    public IdentityUser? Author { get; set; }
 
     /// <summary>
     /// Gets or sets the ID of the user.
@@ -68,7 +69,7 @@ public class Log
     /// <summary>
     /// Gets or sets the affected user.
     /// </summary>
-    public User.User? AffectedUser { get; set; }
+    public IdentityUser? AffectedUser { get; set; }
 
     /// <summary>
     /// Gets or sets the ID of the affected user.

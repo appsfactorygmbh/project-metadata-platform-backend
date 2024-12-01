@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Domain.Logs;
-using ProjectMetadataPlatform.Domain.User;
 
 namespace ProjectMetadataPlatform.Application.Users;
 
@@ -43,12 +43,12 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, strin
     public async Task<string> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
         // Uses Email as Username because: Username cant be empty + Username cant be duplicate.
-        var user = new User { Email = request.Email, UserName = request.Email};
+        var user = new IdentityUser { Email = request.Email, UserName = request.Email};
         var result = await _usersRepository.CreateUserAsync(user, request.Password);
 
         var changes = new List<LogChange>
         {
-            new() { OldValue = "", NewValue = user.Email, Property = nameof(User.Email) }
+            new() { OldValue = "", NewValue = user.Email, Property = nameof(IdentityUser.Email) }
         };
         await _logRepository.AddUserLogForCurrentUser(user, Action.ADDED_USER, changes);
 

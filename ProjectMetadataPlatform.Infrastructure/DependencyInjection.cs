@@ -13,7 +13,6 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using ProjectMetadataPlatform.Application;
 using ProjectMetadataPlatform.Application.Auth;
-using ProjectMetadataPlatform.Domain.User;
 using ProjectMetadataPlatform.Infrastructure.Users;
 
 namespace ProjectMetadataPlatform.Infrastructure;
@@ -38,7 +37,7 @@ public static class DependencyInjection
         _ = serviceCollection.AddScoped<IProjectsRepository, ProjectsRepository>();
         _ = serviceCollection.AddScoped<IAuthRepository, AuthRepository>();
         _ = serviceCollection.AddScoped<IUsersRepository, UsersRepository>();
-        _ = serviceCollection.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+        _ = serviceCollection.AddScoped<IPasswordHasher<IdentityUser>, PasswordHasher<IdentityUser>>();
 
         _ = serviceCollection.AddScoped<ILogRepository, LogRepository>();
         return serviceCollection;
@@ -64,9 +63,9 @@ public static class DependencyInjection
     /// <param name="serviceCollection"></param>
     private static void ConfigureAuth(this IServiceCollection serviceCollection)
     {
-        _ = serviceCollection.AddScoped<IUserStore<User>>(provider =>
+        _ = serviceCollection.AddScoped<IUserStore<IdentityUser>>(provider =>
         {
-            var userStore = new UserStore<User, IdentityRole, ProjectMetadataPlatformDbContext, string>(
+            var userStore = new UserStore<IdentityUser, IdentityRole, ProjectMetadataPlatformDbContext, string>(
                 provider.GetRequiredService<ProjectMetadataPlatformDbContext>())
             {
                 AutoSaveChanges = false
@@ -74,7 +73,7 @@ public static class DependencyInjection
             return userStore;
         });
 
-        _ = serviceCollection.AddIdentity<User, IdentityRole>()
+        _ = serviceCollection.AddIdentity<IdentityUser, IdentityRole>()
             .AddEntityFrameworkStores<ProjectMetadataPlatformDbContext>()
             .AddDefaultTokenProviders();
 
@@ -115,14 +114,14 @@ public static class DependencyInjection
 
         using var scope = serviceProvider.CreateScope();
 
-        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
 
         if (userManager.Users.Any())
         {
             return;
         }
 
-        var user = new User { UserName = "admin@admin.admin", Email = "admin@admin.admin", Id = "1" };
+        var user = new IdentityUser { UserName = "admin@admin.admin", Email = "admin@admin.admin", Id = "1" };
         user.PasswordHash = userManager.PasswordHasher.HashPassword(user, password);
         var identityResult = userManager.CreateAsync(user).Result;
 

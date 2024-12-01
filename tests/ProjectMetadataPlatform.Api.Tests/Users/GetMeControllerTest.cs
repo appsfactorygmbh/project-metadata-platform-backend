@@ -3,13 +3,13 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Api.Users;
 using ProjectMetadataPlatform.Api.Users.Models;
 using ProjectMetadataPlatform.Application.Users;
-using ProjectMetadataPlatform.Domain.User;
 
 namespace ProjectMetadataPlatform.Api.Tests.Users;
 
@@ -26,7 +26,7 @@ public class GetMeControllerTest
     [Test]
     public async Task getMe_Test()
     {
-        var user = new User{Id = "42", Email = "moonstealer@gruhq.com"};
+        var user = new IdentityUser{Id = "42", Email = "moonstealer@gruhq.com"};
 
         _mediator.Setup(m => m.Send(It.IsAny<GetUserByEmailQuery>(), It.IsAny<System.Threading.CancellationToken>()))
             .ReturnsAsync(user);
@@ -49,7 +49,7 @@ public class GetMeControllerTest
     public async Task getMe_Test_NotFound()
     {
         _mediator.Setup(m => m.Send(It.IsAny<GetUserByEmailQuery>(), It.IsAny<System.Threading.CancellationToken>()))
-            .ReturnsAsync((User)null!);
+            .ReturnsAsync((IdentityUser)null!);
         var controller = new UsersController(_mediator.Object, MockHttpContextAccessor("moonstealer"));
 
         var result = await controller.GetMe();

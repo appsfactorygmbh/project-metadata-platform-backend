@@ -1,10 +1,10 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Moq;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Application.Users;
-using ProjectMetadataPlatform.Domain.User;
 
 namespace ProjectMetadataPlatform.Application.Tests.Users;
 
@@ -24,7 +24,7 @@ public class GetUserByEmailQueryHandlerTest
     [Test]
     public async Task HandleGetUserByEmail_Test()
     {
-        var user = new User { Id = "13", Email = "squidlauncher@bankofevil.com" };
+        var user = new IdentityUser { Id = "13", Email = "squidlauncher@bankofevil.com" };
 
         _mockUserRepo.Setup(m => m.GetUserByEmailAsync("squidlauncher@bankofevil.com")).ReturnsAsync(user);
 
@@ -33,7 +33,7 @@ public class GetUserByEmailQueryHandlerTest
         var result = await _handler.Handle(request, It.IsAny<CancellationToken>());
 
         Assert.That(result, Is.Not.Null);
-        Assert.That(result, Is.InstanceOf<User>());
+        Assert.That(result, Is.InstanceOf<IdentityUser>());
         Assert.Multiple(() =>
         {
             Assert.That(result.Id, Is.EqualTo("13"));
@@ -44,7 +44,7 @@ public class GetUserByEmailQueryHandlerTest
     [Test]
     public async Task HandleGetUserByEmail_NotFound_Test()
     {
-        _mockUserRepo.Setup(m => m.GetUserByEmailAsync("Vector")).ReturnsAsync((User)null!);
+        _mockUserRepo.Setup(m => m.GetUserByEmailAsync("Vector")).ReturnsAsync((IdentityUser)null!);
 
         var request = new GetUserByEmailQuery("Vector");
 

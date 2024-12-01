@@ -8,10 +8,10 @@ using Moq;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Api.Users;
 using ProjectMetadataPlatform.Application.Users;
-using ProjectMetadataPlatform.Domain.User;
 using ProjectMetadataPlatform.Api.Users.Models;
 using System;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 
 namespace ProjectMetadataPlatform.Api.Tests.Users;
 
@@ -31,15 +31,15 @@ public class GetAllUsersControllerTest
     [Test]
     public async Task Get_ReturnsAllUsers()
     {
-        var users = new List<User>
+        var users = new List<IdentityUser>
         {
-            new User
+            new IdentityUser
             {
                 Id = "1",
                 Email = "Hinz",
 
             },
-            new User
+            new IdentityUser
             {
                 Id = "2",
                 Email = "Kunz"
@@ -70,7 +70,7 @@ public class GetAllUsersControllerTest
     public async Task Get_ReturnsEmptyList()
     {
         _mediator.Setup(m => m.Send(It.IsAny<GetAllUsersQuery>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<User>());
+            .ReturnsAsync(new List<IdentityUser>());
 
         var result = await _controller.Get();
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
@@ -11,7 +12,6 @@ using ProjectMetadataPlatform.Api.Logs;
 using ProjectMetadataPlatform.Api.Logs.Models;
 using ProjectMetadataPlatform.Application.Logs;
 using ProjectMetadataPlatform.Domain.Logs;
-using ProjectMetadataPlatform.Domain.User;
 using Action = ProjectMetadataPlatform.Domain.Logs.Action;
 
 namespace ProjectMetadataPlatform.Api.Tests.Logs;
@@ -39,7 +39,7 @@ public class LogsControllerTest
             TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
             AuthorId = "42",
             AuthorEmail = "Slartibartfast",
-            Author = new User { Email = "Slartibartfast" },
+            Author = new IdentityUser { Email = "Slartibartfast" },
             ProjectId = 42,
             Action = Action.UPDATED_PROJECT,
             Changes =
@@ -78,7 +78,7 @@ public class LogsControllerTest
             TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
             AuthorId = "42",
             AuthorEmail = "Slartibartfast",
-            Author = new User { Email = "Slartibartfast" },
+            Author = new IdentityUser { Email = "Slartibartfast" },
             ProjectId = 42,
             Action = Action.UPDATED_PROJECT,
             Changes =
@@ -117,7 +117,7 @@ public class LogsControllerTest
             TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
             AuthorId = "42",
             AuthorEmail = "Slartibartfast",
-            Author = new User { Email = "Slartibartfast" },
+            Author = new IdentityUser { Email = "Slartibartfast" },
             ProjectId = 42,
             Action = Action.UPDATED_PROJECT,
             Changes =
@@ -156,7 +156,7 @@ public class LogsControllerTest
             TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
             AuthorId = "42",
             AuthorEmail = "Slartibartfast",
-            Author = new User { Email = "Slartibartfast" },
+            Author = new IdentityUser { Email = "Slartibartfast" },
             Action = Action.UPDATED_USER,
             AffectedUserId = "Newton",
             Changes =
@@ -195,7 +195,7 @@ public class LogsControllerTest
             TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
             AuthorId = "42",
             AuthorEmail = "newton",
-            Author = new User { Email = "newton" },
+            Author = new IdentityUser { Email = "newton" },
             Action = Action.UPDATED_GLOBAL_PLUGIN,
             GlobalPluginId = 42,
             GlobalPluginName = "Gravity",

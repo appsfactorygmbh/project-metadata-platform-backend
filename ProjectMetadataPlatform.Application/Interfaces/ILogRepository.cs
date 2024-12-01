@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using ProjectMetadataPlatform.Domain.Logs;
 using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.Projects;
-using ProjectMetadataPlatform.Domain.User;
 
 namespace ProjectMetadataPlatform.Application.Interfaces;
 
@@ -28,7 +28,7 @@ public interface ILogRepository
     /// <param name="action">The type of change that was made.</param>
     /// <param name="changes">A list of the changed properties.</param>
     /// <returns></returns>
-    Task AddUserLogForCurrentUser(User affectedUser, Action action, List<LogChange> changes);
+    Task AddUserLogForCurrentUser(IdentityUser affectedUser, Action action, List<LogChange> changes);
 
     /// <summary>
     /// Adds Logs for changes made to a GlobalPlugin. Sets the current User as the Author.

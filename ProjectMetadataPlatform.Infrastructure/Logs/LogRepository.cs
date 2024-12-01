@@ -9,7 +9,7 @@ using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Domain.Logs;
 using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.Projects;
-using ProjectMetadataPlatform.Domain.User;
+using Microsoft.AspNetCore.Identity;
 using ProjectMetadataPlatform.Infrastructure.DataAccess;
 using static System.DateTimeOffset;
 using Action = ProjectMetadataPlatform.Domain.Logs.Action;
@@ -89,7 +89,7 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
     }
 
     ///  <inheritdoc />
-    public async Task AddUserLogForCurrentUser(User affectedUser, Action action, List<LogChange> changes)
+    public async Task AddUserLogForCurrentUser(IdentityUser affectedUser, Action action, List<LogChange> changes)
     {
         var actionWhiteList = new List<Action>
         {
@@ -147,7 +147,7 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
     private async Task<Log> PrepareGenericLogForCurrentUser(Action action, List<LogChange> changes)
     {
         var email = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.Email) ?? "Unknown user";
-        User? author = await _usersRepository.GetUserByEmailAsync(email);
+        IdentityUser? author = await _usersRepository.GetUserByEmailAsync(email);
 
         var log = new Log
         {
