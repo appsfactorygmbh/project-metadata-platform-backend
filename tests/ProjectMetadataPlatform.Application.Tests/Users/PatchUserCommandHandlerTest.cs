@@ -5,7 +5,6 @@ using Moq;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Application.Users;
-using ProjectMetadataPlatform.Domain.User;
 
 namespace ProjectMetadataPlatform.Application.Tests.Users;
 
@@ -14,34 +13,34 @@ public class PatchUserCommandHandlerTest
 {
     private PatchUserCommandHandler _handler;
     private Mock<IUsersRepository> _mockUsersRepo;
-    private Mock<IPasswordHasher<User>> _mockPasswordHasher;
+    private Mock<IPasswordHasher<IdentityUser>> _mockPasswordHasher;
+    private Mock<IUnitOfWork> _unitOfWork;
 
     [SetUp]
     public void Setup()
     {
         _mockUsersRepo = new Mock<IUsersRepository>();
-        _mockPasswordHasher = new Mock<IPasswordHasher<User>>();
-        _handler = new PatchUserCommandHandler(_mockUsersRepo.Object, _mockPasswordHasher.Object);
+        _mockPasswordHasher = new Mock<IPasswordHasher<IdentityUser>>();
+        _unitOfWork = new Mock<IUnitOfWork>();
+        _handler = new PatchUserCommandHandler(_mockUsersRepo.Object, _mockPasswordHasher.Object, _unitOfWork.Object);
     }
 
     [Test]
     public async Task PatchUser_Test()
     {
-        var user = new User { Id = "42", Name = "Culture Candela", UserName = "WTFPL 2", Email = "candela@hip-hop.dancehall" };
-        var newUser = new User { Id = "42", Name = "Culcha Candela", UserName = "WTFPL 2", Email = "candela@hip-hop.dancehall" };
+        var user = new IdentityUser { Id = "42",  Email = "candela@hip-hop.dancehall" };
+        var newUser = new IdentityUser { Id = "42", Email = "angela@hip-hop.dancehall" };
 
         _mockUsersRepo.Setup(repo => repo.GetUserByIdAsync("42")).ReturnsAsync(user);
-        _mockUsersRepo.Setup(repo => repo.StoreUser(It.IsAny<User>())).ReturnsAsync((User p) => p);
+        _mockUsersRepo.Setup(repo => repo.StoreUser(It.IsAny<IdentityUser>())).ReturnsAsync((IdentityUser p) => p);
 
         var result =
-            await _handler.Handle(new PatchUserCommand("42", null, "Culcha Candela"), It.IsAny<CancellationToken>());
+            await _handler.Handle(new PatchUserCommand("42","angela@hip-hop.dancehall"), It.IsAny<CancellationToken>());
 
         Assert.Multiple(() =>
         {
             Assert.That(result, Is.Not.Null);
-            Assert.That(result!.Email, Is.EqualTo(newUser.Email));
-            Assert.That(result.Name, Is.EqualTo(newUser.Name));
-            Assert.That(result.UserName, Is.EqualTo(newUser.UserName));
+            Assert.That(result.Email, Is.EqualTo(newUser.Email));
             Assert.That(result.Id, Is.EqualTo(newUser.Id));
         });
     }
@@ -49,10 +48,10 @@ public class PatchUserCommandHandlerTest
     [Test]
     public async Task PatchUser_ChangeNothing_Test()
     {
-        var user = new User { Id = "42", Name = "Coldplay", UserName = "MIT", Email = "cold@play.co.uk" };
+        var user = new IdentityUser { Id = "42", Email = "cold@play.co.uk" };
 
         _mockUsersRepo.Setup(repo => repo.GetUserByIdAsync("42")).ReturnsAsync(user);
-        _mockUsersRepo.Setup(repo => repo.StoreUser(It.IsAny<User>())).ReturnsAsync((User p) => p);
+        _mockUsersRepo.Setup(repo => repo.StoreUser(It.IsAny<IdentityUser>())).ReturnsAsync((IdentityUser p) => p);
 
         var result =
             await _handler.Handle(new PatchUserCommand("42"), It.IsAny<CancellationToken>());
@@ -61,8 +60,6 @@ public class PatchUserCommandHandlerTest
         {
             Assert.That(result, Is.Not.Null);
             Assert.That(result!.Email, Is.EqualTo(user.Email));
-            Assert.That(result.Name, Is.EqualTo(user.Name));
-            Assert.That(result.UserName, Is.EqualTo(user.UserName));
             Assert.That(result.Id, Is.EqualTo(user.Id));
         });
     }
@@ -70,7 +67,7 @@ public class PatchUserCommandHandlerTest
     [Test]
     public async Task PatchUser_NotFound_Test()
     {
-        _mockUsersRepo.Setup(repo => repo.GetUserByIdAsync("42")).ReturnsAsync((User)null!);
+        _mockUsersRepo.Setup(repo => repo.GetUserByIdAsync("42")).ReturnsAsync((IdentityUser)null!);
 
         var result =
             await _handler.Handle(new PatchUserCommand("42"), It.IsAny<CancellationToken>());

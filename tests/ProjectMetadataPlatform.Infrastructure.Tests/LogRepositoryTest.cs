@@ -1,17 +1,16 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Domain.Logs;
+using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.Projects;
-using ProjectMetadataPlatform.Domain.User;
 using ProjectMetadataPlatform.Infrastructure.DataAccess;
 using ProjectMetadataPlatform.Infrastructure.Logs;
 using Action = ProjectMetadataPlatform.Domain.Logs.Action;
@@ -31,7 +30,7 @@ public class LogRepositoryTest : TestsWithDatabase
         _context = DbContext();
         var httpContextAccessorMock = new Mock<IHttpContextAccessor>();
 
-        var identity = new GenericIdentity("camo", "test");
+        var identity = new ClaimsIdentity(new[] { new Claim(ClaimTypes.Email, "camo") }, "TestAuth");
         var contextUser = new ClaimsPrincipal(identity); //add claims as needed
         var httpContext = new DefaultHttpContext
         {
@@ -51,7 +50,7 @@ public class LogRepositoryTest : TestsWithDatabase
     }
 
     [Test]
-    public async Task CreateLogTest()
+    public async Task CreateProjectLogTest()
     {
         var exampleProject = new Project
         {
@@ -63,12 +62,10 @@ public class LogRepositoryTest : TestsWithDatabase
         };
         await _context.Projects.AddAsync(exampleProject);
 
-        var user = new User
+        var user = new IdentityUser
         {
             Id = "42",
-            UserName = "camo",
             Email = "camo",
-            Name = "some user"
         };
         await _context.Users.AddAsync(user);
 
@@ -108,10 +105,10 @@ public class LogRepositoryTest : TestsWithDatabase
             }
         };
 
-        _mockUserRepository.Setup(_ => _.GetUserByUserNameAsync("camo")).ReturnsAsync(user);
+        _mockUserRepository.Setup(_ => _.GetUserByEmailAsync("camo")).ReturnsAsync(user);
 
-        await _loggingRepository.AddLogForCurrentUser( exampleProject.Id, Action.ADDED_PROJECT, logChanges);
-        _context.SaveChanges();
+        await _loggingRepository.AddProjectLogForCurrentUser(exampleProject, Action.ADDED_PROJECT, logChanges);
+        await _context.SaveChangesAsync();
         var dbLog = await _context.Logs.Include(log => log.Author).Include(log => log.Project).Include(log => log.Changes)
             .FirstOrDefaultAsync()!;
         Assert.That(dbLog, Is.Not.Null);
@@ -126,6 +123,238 @@ public class LogRepositoryTest : TestsWithDatabase
             Assert.That(dbLog.Project, Is.EqualTo(exampleProject));
             Assert.That(dbLog.Changes, Has.Count.EqualTo(5));
         });
+    }
+
+    [Test]
+    public async Task UpdateUserLogTest()
+    {
+
+        var author = new IdentityUser
+        {
+            Id = "42",
+            Email = "camo",
+        };
+
+        var affectedUser = new IdentityUser
+        {
+            Id = "12",
+            Email = "gagarin@vostok.su",
+        };
+        await _context.Users.AddAsync(author);
+        await _context.Users.AddAsync(affectedUser);
+
+        await _context.SaveChangesAsync();
+
+        var logChanges = new List<LogChange>
+        {
+            new()
+            {
+                OldValue = "no",
+                NewValue = "yes",
+                Property = "isAstronaut"
+            },
+        };
+
+        _mockUserRepository.Setup(_ => _.GetUserByEmailAsync("camo")).ReturnsAsync(author);
+
+        await _loggingRepository.AddUserLogForCurrentUser(affectedUser, Action.UPDATED_USER, logChanges);
+        await _context.SaveChangesAsync();
+        var dbLog = await _context.Logs
+            .Include(log => log.Author)
+            .Include(log => log.Changes)
+            .Include(log => log.AffectedUser)
+            .FirstOrDefaultAsync()!;
+        Assert.That(dbLog, Is.Not.Null);
+        Assert.Multiple(() =>
+        {
+            Assert.That(dbLog.Id, Is.EqualTo(1));
+            Assert.That(dbLog.Action, Is.EqualTo(Action.UPDATED_USER));
+            Assert.That(dbLog.AuthorEmail, Is.EqualTo("camo"));
+            Assert.That(dbLog.AuthorId, Is.EqualTo("42"));
+            Assert.That(dbLog.Author, Is.EqualTo(author));
+            Assert.That(dbLog.AffectedUserId, Is.EqualTo("12"));
+            Assert.That(dbLog.AffectedUser, Is.EqualTo(affectedUser));
+            Assert.That(dbLog.Changes, Has.Count.EqualTo(1));
+        });
+    }
+
+    [Test]
+    public async Task UpdateGlobalPluginLogTest()
+    {
+
+        var author = new IdentityUser
+        {
+            Id = "42",
+            Email = "camo",
+
+        };
+        await _context.Users.AddAsync(author);
+
+        var globalPlugin = new Plugin
+        {
+            PluginName = "Canadarm2",
+            Id = 13
+        };
+        await _context.Plugins.AddAsync(globalPlugin);
+
+        await _context.SaveChangesAsync();
+
+        var logChanges = new List<LogChange>
+        {
+            new()
+            {
+                OldValue = "in storage",
+                NewValue = "installed",
+                Property = "status"
+            },
+        };
+
+        _mockUserRepository.Setup(_ => _.GetUserByEmailAsync("camo")).ReturnsAsync(author);
+
+        await _loggingRepository.AddGlobalPluginLogForCurrentUser(globalPlugin, Action.UPDATED_GLOBAL_PLUGIN, logChanges);
+        await _context.SaveChangesAsync();
+        var dbLog = await _context.Logs
+            .Include(log => log.Author)
+            .Include(log => log.Changes)
+            .Include(log => log.GlobalPlugin)
+            .FirstOrDefaultAsync()!;
+        Assert.That(dbLog, Is.Not.Null);
+        Assert.Multiple(() =>
+        {
+            Assert.That(dbLog.Id, Is.EqualTo(1));
+            Assert.That(dbLog.Action, Is.EqualTo(Action.UPDATED_GLOBAL_PLUGIN));
+            Assert.That(dbLog.AuthorEmail, Is.EqualTo("camo"));
+            Assert.That(dbLog.AuthorId, Is.EqualTo("42"));
+            Assert.That(dbLog.Author, Is.EqualTo(author));
+            Assert.That(dbLog.GlobalPluginId, Is.EqualTo(13));
+            Assert.That(dbLog.GlobalPlugin, Is.EqualTo(globalPlugin));
+            Assert.That(dbLog.GlobalPluginName, Is.EqualTo("Canadarm2"));
+            Assert.That(dbLog.Changes, Has.Count.EqualTo(1));
+        });
+    }
+
+    [TestCase (Action.ADDED_USER)]
+    [TestCase (Action.UPDATED_USER)]
+    [TestCase (Action.REMOVED_USER)]
+    [TestCase (Action.ADDED_GLOBAL_PLUGIN)]
+    [TestCase (Action.UPDATED_GLOBAL_PLUGIN)]
+    [TestCase (Action.ARCHIVED_GLOBAL_PLUGIN)]
+    [TestCase (Action.UNARCHIVED_GLOBAL_PLUGIN)]
+    [TestCase (Action.REMOVED_GLOBAL_PLUGIN)]
+    public async Task ProjectLogTest_RejectsActionNotInWhitelist(Action action)
+    {
+        var exampleProject = new Project
+        {
+            ProjectName = "Example Project",
+            BusinessUnit = "Example Business Unit",
+            TeamNumber = 1,
+            Department = "Example Department",
+            ClientName = "Example Client"
+        };
+        await _context.Projects.AddAsync(exampleProject);
+
+        var user = new IdentityUser
+        {
+            Id = "42",
+            Email = "camo",
+        };
+
+        await _context.Users.AddAsync(user);
+        await _context.SaveChangesAsync();
+
+        var logChanges = new List<LogChange>
+        {
+            new() { OldValue = "", NewValue = "Example Project", Property = "ProjectName" },
+        };
+
+        Assert.ThrowsAsync<ArgumentException>(() => _loggingRepository.AddProjectLogForCurrentUser(exampleProject, action, logChanges));
+    }
+
+    [TestCase (Action.ADDED_PROJECT)]
+    [TestCase (Action.ADDED_PROJECT_PLUGIN)]
+    [TestCase (Action.UPDATED_PROJECT)]
+    [TestCase (Action.UPDATED_PROJECT_PLUGIN)]
+    [TestCase (Action.REMOVED_PROJECT_PLUGIN)]
+    [TestCase (Action.ARCHIVED_PROJECT)]
+    [TestCase (Action.UNARCHIVED_PROJECT)]
+    [TestCase (Action.REMOVED_PROJECT)]
+    [TestCase (Action.ADDED_GLOBAL_PLUGIN)]
+    [TestCase (Action.UPDATED_GLOBAL_PLUGIN)]
+    [TestCase (Action.ARCHIVED_GLOBAL_PLUGIN)]
+    [TestCase (Action.UNARCHIVED_GLOBAL_PLUGIN)]
+    [TestCase (Action.REMOVED_GLOBAL_PLUGIN)]
+    public async Task UserLogTest_RejectsActionNotInWhitelist(Action action)
+    {
+
+        var author = new IdentityUser
+        {
+            Id = "42",
+            Email = "camo",
+        };
+
+        var affectedUser = new IdentityUser
+        {
+            Id = "12",
+            Email = "gagarin@vostok.su",
+        };
+        await _context.Users.AddAsync(author);
+        await _context.Users.AddAsync(affectedUser);
+
+        await _context.SaveChangesAsync();
+
+        var logChanges = new List<LogChange>
+        {
+            new()
+            {
+                OldValue = "no",
+                NewValue = "yes",
+                Property = "isAstronaut"
+            },
+        };
+
+        Assert.ThrowsAsync<ArgumentException>(() => _loggingRepository.AddUserLogForCurrentUser(affectedUser, action, logChanges));
+    }
+
+    [TestCase (Action.ADDED_USER)]
+    [TestCase (Action.UPDATED_USER)]
+    [TestCase (Action.REMOVED_USER)]
+    [TestCase (Action.ADDED_PROJECT)]
+    [TestCase (Action.ADDED_PROJECT_PLUGIN)]
+    [TestCase (Action.UPDATED_PROJECT)]
+    [TestCase (Action.UPDATED_PROJECT_PLUGIN)]
+    [TestCase (Action.REMOVED_PROJECT_PLUGIN)]
+    [TestCase (Action.ARCHIVED_PROJECT)]
+    [TestCase (Action.UNARCHIVED_PROJECT)]
+    [TestCase (Action.REMOVED_PROJECT)]
+    public async Task GlobalPluginLogTest_RejectsActionNotInWhitelist(Action action)
+    {
+        var author = new IdentityUser
+        {
+            Id = "42",
+            Email = "camo",
+        };
+        await _context.Users.AddAsync(author);
+
+        var globalPlugin = new Plugin
+        {
+            PluginName = "Canadarm2",
+            Id = 13
+        };
+        await _context.Plugins.AddAsync(globalPlugin);
+
+        await _context.SaveChangesAsync();
+
+        var logChanges = new List<LogChange>
+        {
+            new()
+            {
+                OldValue = "in storage",
+                NewValue = "installed",
+                Property = "status"
+            },
+        };
+
+        Assert.ThrowsAsync<ArgumentException>(() => _loggingRepository.AddGlobalPluginLogForCurrentUser(globalPlugin, action, logChanges));
     }
 
     [Test]
@@ -163,6 +392,17 @@ public class LogRepositoryTest : TestsWithDatabase
 
         Assert.That(logs, Has.Count.EqualTo(1));
         Assert.That(logs[0], Is.EqualTo(exampleLog));
+
+        var log = logs[0];
+        Assert.Multiple(() =>
+        {
+            Assert.That(log.Id, Is.EqualTo(1));
+            Assert.That(log.AuthorId, Is.Null);
+            Assert.That(log.AuthorEmail, Is.EqualTo("camo"));
+            Assert.That(log.ProjectId, Is.EqualTo(301));
+            Assert.That(log.Action, Is.EqualTo(Action.ADDED_PROJECT));
+            Assert.That(log.Changes, Has.Count.EqualTo(1));
+        });
     }
 
     [Test]
@@ -380,6 +620,131 @@ public class LogRepositoryTest : TestsWithDatabase
             Assert.That(log.AuthorEmail, Is.EqualTo("someUserName"));
             Assert.That(log.ProjectId, Is.EqualTo(302));
             Assert.That(log.Action, Is.EqualTo(Action.UPDATED_PROJECT));
+            Assert.That(log.Changes, Has.Count.EqualTo(1));
+        });
+    }
+
+    [Test]
+    public async Task GetLogsForAffectedUser_Test()
+    {
+        var exampleLog1 = new Log
+        {
+            Id = 1,
+            AuthorId = null,
+            AuthorEmail = "camo",
+            TimeStamp = DateTimeOffset.UtcNow,
+            ProjectId = null,
+            Action = Action.REMOVED_PROJECT,
+            Changes =
+            [
+                new LogChange { OldValue = "", NewValue = "Example Project", Property = "ProjectName" }
+            ]
+        };
+
+        var exampleUser = new IdentityUser
+        {
+            Id = "Newton",
+            Email = "newton@royalastronomicalsociety.co.uk"
+        };
+
+        var exampleLog2 = new Log
+        {
+            Id = 2,
+            AuthorId = null,
+            AuthorEmail = "someUserName",
+            TimeStamp = DateTimeOffset.UtcNow,
+            Action = Action.UPDATED_USER,
+            AffectedUserId = "Newton",
+            AffectedUserEmail = "Newton@royalastronomicalsociety.co.uk",
+            AffectedUser = exampleUser,
+            Changes =
+            [
+                new LogChange { OldValue = "yes", NewValue = "no", Property = "flying" }
+            ]
+        };
+
+        await _context.Users.AddAsync(exampleUser);
+        await _context.Logs.AddAsync(exampleLog1);
+        await _context.Logs.AddAsync(exampleLog2);
+        await _context.SaveChangesAsync();
+
+        var logs = await _loggingRepository.GetLogsForUser("Newton");
+
+        Assert.That(logs, Has.Count.EqualTo(1));
+
+        var log = logs[0];
+        Assert.Multiple(() =>
+        {
+            Assert.That(log.Id, Is.EqualTo(2));
+            Assert.That(log.AuthorId, Is.Null);
+            Assert.That(log.AuthorEmail, Is.EqualTo("someUserName"));
+            Assert.That(log.Action, Is.EqualTo(Action.UPDATED_USER));
+            Assert.That(log.AffectedUserEmail, Is.EqualTo("Newton@royalastronomicalsociety.co.uk"));
+            Assert.That(log.AffectedUserId, Is.EqualTo("Newton"));
+            Assert.That(log.AffectedUser, Is.EqualTo(exampleUser));
+            Assert.That(log.AffectedUserId, Is.EqualTo("Newton"));
+            Assert.That(log.Changes, Has.Count.EqualTo(1));
+        });
+    }
+
+    [Test]
+    public async Task GetLogsForGlobalPlugin_Test()
+    {
+        var exampleLog1 = new Log
+        {
+            Id = 1,
+            AuthorId = null,
+            AuthorEmail = "camo",
+            TimeStamp = DateTimeOffset.UtcNow,
+            ProjectId = null,
+            Action = Action.REMOVED_PROJECT,
+            Changes =
+            [
+                new LogChange { OldValue = "", NewValue = "Example Project", Property = "ProjectName" }
+            ]
+        };
+
+        var examplePlugin = new Plugin
+        {
+            Id = 42,
+            PluginName = "Gravity"
+        };
+
+        var exampleLog2 = new Log
+        {
+            Id = 2,
+            AuthorId = null,
+            AuthorEmail = "someUserName",
+            TimeStamp = DateTimeOffset.UtcNow,
+            Action = Action.UPDATED_GLOBAL_PLUGIN,
+            GlobalPluginId = 42,
+            GlobalPluginName = "Gravity",
+            GlobalPlugin = examplePlugin,
+            Changes =
+            [
+                new LogChange { OldValue = "no", NewValue = "yes", Property = "discovered" }
+            ]
+        };
+
+        await _context.Plugins.AddAsync(examplePlugin);
+        await _context.Logs.AddAsync(exampleLog1);
+        await _context.Logs.AddAsync(exampleLog2);
+        await _context.SaveChangesAsync();
+
+        var logs = await _loggingRepository.GetLogsForGlobalPlugin(42);
+
+        Assert.That(logs, Has.Count.EqualTo(1));
+
+        var log = logs[0];
+        Assert.Multiple(() =>
+        {
+            Assert.That(log.Id, Is.EqualTo(2));
+            Assert.That(log.AuthorId, Is.Null);
+            Assert.That(log.AuthorEmail, Is.EqualTo("someUserName"));
+            Assert.That(log.Action, Is.EqualTo(Action.UPDATED_GLOBAL_PLUGIN));
+            Assert.That(log.GlobalPluginId, Is.EqualTo(42));
+            Assert.That(log.GlobalPluginName, Is.EqualTo("Gravity"));
+            Assert.That(log.GlobalPlugin, Is.EqualTo(examplePlugin));
             Assert.That(log.Changes, Has.Count.EqualTo(1));
         });
     }

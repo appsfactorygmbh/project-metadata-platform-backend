@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
@@ -11,7 +12,6 @@ using ProjectMetadataPlatform.Api.Logs;
 using ProjectMetadataPlatform.Api.Logs.Models;
 using ProjectMetadataPlatform.Application.Logs;
 using ProjectMetadataPlatform.Domain.Logs;
-using ProjectMetadataPlatform.Domain.User;
 using Action = ProjectMetadataPlatform.Domain.Logs.Action;
 
 namespace ProjectMetadataPlatform.Api.Tests.Logs;
@@ -39,7 +39,7 @@ public class LogsControllerTest
             TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
             AuthorId = "42",
             AuthorEmail = "Slartibartfast",
-            Author = new User { Email = "Slartibartfast" },
+            Author = new IdentityUser { Email = "Slartibartfast" },
             ProjectId = 42,
             Action = Action.UPDATED_PROJECT,
             Changes =
@@ -50,7 +50,7 @@ public class LogsControllerTest
         _mediator.Setup(m => m.Send(It.IsAny<GetLogsQuery>(), default)).ReturnsAsync([log]);
         _logConverter.Setup(lc => lc.BuildLogMessage(log)).Returns(new LogResponse("Project updated", "1970-01-01T00:00:00+01:00"));
 
-        var result = await _controller.Get(null, null);
+        var result = await _controller.Get(null, null, null, null);
 
         var okResult = result.Result as OkObjectResult;
         Assert.That(okResult, Is.Not.Null);
@@ -78,7 +78,7 @@ public class LogsControllerTest
             TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
             AuthorId = "42",
             AuthorEmail = "Slartibartfast",
-            Author = new User { Email = "Slartibartfast" },
+            Author = new IdentityUser { Email = "Slartibartfast" },
             ProjectId = 42,
             Action = Action.UPDATED_PROJECT,
             Changes =
@@ -89,7 +89,7 @@ public class LogsControllerTest
         _mediator.Setup(m => m.Send(It.IsAny<GetLogsQuery>(), default)).ReturnsAsync([log]);
         _logConverter.Setup(lc => lc.BuildLogMessage(log)).Returns(new LogResponse("Project updated", "1970-01-01T00:00:00+01:00"));
 
-        var result = await _controller.Get(42, null);
+        var result = await _controller.Get(42, null, null, null);
 
         var okResult = result.Result as OkObjectResult;
         Assert.That(okResult, Is.Not.Null);
@@ -117,7 +117,7 @@ public class LogsControllerTest
             TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
             AuthorId = "42",
             AuthorEmail = "Slartibartfast",
-            Author = new User { Email = "Slartibartfast" },
+            Author = new IdentityUser { Email = "Slartibartfast" },
             ProjectId = 42,
             Action = Action.UPDATED_PROJECT,
             Changes =
@@ -128,7 +128,7 @@ public class LogsControllerTest
         _mediator.Setup(m => m.Send(It.IsAny<GetLogsQuery>(), default)).ReturnsAsync([log]);
         _logConverter.Setup(lc => lc.BuildLogMessage(log)).Returns(new LogResponse("Project updated", "1970-01-01T00:00:00+01:00"));
 
-        var result = await _controller.Get(null, "updated");
+        var result = await _controller.Get(null, "updated", null, null);
 
         var okResult = result.Result as OkObjectResult;
         Assert.That(okResult, Is.Not.Null);
@@ -148,11 +148,90 @@ public class LogsControllerTest
     }
 
     [Test]
+    public async Task GetLogsForAffectedUser_Test()
+    {
+        var log = new Log
+        {
+            Id = 42,
+            TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
+            AuthorId = "42",
+            AuthorEmail = "Slartibartfast",
+            Author = new IdentityUser { Email = "Slartibartfast" },
+            Action = Action.UPDATED_USER,
+            AffectedUserId = "Newton",
+            Changes =
+            [
+                new LogChange { Property = "flying", OldValue = "yes", NewValue = "no" }
+            ]
+        };
+        _mediator.Setup(m => m.Send(It.IsAny<GetLogsQuery>(), default)).ReturnsAsync([log]);
+        _logConverter.Setup(lc => lc.BuildLogMessage(log)).Returns(new LogResponse("User updated", "1970-01-01T00:00:00+01:00"));
+
+        var result = await _controller.Get(null, null, "Newton", null);
+
+        var okResult = result.Result as OkObjectResult;
+        Assert.That(okResult, Is.Not.Null);
+        Assert.That(okResult.StatusCode, Is.EqualTo(200));
+        var response = okResult.Value as IEnumerable<LogResponse>;
+        Assert.That(response, Is.Not.Null);
+        var logResponses = response.ToList();
+        Assert.That(logResponses, Has.Count.EqualTo(1));
+        Assert.Multiple(() =>
+        {
+            Assert.That(logResponses[0].LogMessage, Is.EqualTo("User updated"));
+            Assert.That(logResponses[0].Timestamp, Is.EqualTo("1970-01-01T00:00:00+01:00"));
+        });
+
+        _mediator.Verify(m => m.Send(It.Is<GetLogsQuery>(q => q.UserId == "Newton"), default), Times.Once);
+        _logConverter.Verify(lc => lc.BuildLogMessage(log), Times.Once);
+    }
+
+    [Test]
+    public async Task GetLogsForGlobalPlugin_Test()
+    {
+        var log = new Log
+        {
+            Id = 42,
+            TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
+            AuthorId = "42",
+            AuthorEmail = "newton",
+            Author = new IdentityUser { Email = "newton" },
+            Action = Action.UPDATED_GLOBAL_PLUGIN,
+            GlobalPluginId = 42,
+            GlobalPluginName = "Gravity",
+            Changes =
+            [
+                new LogChange { Property = "discovered", OldValue = "no", NewValue = "yes" }
+            ]
+        };
+        _mediator.Setup(m => m.Send(It.IsAny<GetLogsQuery>(), default)).ReturnsAsync([log]);
+        _logConverter.Setup(lc => lc.BuildLogMessage(log)).Returns(new LogResponse("Global plugin updated", "1970-01-01T00:00:00+01:00"));
+
+        var result = await _controller.Get(null, null, null, 42);
+
+        var okResult = result.Result as OkObjectResult;
+        Assert.That(okResult, Is.Not.Null);
+        Assert.That(okResult.StatusCode, Is.EqualTo(200));
+        var response = okResult.Value as IEnumerable<LogResponse>;
+        Assert.That(response, Is.Not.Null);
+        var logResponses = response.ToList();
+        Assert.That(logResponses, Has.Count.EqualTo(1));
+        Assert.Multiple(() =>
+        {
+            Assert.That(logResponses[0].LogMessage, Is.EqualTo("Global plugin updated"));
+            Assert.That(logResponses[0].Timestamp, Is.EqualTo("1970-01-01T00:00:00+01:00"));
+        });
+
+        _mediator.Verify(m => m.Send(It.Is<GetLogsQuery>(q => q.GlobalPluginId == 42), default), Times.Once);
+        _logConverter.Verify(lc => lc.BuildLogMessage(log), Times.Once);
+    }
+
+    [Test]
     public async Task GetLogs_ProjectNotFound_Test()
     {
         _mediator.Setup(m => m.Send(It.IsAny<GetLogsQuery>(), default)).ThrowsAsync(new InvalidOperationException("Something went wrong"));
 
-        var result = await _controller.Get(404, null);
+        var result = await _controller.Get(404, null, null, null);
 
         Assert.That(result.Result, Is.InstanceOf<NotFoundObjectResult>());
         var statusCodeResult = result.Result as NotFoundObjectResult;
@@ -169,7 +248,7 @@ public class LogsControllerTest
     {
         _mediator.Setup(m => m.Send(It.IsAny<GetLogsQuery>(), default)).ThrowsAsync(new FormatException("Something went wrong"));
 
-        var result = await _controller.Get(null, null);
+        var result = await _controller.Get(null, null, null, null);
 
         Assert.That(result.Result, Is.InstanceOf<StatusCodeResult>());
         var statusCodeResult = result.Result as StatusCodeResult;

@@ -1,9 +1,9 @@
 using MediatR;
-using ProjectMetadataPlatform.Domain.User;
+using Microsoft.AspNetCore.Identity;
 
 namespace ProjectMetadataPlatform.Application.Users;
 
 /// <summary>
 ///     Query to get a user by id.
 /// </summary>
-public record GetUserQuery(string UserId) : IRequest<User?>;
+public record GetUserQuery(string UserId) : IRequest<IdentityUser?>;

@@ -9,10 +9,10 @@ using ProjectMetadataPlatform.Infrastructure.DataAccess;
 using ProjectMetadataPlatform.Infrastructure.Logs;
 using ProjectMetadataPlatform.Infrastructure.Plugins;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using ProjectMetadataPlatform.Application;
 using ProjectMetadataPlatform.Application.Auth;
-using ProjectMetadataPlatform.Domain.User;
 using ProjectMetadataPlatform.Infrastructure.Users;
 
 namespace ProjectMetadataPlatform.Infrastructure;
@@ -30,14 +30,14 @@ public static class DependencyInjection
     public static IServiceCollection AddInfrastructureDependencies(this IServiceCollection serviceCollection)
     {
         serviceCollection.AddDbContextWithPostgresConnection();
-        serviceCollection.AddScoped<IUnitOfWork>(provider =>
+        _ = serviceCollection.AddScoped<IUnitOfWork>(provider =>
             provider.GetRequiredService<ProjectMetadataPlatformDbContext>());
         serviceCollection.ConfigureAuth();
         _ = serviceCollection.AddScoped<IPluginRepository, PluginRepository>();
         _ = serviceCollection.AddScoped<IProjectsRepository, ProjectsRepository>();
         _ = serviceCollection.AddScoped<IAuthRepository, AuthRepository>();
         _ = serviceCollection.AddScoped<IUsersRepository, UsersRepository>();
-        _ = serviceCollection.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+        _ = serviceCollection.AddScoped<IPasswordHasher<IdentityUser>, PasswordHasher<IdentityUser>>();
 
         _ = serviceCollection.AddScoped<ILogRepository, LogRepository>();
         return serviceCollection;
@@ -63,12 +63,22 @@ public static class DependencyInjection
     /// <param name="serviceCollection"></param>
     private static void ConfigureAuth(this IServiceCollection serviceCollection)
     {
-        _ = serviceCollection.AddIdentity<User, IdentityRole>()
+        _ = serviceCollection.AddScoped<IUserStore<IdentityUser>>(provider =>
+        {
+            var userStore = new UserStore<IdentityUser, IdentityRole, ProjectMetadataPlatformDbContext, string>(
+                provider.GetRequiredService<ProjectMetadataPlatformDbContext>())
+            {
+                AutoSaveChanges = false
+            };
+            return userStore;
+        });
+
+        _ = serviceCollection.AddIdentity<IdentityUser, IdentityRole>()
             .AddEntityFrameworkStores<ProjectMetadataPlatformDbContext>()
             .AddDefaultTokenProviders();
 
         var tokenDescriptorInformation = TokenDescriptorInformation.ReadFromEnvVariables();
-
+        _ = serviceCollection.Configure<IdentityOptions>(options => options.User.RequireUniqueEmail = true);
         _ = serviceCollection.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -104,14 +114,14 @@ public static class DependencyInjection
 
         using var scope = serviceProvider.CreateScope();
 
-        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
 
         if (userManager.Users.Any())
         {
             return;
         }
 
-        var user = new User { UserName = "admin", Name = "admin", Id = "1" };
+        var user = new IdentityUser { UserName = "admin@admin.admin", Email = "admin@admin.admin", Id = "1" };
         user.PasswordHash = userManager.PasswordHasher.HashPassword(user, password);
         var identityResult = userManager.CreateAsync(user).Result;
 
@@ -119,6 +129,9 @@ public static class DependencyInjection
         {
             throw new InvalidOperationException("Could not create admin user: " + string.Join(", ", identityResult.Errors.Select(e => e.Description)));
         }
+
+        var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+        _ = unitOfWork.CompleteAsync();
     }
 
     /// <summary>

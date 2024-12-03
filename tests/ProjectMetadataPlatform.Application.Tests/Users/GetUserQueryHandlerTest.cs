@@ -1,10 +1,10 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Moq;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Application.Users;
-using ProjectMetadataPlatform.Domain.User;
 
 namespace ProjectMetadataPlatform.Application.Tests.Users;
 
@@ -23,31 +23,31 @@ public class GetUserQueryHandlerTest
     [Test]
     public async Task HandleGetUserRequest_Test()
     {
-        var userResponseContent = new User
+        var userResponseContent = new IdentityUser
         {
             Id = "1",
-            Name = "Hinz"
+            Email = "Hinz"
         };
 
         _mockUserRepo.Setup(m => m.GetUserByIdAsync("1")).ReturnsAsync(userResponseContent);
         var request = new GetUserQuery("1");
-        User? result = await _handler.Handle(request, It.IsAny<CancellationToken>());
+        IdentityUser? result = await _handler.Handle(request, It.IsAny<CancellationToken>());
 
         Assert.That(result, Is.Not.Null);
-        Assert.That(result, Is.InstanceOf<User>());
+        Assert.That(result, Is.InstanceOf<IdentityUser>());
         Assert.Multiple((() =>
         {
             Assert.That(result.Id, Is.EqualTo("1"));
-            Assert.That(result.Name, Is.EqualTo("Hinz"));
+            Assert.That(result.Email, Is.EqualTo("Hinz"));
         }));
     }
 
     [Test]
     public async Task HandleGetUserRequest_NonexistentUser_Test()
     {
-        _mockUserRepo.Setup(m => m.GetUserByIdAsync("1")).ReturnsAsync((User?)null);
+        _mockUserRepo.Setup(m => m.GetUserByIdAsync("1")).ReturnsAsync((IdentityUser?)null);
         var request = new GetUserQuery("1");
-        User? result = await _handler.Handle(request, It.IsAny<CancellationToken>());
+        IdentityUser? result = await _handler.Handle(request, It.IsAny<CancellationToken>());
 
         Assert.That(result, Is.Null);
     }

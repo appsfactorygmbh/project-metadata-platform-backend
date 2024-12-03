@@ -1,15 +1,15 @@
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 using ProjectMetadataPlatform.Application.Interfaces;
-using ProjectMetadataPlatform.Domain.User;
 
 namespace ProjectMetadataPlatform.Application.Users;
 
 /// <summary>
 /// Handles the GetUserQuery.
 /// </summary>
-public class GetUserQueryHandler : IRequestHandler<GetUserQuery, User?>
+public class GetUserQueryHandler : IRequestHandler<GetUserQuery, IdentityUser?>
 {
     /// <summary>
     /// The repository of users.
@@ -31,7 +31,7 @@ public class GetUserQueryHandler : IRequestHandler<GetUserQuery, User?>
     /// <param name="request">The GetUserQuery.</param>
     /// <param name="cancellationToken">A cancellation token that can be used to cancel the work.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains the user with the specified ID, or null if no user is found.</returns>
-    public Task<User?> Handle(GetUserQuery request, CancellationToken cancellationToken)
+    public Task<IdentityUser?> Handle(GetUserQuery request, CancellationToken cancellationToken)
     {
         return _usersRepository.GetUserByIdAsync(request.UserId);
     }

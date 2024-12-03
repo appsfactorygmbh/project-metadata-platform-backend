@@ -3,13 +3,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using ProjectMetadataPlatform.Application.Interfaces;
-using ProjectMetadataPlatform.Domain.User;
+using Microsoft.AspNetCore.Identity;
 
 namespace ProjectMetadataPlatform.Application.Users;
 /// <summary>
 ///    Query for retrieving all users.
 /// </summary>
-public class GetAllUsersQueryHandler : IRequestHandler<GetAllUsersQuery, IEnumerable<User>>
+public class GetAllUsersQueryHandler : IRequestHandler<GetAllUsersQuery, IEnumerable<IdentityUser>>
 {
     private readonly IUsersRepository _usersRepository;
 
@@ -24,7 +24,7 @@ public class GetAllUsersQueryHandler : IRequestHandler<GetAllUsersQuery, IEnumer
     /// <summary>
     ///     Handles the request to retrieve all users.
     /// </summary>
-    public async Task<IEnumerable<User>> Handle(GetAllUsersQuery request, CancellationToken cancellationToken)
+    public async Task<IEnumerable<IdentityUser>> Handle(GetAllUsersQuery request, CancellationToken cancellationToken)
     {
         return await _usersRepository.GetAllUsersAsync();
     }

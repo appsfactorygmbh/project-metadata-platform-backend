@@ -39,7 +39,7 @@ public class AuthController : ControllerBase
     [HttpPost("basic")]
     public async Task<ActionResult<LoginResponse>> Post([FromBody] LoginRequest request)
     {
-        var query = new LoginQuery(request.Username, request.Password);
+        var query = new LoginQuery(request.Email, request.Password);
         try
         {
             var tokens = await _mediator.Send(query);
@@ -91,7 +91,6 @@ public class AuthController : ControllerBase
             Console.WriteLine(e.StackTrace);
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
-
 
     }
 

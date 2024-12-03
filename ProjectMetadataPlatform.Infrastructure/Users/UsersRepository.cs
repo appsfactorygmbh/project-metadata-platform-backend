@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using ProjectMetadataPlatform.Application.Interfaces;
-using ProjectMetadataPlatform.Domain.User;
 using ProjectMetadataPlatform.Infrastructure.DataAccess;
 using Microsoft.AspNetCore.Identity;
 using System.Globalization;
@@ -14,16 +13,16 @@ namespace ProjectMetadataPlatform.Infrastructure.Users;
 /// <summary>
 ///     The repository for users that handles the data access.
 /// </summary>
-public class UsersRepository : RepositoryBase<User>, IUsersRepository
+public class UsersRepository : RepositoryBase<IdentityUser>, IUsersRepository
 {
-    private readonly UserManager<User> _userManager;
+    private readonly UserManager<IdentityUser> _userManager;
     private readonly ProjectMetadataPlatformDbContext _context;
     /// <summary>
     ///     Initializes a new instance of the <see cref="UsersRepository" /> class.
     /// </summary>
     /// <param name="dbContext">The database context for accessing project data.</param>
     /// <param name="userManager">Manager for users of the type user.</param>
-    public UsersRepository(ProjectMetadataPlatformDbContext dbContext,UserManager<User> userManager) : base(dbContext)
+    public UsersRepository(ProjectMetadataPlatformDbContext dbContext,UserManager<IdentityUser> userManager) : base(dbContext)
     {
         _userManager = userManager;
         _context = dbContext;
@@ -33,19 +32,19 @@ public class UsersRepository : RepositoryBase<User>, IUsersRepository
     ///     Asynchronously retrieves all projects from the database.
     /// </summary>
     /// <returns>A task representing the asynchronous operation. When this task completes, it returns a collection of projects.</returns>
-    public async Task<IEnumerable<User>> GetAllUsersAsync()
+    public async Task<IEnumerable<IdentityUser>> GetAllUsersAsync()
     {
         return await GetEverything().ToListAsync();
     }
 
     /// <summary>
-    /// Returns the user with the given username.
+    /// Returns the user with the given email.
     /// </summary>
-    /// <param name="userName">The username of the user to be searched for.</param>
-    /// <returns>The user with the specified username, or null if not found.</returns>
-    public Task<User?> GetUserByUserNameAsync(string userName)
+    /// <param name="email">The email of the user to be searched for.</param>
+    /// <returns>The user with the specified email, or null if not found.</returns>
+    public Task<IdentityUser?> GetUserByEmailAsync(string email)
     {
-        return _userManager.FindByNameAsync(userName);
+        return _userManager.FindByEmailAsync(email);
     }
 
     /// <summary>
@@ -54,7 +53,7 @@ public class UsersRepository : RepositoryBase<User>, IUsersRepository
     /// <param name="user">User to be created.</param>
     /// <param name="password">Password of the user.</param>
     /// <returns>Id of the created User.</returns>
-    public async Task<string> CreateUserAsync(User user, string password)
+    public async Task<string> CreateUserAsync(IdentityUser user, string password)
     {
         var userIds = await _context.Users
             .Select(u => u.Id)
@@ -68,8 +67,9 @@ public class UsersRepository : RepositoryBase<User>, IUsersRepository
         user.Id = (maxId + 1).ToString(CultureInfo.InvariantCulture);
 
         var identityResult = await _userManager.CreateAsync(user, password);
-
-        return !identityResult.Succeeded ? throw new ArgumentException("User creation " + identityResult) : user.Id;
+        return identityResult.Errors.Any(e => e.Code == "DuplicateUserName")
+            ? throw new ArgumentException("User creation Failed : DuplicateEmail")
+            : !identityResult.Succeeded ? throw new ArgumentException("User creation " + identityResult) : user.Id;
     }
 
     /// <summary>
@@ -77,7 +77,7 @@ public class UsersRepository : RepositoryBase<User>, IUsersRepository
     /// </summary>
     /// <param name="id">The unique identifier of the user.</param>
     /// <returns>The user with the specified identifier, or null if not found.</returns>
-    public Task<User?> GetUserByIdAsync(string id)
+    public Task<IdentityUser?> GetUserByIdAsync(string id)
     {
         return _userManager.FindByIdAsync(id);
     }
@@ -87,16 +87,9 @@ public class UsersRepository : RepositoryBase<User>, IUsersRepository
     /// </summary>
     /// <param name="user">The user to be stored.</param>
     /// <returns>The stored user.</returns>
-    public async Task<User> StoreUser(User user)
+    public async Task<IdentityUser> StoreUser(IdentityUser user)
     {
-        if (user.Id == "")
-        {
-            await _userManager.CreateAsync(user);
-        }
-        else
-        {
-            await _userManager.UpdateAsync(user);
-        }
+        _ = user.Id == "" ? await _userManager.CreateAsync(user) : await _userManager.UpdateAsync(user);
 
         return user;
     }
@@ -106,7 +99,7 @@ public class UsersRepository : RepositoryBase<User>, IUsersRepository
     /// </summary>
     /// <param name="user">The user to be deleted.</param>
     /// <returns>The task result contains the deleted user.</returns>
-    public async Task<User> DeleteUserAsync(User user)
+    public async Task<IdentityUser> DeleteUserAsync(IdentityUser user)
     {
         var task = await _userManager.DeleteAsync(user);
         return !task.Succeeded ? throw new ArgumentException("User deletion failed. With id " + user.Id + task) : user;

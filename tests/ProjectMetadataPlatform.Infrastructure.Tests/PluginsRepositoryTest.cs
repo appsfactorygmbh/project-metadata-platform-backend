@@ -92,7 +92,9 @@ public class PluginsRepositoryTest : TestsWithDatabase
 
         Plugin pluginOne = await _repository.StorePlugin(pluginMethane);
         Plugin pluginTwo = await _repository.StorePlugin(pluginOxygen);
+        await _context.SaveChangesAsync();
 
+        _context.SaveChangesAsync();
         Assert.Multiple(() =>
         {
             Assert.That(pluginOne, Is.Not.Null);
@@ -382,8 +384,6 @@ public class PluginsRepositoryTest : TestsWithDatabase
 
         Assert.That(ex.Message, Is.EqualTo("Project with Id 999 does not exist."));
     }
-
-
 
 
 }

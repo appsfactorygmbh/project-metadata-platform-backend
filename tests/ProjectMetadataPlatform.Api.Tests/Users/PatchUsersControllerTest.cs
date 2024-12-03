@@ -2,13 +2,13 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Api.Users;
 using ProjectMetadataPlatform.Api.Users.Models;
 using ProjectMetadataPlatform.Application.Users;
-using ProjectMetadataPlatform.Domain.User;
 
 namespace ProjectMetadataPlatform.Api.Tests.Users;
 
@@ -26,11 +26,9 @@ public class PatchUsersControllerTest
     [Test]
     public async Task PatchUser_Test()
     {
-        var user = new User
+        var user = new IdentityUser
         {
             Id = "42",
-            Name = "Dr. Peacock",
-            UserName = "CC BY-NC",
             Email = "dr@core.fr",
             PasswordHash = "someHash"
         };
@@ -46,8 +44,6 @@ public class PatchUsersControllerTest
         Assert.Multiple(() =>
         {
             Assert.That(resultValue, Is.Not.Null);
-            Assert.That(resultValue!.Username, Is.EqualTo("CC BY-NC"));
-            Assert.That(resultValue.Name, Is.EqualTo("Dr. Peacock"));
             Assert.That(resultValue.Email, Is.EqualTo("dr@core.fr"));
             Assert.That(resultValue.Id, Is.EqualTo("42"));
         });
@@ -56,7 +52,7 @@ public class PatchUsersControllerTest
     [Test]
     public async Task PatchUser_NotFound_Test()
     {
-        _mediator.Setup(m => m.Send(It.IsAny<PatchUserCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync((User)null!);
+        _mediator.Setup(m => m.Send(It.IsAny<PatchUserCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync((IdentityUser)null!);
 
         var request = new PatchUserRequest(null, "Black Midi");
 

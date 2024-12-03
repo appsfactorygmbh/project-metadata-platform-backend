@@ -3,13 +3,13 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Api.Users;
 using ProjectMetadataPlatform.Api.Users.Models;
 using ProjectMetadataPlatform.Application.Users;
-using ProjectMetadataPlatform.Domain.User;
 
 namespace ProjectMetadataPlatform.Api.Tests.Users;
 
@@ -26,11 +26,11 @@ public class GetMeControllerTest
     [Test]
     public async Task getMe_Test()
     {
-        var user = new User{Id = "42", Name = "Gru", UserName = "moonstealer", Email = "moonstealer@gruhq.com"};
+        var user = new IdentityUser{Id = "42", Email = "moonstealer@gruhq.com"};
 
-        _mediator.Setup(m => m.Send(It.IsAny<GetUserByUserNameQuery>(), It.IsAny<System.Threading.CancellationToken>()))
+        _mediator.Setup(m => m.Send(It.IsAny<GetUserByEmailQuery>(), It.IsAny<System.Threading.CancellationToken>()))
             .ReturnsAsync(user);
-        var controller = new UsersController(_mediator.Object, MockHttpContextAccessor("moonstealer"));
+        var controller = new UsersController(_mediator.Object, MockHttpContextAccessor("moonstealer@gruhq.com"));
 
         var result = await controller.GetMe();
         var okResult = result.Result as OkObjectResult;
@@ -41,8 +41,6 @@ public class GetMeControllerTest
         Assert.Multiple(() =>
         {
             Assert.That(response.Id, Is.EqualTo("42"));
-            Assert.That(response.Name, Is.EqualTo("Gru"));
-            Assert.That(response.Username, Is.EqualTo("moonstealer"));
             Assert.That(response.Email, Is.EqualTo("moonstealer@gruhq.com"));
         });
     }
@@ -50,8 +48,8 @@ public class GetMeControllerTest
     [Test]
     public async Task getMe_Test_NotFound()
     {
-        _mediator.Setup(m => m.Send(It.IsAny<GetUserByUserNameQuery>(), It.IsAny<System.Threading.CancellationToken>()))
-            .ReturnsAsync((User)null!);
+        _mediator.Setup(m => m.Send(It.IsAny<GetUserByEmailQuery>(), It.IsAny<System.Threading.CancellationToken>()))
+            .ReturnsAsync((IdentityUser)null!);
         var controller = new UsersController(_mediator.Object, MockHttpContextAccessor("moonstealer"));
 
         var result = await controller.GetMe();
@@ -63,7 +61,7 @@ public class GetMeControllerTest
     [Test]
     public async Task getMe_Test_InternalError()
     {
-        _mediator.Setup(m => m.Send(It.IsAny<GetUserByUserNameQuery>(), It.IsAny<System.Threading.CancellationToken>()))
+        _mediator.Setup(m => m.Send(It.IsAny<GetUserByEmailQuery>(), It.IsAny<System.Threading.CancellationToken>()))
             .ThrowsAsync(new InvalidOperationException("Internal error"));
         var controller = new UsersController(_mediator.Object, MockHttpContextAccessor("Dr. Nefario"));
 
@@ -87,16 +85,16 @@ public class GetMeControllerTest
         Assert.That(unauthorizedResult.StatusCode, Is.EqualTo(401));
     }
 
-    private static HttpContextAccessor MockHttpContextAccessor(string? username)
+    private static HttpContextAccessor MockHttpContextAccessor(string? email)
     {
-        if (username == null)
+        if (email == null)
         {
             return new HttpContextAccessor
             {
                 HttpContext = null
             };
         }
-        var claims = new System.Collections.Generic.List<Claim> { new(ClaimTypes.Name, username) };
+        var claims = new System.Collections.Generic.List<Claim> { new(ClaimTypes.Email, email) };
         var identity = new ClaimsIdentity(claims, "TestAuthType");
         var claimsPrincipal = new ClaimsPrincipal(identity);
 

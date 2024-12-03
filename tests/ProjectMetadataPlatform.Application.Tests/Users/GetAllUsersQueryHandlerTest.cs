@@ -2,11 +2,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Moq;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Application.Users;
-using ProjectMetadataPlatform.Domain.User;
 
 namespace ProjectMetadataPlatform.Application.Tests.Users;
 
@@ -27,11 +27,11 @@ public class GetAllUsersQueryHandlerTest
     {
         _mockUserRepo.Setup(m => m.GetAllUsersAsync()).ReturnsAsync([]);
         var request = new GetAllUsersQuery();
-        IEnumerable<User> result = await _handler.Handle(request, It.IsAny<CancellationToken>());
+        IEnumerable<IdentityUser> result = await _handler.Handle(request, It.IsAny<CancellationToken>());
 
-        User[] resultArray = result as User[] ?? result.ToArray();
+        IdentityUser[] resultArray = result as IdentityUser[] ?? result.ToArray();
         Assert.That(resultArray, Is.Not.Null);
-        Assert.That(resultArray, Is.InstanceOf<IEnumerable<User>>());
+        Assert.That(resultArray, Is.InstanceOf<IEnumerable<IdentityUser>>());
 
         Assert.That(resultArray, Has.Length.EqualTo(0));
     }
@@ -39,12 +39,12 @@ public class GetAllUsersQueryHandlerTest
     [Test]
     public async Task HandleGetAllUsersRequest_Test()
     {
-        var usersResponseContent = new List<User>
+        var usersResponseContent = new List<IdentityUser>
         {
             new()
             {
                 Id = "1",
-                Name = "Hinz"
+                Email = "Hinz"
             }
         };
 
@@ -53,14 +53,14 @@ public class GetAllUsersQueryHandlerTest
         var result = (await _handler.Handle(request, It.IsAny<CancellationToken>())).ToList();
 
         Assert.That(result, Is.Not.Null);
-        Assert.That(result, Is.InstanceOf<IEnumerable<User>>());
+        Assert.That(result, Is.InstanceOf<IEnumerable<IdentityUser>>());
 
-        User[] resultArray = result.ToArray();
+        IdentityUser[] resultArray = result.ToArray();
         Assert.That(resultArray, Has.Length.EqualTo(1));
         Assert.Multiple((() =>
         {
             Assert.That(resultArray[0].Id, Is.EqualTo("1"));
-            Assert.That(resultArray[0].Name, Is.EqualTo("Hinz"));
+            Assert.That(resultArray[0].Email, Is.EqualTo("Hinz"));
         }));
     }
 }

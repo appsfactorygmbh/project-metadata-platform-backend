@@ -8,10 +8,10 @@ using Moq;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Api.Users;
 using ProjectMetadataPlatform.Application.Users;
-using ProjectMetadataPlatform.Domain.User;
 using ProjectMetadataPlatform.Api.Users.Models;
 using System;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 
 namespace ProjectMetadataPlatform.Api.Tests.Users;
 
@@ -31,18 +31,18 @@ public class GetAllUsersControllerTest
     [Test]
     public async Task Get_ReturnsAllUsers()
     {
-        var users = new List<User>
+        var users = new List<IdentityUser>
         {
-            new User
+            new IdentityUser
             {
                 Id = "1",
-                Name = "Hinz",
-                UserName = "und"
+                Email = "Hinz",
+
             },
-            new User
+            new IdentityUser
             {
                 Id = "2",
-                Name = "Kunz"
+                Email = "Kunz"
             }
         };
         _mediator.Setup(m => m.Send(It.IsAny<GetAllUsersQuery>(), It.IsAny<CancellationToken>()))
@@ -53,17 +53,16 @@ public class GetAllUsersControllerTest
         var okResult = result.Result as OkObjectResult;
         Assert.That(okResult, Is.Not.Null);
         Assert.That(okResult.StatusCode, Is.EqualTo(200));
-        var response = okResult.Value as IEnumerable<GetAllUsersResponse>;
+        var response = okResult.Value as IEnumerable<GetUserResponse>;
         Assert.That(response, Is.Not.Null);
         Assert.Multiple((() =>
         {
             Assert.That(response.Count(), Is.EqualTo(2));
             Assert.That(response.ElementAt(0).Id, Is.EqualTo("1"));
-            Assert.That(response.ElementAt(0).Name, Is.EqualTo("Hinz"));
-            Assert.That(response.ElementAt(0).Username, Is.EqualTo("und"));
+            Assert.That(response.ElementAt(0).Email, Is.EqualTo("Hinz"));
             Assert.That(response.ElementAt(1).Id, Is.EqualTo("2"));
-            Assert.That(response.ElementAt(1).Name, Is.EqualTo("Kunz"));
-            Assert.That(response.ElementAt(1).Username, Is.EqualTo(""));
+            Assert.That(response.ElementAt(1).Email, Is.EqualTo("Kunz"));
+
         }));
     }
 
@@ -71,14 +70,14 @@ public class GetAllUsersControllerTest
     public async Task Get_ReturnsEmptyList()
     {
         _mediator.Setup(m => m.Send(It.IsAny<GetAllUsersQuery>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<User>());
+            .ReturnsAsync(new List<IdentityUser>());
 
         var result = await _controller.Get();
 
         var okResult = result.Result as OkObjectResult;
         Assert.That(okResult, Is.Not.Null);
         Assert.That(okResult.StatusCode, Is.EqualTo(200));
-        var response = okResult.Value as IEnumerable<GetAllUsersResponse>;
+        var response = okResult.Value as IEnumerable<GetUserResponse>;
         Assert.That(response, Is.Not.Null);
         Assert.That(response.Count(), Is.EqualTo(0));
     }

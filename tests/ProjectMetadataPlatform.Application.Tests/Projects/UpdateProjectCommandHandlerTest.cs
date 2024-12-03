@@ -341,8 +341,8 @@ public class UpdateProjectCommandHandlerTest
 
         await _handler.Handle(updateCommand, CancellationToken.None);
 
-        _mockLogRepository.Verify(logRepo => logRepo.AddLogForCurrentUser(
-            project.Id,
+        _mockLogRepository.Verify(logRepo => logRepo.AddProjectLogForCurrentUser(
+            project,
             Action.UPDATED_PROJECT,
             It.Is<List<LogChange>>(changes =>
                 changes.Count == 5 &&
@@ -385,8 +385,8 @@ public class UpdateProjectCommandHandlerTest
 
         await _handler.Handle(updateCommand, CancellationToken.None);
 
-        _mockLogRepository.Verify(logRepo => logRepo.AddLogForCurrentUser(
-            It.IsAny<int>(),
+        _mockLogRepository.Verify(logRepo => logRepo.AddProjectLogForCurrentUser(
+            It.IsAny<Project>(),
             It.IsAny<Action>(),
             It.IsAny<List<LogChange>>()
         ), Times.Never);
@@ -422,8 +422,8 @@ public class UpdateProjectCommandHandlerTest
 
         await _handler.Handle(updateCommand, CancellationToken.None);
 
-        _mockLogRepository.Verify(logRepo => logRepo.AddLogForCurrentUser(
-            project.Id,
+        _mockLogRepository.Verify(logRepo => logRepo.AddProjectLogForCurrentUser(
+            project,
             Action.UPDATED_PROJECT,
             It.Is<List<LogChange>>(changes =>
                 changes.Count == 2 &&
@@ -460,8 +460,8 @@ public class UpdateProjectCommandHandlerTest
 
         _mockProjectRepo.Setup(repo => repo.GetProjectWithPluginsAsync(project.Id)).ReturnsAsync(project);
 
-        _mockLogRepository.Setup(logRepo => logRepo.AddLogForCurrentUser(
-            It.IsAny<int>(),
+        _mockLogRepository.Setup(logRepo => logRepo.AddProjectLogForCurrentUser(
+            It.IsAny<Project>(),
             It.IsAny<Action>(),
             It.IsAny<List<LogChange>>()
         )).Throws(new Exception("Logging error"));
@@ -471,8 +471,8 @@ public class UpdateProjectCommandHandlerTest
         );
         Assert.That(exception.Message, Is.EqualTo("Logging error"));
 
-        _mockLogRepository.Verify(logRepo => logRepo.AddLogForCurrentUser(
-            It.IsAny<int>(),
+        _mockLogRepository.Verify(logRepo => logRepo.AddProjectLogForCurrentUser(
+            It.IsAny<Project>(),
             It.IsAny<Action>(),
             It.IsAny<List<LogChange>>()
         ), Times.Once);
@@ -510,8 +510,8 @@ public class UpdateProjectCommandHandlerTest
 
         Assert.That(project.IsArchived, Is.True);
 
-        _mockLogRepository.Verify(logRepo => logRepo.AddLogForCurrentUser(
-            project.Id,
+        _mockLogRepository.Verify(logRepo => logRepo.AddProjectLogForCurrentUser(
+            project,
             Action.ARCHIVED_PROJECT,  // Expect Action.ARCHIVED_PROJECT since the project was archived
             It.Is<List<LogChange>>(changes =>
                 changes.Count == 1 &&
@@ -555,8 +555,8 @@ public class UpdateProjectCommandHandlerTest
 
         Assert.That(project.IsArchived, Is.False);
 
-        _mockLogRepository.Verify(logRepo => logRepo.AddLogForCurrentUser(
-            project.Id,
+        _mockLogRepository.Verify(logRepo => logRepo.AddProjectLogForCurrentUser(
+            project,
             Action.UNARCHIVED_PROJECT,
             It.Is<List<LogChange>>(changes =>
                 changes.Count == 1 &&
@@ -599,11 +599,219 @@ public class UpdateProjectCommandHandlerTest
 
         Assert.That(project.IsArchived, Is.True);
 
-        _mockLogRepository.Verify(logRepo => logRepo.AddLogForCurrentUser(
-            project.Id,
+        _mockLogRepository.Verify(logRepo => logRepo.AddProjectLogForCurrentUser(
+            project,
             Action.UPDATED_PROJECT,
             It.IsAny<List<LogChange>>()
         ), Times.Never);
     }
 
+    [Test]
+    public async Task LogsWhenProjectPluginIsRemoved()
+    {
+        var project = new Project
+        {
+            Id = 1,
+            ProjectName = "Test Project",
+            ClientName = "Test Client",
+            BusinessUnit = "Test Unit",
+            TeamNumber = 1,
+            Department = "Test Department",
+            ProjectPlugins = new List<ProjectPlugins>
+            {
+                new ProjectPlugins
+                {
+                    PluginId = 1,
+                    Url = "http://example.com",
+                    DisplayName = "Example Plugin"
+                }
+            },
+            IsArchived = false
+        };
+
+        var updateCommand = new UpdateProjectCommand(
+            project.ProjectName,
+            project.BusinessUnit,
+            project.TeamNumber,
+            project.Department,
+            project.ClientName,
+            project.Id,
+            new List<ProjectPlugins>(),
+            false
+        );
+
+        _mockProjectRepo.Setup(repo => repo.GetProjectWithPluginsAsync(project.Id)).ReturnsAsync(project);
+
+        await _handler.Handle(updateCommand, CancellationToken.None);
+
+        _mockLogRepository.Verify(logRepo => logRepo.AddProjectLogForCurrentUser(
+            project,
+            Action.REMOVED_PROJECT_PLUGIN,
+            It.Is<List<LogChange>>(changes =>
+                changes.Any(change => change.Property == "PluginId" && change.OldValue == "1" && change.NewValue == String.Empty) &&
+                changes.Any(change => change.Property == "Url" && change.OldValue == "http://example.com" && change.NewValue == String.Empty) &&
+                changes.Any(change => change.Property == "DisplayName" && change.OldValue == "Example Plugin" && change.NewValue == String.Empty)
+            )
+        ), Times.Once);
+    }
+
+    [Test]
+    public async Task LogsWhenProjectPluginIsAdded()
+    {
+        var project = new Project
+        {
+            Id = 1,
+            ProjectName = "Test Project",
+            ClientName = "Test Client",
+            BusinessUnit = "Test Unit",
+            TeamNumber = 1,
+            Department = "Test Department",
+            ProjectPlugins = new List<ProjectPlugins>(),
+            IsArchived = false
+        };
+
+        var updateCommand = new UpdateProjectCommand(
+            project.ProjectName,
+            project.BusinessUnit,
+            project.TeamNumber,
+            project.Department,
+            project.ClientName,
+            project.Id,
+            new List<ProjectPlugins>
+            {
+                new ProjectPlugins
+                {
+                    PluginId = 1,
+                    Url = "http://example.com",
+                    DisplayName = "Example Plugin"
+                }
+            },
+            false
+        );
+
+        _mockProjectRepo.Setup(repo => repo.GetProjectWithPluginsAsync(project.Id)).ReturnsAsync(project);
+        _mockPluginRepo.Setup(repo => repo.CheckPluginExists(1)).ReturnsAsync(true);
+
+        await _handler.Handle(updateCommand, CancellationToken.None);
+
+        _mockLogRepository.Verify(logRepo => logRepo.AddProjectLogForCurrentUser(
+            project,
+            Action.ADDED_PROJECT_PLUGIN,
+            It.Is<List<LogChange>>(changes =>
+                changes.Any(change => change.Property == "PluginId" && change.OldValue == String.Empty && change.NewValue == "1") &&
+                changes.Any(change => change.Property == "Url" && change.OldValue == String.Empty && change.NewValue == "http://example.com") &&
+                changes.Any(change => change.Property == "DisplayName" && change.OldValue == String.Empty && change.NewValue == "Example Plugin")
+            )
+        ), Times.Once);
+    }
+
+    [Test]
+    public async Task LogsWhenProjectPluginIsUpdated()
+    {
+        var project = new Project
+        {
+            Id = 1,
+            ProjectName = "Test Project",
+            ClientName = "Test Client",
+            BusinessUnit = "Test Unit",
+            TeamNumber = 1,
+            Department = "Test Department",
+            ProjectPlugins = new List<ProjectPlugins>
+            {
+                new ProjectPlugins
+                {
+                    PluginId = 1,
+                    Url = "http://example.com",
+                    DisplayName = "Example Plugin"
+                }
+            },
+            IsArchived = false
+        };
+
+        var updateCommand = new UpdateProjectCommand(
+            project.ProjectName,
+            project.BusinessUnit,
+            project.TeamNumber,
+            project.Department,
+            project.ClientName,
+            project.Id,
+            new List<ProjectPlugins>
+            {
+                new ProjectPlugins
+                {
+                    PluginId = 1,
+                    Url = "http://example.com",
+                    DisplayName = "Updated Plugin"
+                }
+            },
+            false
+        );
+
+        _mockProjectRepo.Setup(repo => repo.GetProjectWithPluginsAsync(project.Id)).ReturnsAsync(project);
+        _mockPluginRepo.Setup(repo => repo.CheckPluginExists(1)).ReturnsAsync(true);
+
+        await _handler.Handle(updateCommand, CancellationToken.None);
+
+        _mockLogRepository.Verify(logRepo => logRepo.AddProjectLogForCurrentUser(
+            project,
+            Action.UPDATED_PROJECT_PLUGIN,
+            It.Is<List<LogChange>>(changes =>
+                changes.Any(change => change.Property == "DisplayName" && change.OldValue == "Example Plugin" && change.NewValue == "Updated Plugin")
+            )
+        ), Times.Once);
+    }
+
+    [Test]
+    public async Task NoLogsWhenNoProjectPluginChanged()
+    {
+        var project = new Project
+        {
+            Id = 1,
+            ProjectName = "Test Project",
+            ClientName = "Test Client",
+            BusinessUnit = "Test Unit",
+            TeamNumber = 1,
+            Department = "Test Department",
+            ProjectPlugins = new List<ProjectPlugins>
+            {
+                new ProjectPlugins
+                {
+                    PluginId = 1,
+                    Url = "http://example.com",
+                    DisplayName = "Example Plugin"
+                }
+            },
+            IsArchived = false
+        };
+
+        var updateCommand = new UpdateProjectCommand(
+            project.ProjectName,
+            project.BusinessUnit,
+            project.TeamNumber,
+            project.Department,
+            project.ClientName,
+            project.Id,
+            new List<ProjectPlugins>
+            {
+                new ProjectPlugins
+                {
+                    PluginId = 1,
+                    Url = "http://example.com",
+                    DisplayName = "Example Plugin"
+                }
+            },
+            false
+        );
+
+        _mockProjectRepo.Setup(repo => repo.GetProjectWithPluginsAsync(project.Id)).ReturnsAsync(project);
+        _mockPluginRepo.Setup(repo => repo.CheckPluginExists(1)).ReturnsAsync(true);
+
+        await _handler.Handle(updateCommand, CancellationToken.None);
+
+        _mockLogRepository.Verify(logRepo => logRepo.AddProjectLogForCurrentUser(
+            It.IsAny<Project>(),
+            It.IsAny<Action>(),
+            It.IsAny<List<LogChange>>()
+        ), Times.Never);
+    }
 }

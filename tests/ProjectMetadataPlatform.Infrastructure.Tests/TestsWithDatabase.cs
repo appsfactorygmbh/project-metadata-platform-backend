@@ -40,10 +40,12 @@ public class TestsWithDatabase
         var allEntitiesProjects = context.Projects.ToList();
         var allEntitiesProjectsPlugins = context.ProjectPluginsRelation.ToList();
         var allEntitiesLogs = context.Logs.ToList();
+        var allEntitiesUsers = context.Users.ToList();
         context.Plugins.RemoveRange(allEntitiesPlugins);
         context.Projects.RemoveRange(allEntitiesProjects);
         context.ProjectPluginsRelation.RemoveRange(allEntitiesProjectsPlugins);
         context.Logs.RemoveRange(allEntitiesLogs);
+        context.Users.RemoveRange(allEntitiesUsers);
         context.SaveChanges();
     }
 

@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using ProjectMetadataPlatform.Domain.Logs;
+using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.Projects;
 
 namespace ProjectMetadataPlatform.Application.Interfaces;
@@ -10,24 +12,32 @@ namespace ProjectMetadataPlatform.Application.Interfaces;
 /// </summary>
 public interface ILogRepository
 {
+    /// <summary>
+    /// Adds Logs for changes made to a project. Sets the current User as the Author.
+    /// </summary>
+    /// <param name="project">The Project changes were made to.</param>
+    /// <param name="action">The type of change that was made.</param>
+    /// <param name="changes">A list of the changed properties.</param>
+    /// <returns></returns>
+    Task AddProjectLogForCurrentUser(Project  project, Action action, List<LogChange> changes);
 
     /// <summary>
-    ///     Adds new log for user.
+    /// Adds Logs for changes made to a User. Sets the current User as the Author.
     /// </summary>
-    /// <param name="projectId"></param>
-    /// <param name="action"></param>
-    /// <param name="changes"></param>
+    /// <param name="affectedUser">The User changes were made to.</param>
+    /// <param name="action">The type of change that was made.</param>
+    /// <param name="changes">A list of the changed properties.</param>
     /// <returns></returns>
-    Task AddLogForCurrentUser(int  projectId, Action action, List<LogChange> changes);
+    Task AddUserLogForCurrentUser(IdentityUser affectedUser, Action action, List<LogChange> changes);
 
     /// <summary>
-    ///     Adds new log for user. Uses a project object instead of a project id.
+    /// Adds Logs for changes made to a GlobalPlugin. Sets the current User as the Author.
     /// </summary>
-    /// <param name="project"></param>
-    /// <param name="action"></param>
-    /// <param name="changes"></param>
+    /// <param name="globalPlugin">The GlobalPlugin changes were made to.</param>
+    /// <param name="action">The type of change that was made.</param>
+    /// <param name="changes">A list of the changed properties.</param>
     /// <returns></returns>
-    Task AddLogForCurrentUser(Project  project, Action action, List<LogChange> changes);
+    Task AddGlobalPluginLogForCurrentUser(Plugin globalPlugin, Action action, List<LogChange> changes);
 
     /// <summary>
     /// Retrieves the logs for a specific project.
@@ -42,6 +52,20 @@ public interface ILogRepository
     /// <param name="search">The search term to filter logs.</param>
     /// <returns>A list of logs that match the search term.</returns>
     Task<List<Log>> GetLogsWithSearch(string search);
+
+    /// <summary>
+    /// Retrieves the logs for a specific project.
+    /// </summary>
+    /// <param name="userId">The unique identifier of the user.</param>
+    /// <returns> A list of logs associated with the specified user.</returns>
+    Task<List<Log>> GetLogsForUser(string userId);
+
+    /// <summary>
+    /// Retrieves the logs for a specific project.
+    /// </summary>
+    /// <param name="globalPluginId">The unique identifier of the global plugin.</param>
+    /// <returns> A list of logs associated with the specified global plugin.</returns>
+    Task<List<Log>> GetLogsForGlobalPlugin(int globalPluginId);
 
     /// <summary>
     /// Retrieves all logs from the database.

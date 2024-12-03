@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ProjectMetadataPlatform.Api.Users.Models;
 using ProjectMetadataPlatform.Application.Users;
-using ProjectMetadataPlatform.Domain.User;
+using Microsoft.AspNetCore.Identity;
 
 namespace ProjectMetadataPlatform.Api.Users;
 
@@ -48,15 +48,12 @@ public class UsersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<CreateUserResponse>> Put([FromBody] CreateUserRequest request)
     {
-        if (string.IsNullOrWhiteSpace(request.Name)
-            || string.IsNullOrWhiteSpace(request.Username)
-            || string.IsNullOrWhiteSpace(request.Email)
-            || string.IsNullOrWhiteSpace(request.Password))
+        if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
         {
-            return BadRequest("name, username, email and password must not be empty.");
+            return BadRequest("email and password can't be empty.");
         }
 
-        var command = new CreateUserCommand(request.Username, request.Name, request.Email, request.Password);
+        var command = new CreateUserCommand( request.Email, request.Password);
         string id;
         try
         {
@@ -85,10 +82,10 @@ public class UsersController : ControllerBase
     /// <response code="200">The users are returned successfully.</response>
     /// <response code="500">An internal error occurred.</response>
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<GetAllUsersResponse>>> Get()
+    public async Task<ActionResult<IEnumerable<GetUserResponse>>> Get()
     {
         var query = new GetAllUsersQuery();
-        IEnumerable<User> users;
+        IEnumerable<IdentityUser> users;
         try
         {
             users = await _mediator.Send(query);
@@ -100,10 +97,9 @@ public class UsersController : ControllerBase
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
 
-        IEnumerable<GetAllUsersResponse> response = users.Select(user => new GetAllUsersResponse(
+        IEnumerable<GetUserResponse> response = users.Select(user => new GetUserResponse(
             user.Id,
-            user.Name,
-            user.UserName ?? ""
+            user.Email ?? ""
             ));
         return Ok(response);
     }
@@ -120,7 +116,7 @@ public class UsersController : ControllerBase
     public async Task<ActionResult<GetUserResponse>> GetUserById(string userId)
     {
         var query = new GetUserQuery(userId);
-        User? user;
+        IdentityUser? user;
         try
         {
             user = await _mediator.Send(query);
@@ -139,8 +135,6 @@ public class UsersController : ControllerBase
 
         var response = new GetUserResponse(
             user.Id,
-            user.UserName ?? "",
-            user.Name ?? "",
             user.Email ?? ""
             );
         return Ok(response);
@@ -158,9 +152,9 @@ public class UsersController : ControllerBase
     [HttpPatch("{userId}")]
     public async Task<ActionResult<GetUserResponse>> Patch(string userId, [FromBody] PatchUserRequest request)
     {
-        var command = new PatchUserCommand(userId, request.Username, request.Name, request.Email, request.Password);
+        var command = new PatchUserCommand(userId, request.Email, request.Password);
 
-        User? user;
+        IdentityUser? user;
         try
         {
             user = await _mediator.Send(command);
@@ -178,10 +172,9 @@ public class UsersController : ControllerBase
             return NotFound("No user with id " + userId + " was found.");
         }
 
-        var response = new GetUserResponse(user.Id, user.UserName ?? "", user.Name, user.Email ?? "");
+        var response = new GetUserResponse(user.Id,  user.Email ?? "");
         return Ok(response);
     }
-
 
     /// <summary>
     ///    Gets the current authenticated user's information.
@@ -194,16 +187,16 @@ public class UsersController : ControllerBase
     [HttpGet("Me")]
     public async Task<ActionResult<GetUserResponse>> GetMe()
     {
-        var username = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Name)?.Value;
+        var email = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.Email);
 
-        if (username == null)
+        if (email == null)
         {
             return Unauthorized("User not authenticated.");
         }
 
-        var query = new GetUserByUserNameQuery(username);
+        var query = new GetUserByEmailQuery(email);
 
-        User? user;
+        IdentityUser? user;
         try
         {
             user = await _mediator.Send(query);
@@ -219,7 +212,7 @@ public class UsersController : ControllerBase
             return NotFound("User not found.");
         }
 
-        var response = new GetUserResponse(user.Id, user.UserName ?? "", user.Name ?? "", user.Email ?? "");
+        var response = new GetUserResponse(user.Id,  user.Email ?? "");
         return Ok(response);
     }
 
@@ -236,7 +229,7 @@ public class UsersController : ControllerBase
     public async Task<ActionResult> Delete(string userId)
     {
         var command = new DeleteUserCommand(userId);
-        User? user;
+        IdentityUser? user;
         try
         {
             user = await _mediator.Send(command);

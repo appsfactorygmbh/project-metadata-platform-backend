@@ -1,11 +1,11 @@
 using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Api.Logs;
 using ProjectMetadataPlatform.Api.Logs.Models;
 using ProjectMetadataPlatform.Domain.Logs;
 using ProjectMetadataPlatform.Domain.Projects;
-using ProjectMetadataPlatform.Domain.User;
 using Action = ProjectMetadataPlatform.Domain.Logs.Action;
 
 namespace ProjectMetadataPlatform.Api.Tests.Logs;
@@ -29,7 +29,7 @@ public class LogConverterTest
             TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
             AuthorId = "42",
             AuthorEmail = "Slartibartfast",
-            Author = new User { Email = "Slartibartfast" },
+            Author = new IdentityUser { Email = "Slartibartfast" },
             ProjectId = 43,
             Action = Action.UPDATED_PROJECT,
             Changes =
@@ -57,7 +57,7 @@ public class LogConverterTest
             TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
             AuthorId = "43",
             AuthorEmail = "Deep Thought",
-            Author = new User { Email = "Deep Thought" },
+            Author = new IdentityUser { Email = "Deep Thought" },
             ProjectId = 44,
             Project = new Project
             {
@@ -88,7 +88,7 @@ public class LogConverterTest
             TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
             AuthorId = "44",
             AuthorEmail = "Infinite Improbability Drive",
-            Author = new User { Email = "Infinite Improbability Drive" },
+            Author = new IdentityUser { Email = "Infinite Improbability Drive" },
             ProjectId = 45,
             Project = new Project
             {
@@ -123,7 +123,7 @@ public class LogConverterTest
             TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
             AuthorId = "45",
             AuthorEmail = "Ground",
-            Author = new User { Email = "Ground" },
+            Author = new IdentityUser { Email = "Ground" },
             ProjectId = 46,
             Project = new Project
             {
@@ -158,7 +158,7 @@ public class LogConverterTest
             TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
             AuthorId = "46",
             AuthorEmail = "Prostetnic Vogon Jeltz",
-            Author = new User { Email = "Prostetnic Vogon Jeltz" },
+            Author = new IdentityUser { Email = "Prostetnic Vogon Jeltz" },
             ProjectId = 47,
             Project = new Project
             {
@@ -193,7 +193,7 @@ public class LogConverterTest
             TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
             AuthorId = "47",
             AuthorEmail = "Earth",
-            Author = new User { Email = "Earth" },
+            Author = new IdentityUser { Email = "Earth" },
             ProjectId = 48,
             Project = new Project
             {
@@ -251,7 +251,7 @@ public class LogConverterTest
             TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
             AuthorId = "42",
             AuthorEmail = "Infinite Improbability Drive",
-            Author = new User { Email = "Infinite Improbability Drive" },
+            Author = new IdentityUser { Email = "Infinite Improbability Drive" },
             Action = Action.ADDED_USER,
             Changes =
             [
@@ -277,7 +277,7 @@ public class LogConverterTest
             TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
             AuthorId = "42",
             AuthorEmail = "Gandalf",
-            Author = new User { Email = "Gandalf" },
+            Author = new IdentityUser { Email = "Gandalf" },
             Action = Action.UPDATED_USER,
             Changes =
             [
@@ -303,7 +303,7 @@ public class LogConverterTest
             TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
             AuthorId = "42",
             AuthorEmail = "Ground",
-            Author = new User { Email = "Ground" },
+            Author = new IdentityUser { Email = "Ground" },
             Action = Action.REMOVED_USER,
             AffectedUserEmail = "whale@air.com",
             Changes =
@@ -330,7 +330,7 @@ public class LogConverterTest
             TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
             AuthorId = "42",
             AuthorEmail = "Luke Skywalker",
-            Author = new User { Email = "Luke Skywalker" },
+            Author = new IdentityUser { Email = "Luke Skywalker" },
             Action = Action.REMOVED_PROJECT,
             ProjectName = "DeathStar",
         };
@@ -353,7 +353,7 @@ public class LogConverterTest
             TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
             AuthorId = "42",
             AuthorEmail = "Chancellor Palpatine",
-            Author = new User { Email = "Chancellor Palpatine" },
+            Author = new IdentityUser { Email = "Chancellor Palpatine" },
             Action = Action.ADDED_GLOBAL_PLUGIN,
             Changes =
             [
@@ -379,7 +379,7 @@ public class LogConverterTest
             TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
             AuthorId = "42",
             AuthorEmail = "Darth Sidious",
-            Author = new User { Email = "Darth Sidious" },
+            Author = new IdentityUser { Email = "Darth Sidious" },
             Action = Action.UPDATED_GLOBAL_PLUGIN,
             Changes =
             [
@@ -405,7 +405,7 @@ public class LogConverterTest
             TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
             AuthorId = "42",
             AuthorEmail = "Zip",
-            Author = new User { Email = "Zip" },
+            Author = new IdentityUser { Email = "Zip" },
             Action = Action.ARCHIVED_GLOBAL_PLUGIN,
             GlobalPluginName = "Directory",
         };
@@ -428,7 +428,7 @@ public class LogConverterTest
             TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
             AuthorId = "42",
             AuthorEmail = "Unzip",
-            Author = new User { Email = "Unzip" },
+            Author = new IdentityUser { Email = "Unzip" },
             Action = Action.UNARCHIVED_GLOBAL_PLUGIN,
             GlobalPluginName = "Directory",
         };
@@ -451,7 +451,7 @@ public class LogConverterTest
             TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
             AuthorId = "42",
             AuthorEmail = "Recursively",
-            Author = new User { Email = "Recursively" },
+            Author = new IdentityUser { Email = "Recursively" },
             Action = Action.REMOVED_GLOBAL_PLUGIN,
             GlobalPluginName = "root"
         };

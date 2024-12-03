@@ -41,7 +41,7 @@ public class IntegrationTestsBase : IDisposable
 
     protected static async Task GetAuthTokenAndAddItToDefaultRequestHeadersOfClient(HttpClient client)
     {
-        var response = await client.PostAsJsonAsync("/auth/basic", new { Username = "admin", Password = "admin" });
+        var response = await client.PostAsJsonAsync("/auth/basic", new { Email = "admin@admin.admin", Password = "admin" });
         response.EnsureSuccessStatusCode();
 
         var content = await response.Content.ReadFromJsonAsync<LoginResponse>();

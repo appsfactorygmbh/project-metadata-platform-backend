@@ -25,6 +25,9 @@ public class GetLogsQueryHandler: IRequestHandler<GetLogsQuery, IEnumerable<Log>
 
     /// <summary>
     /// Handles the GetLogsQuery request.
+    /// Filters are optional and can *not* be used in combination.
+    /// if multiple filters are used, the first one will be used.
+    /// projectId > search > userId > globalPluginId
     /// </summary>
     /// <param name="request">The request containing project ID and search criteria.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
@@ -39,6 +42,14 @@ public class GetLogsQueryHandler: IRequestHandler<GetLogsQuery, IEnumerable<Log>
         else if (request.Search != null)
         {
             logs = await _logRepository.GetLogsWithSearch(request.Search);
+        }
+        else if (request.UserId != null)
+        {
+            logs = await _logRepository.GetLogsForUser(request.UserId!);
+        }
+        else if (request.GlobalPluginId != null)
+        {
+            logs = await _logRepository.GetLogsForGlobalPlugin((int)request.GlobalPluginId!);
         }
         else
         {

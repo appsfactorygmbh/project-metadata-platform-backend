@@ -1,8 +1,12 @@
+using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using ProjectMetadataPlatform.Application.Interfaces;
+using ProjectMetadataPlatform.Domain.Logs;
 using ProjectMetadataPlatform.Domain.Plugins;
+using Action = ProjectMetadataPlatform.Domain.Logs.Action;
 
 namespace ProjectMetadataPlatform.Application.Plugins;
 
@@ -12,15 +16,22 @@ namespace ProjectMetadataPlatform.Application.Plugins;
 public class PatchGlobalPluginCommandHandler : IRequestHandler<PatchGlobalPluginCommand, Plugin?>
 {
     private readonly IPluginRepository _pluginRepository;
-    
+    private readonly ILogRepository _logRepository;
+    private readonly IUnitOfWork _unitOfWork;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="PatchGlobalPluginCommandHandler"/> class.
     /// </summary>
     /// <param name="pluginRepository">The plugin repository to use for plugin operations.</param>
-    public PatchGlobalPluginCommandHandler(IPluginRepository pluginRepository)
+    /// <param name="logRepository">The log repository to use for logging operations.</param>
+    /// <param name="unitOfWork">The unit of work to use for transactional operations.</param>
+    public PatchGlobalPluginCommandHandler(IPluginRepository pluginRepository, ILogRepository logRepository, IUnitOfWork unitOfWork)
     {
         _pluginRepository = pluginRepository;
+        _logRepository = logRepository;
+        _unitOfWork = unitOfWork;
     }
+
 
     /// <summary>
     /// Handles the PatchGlobalPluginCommand request.
@@ -31,15 +42,37 @@ public class PatchGlobalPluginCommandHandler : IRequestHandler<PatchGlobalPlugin
     public async Task<Plugin?> Handle(PatchGlobalPluginCommand request, CancellationToken cancellationToken)
     {
         var plugin = await _pluginRepository.GetPluginByIdAsync(request.Id);
-        
-        if (plugin == null)
+        if(plugin == null)
         {
             return null;
         }
-        
-        plugin.PluginName = request.PluginName ?? plugin.PluginName;
-        plugin.IsArchived = request.IsArchived ?? plugin.IsArchived;
 
-        return await _pluginRepository.StorePlugin(plugin);
+        if (request.PluginName != null && !string.Equals(plugin.PluginName, request.PluginName, StringComparison.Ordinal))
+        {
+            var changes = new List<LogChange>
+            {
+                new()
+                {
+                    Property = nameof(plugin.PluginName),
+                    OldValue = plugin.PluginName,
+                    NewValue = request.PluginName
+                }
+            };
+
+            plugin.PluginName = request.PluginName;
+
+            await _logRepository.AddGlobalPluginLogForCurrentUser(plugin, Action.UPDATED_GLOBAL_PLUGIN, changes);
+        }
+
+        if (request.IsArchived != null && plugin.IsArchived != request.IsArchived.Value)
+        {
+            plugin.IsArchived = request.IsArchived.Value;
+            await _logRepository.AddGlobalPluginLogForCurrentUser(plugin, plugin.IsArchived ? Action.ARCHIVED_GLOBAL_PLUGIN : Action.UNARCHIVED_GLOBAL_PLUGIN, []);
+        }
+
+        Plugin updatedPlugin = await _pluginRepository.StorePlugin(plugin);
+        await _unitOfWork.CompleteAsync();
+
+        return updatedPlugin;
     }
 }

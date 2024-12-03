@@ -60,7 +60,7 @@ public class CreateProjectCommandHandlerTest
                     "Example Client", plugins), It.IsAny<CancellationToken>());
 
         Assert.That(result, Is.EqualTo(1));
-        _mockLogRepo.Verify(m => m.AddLogForCurrentUser(It.IsAny<Project>(), Action.ADDED_PROJECT,It.IsAny<List<LogChange>>()), Times.Once);
-        _mockLogRepo.Verify(m => m.AddLogForCurrentUser(It.IsAny<Project>(), Action.ADDED_PROJECT_PLUGIN, It.IsAny<List<LogChange>>()), Times.Once);
+        _mockLogRepo.Verify(m => m.AddProjectLogForCurrentUser(It.IsAny<Project>(), Action.ADDED_PROJECT,It.IsAny<List<LogChange>>()), Times.Once);
+        _mockLogRepo.Verify(m => m.AddProjectLogForCurrentUser(It.IsAny<Project>(), Action.ADDED_PROJECT_PLUGIN, It.IsAny<List<LogChange>>()), Times.Once);
     }
 }
