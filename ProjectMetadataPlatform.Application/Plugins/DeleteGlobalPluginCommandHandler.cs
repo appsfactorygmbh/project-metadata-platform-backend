@@ -1,6 +1,5 @@
 using System.Threading;
 using System.Threading.Tasks;
-using ProjectMetadataPlatform.Domain.Plugins;
 using MediatR;
 using ProjectMetadataPlatform.Application.Interfaces;
 

@@ -101,6 +101,11 @@ public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
     {
         return _context.Plugins.Any(plugin => plugin.Id == id);
     }
+    /// <summary>
+    /// Deletes Global Plugin
+    /// </summary>
+    /// <param name="plugin"></param>
+    /// <returns></returns>
     public async Task<bool> DeleteGlobalPlugin(Plugin plugin)
     {
         try
