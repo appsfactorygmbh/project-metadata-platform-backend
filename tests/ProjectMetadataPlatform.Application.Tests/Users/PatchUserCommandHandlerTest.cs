@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
@@ -5,6 +7,7 @@ using Moq;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Application.Users;
+using ProjectMetadataPlatform.Domain.Logs;
 
 namespace ProjectMetadataPlatform.Application.Tests.Users;
 
@@ -14,15 +17,18 @@ public class PatchUserCommandHandlerTest
     private PatchUserCommandHandler _handler;
     private Mock<IUsersRepository> _mockUsersRepo;
     private Mock<IPasswordHasher<IdentityUser>> _mockPasswordHasher;
-    private Mock<IUnitOfWork> _unitOfWork;
+    private Mock<IUnitOfWork> _mockUnitOfWork;
+    private Mock<ILogRepository> _mockLogRepo;
+
 
     [SetUp]
     public void Setup()
     {
         _mockUsersRepo = new Mock<IUsersRepository>();
         _mockPasswordHasher = new Mock<IPasswordHasher<IdentityUser>>();
-        _unitOfWork = new Mock<IUnitOfWork>();
-        _handler = new PatchUserCommandHandler(_mockUsersRepo.Object, _mockPasswordHasher.Object, _unitOfWork.Object);
+        _mockUnitOfWork = new Mock<IUnitOfWork>();
+        _mockLogRepo = new Mock<ILogRepository>();
+        _handler = new PatchUserCommandHandler(_mockUsersRepo.Object, _mockPasswordHasher.Object, _mockUnitOfWork.Object, _mockLogRepo.Object);
     }
 
     [Test]
@@ -33,6 +39,8 @@ public class PatchUserCommandHandlerTest
 
         _mockUsersRepo.Setup(repo => repo.GetUserByIdAsync("42")).ReturnsAsync(user);
         _mockUsersRepo.Setup(repo => repo.StoreUser(It.IsAny<IdentityUser>())).ReturnsAsync((IdentityUser p) => p);
+        _mockUnitOfWork.Setup(m => m.CompleteAsync()).Returns(Task.CompletedTask);
+        _mockLogRepo.Setup(m => m.AddUserLogForCurrentUser(It.IsAny<IdentityUser>(), It.IsAny<Action>(), It.IsAny<List<LogChange>>())).Returns(Task.CompletedTask);
 
         var result =
             await _handler.Handle(new PatchUserCommand("42","angela@hip-hop.dancehall"), It.IsAny<CancellationToken>());
@@ -52,7 +60,8 @@ public class PatchUserCommandHandlerTest
 
         _mockUsersRepo.Setup(repo => repo.GetUserByIdAsync("42")).ReturnsAsync(user);
         _mockUsersRepo.Setup(repo => repo.StoreUser(It.IsAny<IdentityUser>())).ReturnsAsync((IdentityUser p) => p);
-
+        _mockUnitOfWork.Setup(m => m.CompleteAsync()).Returns(Task.CompletedTask);
+        _mockLogRepo.Setup(m => m.AddUserLogForCurrentUser(It.IsAny<IdentityUser>(), It.IsAny<Action>(), It.IsAny<List<LogChange>>())).Returns(Task.CompletedTask);
         var result =
             await _handler.Handle(new PatchUserCommand("42"), It.IsAny<CancellationToken>());
 
@@ -73,6 +82,24 @@ public class PatchUserCommandHandlerTest
             await _handler.Handle(new PatchUserCommand("42"), It.IsAny<CancellationToken>());
 
         Assert.That(result, Is.Null);
+    }
+
+    [Test]
+    public async Task PatchUser_LogTest()
+    {
+        var user = new IdentityUser { Id = "42", Email = "oldButGold@htwk.com" };
+        var newEmail = "newAndShiny@htwk.com";
+
+        _mockUsersRepo.Setup(repo => repo.GetUserByIdAsync("42")).ReturnsAsync(user);
+        _mockUsersRepo.Setup(repo => repo.StoreUser(It.IsAny<IdentityUser>())).ReturnsAsync((IdentityUser p) => p);
+        _mockUnitOfWork.Setup(m => m.CompleteAsync()).Returns(Task.CompletedTask);
+        _mockLogRepo.Setup(m => m.AddUserLogForCurrentUser(It.IsAny<IdentityUser>(), It.IsAny<Action>(), It.IsAny<List<LogChange>>())).Returns(Task.CompletedTask);
+
+        var result = await _handler.Handle(new PatchUserCommand("42", newEmail), It.IsAny<CancellationToken>());
+
+        _mockLogRepo.Verify(m => m.AddUserLogForCurrentUser(It.Is<IdentityUser>(u => u.Email == newEmail), Action.UPDATED_USER, It.Is<List<LogChange>>(
+            changes => changes.Any(change => change.Property == "Email" && change.OldValue == "oldButGold@htwk.com" && change.NewValue == newEmail)
+        )), Times.Once);
     }
 
 }

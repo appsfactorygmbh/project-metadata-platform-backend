@@ -1,8 +1,10 @@
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using ProjectMetadataPlatform.Application.Interfaces;
+using ProjectMetadataPlatform.Domain.Logs;
 
 namespace ProjectMetadataPlatform.Application.Users;
 
@@ -14,18 +16,22 @@ public class PatchUserCommandHandler : IRequestHandler<PatchUserCommand, Identit
     private readonly IUsersRepository _usersRepository;
     private readonly IPasswordHasher<IdentityUser> _passwordHasher;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ILogRepository _logRepository;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PatchUserCommandHandler"/> class.
     /// </summary>
     /// <param name="usersRepository">The repository for accessing user data.</param>
     /// <param name="passwordHasher">The service for hashing user passwords.</param>
-    /// <param name="unitOfWork">Unit of work</param>
-    public PatchUserCommandHandler(IUsersRepository usersRepository, IPasswordHasher<IdentityUser> passwordHasher, IUnitOfWork unitOfWork)
+    /// <param name="unitOfWork">The unit of work for managing transactions.</param>
+    /// <param name="logRepository">The repository for logging user actions.</param>
+
+    public PatchUserCommandHandler(IUsersRepository usersRepository, IPasswordHasher<IdentityUser> passwordHasher, IUnitOfWork unitOfWork, ILogRepository logRepository)
     {
         _usersRepository = usersRepository;
         _passwordHasher = passwordHasher;
         _unitOfWork = unitOfWork;
+        _logRepository = logRepository;
     }
 
     /// <summary>
@@ -43,10 +49,19 @@ public class PatchUserCommandHandler : IRequestHandler<PatchUserCommand, Identit
             return null;
         }
 
+        var oldEmail = user.Email;
         user.Email = request.Email ?? user.Email;
         user.UserName = user.Email;
         user.PasswordHash = request.Password != null ? _passwordHasher.HashPassword(user, request.Password) : user.PasswordHash;
+
         var response = await _usersRepository.StoreUser(user);
+        var changes = new List<LogChange>
+        {
+            new() { OldValue = oldEmail, NewValue = request.Email, Property = nameof(IdentityUser.Email) }
+        };
+
+        await _logRepository.AddUserLogForCurrentUser(user, Action.UPDATED_USER, changes);
+
         await _unitOfWork.CompleteAsync();
         return response;
     }
