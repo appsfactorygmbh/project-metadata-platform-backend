@@ -22,5 +22,7 @@ public class ProjectModelConfig : IEntityTypeConfiguration<Project>
         _ = builder.HasMany(p => p.ProjectPlugins)
             .WithOne(pp => pp.Project)
             .HasForeignKey(pp => pp.ProjectId);
+
+        _ = builder.HasIndex(p => p.Slug).IsUnique();
     }
 }

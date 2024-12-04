@@ -40,6 +40,7 @@ public class GetAllPluginsForProjectIdQueryHandlerTest
                     {
                         Id = 1,
                         ProjectName = "Project 1",
+                        Slug = "project 1",
                         ClientName = "Client 1",
                         BusinessUnit = "Bu 1",
                         TeamNumber = 1,
@@ -56,6 +57,7 @@ public class GetAllPluginsForProjectIdQueryHandlerTest
                 {
                     Id = 1,
                     ProjectName = "Project 1",
+                    Slug = "project 1",
                     ClientName = "Client 1",
                     BusinessUnit = "Bu 1",
                     TeamNumber = 1,

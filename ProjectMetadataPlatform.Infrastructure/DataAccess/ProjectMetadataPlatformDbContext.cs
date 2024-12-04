@@ -69,6 +69,7 @@ public sealed class ProjectMetadataPlatformDbContext : IdentityDbContext<Identit
         {
             Id = 100,
             ProjectName = "DB App",
+            Slug = "db_app",
             ClientName = "Deutsche Bahn",
             BusinessUnit = "Unit 1",
             TeamNumber = 1,
@@ -79,6 +80,7 @@ public sealed class ProjectMetadataPlatformDbContext : IdentityDbContext<Identit
         {
             Id = 200,
             ProjectName = "Tagesschau App",
+            Slug = "tagesschau_app",
             ClientName = "ARD",
             BusinessUnit = "Unit 2",
             TeamNumber = 2,
@@ -89,6 +91,7 @@ public sealed class ProjectMetadataPlatformDbContext : IdentityDbContext<Identit
         {
             Id = 300,
             ProjectName = "AOK Bonus App",
+            Slug = "aok_bonus_app",
             ClientName = "AOK",
             BusinessUnit = "Unit 3",
             TeamNumber = 3,

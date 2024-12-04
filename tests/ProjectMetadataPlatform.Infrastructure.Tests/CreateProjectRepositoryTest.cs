@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -33,6 +32,7 @@ public class CreateProjectRepositoryTest : TestsWithDatabase
         var exampleProject = new Project
         {
             ProjectName = "Example Project",
+            Slug = "example_project",
             BusinessUnit = "Example Business Unit",
             TeamNumber = 1,
             Department = "Example Department",
@@ -59,6 +59,7 @@ public class CreateProjectRepositoryTest : TestsWithDatabase
         {
             Id = 1,
             ProjectName = "Example Project",
+            Slug = "example_project",
             BusinessUnit = "Example Business Unit",
             TeamNumber = 1,
             Department = "Example Department",
@@ -94,6 +95,7 @@ public class CreateProjectRepositoryTest : TestsWithDatabase
         var exampleProject = new Project
         {
             ProjectName = "Example Project",
+            Slug = "example_project",
             BusinessUnit = "Example Business Unit",
             TeamNumber = 1,
             Department = "Example Department",

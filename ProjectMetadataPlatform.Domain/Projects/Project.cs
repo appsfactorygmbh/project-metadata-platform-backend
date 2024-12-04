@@ -20,6 +20,11 @@ public class Project
     public required string ProjectName { get; set; }
 
     /// <summary>
+    ///     Gets or sets the short version of the ProjectName that can be used to identify a Project in requests instead of the Id. This property is required.
+    /// </summary>
+    public required string Slug { get; set; }
+
+    /// <summary>
     ///     Gets or sets the name of the client associated with the project. This property is required.
     /// </summary>
     public required string ClientName { get; set; }

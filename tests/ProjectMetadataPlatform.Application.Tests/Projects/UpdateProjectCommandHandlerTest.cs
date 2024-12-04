@@ -39,6 +39,7 @@ public class UpdateProjectCommandHandlerTest
         {
             Id = 1,
             ProjectName = "Example Project",
+            Slug = "example project",
             BusinessUnit = "Example Business Unit",
             TeamNumber = 1,
             Department = "Example Department",
@@ -79,6 +80,7 @@ public class UpdateProjectCommandHandlerTest
         {
             Id = 1,
             ProjectName = "Example Project",
+            Slug = "example project",
             BusinessUnit = "Example Business Unit",
             TeamNumber = 1,
             Department = "Example Department",
@@ -130,6 +132,7 @@ public class UpdateProjectCommandHandlerTest
         {
             Id = 1,
             ProjectName = "Example Project",
+            Slug = "example project",
             BusinessUnit = "Example Business Unit",
             TeamNumber = 1,
             Department = "Example Department",
@@ -182,6 +185,7 @@ public class UpdateProjectCommandHandlerTest
         {
             Id = 1,
             ProjectName = "Db App",
+            Slug = "db app",
             ClientName = "DB",
             BusinessUnit = "Unit 1",
             TeamNumber = 1,
@@ -223,6 +227,7 @@ public class UpdateProjectCommandHandlerTest
         {
             Id = 1,
             ProjectName = "Db App",
+            Slug = "db app",
             ClientName = "DB",
             BusinessUnit = "Unit 1",
             TeamNumber = 1,
@@ -287,6 +292,7 @@ public class UpdateProjectCommandHandlerTest
         {
             Id = 1,
             ProjectName = "Db App",
+            Slug = "db app",
             ClientName = "DB",
             BusinessUnit = "Unit 1",
             TeamNumber = 1,
@@ -319,6 +325,7 @@ public class UpdateProjectCommandHandlerTest
         {
             Id = 1,
             ProjectName = "Old Project Name",
+            Slug = "old project name",
             BusinessUnit = "Old Unit",
             TeamNumber = 1,
             Department = "Old Department",
@@ -362,6 +369,7 @@ public class UpdateProjectCommandHandlerTest
         {
             Id = 1,
             ProjectName = "No Change Project",
+            Slug = "no change project",
             ClientName = "Client A",
             BusinessUnit = "Business Unit A",
             TeamNumber = 5,
@@ -399,6 +407,7 @@ public class UpdateProjectCommandHandlerTest
         {
             Id = 1,
             ProjectName = "Partial Update",
+            Slug = "partial update",
             ClientName = "Client A",
             BusinessUnit = "Unit 1",
             TeamNumber = 5,
@@ -440,6 +449,7 @@ public class UpdateProjectCommandHandlerTest
         {
             Id = 1,
             ProjectName = "Project With Exception",
+            Slug = "project with exception",
             ClientName = "Client C",
             BusinessUnit = "Unit 3",
             TeamNumber = 4,
@@ -485,6 +495,7 @@ public class UpdateProjectCommandHandlerTest
         {
             Id = 1,
             ProjectName = "Test Project",
+            Slug = "test project",
             ClientName = "Test Client",
             BusinessUnit = "Test Unit",
             TeamNumber = 1,
@@ -530,6 +541,7 @@ public class UpdateProjectCommandHandlerTest
         {
             Id = 1,
             ProjectName = "Archived Project",
+            Slug = "archived project",
             ClientName = "Test Client",
             BusinessUnit = "Test Unit",
             TeamNumber = 1,
@@ -574,6 +586,7 @@ public class UpdateProjectCommandHandlerTest
         {
             Id = 1,
             ProjectName = "Test Project",
+            Slug = "test project",
             ClientName = "Test Client",
             BusinessUnit = "Test Unit",
             TeamNumber = 1,
@@ -613,6 +626,7 @@ public class UpdateProjectCommandHandlerTest
         {
             Id = 1,
             ProjectName = "Test Project",
+            Slug = "test project",
             ClientName = "Test Client",
             BusinessUnit = "Test Unit",
             TeamNumber = 1,
@@ -662,6 +676,7 @@ public class UpdateProjectCommandHandlerTest
         {
             Id = 1,
             ProjectName = "Test Project",
+            Slug = "test project",
             ClientName = "Test Client",
             BusinessUnit = "Test Unit",
             TeamNumber = 1,
@@ -712,6 +727,7 @@ public class UpdateProjectCommandHandlerTest
         {
             Id = 1,
             ProjectName = "Test Project",
+            Slug = "test project",
             ClientName = "Test Client",
             BusinessUnit = "Test Unit",
             TeamNumber = 1,
@@ -768,6 +784,7 @@ public class UpdateProjectCommandHandlerTest
         {
             Id = 1,
             ProjectName = "Test Project",
+            Slug = "test project",
             ClientName = "Test Client",
             BusinessUnit = "Test Unit",
             TeamNumber = 1,

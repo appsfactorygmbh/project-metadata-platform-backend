@@ -31,6 +31,7 @@ public class ProjectsBySearchTest : TestsWithDatabase
         {
             Id = 1,
             ProjectName = "Regen",
+            Slug = "regen",
             ClientName = "Nasa",
             BusinessUnit = "BuWeather",
             TeamNumber = 42,
@@ -63,6 +64,7 @@ public class ProjectsBySearchTest : TestsWithDatabase
         {
             Id = 1,
             ProjectName = "Regen",
+            Slug = "regen",
             ClientName = "Nasa",
             BusinessUnit = "BuWeather",
             TeamNumber = 42,
@@ -88,6 +90,7 @@ public class ProjectsBySearchTest : TestsWithDatabase
             {
                 Id = 1,
                 ProjectName = "Wasserfall",
+                Slug = "wasserfall",
                 ClientName = "whatever_taucht_nicht_auf",
                 BusinessUnit = "BuWeather",
                 TeamNumber = 42,
@@ -97,6 +100,7 @@ public class ProjectsBySearchTest : TestsWithDatabase
             {
                 Id = 2,
                 ProjectName = "Regen",
+                Slug = "regen",
                 ClientName = "ESA",
                 BusinessUnit = "BuWeather",
                 TeamNumber = 42,
@@ -106,6 +110,7 @@ public class ProjectsBySearchTest : TestsWithDatabase
             {
                 Id = 3,
                 ProjectName = "Turbo",
+                Slug = "turbo",
                 ClientName = "Regen",
                 BusinessUnit = "BuWeather",
                 TeamNumber = 42,
@@ -137,6 +142,7 @@ public class ProjectsBySearchTest : TestsWithDatabase
             {
                 Id = 1,
                 ProjectName = "Wasserfall",
+                Slug = "wasserfall",
                 ClientName = "whatever_taucht_nicht_auf",
                 BusinessUnit = "BuWeather",
                 TeamNumber = 42,
@@ -146,6 +152,7 @@ public class ProjectsBySearchTest : TestsWithDatabase
             {
                 Id = 2,
                 ProjectName = "Regen",
+                Slug = "regen",
                 ClientName = "ESA",
                 BusinessUnit = "BuWeather",
                 TeamNumber = 42,
@@ -155,6 +162,7 @@ public class ProjectsBySearchTest : TestsWithDatabase
             {
                 Id = 3,
                 ProjectName = "Turbo",
+                Slug = "turbo",
                 ClientName = "Regen",
                 BusinessUnit = "BuWeather",
                 TeamNumber = 42,
@@ -191,6 +199,7 @@ public class ProjectsBySearchTest : TestsWithDatabase
             {
                 Id = 1,
                 ProjectName = "Wasserfall",
+                Slug = "wasserfall",
                 ClientName = "whatever_taucht_nicht_auf",
                 BusinessUnit = "BuWeather",
                 TeamNumber = 42,
@@ -200,6 +209,7 @@ public class ProjectsBySearchTest : TestsWithDatabase
             {
                 Id = 2,
                 ProjectName = "Regen",
+                Slug = "regen",
                 ClientName = "ESA",
                 BusinessUnit = "BuWeather",
                 TeamNumber = 42,
@@ -209,6 +219,7 @@ public class ProjectsBySearchTest : TestsWithDatabase
             {
                 Id = 3,
                 ProjectName = "Turbo",
+                Slug = "turbo",
                 ClientName = "Regen",
                 BusinessUnit = "BuWeather",
                 TeamNumber = 41,

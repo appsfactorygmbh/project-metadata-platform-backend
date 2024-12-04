@@ -37,6 +37,7 @@ public class DeleteProjectCommandHandlerTest
         {
             Id = 1,
             ProjectName = "Heather",
+            Slug = "heather",
             ClientName = "Metatron",
             BusinessUnit = "666",
             Department = "Silent Hill",
@@ -58,6 +59,7 @@ public class DeleteProjectCommandHandlerTest
         {
             Id = 1,
             ProjectName = "Heather",
+            Slug = "heather",
             ClientName = "Metatron",
             BusinessUnit = "666",
             Department = "Silent Hill",
@@ -86,6 +88,7 @@ public class DeleteProjectCommandHandlerTest
         {
             Id = 1,
             ProjectName = "Heather",
+            Slug = "heather",
             ClientName = "Metatron",
             BusinessUnit = "666",
             Department = "Silent Hill",

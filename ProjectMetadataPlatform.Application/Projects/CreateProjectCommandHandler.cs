@@ -49,7 +49,7 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
                 throw new InvalidOperationException("The Plugin with this id does not exist: " + plugin.PluginId);
             }
         }
-        var project = new Project{ProjectName=request.ProjectName, BusinessUnit=request.BusinessUnit, TeamNumber=request.TeamNumber, Department=request.Department, ClientName=request.ClientName, ProjectPlugins = request.Plugins};
+        var project = new Project{ProjectName=request.ProjectName, Slug="", BusinessUnit=request.BusinessUnit, TeamNumber=request.TeamNumber, Department=request.Department, ClientName=request.ClientName, ProjectPlugins = request.Plugins};
 
         await _projectsRepository.Add(project);
 

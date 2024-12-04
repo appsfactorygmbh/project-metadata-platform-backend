@@ -65,6 +65,7 @@ public class ProjectsControllerTest
             {
                 Id = 1,
                 ProjectName = "Regen",
+                Slug = "regen",
                 ClientName = "Nasa",
                 BusinessUnit = "BuWeather",
                 TeamNumber = 42,
@@ -110,6 +111,7 @@ public class ProjectsControllerTest
             {
                 Id = 0,
                 ProjectName = "Regen",
+                Slug = "regen",
                 ClientName = "Nasa",
                 BusinessUnit = "BuWeather",
                 TeamNumber = 42,
@@ -192,7 +194,7 @@ public class ProjectsControllerTest
     {
 
         var plugin = new Plugin { Id = 1, PluginName = "plugin 1" };
-        var projcet = new Project { Id = 1, Department = "department 1", BusinessUnit = "business unit 1", ClientName = "client name 1", ProjectName = "project 1", TeamNumber = 1 };
+        var projcet = new Project { Id = 1, Department = "department 1", BusinessUnit = "business unit 1", ClientName = "client name 1", ProjectName = "project 1", Slug = "project_1", TeamNumber = 1 };
         var responseContent = new List<ProjectPlugins>
         {
             new() { ProjectId = 1, PluginId = 1, Plugin = plugin,Project = projcet,DisplayName = "Gitlab", Url ="Plugin1.com"},
@@ -228,7 +230,7 @@ public class ProjectsControllerTest
     {
 
         var plugin = new Plugin { Id = 1, PluginName = "plugin 1" };
-        var projcet = new Project { Id = 1, Department = "department 1", BusinessUnit = "business unit 1", ClientName = "client name 1", ProjectName = "project 1", TeamNumber = 1 };
+        var projcet = new Project { Id = 1, Department = "department 1", BusinessUnit = "business unit 1", ClientName = "client name 1", ProjectName = "project 1", Slug = "project_1", TeamNumber = 1 };
         var responseContent = new List<ProjectPlugins>
         {
             new() { ProjectId = 1, PluginId = 1, Plugin = plugin,Project = projcet, Url ="Plugin1.com"},
@@ -269,6 +271,7 @@ public class ProjectsControllerTest
                 {
                     Id = 1,
                     ProjectName = "Heather",
+                    Slug = "heather",
                     BusinessUnit = "666",
                     ClientName = "Metatron",
                     Department = "Mars",
@@ -449,6 +452,7 @@ public class ProjectsControllerTest
         {
             Id = 1,
             ProjectName = "Heather",
+            Slug = "heather",
             ClientName = "Metatron",
             BusinessUnit = "666",
             Department = "Silent Hill",
@@ -471,6 +475,7 @@ public class ProjectsControllerTest
         {
             Id = 1,
             ProjectName = "Heather",
+            Slug = "heather",
             ClientName = "Metatron",
             BusinessUnit = "666",
             Department = "Silent Hill",

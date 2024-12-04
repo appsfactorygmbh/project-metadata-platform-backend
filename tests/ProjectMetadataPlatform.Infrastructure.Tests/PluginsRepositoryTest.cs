@@ -38,6 +38,7 @@ public class PluginsRepositoryTest : TestsWithDatabase
         {
             Id = 1,
             ProjectName = "Regen",
+            Slug = "regen",
             ClientName = "Nasa",
             BusinessUnit = "BuWeather",
             TeamNumber = 42,
@@ -182,6 +183,7 @@ public class PluginsRepositoryTest : TestsWithDatabase
         {
             Id = 1,
             ProjectName = "Test Project",
+            Slug = "test_project",
             ClientName = "Test Client", // Ensure ClientName is set
             BusinessUnit = "Test Business",
             TeamNumber = 42,
@@ -216,6 +218,7 @@ public class PluginsRepositoryTest : TestsWithDatabase
         {
             Id = 1,
             ProjectName = "Test Project",
+            Slug = "test_project",
             ClientName = "Test Client", // Make sure this is set
             BusinessUnit = "Test Business",
             TeamNumber = 42,
@@ -243,6 +246,7 @@ public class PluginsRepositoryTest : TestsWithDatabase
         {
             Id = 1,
             ProjectName = "Test Project",
+            Slug = "test_project",
             ClientName = "Test Client", // Make sure this is set
             BusinessUnit = "Test Business",
             TeamNumber = 42,
@@ -263,6 +267,7 @@ public class PluginsRepositoryTest : TestsWithDatabase
         {
             Id = 1,
             ProjectName = "Test Project",
+            Slug = "test_project",
             ClientName = "Test Client", // Make sure this is set
             BusinessUnit = "Test Business",
             TeamNumber = 42,
@@ -292,6 +297,7 @@ public class PluginsRepositoryTest : TestsWithDatabase
         {
             Id = 1,
             ProjectName = "Test Project",
+            Slug = "test_project",
             ClientName = "Test Client", // Make sure this is set
             BusinessUnit = "Test Business",
             TeamNumber = 42,
@@ -325,6 +331,7 @@ public class PluginsRepositoryTest : TestsWithDatabase
         {
             Id = 1,
             ProjectName = "Test Project",
+            Slug = "test_project",
             ClientName = "Test Client", // Make sure this is set
             BusinessUnit = "Test Business",
             TeamNumber = 42,
@@ -334,6 +341,7 @@ public class PluginsRepositoryTest : TestsWithDatabase
         {
             Id = 2,
             ProjectName = "Test Project2",
+            Slug = "test_project2",
             ClientName = "Test Client2", // Make sure this is set
             BusinessUnit = "Test Business2",
             TeamNumber = 37,

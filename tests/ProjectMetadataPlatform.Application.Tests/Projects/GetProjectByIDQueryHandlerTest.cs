@@ -36,6 +36,7 @@ public class GetProjectByIDQueryHandlerTest
         {
             Id = 2,
             ProjectName = "Regen",
+            Slug = "regen",
             ClientName = "Nasa",
             BusinessUnit = "BuWeather",
             TeamNumber = 42,

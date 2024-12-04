@@ -56,6 +56,7 @@ public class GetProjectByIdControllerTest
         {
             Id = 50,
             ProjectName = "MetaDataPlatform",
+            Slug = "metadataplatform",
             ClientName = "Appsfactory",
             BusinessUnit = "BusinessUnit",
             TeamNumber = 200,

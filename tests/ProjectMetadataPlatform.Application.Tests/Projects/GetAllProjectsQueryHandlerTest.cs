@@ -45,6 +45,7 @@ public class GetAllProjectsQueryHandlerTest
             {
                 Id = 0,
                 ProjectName = "Regen",
+                Slug = "regen",
                 ClientName = "Nasa",
                 BusinessUnit = "BuWeather",
                 TeamNumber = 42,
@@ -92,6 +93,7 @@ public class GetAllProjectsQueryHandlerTest
             {
                 Id = 1,
                 ProjectName = "Heather",
+                Slug = "heather",
                 BusinessUnit = "666",
                 ClientName = "Metatron",
                 Department = "Mars",
@@ -101,6 +103,7 @@ public class GetAllProjectsQueryHandlerTest
             {
                 Id = 2,
                 ProjectName = "James",
+                Slug = "james",
                 BusinessUnit = "777",
                 ClientName = "Lucifer",
                 Department = "Venus",
@@ -110,6 +113,7 @@ public class GetAllProjectsQueryHandlerTest
             {
                 Id = 3,
                 ProjectName = "Marika",
+                Slug = "marika",
                 BusinessUnit = "999",
                 ClientName = "Satan",
                 Department = "Earth",
@@ -149,6 +153,7 @@ public class GetAllProjectsQueryHandlerTest
             {
                 Id = 1,
                 ProjectName = "Heather",
+                Slug = "heather",
                 BusinessUnit = "666",
                 ClientName = "Metatron",
                 Department = "Mars",
@@ -158,6 +163,7 @@ public class GetAllProjectsQueryHandlerTest
             {
                 Id = 2,
                 ProjectName = "James",
+                Slug = "james",
                 BusinessUnit = "777",
                 ClientName = "Lucifer",
                 Department = "Venus",
@@ -167,6 +173,7 @@ public class GetAllProjectsQueryHandlerTest
             {
                 Id = 3,
                 ProjectName = "Marika",
+                Slug = "marika",
                 BusinessUnit = "999",
                 ClientName = "Satan",
                 Department = "Earth",
@@ -207,6 +214,7 @@ public class GetAllProjectsQueryHandlerTest
             {
                 Id = 1,
                 ProjectName = "Heather",
+                Slug = "heather",
                 BusinessUnit = "666",
                 ClientName = "Metatron",
                 Department = "Mars",
@@ -217,6 +225,7 @@ public class GetAllProjectsQueryHandlerTest
             {
                 Id = 2,
                 ProjectName = "James",
+                Slug = "james",
                 BusinessUnit = "777",
                 ClientName = "Lucifer",
                 Department = "Venus",
@@ -227,6 +236,7 @@ public class GetAllProjectsQueryHandlerTest
             {
                 Id = 3,
                 ProjectName = "Marika",
+                Slug = "marika",
                 BusinessUnit = "999",
                 ClientName = "Satan",
                 Department = "Earth",
@@ -258,6 +268,7 @@ public class GetAllProjectsQueryHandlerTest
             {
                 Id = 1,
                 ProjectName = "Heather",
+                Slug = "heather",
                 BusinessUnit = "666",
                 ClientName = "Metatron",
                 Department = "Mars",
@@ -267,6 +278,7 @@ public class GetAllProjectsQueryHandlerTest
             {
                 Id = 2,
                 ProjectName = "James",
+                Slug = "james",
                 BusinessUnit = "777",
                 ClientName = "Lucifer",
                 Department = "Venus",
@@ -276,6 +288,7 @@ public class GetAllProjectsQueryHandlerTest
             {
                 Id = 3,
                 ProjectName = "Marika",
+                Slug = "marika",
                 BusinessUnit = "999",
                 ClientName = "Satan",
                 Department = "Earth",

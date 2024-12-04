@@ -62,6 +62,7 @@ public class LogConverterTest
             Project = new Project
             {
                 ProjectName = "Ultimate Question of Life, the Universe and Everything",
+                Slug = "ultimate question of life, the universe and everything",
                 ClientName = "Mice",
                 BusinessUnit = "",
                 TeamNumber = 1,
@@ -93,6 +94,7 @@ public class LogConverterTest
             Project = new Project
             {
                 ProjectName = "Atmosphere",
+                Slug = "atmosphere",
                 ClientName = "",
                 BusinessUnit = "",
                 TeamNumber = 1,
@@ -128,6 +130,7 @@ public class LogConverterTest
             Project = new Project
             {
                 ProjectName = "Wale",
+                Slug = "wale",
                 ClientName = "",
                 BusinessUnit = "",
                 TeamNumber = 1,
@@ -163,6 +166,7 @@ public class LogConverterTest
             Project = new Project
             {
                 ProjectName = "Solarsystem",
+                Slug = "solarsystem",
                 ClientName = "Mice",
                 BusinessUnit = "",
                 TeamNumber = 1,
@@ -198,6 +202,7 @@ public class LogConverterTest
             Project = new Project
             {
                 ProjectName = "Ultimate Question of Life, the Universe and Everything",
+                Slug = "ultimate question of life, the universe and everything",
                 ClientName = "Mice",
                 BusinessUnit = "",
                 TeamNumber = 1,

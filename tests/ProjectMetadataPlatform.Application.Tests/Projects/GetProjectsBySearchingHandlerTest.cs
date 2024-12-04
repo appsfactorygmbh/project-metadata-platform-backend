@@ -43,6 +43,7 @@ public class GetProjectsBySearchingHandlerTest
             {
                 Id = 2,
                 ProjectName = "Regen",
+                Slug = "regen",
                 ClientName = "Nasa",
                 BusinessUnit = "BuWeather",
                 TeamNumber = 42,
@@ -69,6 +70,7 @@ public class GetProjectsBySearchingHandlerTest
             {
                 Id = 2,
                 ProjectName = "Regen",
+                Slug = "regen",
                 ClientName = "Nasa",
                 BusinessUnit = "BuWeather",
                 TeamNumber = 42,
@@ -78,6 +80,7 @@ public class GetProjectsBySearchingHandlerTest
             {
                 Id = 3,
                 ProjectName = "Sonne",
+                Slug = "sonne",
                 ClientName = "Nasa",
                 BusinessUnit = "BuWeather",
                 TeamNumber = 42,

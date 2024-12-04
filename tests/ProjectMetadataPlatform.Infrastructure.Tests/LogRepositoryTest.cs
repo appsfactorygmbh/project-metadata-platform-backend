@@ -55,6 +55,7 @@ public class LogRepositoryTest : TestsWithDatabase
         var exampleProject = new Project
         {
             ProjectName = "Example Project",
+            Slug = "example_project",
             BusinessUnit = "Example Business Unit",
             TeamNumber = 1,
             Department = "Example Department",
@@ -246,6 +247,7 @@ public class LogRepositoryTest : TestsWithDatabase
         var exampleProject = new Project
         {
             ProjectName = "Example Project",
+            Slug = "example_project",
             BusinessUnit = "Example Business Unit",
             TeamNumber = 1,
             Department = "Example Department",
@@ -377,6 +379,7 @@ public class LogRepositoryTest : TestsWithDatabase
         var exampleProject = new Project
         {
             ProjectName = "Example Project",
+            Slug = "example_project",
             BusinessUnit = "Example Business Unit",
             TeamNumber = 1,
             Department = "Example Department",
@@ -411,6 +414,7 @@ public class LogRepositoryTest : TestsWithDatabase
         var exampleProject = new Project
         {
             ProjectName = "Example Project",
+            Slug = "example_project",
             BusinessUnit = "Example Business Unit",
             TeamNumber = 1,
             Department = "Example Department",
@@ -445,6 +449,7 @@ public class LogRepositoryTest : TestsWithDatabase
         var exampleProject1 = new Project
         {
             ProjectName = "Example Project",
+            Slug = "example_project",
             BusinessUnit = "Example Business Unit",
             TeamNumber = 1,
             Department = "Example Department",
@@ -469,6 +474,7 @@ public class LogRepositoryTest : TestsWithDatabase
         var exampleProject2 = new Project
         {
             ProjectName = "Another Project",
+            Slug = "another_project",
             BusinessUnit = "Example Business Unit",
             TeamNumber = 1,
             Department = "Example Department",
@@ -504,6 +510,7 @@ public class LogRepositoryTest : TestsWithDatabase
         var exampleProject1 = new Project
         {
             ProjectName = "Example Project",
+            Slug = "example_project",
             BusinessUnit = "Example Business Unit",
             TeamNumber = 1,
             Department = "Example Department",
@@ -528,6 +535,7 @@ public class LogRepositoryTest : TestsWithDatabase
         var exampleProject2 = new Project
         {
             ProjectName = "Another Project",
+            Slug = "another_project",
             BusinessUnit = "Example Business Unit",
             TeamNumber = 1,
             Department = "Example Department",
@@ -574,6 +582,7 @@ public class LogRepositoryTest : TestsWithDatabase
         var exampleProject1 = new Project
         {
             ProjectName = "Example Project",
+            Slug = "example_project",
             BusinessUnit = "Example Business Unit",
             TeamNumber = 1,
             Department = "Example Department",
@@ -598,6 +607,7 @@ public class LogRepositoryTest : TestsWithDatabase
         var exampleProject2 = new Project
         {
             ProjectName = "Another Project",
+            Slug = "another_project",
             BusinessUnit = "Example Business Unit",
             TeamNumber = 1,
             Department = "Example Department",

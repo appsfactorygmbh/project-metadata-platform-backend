@@ -31,6 +31,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
         {
             Id = 1,
             ProjectName = "Regen",
+            Slug = "regen",
             ClientName = "Nasa",
             BusinessUnit = "BuWeather",
             TeamNumber = 42,
@@ -71,6 +72,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
             {
                 Id = 1,
                 ProjectName = "Heather",
+                Slug = "heather",
                 BusinessUnit = "666",
                 ClientName = "Metatron",
                 Department = "Mars",
@@ -81,6 +83,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
             {
                 Id = 2,
                 ProjectName = "James",
+                Slug = "james",
                 BusinessUnit = "777",
                 ClientName = "Lucifer",
                 Department = "Venus",
@@ -91,6 +94,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
             {
                 Id = 3,
                 ProjectName = "Marika",
+                Slug = "marika",
                 BusinessUnit = "999",
                 ClientName = "Satan",
                 Department = "Earth",
@@ -136,6 +140,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
             {
                 Id = 1,
                 ProjectName = "Heather",
+                Slug = "heather",
                 BusinessUnit = "666",
                 ClientName = "Metatron",
                 Department = "Mars",
@@ -145,6 +150,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
             {
                 Id = 2,
                 ProjectName = "James",
+                Slug = "james",
                 BusinessUnit = "777",
                 ClientName = "Lucifer",
                 Department = "Venus",
@@ -173,6 +179,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
             {
                 Id = 1,
                 ProjectName = "Heather",
+                Slug = "heather",
                 BusinessUnit = "666",
                 ClientName = "Metatron",
                 Department = "Mars",
@@ -182,6 +189,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
             {
                 Id = 2,
                 ProjectName = "James",
+                Slug = "james",
                 BusinessUnit = "777",
                 ClientName = "Lucifer",
                 Department = "Venus",
@@ -191,6 +199,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
             {
                 Id = 3,
                 ProjectName = "Marika",
+                Slug = "marika",
                 BusinessUnit = "999",
                 ClientName = "Satan",
                 Department = "Earth",
@@ -221,6 +230,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
             {
                 Id = 1,
                 ProjectName = "Regen",
+                Slug = "regen",
                 ClientName = "Nasa",
                 BusinessUnit = "BuWeather",
                 TeamNumber = 42,
@@ -229,7 +239,8 @@ public class ProjectsRepositoryTests : TestsWithDatabase
             new Project
             {
                 Id = 2,
-                ProjectName = "Regen",
+                ProjectName = "Nieselegen",
+                Slug = "nieselregen",
                 ClientName = "Nasa",
                 BusinessUnit = "BuWeather",
                 TeamNumber = 43,
@@ -256,6 +267,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
             {
                 Id = 1,
                 ProjectName = "Project1",
+                Slug = "project1",
                 ClientName = "ClientA",
                 BusinessUnit = "Unit1",
                 TeamNumber = 42,
@@ -265,6 +277,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
             {
                 Id = 2,
                 ProjectName = "Project2",
+                Slug = "project2",
                 ClientName = "ClientB",
                 BusinessUnit = "Unit2",
                 TeamNumber = 43,
@@ -294,6 +307,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
             {
                 Id = 1,
                 ProjectName = "Project1",
+                Slug = "project1",
                 ClientName = "ClientA",
                 BusinessUnit = "Unit1",
                 TeamNumber = 42,
@@ -303,6 +317,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
             {
                 Id = 2,
                 ProjectName = "Project2",
+                Slug = "project2",
                 ClientName = "ClientB",
                 BusinessUnit = "Unit1", // Duplicate BusinessUnit
                 TeamNumber = 43,
@@ -312,6 +327,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
             {
                 Id = 3,
                 ProjectName = "Project3",
+                Slug = "project3",
                 ClientName = "ClientC",
                 BusinessUnit = "Unit2",
                 TeamNumber = 44,
@@ -350,6 +366,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
         {
             Id = 1,
             ProjectName = "Regen",
+            Slug = "regen",
             ClientName = "Nasa",
             BusinessUnit = "BuWeather",
             TeamNumber = 42,

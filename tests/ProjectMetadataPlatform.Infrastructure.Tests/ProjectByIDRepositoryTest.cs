@@ -36,6 +36,7 @@ public class ProjectByIDRepositoryTest : TestsWithDatabase
         {
             Id = 1,
             ProjectName = "Regen",
+            Slug = "regen",
             ClientName = "Nasa",
             BusinessUnit = "BuWeather",
             TeamNumber = 42,

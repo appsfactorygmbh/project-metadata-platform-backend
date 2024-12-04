@@ -43,6 +43,7 @@ public class CreateProjectCommandHandlerTest
         var exampleProject = new Project
         {
             ProjectName = "Example Project",
+            Slug = "example project",
             BusinessUnit = "Example Business Unit",
             TeamNumber = 1,
             Department = "Example Department",
