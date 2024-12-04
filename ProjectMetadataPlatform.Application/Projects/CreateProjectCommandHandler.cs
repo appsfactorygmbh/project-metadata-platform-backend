@@ -58,6 +58,7 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
         var changes = new List<LogChange>
         {
             new() { OldValue = "", NewValue = project.ProjectName, Property = nameof(Project.ProjectName) },
+            new() { OldValue = "", NewValue = project.Slug, Property = nameof(Project.Slug) },
             new() { OldValue = "", NewValue = project.BusinessUnit, Property = nameof(Project.BusinessUnit) },
             new() { OldValue = "", NewValue = project.Department, Property = nameof(Project.Department) },
             new() { OldValue = "", NewValue = project.ClientName, Property = nameof(Project.ClientName) },
