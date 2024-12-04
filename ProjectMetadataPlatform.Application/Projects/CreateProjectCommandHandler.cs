@@ -19,6 +19,7 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
     private readonly IPluginRepository _pluginRepository;
     private readonly ILogRepository _logRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ISlugHelper _slugHelper;
     /// <summary>
     ///     Creates a new instance of <see cref="CreateProjectCommandHandler" />.
     /// </summary>
@@ -26,13 +27,14 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
     /// <param name="pluginRepository">Repository for Plugins</param>
     /// <param name="logRepository">Repository for Logs</param>
     /// <param name="unitOfWork"> Used to save changes to the DbContext</param>
-    public CreateProjectCommandHandler(IProjectsRepository projectsRepository, IPluginRepository pluginRepository, ILogRepository logRepository, IUnitOfWork unitOfWork)
+    /// <param name="slugHelper"> Used to generate slugs</param>
+    public CreateProjectCommandHandler(IProjectsRepository projectsRepository, IPluginRepository pluginRepository, ILogRepository logRepository, IUnitOfWork unitOfWork, ISlugHelper slugHelper)
     {
         _projectsRepository = projectsRepository;
         _pluginRepository = pluginRepository;
         _logRepository = logRepository;
         _unitOfWork = unitOfWork;
-
+        _slugHelper = slugHelper;
     }
     /// <summary>
     ///     Handles the request to create a project.
@@ -49,7 +51,7 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
                 throw new InvalidOperationException("The Plugin with this id does not exist: " + plugin.PluginId);
             }
         }
-        var project = new Project{ProjectName=request.ProjectName, Slug="", BusinessUnit=request.BusinessUnit, TeamNumber=request.TeamNumber, Department=request.Department, ClientName=request.ClientName, ProjectPlugins = request.Plugins};
+        var project = new Project{ProjectName=request.ProjectName, Slug = _slugHelper.GenerateSlug(request.ProjectName), BusinessUnit=request.BusinessUnit, TeamNumber=request.TeamNumber, Department=request.Department, ClientName=request.ClientName, ProjectPlugins = request.Plugins};
 
         await _projectsRepository.Add(project);
 

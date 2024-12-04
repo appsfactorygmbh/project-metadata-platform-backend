@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -163,7 +164,7 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
         return await _context.Projects.Select(project => project.TeamNumber).Distinct().ToListAsync();
     }
 
-        /// <summary>
+    /// <summary>
     /// Asynchronously deletes a project from the database.
     /// </summary>
     /// <param name="project">The project to delete.</param>
@@ -173,5 +174,11 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
         Delete(project);
         _ = await _context.SaveChangesAsync();
         return project;
+    }
+
+    /// <inheritdoc/>
+    public Task<Project?> GetProjectBySlugAsync(string slug)
+    {
+        return GetIf(p => p.Slug == slug).FirstOrDefaultAsync();
     }
 }

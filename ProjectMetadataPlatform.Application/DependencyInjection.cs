@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using ProjectMetadataPlatform.Application.Helper;
+using ProjectMetadataPlatform.Application.Interfaces;
 
 namespace ProjectMetadataPlatform.Application;
 
@@ -14,7 +16,9 @@ public static class DependencyInjection
     /// <returns>The service collection with the add dependencies.</returns>
     public static IServiceCollection AddApplicationDependencies(this IServiceCollection serviceCollection)
     {
-        return serviceCollection.AddMediatR(configuration =>
+        _ = serviceCollection.AddScoped<ISlugHelper, SlugHelper>();
+        _ = serviceCollection.AddMediatR(configuration =>
             configuration.RegisterServicesFromAssemblyContaining(typeof(DependencyInjection)));
+        return serviceCollection;
     }
 }

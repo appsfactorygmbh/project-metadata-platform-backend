@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -386,5 +387,73 @@ public class ProjectsRepositoryTests : TestsWithDatabase
             Assert.That(remainingProjects, Is.Empty);
             Assert.That(deletedProject, Is.EqualTo(project));
         });
+    }
+
+    [Test]
+    public async Task GetProjectBySlug_Test()
+    {
+        var project1 = new Project
+        {
+            Id = 1,
+            ProjectName = "Regen",
+            Slug = "regen",
+            ClientName = "Nasa",
+            BusinessUnit = "BuWeather",
+            TeamNumber = 42,
+            Department = "Homelandsecurity"
+        };
+
+        var project2 = new Project
+        {
+            Id = 2,
+            ProjectName = "Nieselegen",
+            Slug = "nieselregen",
+            ClientName = "Nasa",
+            BusinessUnit = "BuWeather",
+            TeamNumber = 42,
+            Department = "Homelandsecurity"
+        };
+
+        _context.Projects.RemoveRange(_context.Projects);
+        _context.Projects.Add(project1);
+        _context.Projects.Add(project2);
+        await _context.SaveChangesAsync();
+
+        var result = await _repository.GetProjectBySlugAsync("regen");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Id, Is.EqualTo(1));
+            Assert.That(result.Slug, Is.EqualTo("regen"));
+            Assert.That(result.ProjectName, Is.EqualTo("Regen"));
+            Assert.That(result.ClientName, Is.EqualTo("Nasa"));
+            Assert.That(result.BusinessUnit, Is.EqualTo("BuWeather"));
+            Assert.That(result.TeamNumber, Is.EqualTo(42));
+            Assert.That(result.Department, Is.EqualTo("Homelandsecurity"));
+        });
+    }
+
+    [Test]
+    public async Task GetProjectBySlug_Test_NotFoundReturnsNull()
+    {
+        var project2 = new Project
+        {
+            Id = 2,
+            ProjectName = "Nieselegen",
+            Slug = "nieselregen",
+            ClientName = "Nasa",
+            BusinessUnit = "BuWeather",
+            TeamNumber = 42,
+            Department = "Homelandsecurity"
+        };
+
+        _context.Projects.RemoveRange(_context.Projects);
+        _context.Projects.Add(project2);
+        await _context.SaveChangesAsync();
+
+        var result = await _repository.GetProjectBySlugAsync("regen");
+
+        Assert.That(result, Is.Null);
     }
 }

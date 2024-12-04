@@ -19,6 +19,7 @@ public class CreateProjectCommandHandlerTest
     private Mock<IPluginRepository> _mockPluginRepo;
     private Mock<ILogRepository> _mockLogRepo;
     private Mock<IUnitOfWork> _mockUnitOfWork;
+    private Mock<ISlugHelper> _mockSlugHelper;
 
     [SetUp]
     public void Setup()
@@ -27,7 +28,8 @@ public class CreateProjectCommandHandlerTest
         _mockPluginRepo = new Mock<IPluginRepository>();
         _mockLogRepo = new Mock<ILogRepository>();
         _mockUnitOfWork = new Mock<IUnitOfWork>();
-        _handler = new CreateProjectCommandHandler(_mockProjectRepo.Object, _mockPluginRepo.Object, _mockLogRepo.Object, _mockUnitOfWork.Object);
+        _mockSlugHelper = new Mock<ISlugHelper>();
+        _handler = new CreateProjectCommandHandler(_mockProjectRepo.Object, _mockPluginRepo.Object, _mockLogRepo.Object, _mockUnitOfWork.Object, _mockSlugHelper.Object);
     }
 
     [Test]
@@ -43,7 +45,7 @@ public class CreateProjectCommandHandlerTest
         var exampleProject = new Project
         {
             ProjectName = "Example Project",
-            Slug = "example project",
+            Slug = "example_project",
             BusinessUnit = "Example Business Unit",
             TeamNumber = 1,
             Department = "Example Department",
@@ -52,7 +54,7 @@ public class CreateProjectCommandHandlerTest
         };
         _mockProjectRepo.Setup(m => m.Add(It.IsAny<Project>())).Callback<Project>(p => p.Id = 1);
         _mockPluginRepo.Setup(m => m.CheckPluginExists(It.IsAny<int>())).ReturnsAsync(true);
-
+        _mockSlugHelper.Setup(m => m.GenerateSlug(It.IsAny<string>())).Returns("example_project");
         // act
 
         int result =

@@ -23,7 +23,7 @@ public class ProjectsWorkflow : IntegrationTestsBase
 
     private const string CREATE_PROJECT_REQUEST2 = """
                                                   {
-                                                    "projectName": "testProject2",
+                                                    "projectName": "otherTestProject2",
                                                     "businessUnit": "BU2",
                                                     "teamNumber": 4,
                                                     "department": "testDepartment2",
@@ -91,10 +91,10 @@ public class ProjectsWorkflow : IntegrationTestsBase
         firstProject.GetProperty("id").GetInt32().Should().BeGreaterThan(0);
 
         var secondProject = rootElement[1];
-        secondProject.GetProperty("projectName").GetString().Should().Be("testProject2");
+        secondProject.GetProperty("projectName").GetString().Should().Be("otherTestProject2");
         secondProject.GetProperty("businessUnit").GetString().Should().Be("BU2");
         secondProject.GetProperty("teamNumber").GetInt32().Should().Be(4);
-        firstProject.TryGetProperty("department", out _).Should().BeFalse();
+        secondProject.TryGetProperty("department", out _).Should().BeFalse();
         secondProject.GetProperty("clientName").GetString().Should().Be("testClient2");
         secondProject.GetProperty("id").GetInt32().Should().BeGreaterThan(0);
     }
