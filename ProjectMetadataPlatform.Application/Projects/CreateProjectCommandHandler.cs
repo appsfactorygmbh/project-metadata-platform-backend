@@ -46,7 +46,7 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
     {
         foreach (var plugin in request.Plugins)
         {
-            if (!(await _pluginRepository.CheckPluginExists(plugin.PluginId)))
+            if (!await _pluginRepository.CheckPluginExists(plugin.PluginId))
             {
                 throw new InvalidOperationException("The Plugin with this id does not exist: " + plugin.PluginId);
             }

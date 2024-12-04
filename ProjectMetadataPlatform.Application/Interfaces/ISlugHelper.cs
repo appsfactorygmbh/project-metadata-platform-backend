@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace ProjectMetadataPlatform.Application.Interfaces;
 
@@ -18,7 +19,7 @@ public interface ISlugHelper
     /// Retrieves a projects Id by its slug. When no project is found an exception is thrown.
     /// </summary>
     /// <param name="slug">The projects slug.</param>
-    /// <exception cref="">Thrown when no project is found.</exception>
+    /// <exception cref="InvalidOperationException">Thrown when no project is found.</exception>
     /// <returns>The Id from the slug.</returns>
     public Task<int> GetProjectIdBySlug(string slug);
 }
