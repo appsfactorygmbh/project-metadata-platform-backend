@@ -58,7 +58,7 @@ public class PatchUserCommandHandler : IRequestHandler<PatchUserCommand, Identit
         user.Email = request.Email ?? user.Email;
         user.UserName = user.Email;
 
-        var oldPasswordHash = user.PasswordHash;
+        var oldPasswordHash = user.PasswordHash ?? string.Empty;
         var passwordChanged = request.Password != null && _passwordHasher.HashPassword(user, request.Password) != oldPasswordHash;
 
         if (passwordChanged)
@@ -79,7 +79,7 @@ public class PatchUserCommandHandler : IRequestHandler<PatchUserCommand, Identit
             changes.Add(new LogChange { OldValue = "old password was changed", NewValue = "new password *****", Property = nameof(IdentityUser.PasswordHash) });
         }
 
-        if (changes.Any())
+        if (changes.Count > 0)
         {
             await _logRepository.AddUserLogForCurrentUser(user, Action.UPDATED_USER, changes);
         }
