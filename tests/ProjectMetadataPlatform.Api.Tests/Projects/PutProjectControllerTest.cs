@@ -92,6 +92,20 @@ public class PutProjectControllerTest
     }
 
     [Test]
+    public async Task CreateProject_BadRequestTest_SlugAlreadyExists()
+    {
+        _mediator.Setup(mediator => mediator.Send(It.IsAny<CreateProjectCommand>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new InvalidOperationException("A Project with this slug already exists: example_project"));
+        var request = new CreateProjectRequest("Tour Eiffel", "BusinessUnit 9001", 42, "Côte-d'Or", "France");
+        var result = await _controller.Put(request);
+
+        Assert.That(result.Result, Is.InstanceOf<BadRequestObjectResult>());
+        var badRequestResult = result.Result as BadRequestObjectResult;
+        Assert.That(badRequestResult, Is.Not.Null);
+        Assert.That(badRequestResult.Value, Is.EqualTo("A Project with this slug already exists: example_project"));
+    }
+
+    [Test]
     public async Task CreateProject_MediatorThrowsInvalidOperationExceptionTest()
     {
         _mediator.Setup(mediator => mediator.Send(It.IsAny<CreateProjectCommand>(), It.IsAny<CancellationToken>()))
