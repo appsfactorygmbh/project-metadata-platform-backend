@@ -94,6 +94,7 @@ public class ProjectsControllerTest
         Assert.Multiple(() =>
         {
             Assert.That(project.Id, Is.EqualTo(1));
+            Assert.That(project.Slug, Is.EqualTo("regen"));
             Assert.That(project.ProjectName, Is.EqualTo("Regen"));
             Assert.That(project.ClientName, Is.EqualTo("Nasa"));
             Assert.That(project.BusinessUnit, Is.EqualTo("BuWeather"));
@@ -141,6 +142,7 @@ public class ProjectsControllerTest
         Assert.Multiple(() =>
         {
             Assert.That(project.ProjectName, Is.EqualTo("Regen"));
+            Assert.That(project.Slug, Is.EqualTo("regen"));
             Assert.That(project.ClientName, Is.EqualTo("Nasa"));
             Assert.That(project.BusinessUnit, Is.EqualTo("BuWeather"));
             Assert.That(project.TeamNumber, Is.EqualTo(42));
@@ -297,6 +299,7 @@ public class ProjectsControllerTest
             Assert.That(response, Has.Count.EqualTo(1));
             Assert.That(response.ToArray()[0].Id, Is.EqualTo(1));
             Assert.That(response.ToArray()[0].ProjectName, Is.EqualTo("Heather"));
+            Assert.That(response.ToArray()[0].Slug, Is.EqualTo("heather"));
             Assert.That(response.ToArray()[0].BusinessUnit, Is.EqualTo("666"));
             Assert.That(response.ToArray()[0].ClientName, Is.EqualTo("Metatron"));
             Assert.That(response.ToArray()[0].TeamNumber, Is.EqualTo(42));

@@ -83,6 +83,7 @@ public class GetProjectByIdControllerTest
         {
             Assert.That(project.Id, Is.EqualTo(50));
             Assert.That(project.ProjectName, Is.EqualTo("MetaDataPlatform"));
+            Assert.That(project.Slug, Is.EqualTo("metadataplatform"));
             Assert.That(project.ClientName, Is.EqualTo("Appsfactory"));
             Assert.That(project.BusinessUnit, Is.EqualTo("BusinessUnit"));
             Assert.That(project.TeamNumber, Is.EqualTo(200));

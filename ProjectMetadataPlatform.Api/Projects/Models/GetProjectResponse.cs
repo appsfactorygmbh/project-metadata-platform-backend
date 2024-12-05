@@ -4,6 +4,7 @@ namespace ProjectMetadataPlatform.Api.Projects.Models;
 ///     Represents a response to the GetProject API call.
 /// </summary>
 /// <param name="Id">The identification number for the project.</param>
+/// <param name="Slug">The Slug for the project name.</param>
 /// <param name="ProjectName">The name of the project.</param>
 /// <param name="ClientName">The name of the client for the project.</param>
 /// <param name="BusinessUnit">The name of the Business Unit associated with the project.</param>
@@ -12,6 +13,7 @@ namespace ProjectMetadataPlatform.Api.Projects.Models;
 /// <param name="IsArchived">If the project is archived or not.</param>
 public record GetProjectResponse(
     int Id,
+    string Slug,
     string ProjectName,
     string ClientName,
     string BusinessUnit,

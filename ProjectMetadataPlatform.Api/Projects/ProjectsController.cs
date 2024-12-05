@@ -59,6 +59,7 @@ public class ProjectsController : ControllerBase
 
         IEnumerable<GetProjectsResponse> response = projects.Select(project => new GetProjectsResponse(
             project.Id,
+            project.Slug,
             project.ProjectName,
             project.ClientName,
             project.BusinessUnit,
@@ -99,6 +100,7 @@ public class ProjectsController : ControllerBase
 
         var response = new GetProjectResponse(
             project.Id,
+            project.Slug,
             project.ProjectName,
             project.ClientName,
             project.BusinessUnit,
