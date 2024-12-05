@@ -39,14 +39,6 @@ public partial class SlugHelper: ISlugHelper
     /// <inheritdoc/>
     public async Task<bool> CheckProjectSlugExists(string slug)
     {
-        try
-        {
-            _ = await GetProjectIdBySlug(slug);
-            return true;
-        }
-        catch (InvalidOperationException)
-        {
-            return false;
-        }
+        return await _projectsRepository.GetProjectIdBySlugAsync(slug) != null;
     }
 }
