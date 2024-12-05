@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -63,7 +62,7 @@ public class PatchUserCommandHandler : IRequestHandler<PatchUserCommand, Identit
 
         if (passwordChanged)
         {
-            user.PasswordHash = _passwordHasher.HashPassword(user, request.Password);
+            user.PasswordHash = _passwordHasher.HashPassword(user, request.Password ?? string.Empty);
         }
         var response = await _usersRepository.StoreUser(user);
 
