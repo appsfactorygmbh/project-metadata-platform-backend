@@ -76,7 +76,7 @@ public class PatchUserCommandHandler : IRequestHandler<PatchUserCommand, Identit
 
         if (passwordChanged)
         {
-            changes.Add(new LogChange { OldValue = "old password was changed", NewValue = " new password *****", Property = nameof(IdentityUser.PasswordHash) });
+            changes.Add(new LogChange { OldValue = "old password was changed", NewValue = "new password *****", Property = nameof(IdentityUser.PasswordHash) });
         }
 
         if (changes.Any())

@@ -102,4 +102,71 @@ public class PatchUserCommandHandlerTest
         )), Times.Once);
     }
 
+    [Test]
+    public async Task PatchUser_PasswordChangeLogTest()
+    {
+        var user = new IdentityUser { Id = "42", Email = "hanSolo", PasswordHash = "oldPassword" };
+        var newPassword = "newPassword";
+        var newPasswordHash = "newPasswordHash";
+
+        _mockUsersRepo.Setup(repo => repo.GetUserByIdAsync("42")).ReturnsAsync(user);
+        _mockUsersRepo.Setup(repo => repo.StoreUser(It.IsAny<IdentityUser>())).ReturnsAsync((IdentityUser p) => p);
+        _mockUnitOfWork.Setup(m => m.CompleteAsync()).Returns(Task.CompletedTask);
+        _mockLogRepo
+            .Setup(m => m.AddUserLogForCurrentUser(It.IsAny<IdentityUser>(), It.IsAny<Action>(),
+                It.IsAny<List<LogChange>>())).Returns(Task.CompletedTask);
+        _mockPasswordHasher.Setup(ph => ph.HashPassword(user, newPassword)).Returns(newPasswordHash);
+
+        var result = await _handler.Handle(new PatchUserCommand("42", Password: newPassword),
+            It.IsAny<CancellationToken>());
+
+        _mockLogRepo.Verify(m => m.AddUserLogForCurrentUser(
+            It.Is<IdentityUser>(u => u.PasswordHash == newPasswordHash),
+            Action.UPDATED_USER, It.Is<List<LogChange>>(
+                changes => changes.Any(change =>
+                    change.Property == "PasswordHash" && change.OldValue == "old password was changed" &&
+                    change.NewValue == "new password *****")
+            )), Times.Once);
+    }
+
+    [Test]
+    public async Task PatchUser_EmailNotChanged_Test()
+    {
+        var user = new IdentityUser { Id = "42", Email = "oldButGold@htwk.com" };
+        var newEmail = "oldButGold@htwk.com";
+
+        _mockUsersRepo.Setup(repo => repo.GetUserByIdAsync("42")).ReturnsAsync(user);
+        _mockUsersRepo.Setup(repo => repo.StoreUser(It.IsAny<IdentityUser>())).ReturnsAsync((IdentityUser p) => p);
+        _mockUnitOfWork.Setup(m => m.CompleteAsync()).Returns(Task.CompletedTask);
+        _mockLogRepo.Setup(m => m.AddUserLogForCurrentUser(It.IsAny<IdentityUser>(), It.IsAny<Action>(), It.IsAny<List<LogChange>>())).Returns(Task.CompletedTask);
+
+        var result = await _handler.Handle(new PatchUserCommand("42", newEmail), It.IsAny<CancellationToken>());
+
+        _mockLogRepo.Verify(m => m.AddUserLogForCurrentUser(It.IsAny<IdentityUser>(), Action.UPDATED_USER, It.IsAny<List<LogChange>>()), Times.Never);
+    }
+
+    [Test]
+    public async Task PatchUser_PasswordNotChanged_Test()
+    {
+        var user = new IdentityUser { Id = "42", Email = "never", PasswordHash = "password" };
+        var newPassword = "password";
+
+        _mockUsersRepo.Setup(repo => repo.GetUserByIdAsync("42")).ReturnsAsync(user);
+        _mockUsersRepo.Setup(repo => repo.StoreUser(It.IsAny<IdentityUser>())).ReturnsAsync((IdentityUser p) => p);
+        _mockUnitOfWork.Setup(m => m.CompleteAsync()).Returns(Task.CompletedTask);
+        _mockLogRepo
+            .Setup(m => m.AddUserLogForCurrentUser(It.IsAny<IdentityUser>(), It.IsAny<Action>(),
+                It.IsAny<List<LogChange>>())).Returns(Task.CompletedTask);
+        _mockPasswordHasher.Setup(ph => ph.HashPassword(user, newPassword)).Returns(user.PasswordHash);
+
+        var result = await _handler.Handle(new PatchUserCommand("42", Password: newPassword),
+            It.IsAny<CancellationToken>());
+
+        _mockLogRepo.Verify(
+            m => m.AddUserLogForCurrentUser(It.IsAny<IdentityUser>(), Action.UPDATED_USER, It.IsAny<List<LogChange>>()),
+            Times.Never);
+    }
+
+
+
 }
