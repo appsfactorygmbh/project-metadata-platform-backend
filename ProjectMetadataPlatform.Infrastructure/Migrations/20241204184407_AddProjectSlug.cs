@@ -17,7 +17,7 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
                 nullable: false,
                 defaultValue: "");
 
-            migrationBuilder.Sql("UPDATE \"Projects\" SET \"Slug\" = LOWER(REPLACE(TRIM(\"ProjectName\"), ' ', '_'))");
+            migrationBuilder.Sql("UPDATE \"Projects\" SET \"Slug\" = LOWER(REPLACE(TRIM(\"ProjectName\"), ' ', '_'));");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Projects_Slug",
