@@ -57,7 +57,7 @@ public class ProjectsController : ControllerBase
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
 
-        IEnumerable<GetProjectsResponse> response = projects.Select(project => new GetProjectsResponse(
+        var response = projects.Select(project => new GetProjectsResponse(
             project.Id,
             project.Slug,
             project.ProjectName,
@@ -132,7 +132,7 @@ public class ProjectsController : ControllerBase
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
 
-        IEnumerable<GetPluginResponse> response = projectPlugins.Select(plugin
+        var response = projectPlugins.Select(plugin
             => new GetPluginResponse(plugin.Plugin!.PluginName, plugin.Url,
                 plugin.DisplayName ?? plugin.Plugin.PluginName, plugin.Plugin.Id));
 
@@ -168,7 +168,7 @@ public class ProjectsController : ControllerBase
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
 
-        IEnumerable<GetPluginResponse> response = unarchivedProjectPlugins
+        var response = unarchivedProjectPlugins
             .Where(plugin => plugin.Plugin != null)
             .Select(plugin => new GetPluginResponse(
                 plugin.Plugin!.PluginName,
@@ -266,7 +266,7 @@ public class ProjectsController : ControllerBase
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
 
-        IEnumerable<string> response = businessunits;
+        var response = businessunits;
 
         return Ok(response);
     }
@@ -298,7 +298,7 @@ public class ProjectsController : ControllerBase
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
 
-        IEnumerable<int> response = teamNumbers;
+        var response = teamNumbers;
 
         return Ok(response);
     }
