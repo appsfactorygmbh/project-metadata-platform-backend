@@ -58,12 +58,8 @@ public class PatchUserCommandHandler : IRequestHandler<PatchUserCommand, Identit
         user.UserName = user.Email;
 
         var oldPasswordHash = user.PasswordHash ?? string.Empty;
-        var passwordChanged = request.Password != null && _passwordHasher.HashPassword(user, request.Password) != oldPasswordHash;
+        user.PasswordHash = request.Password != null ? _passwordHasher.HashPassword(user, request.Password) : user.PasswordHash;
 
-        if (passwordChanged)
-        {
-            user.PasswordHash = _passwordHasher.HashPassword(user, request.Password ?? string.Empty);
-        }
         var response = await _usersRepository.StoreUser(user);
 
         var changes = new List<LogChange>();
@@ -73,7 +69,7 @@ public class PatchUserCommandHandler : IRequestHandler<PatchUserCommand, Identit
             changes.Add(new LogChange { OldValue = oldEmail, NewValue = request.Email, Property = nameof(IdentityUser.Email) });
         }
 
-        if (passwordChanged)
+        if (oldPasswordHash != user.PasswordHash)
         {
             changes.Add(new LogChange { OldValue = "old password was changed", NewValue = "new password *****", Property = nameof(IdentityUser.PasswordHash) });
         }
