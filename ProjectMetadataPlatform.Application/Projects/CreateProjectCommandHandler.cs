@@ -57,7 +57,7 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
 
         var projectSlug = _slugHelper.GenerateSlug(request.ProjectName);
 
-        if (!await CheckProjectSlugIsUnused(projectSlug))
+        if (await _slugHelper.ProjectSlugExists(projectSlug))
         {
             throw new InvalidOperationException("A Project with this slug already exists: " + projectSlug);
         }
@@ -99,23 +99,5 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
 
         await _unitOfWork.CompleteAsync();
         return project.Id;
-    }
-
-    /// <summary>
-    /// Checks if the project slug is unused.
-    /// </summary>
-    /// <param name="slug">The slug to check.</param>
-    /// <returns>A task that represents the asynchronous operation. The task result contains a boolean indicating whether the slug is unused.</returns>
-    private async Task<bool> CheckProjectSlugIsUnused(string slug)
-    {
-        try
-        {
-            _ = await _slugHelper.GetProjectIdBySlug(slug);
-            return false;
-        }
-        catch (InvalidOperationException)
-        {
-            return true;
-        }
     }
 }
