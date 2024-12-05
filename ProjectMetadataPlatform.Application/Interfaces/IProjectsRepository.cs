@@ -69,9 +69,9 @@ public interface IProjectsRepository
     Task<Project> DeleteProjectAsync(Project project);
 
     /// <summary>
-    /// Returns a project based on its unique slug.
+    /// Returns the id of a project based on its unique slug.
     /// </summary>
     /// <param name="slug">The projects unique slug.</param>
-    /// <returns>A task representing the asynchronous operation, which upon completion returns the requested project or null.</returns>
-    Task<Project?> GetProjectBySlugAsync(string slug);
+    /// <returns>A task representing the asynchronous operation, which upon completion returns the requested project id or null.</returns>
+    Task<int?> GetProjectIdBySlugAsync(string slug);
 }

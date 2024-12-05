@@ -78,25 +78,12 @@ public class SlugHelperTest
     [Test]
     public async Task GetProjectIdBySlug_Test()
     {
-        var exampleProject = new Project
-        {
-            Id = 1,
-            ProjectName = "Example Project",
-            Slug = "example_project",
-            ClientName = "",
-            BusinessUnit = "",
-            Department = "",
-            TeamNumber = 0
-        };
-
         const string slug = "example_project";
-        const int expected = 1;
-
-        _mockProjectsRepository.Setup(m => m.GetProjectBySlugAsync(It.IsAny<string>())).ReturnsAsync(exampleProject);
+        _mockProjectsRepository.Setup(m => m.GetProjectIdBySlugAsync(It.IsAny<string>())).ReturnsAsync(1);
 
         var result = await _slugHelper.GetProjectIdBySlug(slug);
 
-        Assert.That(result, Is.EqualTo(expected));
+        Assert.That(result, Is.EqualTo(1));
     }
 
     [Test]
@@ -104,7 +91,7 @@ public class SlugHelperTest
     {
         const string slug = "example_project";
 
-        _mockProjectsRepository.Setup(m => m.GetProjectBySlugAsync(It.IsAny<string>())).ReturnsAsync((Project)null!);
+        _mockProjectsRepository.Setup(m => m.GetProjectIdBySlugAsync(It.IsAny<string>())).ReturnsAsync((int?)null);
 
         Assert.ThrowsAsync<InvalidOperationException>(() => _slugHelper.GetProjectIdBySlug(slug));
     }

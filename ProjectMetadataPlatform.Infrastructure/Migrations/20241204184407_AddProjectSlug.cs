@@ -17,26 +17,7 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
                 nullable: false,
                 defaultValue: "");
 
-            migrationBuilder.UpdateData(
-                table: "Projects",
-                keyColumn: "Id",
-                keyValue: 100,
-                column: "Slug",
-                value: "db_app");
-
-            migrationBuilder.UpdateData(
-                table: "Projects",
-                keyColumn: "Id",
-                keyValue: 200,
-                column: "Slug",
-                value: "tagesschau_app");
-
-            migrationBuilder.UpdateData(
-                table: "Projects",
-                keyColumn: "Id",
-                keyValue: 300,
-                column: "Slug",
-                value: "aok_bonus_app");
+            migrationBuilder.Sql("UPDATE \"Projects\" SET \"Slug\" = LOWER(REPLACE(TRIM(REGEXP_REPLACE(\"ProjectName\", '[^a-zA-Z0-9_ ]', '')), ' ', '_'))");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Projects_Slug",

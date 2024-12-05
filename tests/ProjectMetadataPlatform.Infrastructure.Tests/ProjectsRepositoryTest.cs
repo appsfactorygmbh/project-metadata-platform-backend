@@ -419,18 +419,12 @@ public class ProjectsRepositoryTests : TestsWithDatabase
         _context.Projects.Add(project2);
         await _context.SaveChangesAsync();
 
-        var result = await _repository.GetProjectBySlugAsync("regen");
+        var result = await _repository.GetProjectIdBySlugAsync("regen");
 
         Assert.Multiple(() =>
         {
             Assert.That(result, Is.Not.Null);
-            Assert.That(result.Id, Is.EqualTo(1));
-            Assert.That(result.Slug, Is.EqualTo("regen"));
-            Assert.That(result.ProjectName, Is.EqualTo("Regen"));
-            Assert.That(result.ClientName, Is.EqualTo("Nasa"));
-            Assert.That(result.BusinessUnit, Is.EqualTo("BuWeather"));
-            Assert.That(result.TeamNumber, Is.EqualTo(42));
-            Assert.That(result.Department, Is.EqualTo("Homelandsecurity"));
+            Assert.That(result, Is.EqualTo(1));
         });
     }
 
@@ -452,7 +446,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
         _context.Projects.Add(project2);
         await _context.SaveChangesAsync();
 
-        var result = await _repository.GetProjectBySlugAsync("regen");
+        var result = await _repository.GetProjectIdBySlugAsync("regen");
 
         Assert.That(result, Is.Null);
     }

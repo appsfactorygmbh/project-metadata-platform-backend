@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -177,8 +176,9 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     }
 
     /// <inheritdoc/>
-    public Task<Project?> GetProjectBySlugAsync(string slug)
+    public async Task<int?> GetProjectIdBySlugAsync(string slug)
     {
-        return GetIf(p => p.Slug == slug).FirstOrDefaultAsync();
+        return await _context.Projects.Where(p => p.Slug == slug)
+            .Select(p => (int?)p.Id).FirstOrDefaultAsync();
     }
 }

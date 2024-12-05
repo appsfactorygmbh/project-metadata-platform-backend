@@ -8,7 +8,7 @@ namespace ProjectMetadataPlatform.Application.Helper;
 /// <inheritdoc/>
 public partial class SlugHelper: ISlugHelper
 {
-    [GeneratedRegex("[^a-zA-Z0-9 ]")]
+    [GeneratedRegex("[^a-zA-Z0-9_ ]")]
     private static partial Regex ProjectNameToSlugRegex();
 
     private readonly IProjectsRepository _projectsRepository;
@@ -31,8 +31,8 @@ public partial class SlugHelper: ISlugHelper
     /// <inheritdoc/>
     public async Task<int> GetProjectIdBySlug(string slug)
     {
-        var project = await _projectsRepository.GetProjectBySlugAsync(slug);
+        var projectId = await _projectsRepository.GetProjectIdBySlugAsync(slug);
 
-        return project?.Id ?? throw new InvalidOperationException("Project with this slug does not exist: " + slug);
+        return projectId ?? throw new InvalidOperationException("Project with this slug does not exist: " + slug);
     }
 }
