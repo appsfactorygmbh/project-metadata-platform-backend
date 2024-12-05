@@ -57,7 +57,7 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
 
         var projectSlug = _slugHelper.GenerateSlug(request.ProjectName);
 
-        if (await _slugHelper.ProjectSlugExists(projectSlug))
+        if (await _slugHelper.CheckProjectSlugExists(projectSlug))
         {
             throw new InvalidOperationException("A Project with this slug already exists: " + projectSlug);
         }

@@ -37,7 +37,7 @@ public partial class SlugHelper: ISlugHelper
     }
 
     /// <inheritdoc/>
-    public async Task<bool> ProjectSlugExists(string slug)
+    public async Task<bool> CheckProjectSlugExists(string slug)
     {
         try
         {

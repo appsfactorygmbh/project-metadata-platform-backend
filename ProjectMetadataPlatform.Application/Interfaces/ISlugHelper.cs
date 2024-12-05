@@ -28,5 +28,5 @@ public interface ISlugHelper
     /// </summary>
     /// <param name="slug">The slug to check.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains a boolean indicating whether the slug is used or not.</returns>
-    public Task<bool> ProjectSlugExists(string slug);
+    public Task<bool> CheckProjectSlugExists(string slug);
 }

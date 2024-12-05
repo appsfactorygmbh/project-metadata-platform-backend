@@ -102,7 +102,7 @@ public class SlugHelperTest
         const string slug = "example_project";
         _mockProjectsRepository.Setup(m => m.GetProjectIdBySlugAsync(It.IsAny<string>())).ReturnsAsync(1);
 
-        var result = await _slugHelper.ProjectSlugExists(slug);
+        var result = await _slugHelper.CheckProjectSlugExists(slug);
 
         Assert.That(result, Is.True);
     }
@@ -113,7 +113,7 @@ public class SlugHelperTest
         const string slug = "example_project";
         _mockProjectsRepository.Setup(m => m.GetProjectIdBySlugAsync(It.IsAny<string>())).ReturnsAsync((int?)null);
 
-        var result = await _slugHelper.ProjectSlugExists(slug);
+        var result = await _slugHelper.CheckProjectSlugExists(slug);
 
         Assert.That(result, Is.False);
     }

@@ -82,7 +82,7 @@ public class CreateProjectCommandHandlerTest
         _mockPluginRepo.Setup(m => m.CheckPluginExists(It.IsAny<int>())).ReturnsAsync(true);
         _mockSlugHelper.Setup(m => m.GenerateSlug(It.IsAny<string>())).Returns("example_project");
         _mockSlugHelper.Setup(m => m.GetProjectIdBySlug("example_project")).ReturnsAsync(1);
-        _mockSlugHelper.Setup(m => m.ProjectSlugExists("example_project")).ReturnsAsync(true);
+        _mockSlugHelper.Setup(m => m.CheckProjectSlugExists("example_project")).ReturnsAsync(true);
 
         var ex = Assert.ThrowsAsync<InvalidOperationException>(async () =>
         {
