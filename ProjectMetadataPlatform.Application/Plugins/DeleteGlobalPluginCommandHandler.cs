@@ -34,7 +34,11 @@ public class DeleteGlobalPluginCommandHandler : IRequestHandler<DeleteGlobalPlug
         {
             return null;
         }
-        if (plugin.IsArchived) return  await _pluginRepository.DeleteGlobalPlugin(plugin);
+
+        if (plugin.IsArchived)
+        {
+            return await _pluginRepository.DeleteGlobalPlugin(plugin);
+        }
         return false;
     }
 }
