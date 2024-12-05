@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using ProjectMetadataPlatform.Api.Interfaces;
 using ProjectMetadataPlatform.Api.Logs.Models;
 using ProjectMetadataPlatform.Application.Logs;
+using ProjectMetadataPlatform.Application.Projects;
 using ProjectMetadataPlatform.Domain.Logs;
 
 namespace ProjectMetadataPlatform.Api.Logs;
@@ -45,14 +46,36 @@ public class LogsController: ControllerBase
     /// <param name="search">The search term to filter logs by.</param>
     /// <param name="userId">The ID of the affected user to filter logs by.</param>
     /// <param name="globalPluginId">The ID of the global plugin to filter logs by.</param>
+    /// <param name="slug">The slug of the project to filter logs by.</param>
     /// <returns>A list of log responses.</returns>
     /// <response code="200">Returns the list of log responses.</response>
     /// <response code="404">Not Project with the given id was found.</response>
     /// <response code="500">If an error occurs while processing the request.</response>
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<LogResponse>>> Get(int? projectId, string? search, string? userId, int? globalPluginId)
+    public async Task<ActionResult<IEnumerable<LogResponse>>> Get(int? projectId, string? search, string? userId, int? globalPluginId, string? slug)
     {
-        var query = new GetLogsQuery(projectId, search, userId, globalPluginId);
+        var projectFromSlugId = (int?)null;
+
+        try
+        {
+            if (slug != null && projectId == null)
+            {
+                var projectIdFromSlugQuery = new GetProjectIdBySlugQuery(slug);
+                projectFromSlugId = await _mediator.Send(projectIdFromSlugQuery);
+            }
+        }
+        catch (InvalidOperationException)
+        {
+            return NotFound("No project with slug " + slug + " found");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.StackTrace);
+            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+        }
+
+
+        var query = new GetLogsQuery(projectId ?? projectFromSlugId, search, userId, globalPluginId);
 
         IEnumerable<Log> logs;
 
