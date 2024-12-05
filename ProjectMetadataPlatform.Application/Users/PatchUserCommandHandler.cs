@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -49,18 +50,39 @@ public class PatchUserCommandHandler : IRequestHandler<PatchUserCommand, Identit
             return null;
         }
 
-        var oldEmail = user.Email;
+        var oldEmail = string.Empty;
+        if(request.Email != null)
+        {
+            oldEmail= user.Email ?? string.Empty;
+        }
         user.Email = request.Email ?? user.Email;
         user.UserName = user.Email;
-        user.PasswordHash = request.Password != null ? _passwordHasher.HashPassword(user, request.Password) : user.PasswordHash;
 
-        var response = await _usersRepository.StoreUser(user);
-        var changes = new List<LogChange>
+        var oldPasswordHash = user.PasswordHash;
+        var passwordChanged = request.Password != null && _passwordHasher.HashPassword(user, request.Password) != oldPasswordHash;
+
+        if (passwordChanged)
         {
-            new() { OldValue = oldEmail, NewValue = request.Email, Property = nameof(IdentityUser.Email) }
-        };
+            user.PasswordHash = _passwordHasher.HashPassword(user, request.Password);
+        }
+        var response = await _usersRepository.StoreUser(user);
 
-        await _logRepository.AddUserLogForCurrentUser(user, Action.UPDATED_USER, changes);
+        var changes = new List<LogChange>();
+
+        if (request.Email != null && oldEmail != request.Email)
+        {
+            changes.Add(new LogChange { OldValue = oldEmail, NewValue = request.Email, Property = nameof(IdentityUser.Email) });
+        }
+
+        if (passwordChanged)
+        {
+            changes.Add(new LogChange { OldValue = "old password was changed", NewValue = " new password *****", Property = nameof(IdentityUser.PasswordHash) });
+        }
+
+        if (changes.Any())
+        {
+            await _logRepository.AddUserLogForCurrentUser(user, Action.UPDATED_USER, changes);
+        }
 
         await _unitOfWork.CompleteAsync();
         return response;
