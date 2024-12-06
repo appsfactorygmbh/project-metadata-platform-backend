@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ProjectMetadataPlatform.Api.Plugins.Models;
 using ProjectMetadataPlatform.Api.Projects.Models;
+using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Application.Plugins;
 using ProjectMetadataPlatform.Application.Projects;
 using ProjectMetadataPlatform.Domain.Plugins;
@@ -33,6 +34,7 @@ public class ProjectsController : ControllerBase
     {
         _mediator = mediator;
     }
+
 
     /// <summary>
     ///     Gets all projects or all projects that match the given search string.
@@ -69,6 +71,17 @@ public class ProjectsController : ControllerBase
         return Ok(response);
     }
 
+    [HttpGet("{slug:string}")]
+    public async Task<ActionResult<GetProjectResponse>> Get(string slug)
+    {
+        var projectId = GetProjectId(slug);
+        if (projectId == null)
+        {
+            return NotFound(slug);
+        }
+        return await Get((int) projectId);
+
+    }
 
     /// <summary>
     ///     Gets the project with the given id.
@@ -335,5 +348,11 @@ public class ProjectsController : ControllerBase
         }
 
         return Ok(NoContent());
+    }
+
+    private int? GetProjectId(string slug)
+    {
+        var query = new GetProjectIdBySlugQuery(slug);
+        return _mediator.Send(query).Result;
     }
 }
