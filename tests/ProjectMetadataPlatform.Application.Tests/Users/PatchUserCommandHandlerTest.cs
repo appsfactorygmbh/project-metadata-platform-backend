@@ -60,8 +60,6 @@ public class PatchUserCommandHandlerTest
 
         _mockUsersRepo.Setup(repo => repo.GetUserByIdAsync("42")).ReturnsAsync(user);
         _mockUsersRepo.Setup(repo => repo.StoreUser(It.IsAny<IdentityUser>())).ReturnsAsync((IdentityUser p) => p);
-        _mockUnitOfWork.Setup(m => m.CompleteAsync()).Returns(Task.CompletedTask);
-        _mockLogRepo.Setup(m => m.AddUserLogForCurrentUser(It.IsAny<IdentityUser>(), It.IsAny<Action>(), It.IsAny<List<LogChange>>())).Returns(Task.CompletedTask);
         var result =
             await _handler.Handle(new PatchUserCommand("42"), It.IsAny<CancellationToken>());
 
@@ -92,8 +90,6 @@ public class PatchUserCommandHandlerTest
 
         _mockUsersRepo.Setup(repo => repo.GetUserByIdAsync("42")).ReturnsAsync(user);
         _mockUsersRepo.Setup(repo => repo.StoreUser(It.IsAny<IdentityUser>())).ReturnsAsync((IdentityUser p) => p);
-        _mockUnitOfWork.Setup(m => m.CompleteAsync()).Returns(Task.CompletedTask);
-        _mockLogRepo.Setup(m => m.AddUserLogForCurrentUser(It.IsAny<IdentityUser>(), It.IsAny<Action>(), It.IsAny<List<LogChange>>())).Returns(Task.CompletedTask);
 
         var result = await _handler.Handle(new PatchUserCommand("42", newEmail), It.IsAny<CancellationToken>());
 
@@ -111,10 +107,6 @@ public class PatchUserCommandHandlerTest
 
         _mockUsersRepo.Setup(repo => repo.GetUserByIdAsync("42")).ReturnsAsync(user);
         _mockUsersRepo.Setup(repo => repo.StoreUser(It.IsAny<IdentityUser>())).ReturnsAsync((IdentityUser p) => p);
-        _mockUnitOfWork.Setup(m => m.CompleteAsync()).Returns(Task.CompletedTask);
-        _mockLogRepo
-            .Setup(m => m.AddUserLogForCurrentUser(It.IsAny<IdentityUser>(), It.IsAny<Action>(),
-                It.IsAny<List<LogChange>>())).Returns(Task.CompletedTask);
         _mockPasswordHasher.Setup(ph => ph.HashPassword(user, newPassword)).Returns(newPasswordHash);
 
         var result = await _handler.Handle(new PatchUserCommand("42", Password: newPassword),
@@ -137,8 +129,6 @@ public class PatchUserCommandHandlerTest
 
         _mockUsersRepo.Setup(repo => repo.GetUserByIdAsync("42")).ReturnsAsync(user);
         _mockUsersRepo.Setup(repo => repo.StoreUser(It.IsAny<IdentityUser>())).ReturnsAsync((IdentityUser p) => p);
-        _mockUnitOfWork.Setup(m => m.CompleteAsync()).Returns(Task.CompletedTask);
-        _mockLogRepo.Setup(m => m.AddUserLogForCurrentUser(It.IsAny<IdentityUser>(), It.IsAny<Action>(), It.IsAny<List<LogChange>>())).Returns(Task.CompletedTask);
 
         var result = await _handler.Handle(new PatchUserCommand("42", newEmail), It.IsAny<CancellationToken>());
 
@@ -153,10 +143,6 @@ public class PatchUserCommandHandlerTest
 
         _mockUsersRepo.Setup(repo => repo.GetUserByIdAsync("42")).ReturnsAsync(user);
         _mockUsersRepo.Setup(repo => repo.StoreUser(It.IsAny<IdentityUser>())).ReturnsAsync((IdentityUser p) => p);
-        _mockUnitOfWork.Setup(m => m.CompleteAsync()).Returns(Task.CompletedTask);
-        _mockLogRepo
-            .Setup(m => m.AddUserLogForCurrentUser(It.IsAny<IdentityUser>(), It.IsAny<Action>(),
-                It.IsAny<List<LogChange>>())).Returns(Task.CompletedTask);
         _mockPasswordHasher.Setup(ph => ph.HashPassword(user, newPassword)).Returns(user.PasswordHash);
 
         var result = await _handler.Handle(new PatchUserCommand("42", Password: newPassword),
