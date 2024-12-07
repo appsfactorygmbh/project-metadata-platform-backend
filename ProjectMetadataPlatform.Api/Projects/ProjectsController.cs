@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ProjectMetadataPlatform.Api.Plugins.Models;
 using ProjectMetadataPlatform.Api.Projects.Models;
-using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Application.Plugins;
 using ProjectMetadataPlatform.Application.Projects;
 using ProjectMetadataPlatform.Domain.Plugins;
@@ -71,16 +70,29 @@ public class ProjectsController : ControllerBase
         return Ok(response);
     }
 
-    [HttpGet("{slug:string}")]
+    /// <summary>
+    ///    Gets the project with the given slug.
+    /// </summary>
+    /// <param name="slug">The slug of the project.</param>
+    /// <returns> The project.</returns>
+    /// <response code="200">The Project is returned successfully.</response>
+    /// <response code="404">The project could not be found.</response>
+    /// <response code="500">An internal error occurred.</response>
+    [HttpGet("{slug}")]
     public async Task<ActionResult<GetProjectResponse>> Get(string slug)
     {
-        var projectId = GetProjectId(slug);
-        if (projectId == null)
+        int? projectId;
+        try
         {
-            return NotFound(slug);
+            projectId = GetProjectId(slug);
         }
-        return await Get((int) projectId);
-
+        catch(Exception e)
+        {
+             Console.Write(e.GetType());
+            Console.Write(e.StackTrace);
+            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+        }
+        return projectId == null ? NotFound(slug) : await Get((int) projectId);
     }
 
     /// <summary>
