@@ -228,7 +228,143 @@ public class ProjectsControllerTest
     }
 
     [Test]
-    public async Task DisplayNameNullCheckTest()
+    public async Task GetPluginsForProjectByProjectSlug_EmptyResponseList_Test()
+    {
+        _mediator.Setup(m => m.Send(It.Is<GetAllPluginsForProjectIdQuery>(r => r.Id == 5), It.IsAny<CancellationToken>())).ReturnsAsync([]);
+        _mediator.Setup(m => m.Send(It.Is<GetProjectIdBySlugQuery>(r => r.Slug == "Bor"), It.IsAny<CancellationToken>())).ReturnsAsync(5);
+
+        var result = await _controller.GetPluginsBySlug("Bor");
+
+        Assert.That(result, Is.Not.Null);
+        var okResult = result.Result as OkObjectResult;
+        Assert.That(okResult, Is.Not.Null);
+        Assert.Multiple(() =>
+        {
+            Assert.That(okResult.Value, Is.Not.Null);
+            Assert.That(okResult.Value, Is.InstanceOf<IEnumerable>());
+            Assert.That((IEnumerable)okResult.Value!, Is.Empty);
+        });
+        _mediator.Verify(m => m.Send(It.Is<GetProjectIdBySlugQuery>(r => r.Slug == "Bor"), It.IsAny<CancellationToken>()), Times.Once);
+        _mediator.Verify(m => m.Send(It.Is<GetAllPluginsForProjectIdQuery>(r => r.Id == 5), It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Test]
+    public async Task GetPluginsForProjectByProjectSlug_SlugNotFound_Test()
+    {
+        _mediator.Setup(m => m.Send(It.Is<GetProjectIdBySlugQuery>(r => r.Slug == "Mendelev"), It.IsAny<CancellationToken>())).ReturnsAsync((int?)null);
+
+        var result = await _controller.GetPluginsBySlug("Mendelev");
+
+        Assert.That(result, Is.Not.Null);
+        var notFoundResult = result.Result as NotFoundObjectResult;
+        Assert.That(notFoundResult, Is.Not.Null);
+        Assert.That(notFoundResult.Value, Is.EqualTo("Project with Slug Mendelev not found."));
+
+        _mediator.Verify(m => m.Send(It.Is<GetProjectIdBySlugQuery>(r => r.Slug == "Mendelev"), It.IsAny<CancellationToken>()), Times.Once);
+        _mediator.Verify(m => m.Send(It.Is<GetAllPluginsForProjectIdQuery>(r => r.Id == 101), It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Test]
+    public async Task GetPluginsForProjectByProjectSlug_MediatorThrowsExceptionWhenRequestingPlugins_Test()
+    {
+        _mediator.Setup(m => m.Send(It.Is<GetProjectIdBySlugQuery>(r => r.Slug == "Meitner"), It.IsAny<CancellationToken>())).ReturnsAsync(109);
+        _mediator.Setup(mediator => mediator.Send(It.Is<GetAllPluginsForProjectIdQuery>(r => r.Id == 109), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new InvalidDataException("An error message"));
+        var result = await _controller.GetPluginsBySlug("Meitner");
+        Assert.That(result.Result, Is.InstanceOf<StatusCodeResult>());
+
+        var badRequestResult = result.Result as StatusCodeResult;
+        Assert.That(badRequestResult!.StatusCode, Is.EqualTo(500));
+
+        _mediator.Verify(m => m.Send(It.Is<GetProjectIdBySlugQuery>(r => r.Slug == "Meitner"), It.IsAny<CancellationToken>()), Times.Once);
+        _mediator.Verify(m => m.Send(It.Is<GetAllPluginsForProjectIdQuery>(r => r.Id == 109), It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Test]
+    public async Task GetPluginsForProjectByProjectSlug_MediatorThrowsExceptionWhenRequestingIdBySlug_Test()
+    {
+        _mediator.Setup(m => m.Send(It.Is<GetProjectIdBySlugQuery>(r => r.Slug == "Curie"), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new InvalidDataException("An error message"));
+
+        var result = await _controller.GetPluginsBySlug("Curie");
+        Assert.That(result.Result, Is.InstanceOf<StatusCodeResult>());
+
+        var badRequestResult = result.Result as StatusCodeResult;
+        Assert.That(badRequestResult!.StatusCode, Is.EqualTo(500));
+
+        _mediator.Verify(m => m.Send(It.Is<GetProjectIdBySlugQuery>(r => r.Slug == "Curie"), It.IsAny<CancellationToken>()), Times.Once);
+        _mediator.Verify(m => m.Send(It.IsAny<GetAllPluginsForProjectIdQuery>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Test]
+    public async Task GetPluginsForProjectByProjectSlug()
+    {
+        var plugin = new Plugin { Id = 1, PluginName = "plugin 1" };
+        var project = new Project { Id = 1, Department = "department 1", BusinessUnit = "business unit 1", ClientName = "client name 1", ProjectName = "project 1", Slug = "project_1", TeamNumber = 1 };
+        var responseContent = new List<ProjectPlugins>
+        {
+            new() { ProjectId = 1, PluginId = 1, Plugin = plugin, Project = project, DisplayName = "Gitlab", Url = "Plugin1.com"},
+        };
+
+        _mediator.Setup(m => m.Send(It.Is<GetAllPluginsForProjectIdQuery>(r => r.Id == 100), It.IsAny<CancellationToken>())).ReturnsAsync(responseContent);
+        _mediator.Setup(m => m.Send(It.Is<GetProjectIdBySlugQuery>(r => r.Slug == "Fermi"), It.IsAny<CancellationToken>())).ReturnsAsync(100);
+
+        var result = await _controller.GetPluginsBySlug("Fermi");
+
+        Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
+
+        var okResult = result.Result as OkObjectResult;
+        Assert.Multiple(() =>
+        {
+            Assert.That(okResult!.Value, Is.Not.Null);
+            Assert.That(okResult.Value, Is.InstanceOf<IEnumerable<GetPluginResponse>>());
+        });
+
+        var resultValue = (okResult?.Value as IEnumerable<GetPluginResponse>)!.ToList();
+        Assert.That(resultValue, Has.Count.EqualTo(1));
+
+        var resultObj = resultValue[0];
+        Assert.Multiple(() =>
+        {
+            Assert.That(resultObj.Url, Is.EqualTo("Plugin1.com"));
+            Assert.That(resultObj.PluginName, Is.EqualTo("plugin 1"));
+            Assert.That(resultObj.DisplayName, Is.EqualTo("Gitlab"));
+        });
+
+        _mediator.Verify(m => m.Send(It.Is<GetProjectIdBySlugQuery>(r => r.Slug == "Fermi"), It.IsAny<CancellationToken>()), Times.Once);
+        _mediator.Verify(m => m.Send(It.Is<GetAllPluginsForProjectIdQuery>(r => r.Id == 100), It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Test]
+    public async Task GetPluginsForProjectByProjectSlug_PluginDisplayNameNullIsReplacedByPluginName_Test()
+    {
+
+        var plugin = new Plugin { Id = 1, PluginName = "plugin 1" };
+        var project = new Project { Id = 1, Department = "department 1", BusinessUnit = "business unit 1", ClientName = "client name 1", ProjectName = "project 1", Slug = "project_1", TeamNumber = 1 };
+        var responseContent = new List<ProjectPlugins>
+        {
+            new() { ProjectId = 1, PluginId = 1, Plugin = plugin, Project = project, Url = "Plugin1.com"},
+        };
+
+        _mediator.Setup(m => m.Send(It.Is<GetAllPluginsForProjectIdQuery>(r => r.Id == 111), It.IsAny<CancellationToken>())).ReturnsAsync(responseContent);
+        _mediator.Setup(m => m.Send(It.Is<GetProjectIdBySlugQuery>(r => r.Slug == "Röntgen"), It.IsAny<CancellationToken>())).ReturnsAsync(111);
+        var result = await _controller.GetPluginsBySlug("Röntgen");
+        var okResult = result.Result as OkObjectResult;
+        var resultValue = (okResult?.Value as IEnumerable<GetPluginResponse>)!.ToList();
+
+        var resultObj = resultValue[0];
+        Assert.Multiple(() =>
+        {
+            Assert.That(resultObj.Url, Is.EqualTo("Plugin1.com"));
+            Assert.That(resultObj.PluginName, Is.EqualTo("plugin 1"));
+            Assert.That(resultObj.DisplayName, Is.EqualTo("plugin 1"));
+        });
+        _mediator.Verify(m => m.Send(It.Is<GetProjectIdBySlugQuery>(r => r.Slug == "Röntgen"), It.IsAny<CancellationToken>()), Times.Once);
+        _mediator.Verify(m => m.Send(It.Is<GetAllPluginsForProjectIdQuery>(r => r.Id == 111), It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Test]
+    public async Task GetPluginsByProject_PluginDisplayNameNullIsReplacedByPluginName_Test()
     {
 
         var plugin = new Plugin { Id = 1, PluginName = "plugin 1" };
