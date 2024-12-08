@@ -92,7 +92,7 @@ public class ProjectsController : ControllerBase
             Console.Write(e.StackTrace);
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
-        return projectId == null ? NotFound(slug) : await Get((int) projectId);
+        return projectId == null ? NotFound($"Project with Slug {slug} not found.") : await Get((int) projectId);
     }
 
     /// <summary>
