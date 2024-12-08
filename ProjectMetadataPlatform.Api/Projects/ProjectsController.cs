@@ -84,7 +84,7 @@ public class ProjectsController : ControllerBase
         int? projectId;
         try
         {
-            projectId = GetProjectId(slug);
+            projectId = await GetProjectId(slug);
         }
         catch(Exception e)
         {
@@ -362,9 +362,9 @@ public class ProjectsController : ControllerBase
         return Ok(NoContent());
     }
 
-    private int? GetProjectId(string slug)
+    private async Task<int?> GetProjectId(string slug)
     {
         var query = new GetProjectIdBySlugQuery(slug);
-        return _mediator.Send(query).Result;
+        return await _mediator.Send(query);
     }
 }
