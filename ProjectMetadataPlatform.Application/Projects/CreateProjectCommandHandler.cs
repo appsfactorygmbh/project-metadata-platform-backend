@@ -20,6 +20,7 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
     private readonly ILogRepository _logRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ISlugHelper _slugHelper;
+
     /// <summary>
     ///     Creates a new instance of <see cref="CreateProjectCommandHandler" />.
     /// </summary>
@@ -28,7 +29,8 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
     /// <param name="logRepository">Repository for Logs</param>
     /// <param name="unitOfWork"> Used to save changes to the DbContext</param>
     /// <param name="slugHelper"> Used to generate slugs</param>
-    public CreateProjectCommandHandler(IProjectsRepository projectsRepository, IPluginRepository pluginRepository, ILogRepository logRepository, IUnitOfWork unitOfWork, ISlugHelper slugHelper)
+    public CreateProjectCommandHandler(IProjectsRepository projectsRepository, IPluginRepository pluginRepository,
+        ILogRepository logRepository, IUnitOfWork unitOfWork, ISlugHelper slugHelper)
     {
         _projectsRepository = projectsRepository;
         _pluginRepository = pluginRepository;
@@ -36,6 +38,7 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
         _unitOfWork = unitOfWork;
         _slugHelper = slugHelper;
     }
+
     /// <summary>
     ///     Handles the request to create a project.
     /// </summary>
@@ -51,7 +54,20 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
                 throw new InvalidOperationException("The Plugin with this id does not exist: " + plugin.PluginId);
             }
         }
-        var project = new Project{ProjectName=request.ProjectName, Slug = _slugHelper.GenerateSlug(request.ProjectName), BusinessUnit=request.BusinessUnit, TeamNumber=request.TeamNumber, Department=request.Department, ClientName=request.ClientName, ProjectPlugins = request.Plugins};
+
+        var projectSlug = _slugHelper.GenerateSlug(request.ProjectName);
+
+        if (await _slugHelper.CheckProjectSlugExists(projectSlug))
+        {
+            throw new InvalidOperationException("A Project with this slug already exists: " + projectSlug);
+        }
+
+        var project = new Project
+        {
+            ProjectName = request.ProjectName, Slug = projectSlug, BusinessUnit = request.BusinessUnit,
+            TeamNumber = request.TeamNumber, Department = request.Department, ClientName = request.ClientName,
+            ProjectPlugins = request.Plugins
+        };
 
         await _projectsRepository.Add(project);
 
@@ -71,12 +87,16 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
             {
                 new() { OldValue = "", NewValue = plugin.Url, Property = nameof(ProjectPlugins.Url) }
             };
-            if(plugin.DisplayName != null)
+            if (plugin.DisplayName != null)
             {
-                pluginChanges.Add(new LogChange { OldValue = "", NewValue = plugin.DisplayName, Property = nameof(ProjectPlugins.DisplayName) });
+                pluginChanges.Add(new LogChange
+                    { OldValue = "", NewValue = plugin.DisplayName, Property = nameof(ProjectPlugins.DisplayName) });
             }
-            await _logRepository.AddProjectLogForCurrentUser(project, Domain.Logs.Action.ADDED_PROJECT_PLUGIN, pluginChanges);
+
+            await _logRepository.AddProjectLogForCurrentUser(project, Domain.Logs.Action.ADDED_PROJECT_PLUGIN,
+                pluginChanges);
         }
+
         await _unitOfWork.CompleteAsync();
         return project.Id;
     }

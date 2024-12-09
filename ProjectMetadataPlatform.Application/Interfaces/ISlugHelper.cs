@@ -22,4 +22,11 @@ public interface ISlugHelper
     /// <exception cref="InvalidOperationException">Thrown when no project is found.</exception>
     /// <returns>The Id from the slug.</returns>
     public Task<int> GetProjectIdBySlug(string slug);
+
+    /// <summary>
+    /// Checks if the project slug is used.
+    /// </summary>
+    /// <param name="slug">The slug to check.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains a boolean indicating whether the slug is used or not.</returns>
+    public Task<bool> CheckProjectSlugExists(string slug);
 }

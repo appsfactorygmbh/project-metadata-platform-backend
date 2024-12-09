@@ -95,4 +95,26 @@ public class SlugHelperTest
 
         Assert.ThrowsAsync<InvalidOperationException>(() => _slugHelper.GetProjectIdBySlug(slug));
     }
+
+    [Test]
+    public async Task ProjectSlugExists_Test()
+    {
+        const string slug = "example_project";
+        _mockProjectsRepository.Setup(m => m.GetProjectIdBySlugAsync(It.IsAny<string>())).ReturnsAsync(1);
+
+        var result = await _slugHelper.CheckProjectSlugExists(slug);
+
+        Assert.That(result, Is.True);
+    }
+
+    [Test]
+    public async Task ProjectSlugExists_Test_ReturnsFalse()
+    {
+        const string slug = "example_project";
+        _mockProjectsRepository.Setup(m => m.GetProjectIdBySlugAsync(It.IsAny<string>())).ReturnsAsync((int?)null);
+
+        var result = await _slugHelper.CheckProjectSlugExists(slug);
+
+        Assert.That(result, Is.False);
+    }
 }

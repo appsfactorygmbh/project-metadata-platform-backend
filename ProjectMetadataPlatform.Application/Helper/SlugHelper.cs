@@ -32,7 +32,12 @@ public partial class SlugHelper: ISlugHelper
     public async Task<int> GetProjectIdBySlug(string slug)
     {
         var projectId = await _projectsRepository.GetProjectIdBySlugAsync(slug);
-
         return projectId ?? throw new InvalidOperationException("Project with this slug does not exist: " + slug);
+    }
+
+    /// <inheritdoc/>
+    public async Task<bool> CheckProjectSlugExists(string slug)
+    {
+        return await _projectsRepository.GetProjectIdBySlugAsync(slug) != null;
     }
 }

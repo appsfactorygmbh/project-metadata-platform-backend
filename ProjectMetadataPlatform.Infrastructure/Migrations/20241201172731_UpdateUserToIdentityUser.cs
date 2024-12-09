@@ -10,6 +10,11 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.Sql("UPDATE \"AspNetUsers\" SET \"Email\" = 'admin@admin.admin' WHERE \"UserName\" = 'admin';");
+            migrationBuilder.Sql("UPDATE \"AspNetUsers\" SET \"NormalizedEmail\" = 'ADMIN@ADMIN.ADMIN' WHERE \"UserName\" = 'admin';");
+            migrationBuilder.Sql("UPDATE \"AspNetUsers\" SET \"UserName\" = \"Email\";");
+            migrationBuilder.Sql("UPDATE \"AspNetUsers\" SET \"NormalizedUserName\" = \"NormalizedEmail\";");
+
             migrationBuilder.DropColumn(
                 name: "Name",
                 table: "AspNetUsers");

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,9 +10,7 @@ using Microsoft.AspNetCore.Http;
 using ProjectMetadataPlatform.Domain.Logs;
 using Action = ProjectMetadataPlatform.Domain.Logs.Action;
 
-
 namespace ProjectMetadataPlatform.Application.Users;
-
 
 /// <summary>
 /// Handles the command to delete a user by their unique identifier.
@@ -40,30 +39,41 @@ public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand,Identi
 
     /// <summary>
     /// Handles the <see cref="DeleteUserCommand"/> request.
+    /// Deletes the user with the specified ID, if present. Returns the deleted user, if present, otherwise null.
+    /// Throws an <see cref="InvalidOperationException"/> if the active user tries to delete themself.
+    /// On successful deletion, a corresponding log entry is added.
+    /// Also, all logs associated with the deleted user are updated, setting the email to the deleted user's current email.
     /// </summary>
     /// <param name="request">The command request containing the user ID.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
-    /// <returns> Deletes User if present, otherwise null.</returns>
+    /// <returns> The deleted user, if present, otherwise null.</returns>
+    /// <exception cref="InvalidOperationException">If the active user tries to delete themself.</exception>
     public async Task<IdentityUser?> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
     {
         var user = await _usersRepository.GetUserByIdAsync(request.Id);
         var email = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.Email) ?? "Unknown user";
-        IdentityUser? activeUser = await _usersRepository.GetUserByEmailAsync(email);
+        var activeUser = await _usersRepository.GetUserByEmailAsync(email);
         if (user == null)
         {
             return null;
         }
-        else if (user == activeUser)
+
+        if (user == activeUser)
         {
             throw new InvalidOperationException("A User can't delete themself.");
         }
-        else
-        {
-            var change = new LogChange() { OldValue = user.Email!, NewValue = "", Property = nameof(IdentityUser.Email) };
-            await _logRepository.AddUserLogForCurrentUser(user,Action.REMOVED_USER,[change]);
-            var response =  await _usersRepository.DeleteUserAsync(user);
-            await _unitOfWork.CompleteAsync();
-            return response;
-        }
+
+        var change = new LogChange { OldValue = user.Email!, NewValue = "", Property = nameof(IdentityUser.Email) };
+        await _logRepository.AddUserLogForCurrentUser(user, Action.REMOVED_USER, [change]);
+
+        // Use the search method because GetAllLogs returns the logs untracked by the db context.
+        var logsByDeletedUser = await _logRepository.GetLogsWithSearch("");
+        logsByDeletedUser.Where(log => log.AuthorId == user.Id).ToList().ForEach(log => log.AuthorEmail = user.Email);
+        logsByDeletedUser.Where(log => log.AffectedUserId == user.Id).ToList().ForEach(log => log.AffectedUserEmail = user.Email);
+
+        var response = await _usersRepository.DeleteUserAsync(user);
+        await _unitOfWork.CompleteAsync();
+
+        return response;
     }
 }

@@ -34,6 +34,7 @@ public class ProjectsController : ControllerBase
         _mediator = mediator;
     }
 
+
     /// <summary>
     ///     Gets all projects or all projects that match the given search string.
     /// </summary>
@@ -57,8 +58,9 @@ public class ProjectsController : ControllerBase
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
 
-        IEnumerable<GetProjectsResponse> response = projects.Select(project => new GetProjectsResponse(
+        var response = projects.Select(project => new GetProjectsResponse(
             project.Id,
+            project.Slug,
             project.ProjectName,
             project.ClientName,
             project.BusinessUnit,
@@ -68,6 +70,30 @@ public class ProjectsController : ControllerBase
         return Ok(response);
     }
 
+    /// <summary>
+    ///    Gets the project with the given slug.
+    /// </summary>
+    /// <param name="slug">The slug of the project.</param>
+    /// <returns> The project.</returns>
+    /// <response code="200">The Project is returned successfully.</response>
+    /// <response code="404">The project could not be found.</response>
+    /// <response code="500">An internal error occurred.</response>
+    [HttpGet("{slug}")]
+    public async Task<ActionResult<GetProjectResponse>> Get(string slug)
+    {
+        int? projectId;
+        try
+        {
+            projectId = await GetProjectId(slug);
+        }
+        catch(Exception e)
+        {
+             Console.Write(e.GetType());
+            Console.Write(e.StackTrace);
+            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+        }
+        return projectId == null ? NotFound($"Project with Slug {slug} not found.") : await Get((int) projectId);
+    }
 
     /// <summary>
     ///     Gets the project with the given id.
@@ -99,6 +125,7 @@ public class ProjectsController : ControllerBase
 
         var response = new GetProjectResponse(
             project.Id,
+            project.Slug,
             project.ProjectName,
             project.ClientName,
             project.BusinessUnit,
@@ -130,11 +157,36 @@ public class ProjectsController : ControllerBase
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
 
-        IEnumerable<GetPluginResponse> response = projectPlugins.Select(plugin
+        var response = projectPlugins.Select(plugin
             => new GetPluginResponse(plugin.Plugin!.PluginName, plugin.Url,
                 plugin.DisplayName ?? plugin.Plugin.PluginName, plugin.Plugin.Id));
 
         return Ok(response);
+    }
+
+    /// <summary>
+    /// Gets all the plugins of the project with the given id.
+    /// </summary>
+    /// <param name="slug">The slug of the project.</param>
+    /// <returns>The plugins of the project.</returns>
+    /// <response code="200">All Plugins of the project are returned successfully.</response>
+    /// <response code="404">No project with the given Slug could be found.</response>
+    /// <response code="500">An internal error occurred.</response>
+    [HttpGet("{slug}/plugins")]
+    public async Task<ActionResult<IEnumerable<GetPluginResponse>>> GetPluginsBySlug(string slug)
+    {
+        int? projectId;
+        try
+        {
+            projectId = await GetProjectId(slug);
+        }
+        catch(Exception e)
+        {
+            Console.Write(e.GetType());
+            Console.Write(e.StackTrace);
+            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+        }
+        return projectId == null ? NotFound($"Project with Slug {slug} not found.") : await GetPlugins((int) projectId);
     }
 
     /// <summary>
@@ -166,7 +218,7 @@ public class ProjectsController : ControllerBase
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
 
-        IEnumerable<GetPluginResponse> response = unarchivedProjectPlugins
+        var response = unarchivedProjectPlugins
             .Where(plugin => plugin.Plugin != null)
             .Select(plugin => new GetPluginResponse(
                 plugin.Plugin!.PluginName,
@@ -264,7 +316,7 @@ public class ProjectsController : ControllerBase
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
 
-        IEnumerable<string> response = businessunits;
+        var response = businessunits;
 
         return Ok(response);
     }
@@ -296,7 +348,7 @@ public class ProjectsController : ControllerBase
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
 
-        IEnumerable<int> response = teamNumbers;
+        var response = teamNumbers;
 
         return Ok(response);
     }
@@ -333,5 +385,11 @@ public class ProjectsController : ControllerBase
         }
 
         return Ok(NoContent());
+    }
+
+    private async Task<int?> GetProjectId(string slug)
+    {
+        var query = new GetProjectIdBySlugQuery(slug);
+        return await _mediator.Send(query);
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Identity;
 using ProjectMetadataPlatform.Api.Interfaces;
 using ProjectMetadataPlatform.Api.Logs.Models;
 using ProjectMetadataPlatform.Domain.Logs;
@@ -30,7 +31,7 @@ public class LogConverter: ILogConverter
             Action.UPDATED_PROJECT_PLUGIN => BuildUpdatedProjectPluginMessage(log.Project?.ProjectName, log.Changes),
             Action.REMOVED_PROJECT_PLUGIN => BuildRemovedProjectPluginMessage(log.Project?.ProjectName, log.Changes),
             Action.ADDED_USER => BuildAddedUserMessage(log.Changes),
-            Action.UPDATED_USER => BuildUpdatedUserMessage(log.Changes),
+            Action.UPDATED_USER => BuildUpdatedUserMessage(log),
             Action.REMOVED_USER => BuildRemovedUserMessage(log.AffectedUserEmail ?? "<Unknown User>"),
             Action.REMOVED_PROJECT => BuildRemovedProjectMessage(log.ProjectName ?? "<Unknown Project>"),
             Action.ADDED_GLOBAL_PLUGIN => BuildAddedGlobalPluginMessage(log.Changes),
@@ -156,14 +157,18 @@ public class LogConverter: ILogConverter
     /// <summary>
     /// Builds a message for an updated user.
     /// </summary>
-    /// <param name="changes">The list of changes.</param>
+    /// <param name="log">The log entry.</param>
     /// <returns>The constructed message.</returns>
-    private static string BuildUpdatedUserMessage(List<LogChange>? changes) {
-        var message = "updated user properties: ";
-        if (changes == null) {
-            return message;
-        }
-        message += string.Join(", ", changes.Select(change => $"set {change.Property} from {change.OldValue} to {change.NewValue}"));
+    private static string BuildUpdatedUserMessage(Log log) {
+        var affectedUserEmail = log.AffectedUser?.Email ?? log.AffectedUserEmail ?? "<Unknown User>";
+
+        var message = $"updated user {affectedUserEmail}: ";
+        message += string.Join(", ", log.Changes!.Select(change =>
+            change.Property switch
+            {
+                nameof(IdentityUser.PasswordHash) => "changed password",
+                _ => $"set {change.Property} from {change.OldValue} to {change.NewValue}"
+            }));
         return message;
     }
 

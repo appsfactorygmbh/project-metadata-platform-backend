@@ -1,5 +1,4 @@
 using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Api.Logs;
@@ -21,7 +20,7 @@ public class LogConverterTest
     }
 
     [Test]
-    public async Task ConvertToUpdatedProjectLog_Test()
+    public void ConvertToUpdatedProjectLog_Test()
     {
         var log = new Log
         {
@@ -38,7 +37,7 @@ public class LogConverterTest
             ]
         };
 
-        LogResponse logResponse = _logConverter.BuildLogMessage(log);
+        var logResponse = _logConverter.BuildLogMessage(log);
 
         Assert.Multiple(() =>
         {
@@ -49,7 +48,7 @@ public class LogConverterTest
     }
 
     [Test]
-    public async Task ConvertToArchivedProjectLog_Test()
+    public void ConvertToArchivedProjectLog_Test()
     {
         var log = new Log
         {
@@ -71,7 +70,7 @@ public class LogConverterTest
             Action = Action.ARCHIVED_PROJECT
         };
 
-        LogResponse logResponse = _logConverter.BuildLogMessage(log);
+        var logResponse = _logConverter.BuildLogMessage(log);
 
         Assert.Multiple(() =>
         {
@@ -81,7 +80,7 @@ public class LogConverterTest
     }
 
     [Test]
-    public async Task ConvertToAddedProjectLog_Test()
+    public void ConvertToAddedProjectLog_Test()
     {
         var log = new Log
         {
@@ -107,7 +106,7 @@ public class LogConverterTest
             ]
         };
 
-        LogResponse logResponse = _logConverter.BuildLogMessage(log);
+        var logResponse = _logConverter.BuildLogMessage(log);
 
         Assert.Multiple(() =>
         {
@@ -117,7 +116,7 @@ public class LogConverterTest
     }
 
     [Test]
-    public async Task ConvertToUpdatedProjectPluginLog_Test()
+    public void ConvertToUpdatedProjectPluginLog_Test()
     {
         var log = new Log
         {
@@ -143,7 +142,7 @@ public class LogConverterTest
             ]
         };
 
-        LogResponse logResponse = _logConverter.BuildLogMessage(log);
+        var logResponse = _logConverter.BuildLogMessage(log);
 
         Assert.Multiple(() =>
         {
@@ -153,7 +152,7 @@ public class LogConverterTest
     }
 
     [Test]
-    public async Task ConvertToRemovedProjectPluginLog_Test()
+    public void ConvertToRemovedProjectPluginLog_Test()
     {
         var log = new Log
         {
@@ -179,7 +178,7 @@ public class LogConverterTest
             ]
         };
 
-        LogResponse logResponse = _logConverter.BuildLogMessage(log);
+        var logResponse = _logConverter.BuildLogMessage(log);
 
         Assert.Multiple(() =>
         {
@@ -189,7 +188,7 @@ public class LogConverterTest
     }
 
     [Test]
-    public async Task ConvertToUnarchivedProjectLog_Test()
+    public void ConvertToUnarchivedProjectLog_Test()
     {
         var log = new Log
         {
@@ -211,7 +210,7 @@ public class LogConverterTest
             Action = Action.UNARCHIVED_PROJECT
         };
 
-        LogResponse logResponse = _logConverter.BuildLogMessage(log);
+        var logResponse = _logConverter.BuildLogMessage(log);
 
         Assert.Multiple(() =>
         {
@@ -221,7 +220,7 @@ public class LogConverterTest
     }
 
     [Test]
-    public async Task ConvertToProjectLogDeletedUser_Test()
+    public void ConvertToProjectLogDeletedUser_Test()
     {
         var log = new Log
         {
@@ -237,7 +236,7 @@ public class LogConverterTest
             ]
         };
 
-        LogResponse logResponse = _logConverter.BuildLogMessage(log);
+        var logResponse = _logConverter.BuildLogMessage(log);
 
         Assert.Multiple(() =>
         {
@@ -248,7 +247,7 @@ public class LogConverterTest
     }
 
     [Test]
-    public async Task ConvertToLogAddedUser_Test()
+    public void ConvertToLogAddedUser_Test()
     {
         var log = new Log
         {
@@ -264,7 +263,7 @@ public class LogConverterTest
             ]
         };
 
-        LogResponse logResponse = _logConverter.BuildLogMessage(log);
+        var logResponse = _logConverter.BuildLogMessage(log);
 
         Assert.Multiple(() =>
         {
@@ -274,15 +273,17 @@ public class LogConverterTest
     }
 
     [Test]
-    public async Task ConvertToLogUpdatedUser_Test()
+    public void ConvertToLogUpdatedUser_Test()
     {
+        var gandalf = new IdentityUser { Email = "Gandalf" };
         var log = new Log
         {
             Id = 42,
             TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
             AuthorId = "42",
             AuthorEmail = "Gandalf",
-            Author = new IdentityUser { Email = "Gandalf" },
+            Author = gandalf,
+            AffectedUser = gandalf,
             Action = Action.UPDATED_USER,
             Changes =
             [
@@ -290,17 +291,17 @@ public class LogConverterTest
             ]
         };
 
-        LogResponse logResponse = _logConverter.BuildLogMessage(log);
+        var logResponse = _logConverter.BuildLogMessage(log);
 
         Assert.Multiple(() =>
         {
-            Assert.That(logResponse.LogMessage, Is.EqualTo("Gandalf updated user properties: set Email from Gandalf the Grey to Gandalf the White"));
+            Assert.That(logResponse.LogMessage, Is.EqualTo("Gandalf updated user Gandalf: set Email from Gandalf the Grey to Gandalf the White"));
             Assert.That(logResponse.Timestamp, Is.EqualTo("1970-01-01T00:00:00+01:00"));
         });
     }
 
     [Test]
-    public async Task ConvertToLogRemovedUser_Test()
+    public void ConvertToLogRemovedUser_Test()
     {
         var log = new Log
         {
@@ -317,7 +318,7 @@ public class LogConverterTest
             ]
         };
 
-        LogResponse logResponse = _logConverter.BuildLogMessage(log);
+        var logResponse = _logConverter.BuildLogMessage(log);
 
         Assert.Multiple(() =>
         {
@@ -327,7 +328,7 @@ public class LogConverterTest
     }
 
     [Test]
-    public async Task ConvertToLogRemovedProject_Test()
+    public void ConvertToLogRemovedProject_Test()
     {
         var log = new Log
         {
@@ -340,7 +341,7 @@ public class LogConverterTest
             ProjectName = "DeathStar",
         };
 
-        LogResponse logResponse = _logConverter.BuildLogMessage(log);
+        var logResponse = _logConverter.BuildLogMessage(log);
 
         Assert.Multiple(() =>
         {
@@ -350,7 +351,7 @@ public class LogConverterTest
     }
 
     [Test]
-    public async Task ConvertToLogAddedGlobalPlugin_Test()
+    public void ConvertToLogAddedGlobalPlugin_Test()
     {
         var log = new Log
         {
@@ -366,7 +367,7 @@ public class LogConverterTest
             ]
         };
 
-        LogResponse logResponse = _logConverter.BuildLogMessage(log);
+        var logResponse = _logConverter.BuildLogMessage(log);
 
         Assert.Multiple(() =>
         {
@@ -376,7 +377,7 @@ public class LogConverterTest
     }
 
     [Test]
-    public async Task ConvertToLogUpdatedGlobalPlugin_Test()
+    public void ConvertToLogUpdatedGlobalPlugin_Test()
     {
         var log = new Log
         {
@@ -392,7 +393,7 @@ public class LogConverterTest
             ]
         };
 
-        LogResponse logResponse = _logConverter.BuildLogMessage(log);
+        var logResponse = _logConverter.BuildLogMessage(log);
 
         Assert.Multiple(() =>
         {
@@ -402,7 +403,7 @@ public class LogConverterTest
     }
 
     [Test]
-    public async Task ConvertToLogArchivedGlobalPlugin_Test()
+    public void ConvertToLogArchivedGlobalPlugin_Test()
     {
         var log = new Log
         {
@@ -415,7 +416,7 @@ public class LogConverterTest
             GlobalPluginName = "Directory",
         };
 
-        LogResponse logResponse = _logConverter.BuildLogMessage(log);
+        var logResponse = _logConverter.BuildLogMessage(log);
 
         Assert.Multiple(() =>
         {
@@ -425,7 +426,7 @@ public class LogConverterTest
     }
 
     [Test]
-    public async Task ConvertToLogUnarchivedGlobalPlugin_Test()
+    public void ConvertToLogUnarchivedGlobalPlugin_Test()
     {
         var log = new Log
         {
@@ -438,7 +439,7 @@ public class LogConverterTest
             GlobalPluginName = "Directory",
         };
 
-        LogResponse logResponse = _logConverter.BuildLogMessage(log);
+        var logResponse = _logConverter.BuildLogMessage(log);
 
         Assert.Multiple(() =>
         {
@@ -448,7 +449,7 @@ public class LogConverterTest
     }
 
     [Test]
-    public async Task ConvertToLogRemovedGlobalPlugin_Test()
+    public void ConvertToLogRemovedGlobalPlugin_Test()
     {
         var log = new Log
         {
@@ -461,7 +462,7 @@ public class LogConverterTest
             GlobalPluginName = "root"
         };
 
-        LogResponse logResponse = _logConverter.BuildLogMessage(log);
+        var logResponse = _logConverter.BuildLogMessage(log);
 
         Assert.Multiple(() =>
         {

@@ -1,4 +1,4 @@
-using System.IO;
+﻿using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -13,8 +13,10 @@ using ProjectMetadataPlatform.Domain.Projects;
 namespace ProjectMetadataPlatform.Api.Tests.Projects;
 
 [TestFixture]
-public class GetProjectByIdControllerTest
+public class GetProjectBySlugControllerTest
 {
+    private ProjectsController _controller;
+    private Mock<IMediator> _mediator;
 
     [SetUp]
     public void Setup()
@@ -22,15 +24,13 @@ public class GetProjectByIdControllerTest
         _mediator = new Mock<IMediator>();
         _controller = new ProjectsController(_mediator.Object);
     }
-    private ProjectsController _controller;
-    private Mock<IMediator> _mediator;
 
-    [Test]
-    public async Task GetProjectById_NonexistentProject_Test()
+        [Test]
+    public async Task GetProjectBySlug_NonexistentProject_Test()
     {
-        _mediator.Setup(m => m.Send(It.Is<GetProjectQuery>(q => q.Id == 1), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Project?)null);
-        ActionResult<GetProjectResponse> result = await _controller.Get(1);
+        _mediator.Setup(m => m.Send(It.Is<GetProjectIdBySlugQuery>(q => q.Slug == "test"), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((int?)null);
+        var result = await _controller.Get("test");
         Assert.That(result, Is.Not.Null);
 
         Assert.That(result.Result, Is.InstanceOf<NotFoundObjectResult>());
@@ -39,9 +39,9 @@ public class GetProjectByIdControllerTest
     [Test]
     public async Task MediatorThrowsExceptionTest()
     {
-        _mediator.Setup(mediator => mediator.Send(It.IsAny<GetProjectQuery>(), It.IsAny<CancellationToken>()))
+        _mediator.Setup(mediator => mediator.Send(It.IsAny<GetProjectIdBySlugQuery>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidDataException("An error message"));
-        var result = await _controller.Get(1);
+        var result = await _controller.Get("test");
         Assert.That(result.Result, Is.InstanceOf<StatusCodeResult>());
 
         var badRequestResult = result.Result as StatusCodeResult;
@@ -62,11 +62,13 @@ public class GetProjectByIdControllerTest
             TeamNumber = 200,
             Department = "Security"
         };
+        _mediator.Setup(m => m.Send(It.Is<GetProjectIdBySlugQuery>(q => q.Slug == "metadataplatform"), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(50);
         _mediator.Setup(m => m.Send(It.Is<GetProjectQuery>(q => q.Id == 50), It.IsAny<CancellationToken>()))
             .ReturnsAsync(projectsResponseContent);
 
         // act
-        ActionResult<GetProjectResponse> result = await _controller.Get(50);
+        ActionResult<GetProjectResponse> result = await _controller.Get("metadataplatform");
 
         // assert
         Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
