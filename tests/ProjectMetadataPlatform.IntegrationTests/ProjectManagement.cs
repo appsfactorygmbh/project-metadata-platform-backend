@@ -9,27 +9,29 @@ using ProjectMetadataPlatform.IntegrationTests.Utilities;
 
 namespace ProjectMetadataPlatform.IntegrationTests;
 
-public class ProjectsWorkflow : IntegrationTestsBase
+public class ProjectManagement : IntegrationTestsBase
 {
-    private const string CREATE_PROJECT_REQUEST = """
-                                                  {
-                                                    "projectName": "testProject",
-                                                    "businessUnit": "BU1",
-                                                    "teamNumber": 3,
-                                                    "department": "testDepartment",
-                                                    "clientName": "testClient"
-                                                  }
-                                                  """;
+    private static readonly StringContent CreateRequest = StringContent(
+        """
+        {
+          "projectName": "testProject",
+          "businessUnit": "BU1",
+          "teamNumber": 3,
+          "department": "testDepartment",
+          "clientName": "testClient"
+        }
+        """);
 
-    private const string CREATE_PROJECT_REQUEST2 = """
-                                                  {
-                                                    "projectName": "otherTestProject2",
-                                                    "businessUnit": "BU2",
-                                                    "teamNumber": 4,
-                                                    "department": "testDepartment2",
-                                                    "clientName": "testClient2"
-                                                  }
-                                                  """;
+    private static readonly StringContent CreateRequest2 = StringContent(
+        """
+        {
+          "projectName": "otherTestProject2",
+          "businessUnit": "BU2",
+          "teamNumber": 4,
+          "department": "testDepartment2",
+          "clientName": "testClient2"
+        }
+        """);
 
     [Test]
     public async Task CreateProject()
@@ -40,7 +42,7 @@ public class ProjectsWorkflow : IntegrationTestsBase
 
         // Act
         // Assert
-        var putResponse = await client.PutAsync("/Projects", new StringContent(CREATE_PROJECT_REQUEST, System.Text.Encoding.UTF8, "application/json"));
+        var putResponse = await client.PutAsync("/Projects", CreateRequest);
 
         putResponse.StatusCode.Should().Be(HttpStatusCode.Created);
         putResponse.Headers.Location.Should().NotBeNull();
@@ -68,10 +70,10 @@ public class ProjectsWorkflow : IntegrationTestsBase
 
         // Act
         // Assert
-        var putResponse = await client.PutAsync("/Projects", new StringContent(CREATE_PROJECT_REQUEST, System.Text.Encoding.UTF8, "application/json"));
+        var putResponse = await client.PutAsync("/Projects", CreateRequest);
         putResponse.StatusCode.Should().Be(HttpStatusCode.Created);
 
-        putResponse = await client.PutAsync("/Projects", new StringContent(CREATE_PROJECT_REQUEST2, System.Text.Encoding.UTF8, "application/json"));
+        putResponse = await client.PutAsync("/Projects", CreateRequest2);
         putResponse.StatusCode.Should().Be(HttpStatusCode.Created);
 
         var getResponse = await client.GetAsync("/Projects");

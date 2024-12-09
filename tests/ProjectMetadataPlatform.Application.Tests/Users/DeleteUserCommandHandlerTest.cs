@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Security.Claims;
-using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -13,7 +11,6 @@ using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Application.Users;
 using ProjectMetadataPlatform.Domain.Logs;
 using UserAction = ProjectMetadataPlatform.Domain.Logs.Action;
-using Action = System.Action;
 
 namespace ProjectMetadataPlatform.Application.Tests.Users;
 
@@ -25,23 +22,23 @@ public class DeleteUserCommandHandlerTest
     {
         _mockUsersRepo = new Mock<IUsersRepository>();
         var httpContextAccessorMock = new Mock<IHttpContextAccessor>();
-        var identity = new ClaimsIdentity(new[] { new Claim(ClaimTypes.Email, "camo") }, "TestAuth");
-        var contextUser = new ClaimsPrincipal(identity); //add claims as needed
+        var identity = new ClaimsIdentity([new Claim(ClaimTypes.Email, "camo")], "TestAuth");
+        var contextUser = new ClaimsPrincipal(identity);
 
         var httpContext = new DefaultHttpContext
         {
             User = contextUser
         };
-        httpContextAccessorMock.Setup(_ => _.HttpContext).Returns(httpContext);
+        httpContextAccessorMock.Setup(contextAccessor => contextAccessor.HttpContext).Returns(httpContext);
         _mockUnitOfWork = new Mock<IUnitOfWork>();
         _mockLogRepository = new Mock<ILogRepository>();
+        _mockLogRepository.Setup(repository => repository.GetLogsWithSearch(It.IsAny<string>())).ReturnsAsync([]);
         _handler = new DeleteUserCommandHandler(_mockUsersRepo.Object, httpContextAccessorMock.Object,_mockLogRepository.Object,_mockUnitOfWork.Object);
-        httpContextAccessorMock.Setup(_ => _.HttpContext.User).Returns(contextUser);
-
+        httpContextAccessorMock.Setup(contextAccessor => contextAccessor.HttpContext.User).Returns(contextUser);
     }
+
     private DeleteUserCommandHandler _handler;
     private Mock<IUsersRepository> _mockUsersRepo;
-    private Mock<IHttpContextAccessor> httpContextAccessorMock;
     private Mock<IUnitOfWork> _mockUnitOfWork;
     private Mock<ILogRepository> _mockLogRepository;
 
@@ -67,9 +64,49 @@ public class DeleteUserCommandHandlerTest
     }
 
     [Test]
+    [Description("""
+                 Scenario: A user is being deleted. The email of the user has been changed in the past, from 'old@mail.de' to 'user@example.com'.
+                 Some logs have been created by the user to be deleted, or affecting the user to be deleted. They were created before the email change.
+
+                 Expected: The email of the logs should be adjusted to the latest email of the user to be deleted.
+                 """)]
+    public async Task AdjustsEmailOfLogsCreatedByOrAffectingUserToDelete()
+    {
+        var user = new IdentityUser { Id = "1", Email = "user@example.com"};
+        _mockUsersRepo.Setup(repository => repository.GetUserByIdAsync("1")).ReturnsAsync(user);
+        _mockUsersRepo.Setup(repository => repository.DeleteUserAsync(user)).ReturnsAsync(user);
+
+        var logByUserToDelete = new Log
+        {
+            AuthorId = "1", AuthorEmail = "old@mail.de", AffectedUserId = "2", AffectedUserEmail = "different@mail.de"
+        };
+        var logAffectingUserToDelete = new Log
+        {
+            AuthorId = "2", AuthorEmail = "different@mail.de", AffectedUserId = "1", AffectedUserEmail = "old@mail.de"
+        };
+        var logThatShouldNotBeChanged = new Log
+        {
+            AuthorId = "2", AuthorEmail = "different@mail.de", AffectedUserId = "2", AffectedUserEmail = "different@mail.de"
+        };
+        _mockLogRepository.Setup(repository => repository.GetLogsWithSearch(It.IsAny<string>()))
+            .ReturnsAsync([logByUserToDelete, logAffectingUserToDelete, logThatShouldNotBeChanged]);
+
+        await _handler.Handle(new DeleteUserCommand("1"), CancellationToken.None);
+        Assert.Multiple(() =>
+        {
+            Assert.That(logByUserToDelete.AuthorEmail, Is.EqualTo("user@example.com"));
+            Assert.That(logByUserToDelete.AffectedUserEmail, Is.EqualTo("different@mail.de"));
+            Assert.That(logAffectingUserToDelete.AuthorEmail, Is.EqualTo("different@mail.de"));
+            Assert.That(logAffectingUserToDelete.AffectedUserEmail, Is.EqualTo("user@example.com"));
+            Assert.That(logThatShouldNotBeChanged.AuthorEmail, Is.EqualTo("different@mail.de"));
+            Assert.That(logThatShouldNotBeChanged.AffectedUserEmail, Is.EqualTo("different@mail.de"));
+        });
+    }
+
+    [Test]
     public async Task DeleteUser_InvalidUser_Test()
     {
-        _mockUsersRepo.Setup(m => m.GetUserByIdAsync("1")).ReturnsAsync((IdentityUser)null);
+        _mockUsersRepo.Setup(m => m.GetUserByIdAsync("1")).ReturnsAsync((IdentityUser?)null);
 
         var result = await _handler.Handle(new DeleteUserCommand("1"), CancellationToken.None);
 
@@ -77,11 +114,13 @@ public class DeleteUserCommandHandlerTest
     }
 
     [Test]
-    public async Task DeleteUser_SelfDeletionAttempt_Test()
+    public void DeleteUser_SelfDeletionAttempt_Test()
     {
         var user = new IdentityUser {Email = "camo", Id = "1"};
+
         _mockUsersRepo.Setup(m => m.GetUserByIdAsync("1")).ReturnsAsync(user);
         _mockUsersRepo.Setup(m => m.GetUserByEmailAsync("camo")).ReturnsAsync(user);
+
         Assert.ThrowsAsync<InvalidOperationException>(() => _handler.Handle(new DeleteUserCommand("1"), CancellationToken.None));
     }
 }

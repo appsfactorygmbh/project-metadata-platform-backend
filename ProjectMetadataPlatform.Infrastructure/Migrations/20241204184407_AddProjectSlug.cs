@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -17,7 +18,14 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
                 nullable: false,
                 defaultValue: "");
 
-            migrationBuilder.Sql("UPDATE \"Projects\" SET \"Slug\" = LOWER(REPLACE(TRIM(\"ProjectName\"), ' ', '_'));");
+            if (migrationBuilder.IsNpgsql())
+            {
+                migrationBuilder.Sql("UPDATE \"Projects\" SET \"Slug\" = LOWER(REPLACE(TRIM(REGEXP_REPLACE(\"ProjectName\", '[^a-zA-Z0-9_ ]', '')), ' ', '_'));");
+            }
+            else
+            {
+                migrationBuilder.Sql("UPDATE \"Projects\" SET \"Slug\" = LOWER(REPLACE(TRIM(\"ProjectName\"), ' ', '_'));");
+            }
 
             migrationBuilder.CreateIndex(
                 name: "IX_Projects_Slug",

@@ -7,6 +7,7 @@ using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Infrastructure.DataAccess;
 using Microsoft.AspNetCore.Identity;
 using System.Globalization;
+using ProjectMetadataPlatform.Domain.Auth;
 
 namespace ProjectMetadataPlatform.Infrastructure.Users;
 
@@ -101,6 +102,10 @@ public class UsersRepository : RepositoryBase<IdentityUser>, IUsersRepository
     /// <returns>The task result contains the deleted user.</returns>
     public async Task<IdentityUser> DeleteUserAsync(IdentityUser user)
     {
+        // Remove all refresh tokens of the user
+        var refreshTokens = ProjectMetadataPlatformDbContext.Set<RefreshToken>();
+        refreshTokens.RemoveRange(refreshTokens.Where(rt => rt.UserId == user.Id));
+
         var task = await _userManager.DeleteAsync(user);
         return !task.Succeeded ? throw new ArgumentException("User deletion failed. With id " + user.Id + task) : user;
     }
