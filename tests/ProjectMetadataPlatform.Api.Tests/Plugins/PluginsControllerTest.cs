@@ -236,7 +236,6 @@ public class Tests
     [Test]
     public async Task DeleteGlobalPlugin_Test()
     {
-        //var plugin = new Plugin { Id = 37, PluginName = "Three-Body-Problem", IsArchived = true };
         _mediator.Setup(m => m.Send(It.IsAny<DeleteGlobalPluginCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
 

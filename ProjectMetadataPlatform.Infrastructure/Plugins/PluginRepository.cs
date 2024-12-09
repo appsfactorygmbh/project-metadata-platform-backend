@@ -108,18 +108,9 @@ public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
     /// <returns></returns>
     public async Task<bool> DeleteGlobalPlugin(Plugin plugin)
     {
-        try
-        {
-            _context.Plugins.Remove(plugin);
-            _ = await _context.SaveChangesAsync();
-            return true;
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
-        }
-
+        _context.Plugins.Remove(plugin);
+        _ = await _context.SaveChangesAsync();
+        return true;
 
     }
 }

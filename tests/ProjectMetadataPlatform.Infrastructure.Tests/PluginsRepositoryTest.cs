@@ -403,7 +403,8 @@ public class PluginsRepositoryTest : TestsWithDatabase
             ClientName = "Test Client", // Make sure this is set
             BusinessUnit = "Test Business",
             TeamNumber = 42,
-            Department = "Test Department"
+            Department = "Test Department",
+            Slug = "testProject",
         };
         var project2 = new Project
         {
@@ -412,7 +413,8 @@ public class PluginsRepositoryTest : TestsWithDatabase
             ClientName = "Test Client2", // Make sure this is set
             BusinessUnit = "Test Business2",
             TeamNumber = 37,
-            Department = "Test Department2"
+            Department = "Test Department2",
+            Slug = "testProject2"
         };
         var archivedPlugin = new Plugin { Id = 1, PluginName = "Unarchived Plugin", IsArchived = true };
 

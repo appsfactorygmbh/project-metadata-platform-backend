@@ -170,9 +170,9 @@ public class PluginsController : ControllerBase
             }
             else if ((bool)!success)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError,"Perhaps the plugin was not archived");
+                return StatusCode(StatusCodes.Status400BadRequest,"the plugin was not archived");
             }
-            return Ok(new DeleteGlobalPluginResponse(pluginId, success));
+            return Ok(new DeleteGlobalPluginResponse(pluginId));
         }
         catch (Exception e)
         {
