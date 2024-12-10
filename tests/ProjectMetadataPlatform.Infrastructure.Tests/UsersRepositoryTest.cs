@@ -158,7 +158,7 @@ public class UsersRepositoryTest : TestsWithDatabase
     public async Task StoreUser_CreatesUser_Test()
     {
         var user = new IdentityUser { Id = "", Email = "notblackmidi@geordiegreep.com" };
-
+        _mockUserManager.Setup(m => m.CreateAsync(It.IsAny<IdentityUser>())).ReturnsAsync(IdentityResult.Success);
         var result = await _repository.StoreUser(user);
 
         _mockUserManager.Verify(x => x.CreateAsync(user), Times.Once);
@@ -170,7 +170,7 @@ public class UsersRepositoryTest : TestsWithDatabase
     public async Task StoreUser_UpdatesUser_Test()
     {
         var user = new IdentityUser { Id = "13", Email = "emily.armstrong@linkinpark.leipzig.de" };
-
+        _mockUserManager.Setup(m => m.UpdateAsync(It.IsAny<IdentityUser>())).ReturnsAsync(IdentityResult.Success);
         var result = await _repository.StoreUser(user);
 
         _mockUserManager.Verify(x => x.UpdateAsync(user), Times.Once);
