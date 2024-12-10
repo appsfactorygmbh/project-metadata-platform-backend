@@ -1,7 +1,9 @@
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using ProjectMetadataPlatform.Application.Interfaces;
+using ProjectMetadataPlatform.Domain.Logs;
 
 namespace ProjectMetadataPlatform.Application.Plugins;
 
@@ -11,14 +13,22 @@ namespace ProjectMetadataPlatform.Application.Plugins;
 public class DeleteGlobalPluginCommandHandler : IRequestHandler<DeleteGlobalPluginCommand, bool?>
 {
     private readonly IPluginRepository _pluginRepository;
+    private readonly ILogRepository _logRepository;
+    private readonly IUnitOfWork _unitOfWork;
+
 
     /// <summary>
     /// Creates a new instance of<see cref="DeleteGlobalPluginCommandHandler"/>.
     /// </summary>
     /// <param name="pluginRepository"></param>
-    public DeleteGlobalPluginCommandHandler(IPluginRepository pluginRepository)
+    /// <param name="logRepository"></param>
+    /// <param name="unitOfWork"></param>
+    public DeleteGlobalPluginCommandHandler(IPluginRepository pluginRepository
+        , ILogRepository logRepository, IUnitOfWork unitOfWork)
     {
         _pluginRepository = pluginRepository;
+        _logRepository = logRepository;
+        _unitOfWork = unitOfWork;
     }
 
     /// <summary>
@@ -37,7 +47,13 @@ public class DeleteGlobalPluginCommandHandler : IRequestHandler<DeleteGlobalPlug
 
         if (plugin.IsArchived)
         {
-            return await _pluginRepository.DeleteGlobalPlugin(plugin);
+            await _pluginRepository.DeleteGlobalPlugin(plugin);
+
+            var changes = new List<LogChange>();
+
+            await _logRepository.AddGlobalPluginLogForCurrentUser(plugin, Action.REMOVED_GLOBAL_PLUGIN, changes);
+            await _unitOfWork.CompleteAsync();
+            return true;
         }
         return false;
     }
