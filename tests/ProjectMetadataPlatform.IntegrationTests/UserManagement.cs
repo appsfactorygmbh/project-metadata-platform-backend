@@ -67,9 +67,9 @@ public class UserManagement : IntegrationTestsBase
         logs.GetArrayLength().Should().Be(2);
 
         logs[0].GetProperty("logMessage").GetString().Should().Be(
-            "admin@admin.admin added a new user with properties: Email = test@mail.de");
+            "admin added a new user with properties: Email = test@mail.de");
         logs[1].GetProperty("logMessage").GetString().Should().Be(
-            "test@mail.de added a new user with properties: Email = foo@bar.de");
+            "test added a new user with properties: Email = foo@bar.de");
     }
 
     [Test]
@@ -100,10 +100,10 @@ public class UserManagement : IntegrationTestsBase
         logs.GetArrayLength().Should().Be(2);
 
         logs[0].GetProperty("logMessage").GetString().Should().Be(
-            "admin@admin.admin added a new user with properties: Email = test@mail.de");
+            "admin added a new user with properties: Email = test@mail.de");
 
         logs[1].GetProperty("logMessage").GetString().Should().Be(
-            "admin@admin.admin updated user foo@bar.de: set Email from test@mail.de to foo@bar.de, changed password");
+            "admin updated user foo: set Email from test@mail.de to foo@bar.de, changed password");
     }
 
     [Test]
@@ -141,13 +141,13 @@ public class UserManagement : IntegrationTestsBase
         logs.GetArrayLength().Should().Be(4);
 
         logs[0].GetProperty("logMessage").GetString().Should().Be(
-            "admin@admin.admin added a new user with properties: Email = test@mail.de");
+            "admin added a new user with properties: Email = test@mail.de");
         logs[1].GetProperty("logMessage").GetString().Should().Be(
-            "test@mail.de (deleted user) added a new user with properties: Email = foo@bar.de");
+            "test (deleted user) added a new user with properties: Email = foo@bar.de");
         logs[2].GetProperty("logMessage").GetString().Should().Be(
-            "foo@bar.de (deleted user) removed user test@mail.de");
+            "foo (deleted user) removed user test@mail.de");
         logs[3].GetProperty("logMessage").GetString().Should().Be(
-            "admin@admin.admin removed user foo@bar.de");
+            "admin removed user foo@bar.de");
     }
 
     [Test]
@@ -176,8 +176,8 @@ public class UserManagement : IntegrationTestsBase
         var logs = await ToJsonElement(client.GetAsync("/Logs"));
 
         logs[0].GetProperty("logMessage").GetString().Should().Be(
-            "admin@admin.admin added a new user with properties: Email = test@mail.de");
+            "admin added a new user with properties: Email = test@mail.de");
         logs[1].GetProperty("logMessage").GetString().Should().Be(
-            "foo@bar.de (deleted user) added a new user with properties: Email = mail@m.de");
+            "foo (deleted user) added a new user with properties: Email = mail@m.de");
     }
 }

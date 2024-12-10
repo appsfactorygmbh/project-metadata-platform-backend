@@ -18,8 +18,8 @@ public class LogConverter: ILogConverter
     public LogResponse BuildLogMessage(Log log)
     {
         var message = log.Author is { Email: not null }
-            ? log.Author.Email
-            : log.AuthorEmail != null ? log.AuthorEmail + " (deleted user)" : "<Deleted User>";
+            ? GetNameFromEmail(log.Author.Email)
+            : log.AuthorEmail != null ? GetNameFromEmail(log.AuthorEmail) + " (deleted user)" : "<Deleted User>";
 
         message += " " + log.Action switch
         {
@@ -161,6 +161,7 @@ public class LogConverter: ILogConverter
     /// <returns>The constructed message.</returns>
     private static string BuildUpdatedUserMessage(Log log) {
         var affectedUserEmail = log.AffectedUser?.Email ?? log.AffectedUserEmail ?? "<Unknown User>";
+        affectedUserEmail = GetNameFromEmail(affectedUserEmail);
 
         var message = $"updated user {affectedUserEmail}: ";
         message += string.Join(", ", log.Changes!.Select(change =>
@@ -254,5 +255,16 @@ public class LogConverter: ILogConverter
     private static string GetTimestamp(DateTimeOffset value)
     {
         return value.ToString("yyyy-MM-ddTHH:mm:ssK");
+    }
+
+    /// <summary>
+    /// Extracts the Name out of the email of a user.
+    /// </summary>
+    /// <param name="email">Email to extract the name from</param>
+    /// <returns>The input if there is not @ in the string or the extracted name</returns>
+    private static string GetNameFromEmail(String email)
+    {
+        var splitEmail = email.Split("@");
+        return splitEmail.Length == 2 ? splitEmail[0] : email;
     }
 }
