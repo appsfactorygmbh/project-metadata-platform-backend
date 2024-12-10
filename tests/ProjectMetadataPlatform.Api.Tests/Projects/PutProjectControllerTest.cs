@@ -1,16 +1,19 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Api.Plugins.Models;
 using ProjectMetadataPlatform.Api.Projects;
 using ProjectMetadataPlatform.Api.Projects.Models;
 using ProjectMetadataPlatform.Application.Projects;
+using ProjectMetadataPlatform.Domain.Projects;
 
 namespace ProjectMetadataPlatform.Api.Tests.Projects;
 
@@ -209,5 +212,44 @@ public class PutProjectControllerTest
                 command.Plugins.Single().ProjectId == 1 &&
                 command.IsArchived == true
         ), It.IsAny<CancellationToken>()));
+    }
+
+    [Test]
+    public async Task UpdateProjectWithSlug_Test()
+    {
+
+        _mediator.Setup(m => m.Send(It.IsAny<CreateProjectCommand>(), It.IsAny<CancellationToken>()))
+            .Throws(new IOException());
+        var createRequest = new CreateProjectRequest("Example Project", "Example Business Unit", 1, "Example Department",
+            "Example Client", [new UpdateProjectPluginRequest("Url", "PluginName", 3)]);
+        var createResult = await _controller.Put(createRequest);
+
+        // Act
+        _mediator.Setup(m => m.Send(It.IsAny<UpdateProjectCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(1);
+        var updateRequest = new CreateProjectRequest("UpdatedProject", "Updated Business Unit", 2, "Updated Department",
+            "Updated Client", new List<UpdateProjectPluginRequest> { new UpdateProjectPluginRequest("UpdatedUrl", "UpdatedPluginName", 4) });
+        var updateResult = await _controller.Put(updateRequest, "updatedproject");
+
+        // Assert
+        Assert.That(updateResult, Is.Not.Null);
+        var createdResult = updateResult.Result as CreatedResult;
+        Assert.That(createdResult, Is.Not.Null);
+        /*
+        Assert.That(createdResult.Value, Is.InstanceOf<CreateProjectResponse>());
+
+        var projectResponse = createdResult.Value as CreateProjectResponse;
+        Assert.That(projectResponse, Is.Not.Null);
+        Assert.Multiple(() =>
+        {
+            Assert.That(projectResponse.Id, Is.EqualTo(1));
+            Assert.That(createdResult.Location, Is.EqualTo("/Projects/1"));
+        });
+
+        _mediator.Verify(mediator => mediator.Send(It.Is<UpdateProjectCommand>(command =>
+                command.Plugins.Count == 1 && command.ProjectName == "Updated Project" && command.BusinessUnit == "Updated Business Unit" &&
+                command.TeamNumber == 2 && command.Department == "Updated Department" && command.ClientName == "Updated Client" &&
+                command.Plugins.Single().PluginId == 4 && command.Plugins.Single().Url == "UpdatedUrl" && command.Plugins.Single().DisplayName == "UpdatedPluginName"),
+            It.IsAny<CancellationToken>()));
+*/
     }
 }

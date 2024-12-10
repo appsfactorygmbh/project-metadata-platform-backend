@@ -34,6 +34,7 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
         _unitOfWork = unitOfWork;
         _slugHelper = slugHelper;
     }
+
     /// <summary>
     /// Handles the request to update a project.
     /// </summary>
