@@ -59,9 +59,9 @@ public class PatchGlobalPluginCommandHandler : IRequestHandler<PatchGlobalPlugin
                 }
             };
 
-            plugin.PluginName = request.PluginName;
-
             await _logRepository.AddGlobalPluginLogForCurrentUser(plugin, Action.UPDATED_GLOBAL_PLUGIN, changes);
+
+            plugin.PluginName = request.PluginName;
         }
 
         if (request.IsArchived != null && plugin.IsArchived != request.IsArchived.Value)
@@ -70,7 +70,7 @@ public class PatchGlobalPluginCommandHandler : IRequestHandler<PatchGlobalPlugin
             await _logRepository.AddGlobalPluginLogForCurrentUser(plugin, plugin.IsArchived ? Action.ARCHIVED_GLOBAL_PLUGIN : Action.UNARCHIVED_GLOBAL_PLUGIN, []);
         }
 
-        Plugin updatedPlugin = await _pluginRepository.StorePlugin(plugin);
+        var updatedPlugin = await _pluginRepository.StorePlugin(plugin);
         await _unitOfWork.CompleteAsync();
 
         return updatedPlugin;

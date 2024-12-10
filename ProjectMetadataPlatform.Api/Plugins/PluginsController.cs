@@ -149,7 +149,7 @@ public class PluginsController : ControllerBase
     /// contains a <see cref="DeleteGlobalPluginResponse"/> on success, or an error message on failure.
     /// </returns>
     /// <response code="200">OK if the plugin was successfully deleted.</response>
-    /// <response code="400">Bad Request if the pluginId is 0, indicating an invalid ID.</response>
+    /// <response code="400">Bad Request if the pluginId is smaller than or equal to 0, or if the plugin with the given id is not archived.</response>
     /// <response code="404">Not Found if no plugin with the specified ID was found.</response>
     /// <response code="500">Internal Server Error if an unexpected exception occurs.</response>
     [HttpDelete("{pluginId:int}")]
