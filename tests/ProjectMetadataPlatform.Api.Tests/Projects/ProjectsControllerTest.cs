@@ -661,4 +661,57 @@ public class ProjectsControllerTest
         Assert.That(statusCodeResult!.StatusCode, Is.EqualTo(StatusCodes.Status500InternalServerError));
     }
 
+    [Test]
+    public async Task DeleteProjectBySlug_ReturnsOk()
+    {
+        var project = new Project
+        {
+            Id = 1,
+            ProjectName = "Heather",
+            Slug = "heather",
+            ClientName = "Metatron",
+            BusinessUnit = "666",
+            Department = "Silent Hill",
+            TeamNumber = 3,
+            IsArchived = true
+        };
+
+        _mediator.Setup(m => m.Send(It.Is<GetProjectIdBySlugQuery>(q => q.Slug == "heather"), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(1);
+        _mediator.Setup(m => m.Send(It.Is<DeleteProjectCommand>(x => x.Id == 1), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(project);
+
+        var result = await _controller.Delete("heather");
+
+        Assert.That(result, Is.InstanceOf<OkObjectResult>());
+    }
+
+
+
+    [Test]
+    public async Task DeleteProjectBySlug_WhenProjectDoesNotExist()
+    {
+        _mediator.Setup(m => m.Send(It.Is<GetProjectIdBySlugQuery>(q => q.Slug == "test"), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((int?)null);
+
+
+        var result = await _controller.Delete("test");
+
+        Assert.That(result, Is.InstanceOf<NotFoundObjectResult>());
+        var notFoundRequestResult = result as NotFoundObjectResult;
+        Assert.That(notFoundRequestResult!.Value, Is.EqualTo("Project with Slug test not found."));
+    }
+
+    [Test]
+    public async Task DeleteProjectBySlug_InternalServerError()
+    {
+        _mediator.Setup(mediator => mediator.Send(It.IsAny<GetProjectIdBySlugQuery>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new InvalidDataException("An error message"));
+        var result = await _controller.Delete("test");
+        Assert.That(result, Is.InstanceOf<StatusCodeResult>());
+
+        var badRequestResult = result as StatusCodeResult;
+        Assert.That(badRequestResult!.StatusCode, Is.EqualTo(500));
+    }
+
 }

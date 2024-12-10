@@ -353,6 +353,32 @@ public class ProjectsController : ControllerBase
         return Ok(response);
     }
 
+    /// <summary>
+    /// Deletes the project with the given slug.
+    /// </summary>
+    /// <param name="slug">The slug of the project to delete.</param>
+    /// <returns>An ActionResult indicating the result of the delete operation.</returns>
+    /// <response code="204">The project was deleted successfully.</response>
+    /// <response code="400">The request was invalid.</response>
+    /// <response code="404">The project with the specified slug was not found.</response>
+    /// <response code="500">An internal error occurred.</response>
+    [HttpDelete("{slug}")]
+    public async Task<ActionResult> Delete(string slug)
+    {
+        int? projectId;
+        try
+        {
+            projectId = await GetProjectId(slug);
+        }
+        catch(Exception e)
+        {
+            Console.Write(e.GetType());
+            Console.Write(e.StackTrace);
+            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+        }
+        return projectId == null ? NotFound($"Project with Slug {slug} not found.") : await Delete((int) projectId);
+
+    }
         /// <summary>
     /// Deletes the project with the given id.
     /// </summary>
