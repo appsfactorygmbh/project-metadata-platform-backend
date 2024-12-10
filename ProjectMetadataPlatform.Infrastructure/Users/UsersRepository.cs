@@ -112,6 +112,12 @@ public class UsersRepository : RepositoryBase<IdentityUser>, IUsersRepository
         return !task.Succeeded ? throw new ArgumentException("User deletion failed. With id " + user.Id + task) : user;
     }
 
+    /// <summary>
+    /// Checks if the given password is in the correct format.
+    /// </summary>
+    /// <param name="password"> password to be checked.</param>
+    /// <returns>true if the format is correct.</returns>
+    /// <exception cref="ArgumentException">format was false</exception>
     public async Task<bool> CheckPasswordFormat(string password)
     {
         var passwordValidator = new PasswordValidator<IdentityUser>();
