@@ -230,6 +230,22 @@ public class ProjectsController : ControllerBase
         return Ok(response);
     }
 
+    [HttpGet("{slug}/unarchivedPlugins")]
+    public async Task<ActionResult<IEnumerable<GetPluginResponse>>> GetUnarchivedPluginsBySlug(string slug)
+    {
+        int? projectId;
+        try
+        {
+            projectId = await GetProjectId(slug);
+        }
+        catch(Exception e)
+        {
+            Console.Write(e.GetType());
+            Console.Write(e.StackTrace);
+            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+        }
+        return projectId == null ? NotFound($"Project with Slug {slug} not found.") : await GetUnarchivedPlugins((int) projectId);
+    }
 
     /// <summary>
     ///     Creates a new project or updates the one with given id.
