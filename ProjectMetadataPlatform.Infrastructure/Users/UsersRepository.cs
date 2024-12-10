@@ -111,4 +111,12 @@ public class UsersRepository : RepositoryBase<IdentityUser>, IUsersRepository
         var task = await _userManager.DeleteAsync(user);
         return !task.Succeeded ? throw new ArgumentException("User deletion failed. With id " + user.Id + task) : user;
     }
+
+    public async Task<bool> CheckPasswordFormat(string password)
+    {
+        var passwordValidator = new PasswordValidator<IdentityUser>();
+        var identityResult = await passwordValidator.ValidateAsync(_userManager, null, password);
+        return !identityResult.Succeeded ? throw new ArgumentException("User creation " + identityResult) : true;
+
+    }
 }

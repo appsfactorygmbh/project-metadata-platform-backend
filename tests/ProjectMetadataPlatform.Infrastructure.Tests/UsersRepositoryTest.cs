@@ -227,4 +227,19 @@ public class UsersRepositoryTest : TestsWithDatabase
         Assert.ThrowsAsync<ArgumentException>(() => _repository.DeleteUserAsync(user));
     }
 
+    [Test]
+    public async Task CheckPasswordFormat_Correct_Test()
+    {
+        var password = "test11A!!!";
+        var result = await _repository.CheckPasswordFormat(password);
+        Assert.That(result, Is.True);
+    }
+
+    [Test]
+    public async Task CheckPasswordFormat_Incorrect_Test()
+    {
+        var password = "test";
+        Assert.ThrowsAsync<ArgumentException>(() => _repository.CheckPasswordFormat(password));
+    }
+
 }

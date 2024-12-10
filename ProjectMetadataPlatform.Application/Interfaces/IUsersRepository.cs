@@ -51,4 +51,13 @@ public interface IUsersRepository
     /// <returns>The deleted user.</returns>
     Task<IdentityUser>DeleteUserAsync(IdentityUser user);
 
+
+    /// <summary>
+    /// Checks if the given password is in the correct format.
+    /// </summary>
+    /// <param name="password">password to be checked</param>
+    /// <returns>true if the format is correct. Otherwise throws exception</returns>
+    Task<bool> CheckPasswordFormat(string password);
+
+
 }
