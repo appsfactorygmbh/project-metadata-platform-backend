@@ -83,7 +83,7 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
 
         log.Project = project;
         log.ProjectId = project.Id;
-        log.ProjectName = project.ProjectName;
+        log.ProjectName = _context.Entry(project).Property<string>(nameof(Project.ProjectName)).OriginalValue;
 
         _ =_context.Logs.Add(log);
     }
@@ -107,7 +107,7 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
 
         log.AffectedUser = affectedUser;
         log.AffectedUserId = affectedUser.Id;
-        log.AffectedUserEmail = affectedUser.Email;
+        log.AffectedUserEmail = _context.Entry(affectedUser).Property<string?>(nameof(IdentityUser.Email)).OriginalValue;
 
         _ =_context.Logs.Add(log);
     }
@@ -133,7 +133,7 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
 
         log.GlobalPlugin = globalPlugin;
         log.GlobalPluginId = globalPlugin.Id;
-        log.GlobalPluginName = globalPlugin.PluginName;
+        log.GlobalPluginName = _context.Entry(globalPlugin).Property<string>(nameof(Plugin.PluginName)).OriginalValue;
 
         _ =_context.Logs.Add(log);
     }

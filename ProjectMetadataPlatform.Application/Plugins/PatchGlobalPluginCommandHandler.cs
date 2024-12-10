@@ -59,9 +59,9 @@ public class PatchGlobalPluginCommandHandler : IRequestHandler<PatchGlobalPlugin
                 }
             };
 
-            await _logRepository.AddGlobalPluginLogForCurrentUser(plugin, Action.UPDATED_GLOBAL_PLUGIN, changes);
-
             plugin.PluginName = request.PluginName;
+
+            await _logRepository.AddGlobalPluginLogForCurrentUser(plugin, Action.UPDATED_GLOBAL_PLUGIN, changes);
         }
 
         if (request.IsArchived != null && plugin.IsArchived != request.IsArchived.Value)

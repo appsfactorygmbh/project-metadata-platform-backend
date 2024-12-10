@@ -103,7 +103,7 @@ public class UserManagement : IntegrationTestsBase
             "admin@admin.admin added a new user with properties: Email = test@mail.de");
 
         logs[1].GetProperty("logMessage").GetString().Should().Be(
-            "admin@admin.admin updated user foo@bar.de: set Email from test@mail.de to foo@bar.de, changed password");
+            "admin@admin.admin updated user test@mail.de: set Email from test@mail.de to foo@bar.de, changed password");
     }
 
     [Test]
@@ -151,7 +151,7 @@ public class UserManagement : IntegrationTestsBase
     }
 
     [Test]
-    public async Task LastKnownEmailOfDeletedUserIsUsedInLogs()
+    public async Task EmailOfDeletedUserAtCreationTimeOfTheLogIsUsedInLogs()
     {
         // Arrange
         var client = CreateClient();
@@ -178,6 +178,6 @@ public class UserManagement : IntegrationTestsBase
         logs[0].GetProperty("logMessage").GetString().Should().Be(
             "admin@admin.admin added a new user with properties: Email = test@mail.de");
         logs[1].GetProperty("logMessage").GetString().Should().Be(
-            "foo@bar.de (deleted user) added a new user with properties: Email = mail@m.de");
+            "test@mail.de (deleted user) added a new user with properties: Email = mail@m.de");
     }
 }

@@ -92,8 +92,7 @@ public class AuthRepository : RepositoryBase<RefreshToken>, IAuthRepository
     /// <returns>True if a token exists; False if no token exists</returns>
     public async Task<bool> CheckRefreshTokenExists(string email)
     {
-
-        return GetIf(rt => rt.User != null && rt.User.Email == email).Any();
+        return await GetIf(rt => rt.User != null && rt.User.Email == email).AnyAsync();
     }
 
     /// <summary>
@@ -103,9 +102,9 @@ public class AuthRepository : RepositoryBase<RefreshToken>, IAuthRepository
     /// <returns>true if the token is valid; false if the token isn't valid</returns>
     public async Task<bool> CheckRefreshTokenRequest(string refreshToken)
     {
-        var token = GetIf(rt => rt.Token == refreshToken).FirstOrDefaultAsync().Result;
+        var token = await GetIf(rt => rt.Token == refreshToken).AsNoTracking().FirstOrDefaultAsync();
 
-        return (token != null && token.ExpirationDate > DateTime.UtcNow);
+        return token != null && token.ExpirationDate > DateTime.UtcNow;
     }
 
     /// <summary>
@@ -115,7 +114,7 @@ public class AuthRepository : RepositoryBase<RefreshToken>, IAuthRepository
     /// <returns>a username</returns>
     public async Task<string?> GetEmailByRefreshToken(string refreshToken)
     {
-        var token = GetIf(rt => rt.Token == refreshToken).FirstOrDefaultAsync().Result;
+        var token = await GetIf(rt => rt.Token == refreshToken).AsNoTracking().FirstOrDefaultAsync();
         var user = await _userManager.Users.FirstOrDefaultAsync(a => token != null && a.Id == token.UserId);
 
         return user?.Email;

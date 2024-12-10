@@ -24,7 +24,7 @@ public class LogConverter: ILogConverter
         message += " " + log.Action switch
         {
             Action.ADDED_PROJECT => BuildAddedProjectMessage(log.Changes),
-            Action.UPDATED_PROJECT => BuildUpdatedProjectMessage(log.Changes),
+            Action.UPDATED_PROJECT => BuildUpdatedProjectMessage(log.Changes, log.ProjectName ?? "<Unknown Project>"),
             Action.ARCHIVED_PROJECT => BuildArchivedProjectMessage(log.ProjectName),
             Action.UNARCHIVED_PROJECT => BuildUnArchivedProjectMessage(log.ProjectName),
             Action.ADDED_PROJECT_PLUGIN => BuildAddedProjectPluginMessage(log.ProjectName, log.Changes),
@@ -64,9 +64,10 @@ public class LogConverter: ILogConverter
     /// Builds a message for an updated project.
     /// </summary>
     /// <param name="changes">The list of changes.</param>
+    /// <param name="projectName">The name of the updated project.</param>
     /// <returns>The constructed message.</returns>
-    private static string BuildUpdatedProjectMessage(List<LogChange>? changes) {
-        var message = "updated project properties: ";
+    private static string BuildUpdatedProjectMessage(List<LogChange>? changes, string projectName) {
+        var message = $"updated project {projectName}: ";
         if (changes == null) {
             return message;
         }

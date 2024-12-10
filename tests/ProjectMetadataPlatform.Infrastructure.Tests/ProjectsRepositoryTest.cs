@@ -379,6 +379,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
         await _context.SaveChangesAsync();
 
         var deletedProject = await _repository.DeleteProjectAsync(project);
+        await _context.SaveChangesAsync();
 
         var remainingProjects = await _context.Projects.ToListAsync();
 

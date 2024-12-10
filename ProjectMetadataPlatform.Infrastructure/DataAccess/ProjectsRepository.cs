@@ -115,7 +115,7 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     /// <returns>A task representing the asynchronous operation. When this task completes, it returns one project.</returns>
     public async Task<Project?> GetProjectWithPluginsAsync(int id)
     {
-        return await GetIf(p => p.Id == id).AsTracking()
+        return await GetIf(p => p.Id == id)
             .Include(p => p.ProjectPlugins)
             .FirstOrDefaultAsync();
     }
@@ -127,8 +127,7 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     /// <returns>Project is returned</returns>
     public async Task Add(Project project)
     {
-
-        if (GetIf(p => p.Id == project.Id).FirstOrDefault() == null)
+        if (await GetIf(p => p.Id == project.Id).AnyAsync() == false)
         {
             Create(project);
         }
@@ -142,7 +141,7 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     /// <returns>True, if the project with the given id exists</returns>
     public async Task<bool> CheckProjectExists(int id)
     {
-        return _context.Projects.Any(project => project.Id == id);
+        return await _context.Projects.AnyAsync(project => project.Id == id);
     }
 
     /// <summary>
@@ -171,7 +170,6 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     public async Task<Project> DeleteProjectAsync(Project project)
     {
         Delete(project);
-        _ = await _context.SaveChangesAsync();
         return project;
     }
 

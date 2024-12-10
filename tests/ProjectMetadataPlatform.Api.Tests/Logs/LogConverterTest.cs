@@ -30,6 +30,7 @@ public class LogConverterTest
             AuthorEmail = "Slartibartfast",
             Author = new IdentityUser { Email = "Slartibartfast" },
             ProjectId = 43,
+            ProjectName = "Norway",
             Action = Action.UPDATED_PROJECT,
             Changes =
             [
@@ -42,7 +43,7 @@ public class LogConverterTest
         Assert.Multiple(() =>
         {
             Assert.That(logResponse.LogMessage,
-                Is.EqualTo("Slartibartfast updated project properties:  set Fjords from None to Many"));
+                Is.EqualTo("Slartibartfast updated project Norway:  set Fjords from None to Many"));
             Assert.That(logResponse.Timestamp, Is.EqualTo("1970-01-01T00:00:00+01:00"));
         });
     }
@@ -67,6 +68,7 @@ public class LogConverterTest
                 TeamNumber = 1,
                 Department = ""
             },
+            ProjectName = "Ultimate Question of Life, the Universe and Everything",
             Action = Action.ARCHIVED_PROJECT
         };
 
@@ -99,6 +101,7 @@ public class LogConverterTest
                 TeamNumber = 1,
                 Department = ""
             },
+            ProjectName = "Atmosphere",
             Action = Action.ADDED_PROJECT_PLUGIN,
             Changes =
             [
@@ -135,6 +138,7 @@ public class LogConverterTest
                 TeamNumber = 1,
                 Department = ""
             },
+            ProjectName = "Wale",
             Action = Action.UPDATED_PROJECT_PLUGIN,
             Changes =
             [
@@ -171,6 +175,7 @@ public class LogConverterTest
                 TeamNumber = 1,
                 Department = ""
             },
+            ProjectName = "Solarsystem",
             Action = Action.REMOVED_PROJECT_PLUGIN,
             Changes =
             [
@@ -207,6 +212,7 @@ public class LogConverterTest
                 TeamNumber = 1,
                 Department = ""
             },
+            ProjectName = "Ultimate Question of Life, the Universe and Everything",
             Action = Action.UNARCHIVED_PROJECT
         };
 
@@ -230,6 +236,7 @@ public class LogConverterTest
             AuthorEmail = "Earth Population",
             ProjectId = 49,
             Action = Action.UPDATED_PROJECT,
+            ProjectName = "Living Beings",
             Changes =
             [
                 new LogChange { Property = "Home Planet", OldValue = "Earth", NewValue = "None" }
@@ -241,7 +248,7 @@ public class LogConverterTest
         Assert.Multiple(() =>
         {
             Assert.That(logResponse.LogMessage,
-                Is.EqualTo("Earth Population (deleted user) updated project properties:  set Home Planet from Earth to None"));
+                Is.EqualTo("Earth Population (deleted user) updated project Living Beings:  set Home Planet from Earth to None"));
             Assert.That(logResponse.Timestamp, Is.EqualTo("1970-01-01T00:00:00+01:00"));
         });
     }
@@ -284,6 +291,7 @@ public class LogConverterTest
             AuthorEmail = "Gandalf",
             Author = gandalf,
             AffectedUser = gandalf,
+            AffectedUserEmail = "Gandalf",
             Action = Action.UPDATED_USER,
             Changes =
             [
@@ -390,14 +398,15 @@ public class LogConverterTest
             Changes =
             [
                 new LogChange { Property = "Email", OldValue = "Republic", NewValue = "First Galactic Empire" }
-            ]
+            ],
+            GlobalPluginName = "DeathStar"
         };
 
         var logResponse = _logConverter.BuildLogMessage(log);
 
         Assert.Multiple(() =>
         {
-            Assert.That(logResponse.LogMessage, Is.EqualTo("Darth Sidious updated global plugin properties: set Email from Republic to First Galactic Empire"));
+            Assert.That(logResponse.LogMessage, Is.EqualTo("Darth Sidious updated global plugin DeathStar: set Email from Republic to First Galactic Empire"));
             Assert.That(logResponse.Timestamp, Is.EqualTo("1970-01-01T00:00:00+01:00"));
         });
     }

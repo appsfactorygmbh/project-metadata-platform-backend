@@ -44,9 +44,7 @@ public abstract class RepositoryBase<T> where T : class
     /// <returns>An <see cref="IQueryable{T}" /> of entities that satisfy the condition.</returns>
     public IQueryable<T> GetIf(Expression<Func<T, bool>> expression)
     {
-        return ProjectMetadataPlatformDbContext.Set<T>()
-            .Where(expression)
-            .AsNoTracking();
+        return ProjectMetadataPlatformDbContext.Set<T>().Where(expression);
     }
 
     /// <summary>
