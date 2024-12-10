@@ -262,52 +262,28 @@ public class ProjectsController : ControllerBase
     /// <returns>A response containing the id of the created project.</returns>
     /// <response code="201">The Project has been created successfully.</response>
     /// <response code="400">The request data is invalid.</response>
+    /// <response code="404">The project with the specified slug was not found.</response>
     /// <response code="500">An internal error occurred.</response>
-    [HttpPut]
+    [HttpPut("{slug}")]
     [ProducesResponseType(typeof(CreateProjectResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<CreateProjectResponse>> Put([FromBody] CreateProjectRequest project,
         string slug)
     {
+        int? projectId;
         try
         {
-            if (string.IsNullOrWhiteSpace(project.ProjectName) || string.IsNullOrWhiteSpace(project.BusinessUnit)
-                                                               || string.IsNullOrWhiteSpace(project.Department)
-                                                               || string.IsNullOrWhiteSpace(project.ClientName))
-            {
-                return BadRequest("ProjectName, BusinessUnit, Department and ClientName must not be empty.");
-            }
-
-            var projectId = await GetProjectId(slug);
-            if (projectId == null)
-            {
-                return NotFound($"Project with Slug {slug} not found.");
-            }
-            var command = new UpdateProjectCommand(project.ProjectName, project.BusinessUnit, project.TeamNumber,
-                    project.Department, project.ClientName, projectId.Value, (project.PluginList ?? []).Select(p => new ProjectPlugins
-                    {
-                        ProjectId = projectId.Value,
-                        PluginId = p.Id,
-                        DisplayName = p.DisplayName,
-                        Url = p.Url
-                    }).ToList(), project.IsArchived);
-
-            var id = await _mediator.Send(command);
-
-            var response = new CreateProjectResponse(id);
-            return Created("/Projects/" + id, response);
+            projectId = await GetProjectId(slug);
         }
-        catch (InvalidOperationException e)
+        catch(Exception e)
         {
-            return BadRequest(e.Message);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.Message);
-            Console.WriteLine(e.StackTrace);
+            Console.Write(e.GetType());
+            Console.Write(e.StackTrace);
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
+        return projectId == null ? NotFound($"Project with Slug {slug} not found.") : await Put(project, projectId);
     }
 
     /// <summary>
