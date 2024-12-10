@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.Projects;
@@ -396,11 +397,12 @@ public class PluginsRepositoryTest : TestsWithDatabase
     [Test]
     public async Task TestDeletePlugins()
     {
+        // Arrange
         var project1 = new Project
         {
             Id = 1,
             ProjectName = "Test Project",
-            ClientName = "Test Client", // Make sure this is set
+            ClientName = "Test Client",
             BusinessUnit = "Test Business",
             TeamNumber = 42,
             Department = "Test Department",
@@ -410,7 +412,7 @@ public class PluginsRepositoryTest : TestsWithDatabase
         {
             Id = 2,
             ProjectName = "Test Project2",
-            ClientName = "Test Client2", // Make sure this is set
+            ClientName = "Test Client2",
             BusinessUnit = "Test Business2",
             TeamNumber = 37,
             Department = "Test Department2",
@@ -430,13 +432,24 @@ public class PluginsRepositoryTest : TestsWithDatabase
         _context.Projects.AddRange(project1, project2);
         _context.Plugins.Add(archivedPlugin);
         _context.ProjectPluginsRelation.AddRange(projectPluginRelation1, projectPluginRelation2);
+
         await _context.SaveChangesAsync();
+
+        // Act
         bool returnValDeleteGlobalPlugin = await _repository.DeleteGlobalPlugin(archivedPlugin);
+
+        // Assert
         Assert.That(returnValDeleteGlobalPlugin, Is.True);
 
-        var projectRet = _context.Projects.ToList().FirstOrDefault();
-        Assert.That(projectRet.ProjectPlugins, Is.Empty);
+        _context.Entry(project1).State = EntityState.Detached;
+        _context.Entry(project2).State = EntityState.Detached;
+
+        var reloadedProject1 =
+            await _context.Projects.Include(p => p.ProjectPlugins).FirstOrDefaultAsync(p => p.Id == 1);
+        var reloadedProject2 =
+            await _context.Projects.Include(p => p.ProjectPlugins).FirstOrDefaultAsync(p => p.Id == 2);
+
+        Assert.That(reloadedProject1.ProjectPlugins, Is.Empty);
+        Assert.That(reloadedProject2.ProjectPlugins, Is.Empty);
     }
-
-
 }
