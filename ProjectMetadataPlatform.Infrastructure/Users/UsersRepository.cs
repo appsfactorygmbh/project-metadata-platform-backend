@@ -90,9 +90,11 @@ public class UsersRepository : RepositoryBase<IdentityUser>, IUsersRepository
     /// <returns>The stored user.</returns>
     public async Task<IdentityUser> StoreUser(IdentityUser user)
     {
-        _ = user.Id == "" ? await _userManager.CreateAsync(user) : await _userManager.UpdateAsync(user);
+        var identityResult = user.Id == "" ? await _userManager.CreateAsync(user) : await _userManager.UpdateAsync(user);
 
-        return user;
+        return identityResult.Errors.Any(e => e.Code == "DuplicateUserName")
+            ? throw new ArgumentException("User creation Failed : DuplicateEmail")
+            : !identityResult.Succeeded ? throw new ArgumentException("User creation " + identityResult) : user;
     }
 
     /// <summary>

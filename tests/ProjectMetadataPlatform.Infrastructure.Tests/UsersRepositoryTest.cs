@@ -177,6 +177,31 @@ public class UsersRepositoryTest : TestsWithDatabase
 
         Assert.That(result, Is.EqualTo(user));
     }
+
+    [Test]
+    public async Task StoreUserAsync_Create_DuplicateEmail_Test()
+    {
+        _context.Users.Add(new IdentityUser {  Email = "Example Email", Id = "1" });
+        var user = new IdentityUser { Email = "Example Email", Id = "" };
+        var password = "test";
+        _mockUserManager.Setup(m => m.CreateAsync(It.IsAny<IdentityUser>())).ReturnsAsync(IdentityResult.Failed(new IdentityError{ Code = "DuplicateUserName"}));
+
+        var exception =Assert.ThrowsAsync<ArgumentException>(() => _repository.StoreUser(user));
+        Assert.That(exception.Message, Is.EqualTo("User creation Failed : DuplicateEmail"));
+    }
+
+    [Test]
+    public async Task StoreUserAsync_Update_DuplicateEmail_Test()
+    {
+        _context.Users.Add(new IdentityUser {  Email = "Example Email", Id = "1" });
+        var user = new IdentityUser { Email = "Example Email", Id = "5" };
+        var password = "test";
+        _mockUserManager.Setup(m => m.UpdateAsync(It.IsAny<IdentityUser>())).ReturnsAsync(IdentityResult.Failed(new IdentityError{ Code = "DuplicateUserName"}));
+
+        var exception =Assert.ThrowsAsync<ArgumentException>(() => _repository.StoreUser(user));
+        Assert.That(exception.Message, Is.EqualTo("User creation Failed : DuplicateEmail"));
+    }
+
     [Test]
     public async Task DeleteUserAsync_Test()
     {
