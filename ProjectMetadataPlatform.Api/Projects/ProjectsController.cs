@@ -230,6 +230,14 @@ public class ProjectsController : ControllerBase
         return Ok(response);
     }
 
+    /// <summary>
+    /// Gets all the unarchived plugins of the project with the given slug.
+    /// </summary>
+    /// <param name="slug">The slug of the project.</param>
+    /// <returns>The unarchived plugins of the project.</returns>
+    /// <response code="200">All unarchived plugins of the project are returned successfully.</response>
+    /// <response code="404">No project with the given slug could be found.</response>
+    /// <response code="500">An internal error occurred.</response>
     [HttpGet("{slug}/unarchivedPlugins")]
     public async Task<ActionResult<IEnumerable<GetPluginResponse>>> GetUnarchivedPluginsBySlug(string slug)
     {
