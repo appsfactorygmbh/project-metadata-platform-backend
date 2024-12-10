@@ -217,7 +217,7 @@ public class PutProjectControllerTest
     [Test]
     public async Task UpdateProjectWithSlug_Test()
     {
-
+        _mediator.Setup(m => m.Send(It.IsAny<GetProjectIdBySlugQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(4);
         _mediator.Setup(m => m.Send(It.IsAny<CreateProjectCommand>(), It.IsAny<CancellationToken>()))
             .Throws(new IOException());
         var createRequest = new CreateProjectRequest("Example Project", "Example Business Unit", 1, "Example Department",
