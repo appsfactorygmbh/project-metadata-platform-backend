@@ -121,7 +121,7 @@ public class UsersRepository : RepositoryBase<IdentityUser>, IUsersRepository
     public async Task<bool> CheckPasswordFormat(string password)
     {
         var passwordValidator = new PasswordValidator<IdentityUser>();
-        var identityResult = await passwordValidator.ValidateAsync(_userManager, null, password);
+        var identityResult = await passwordValidator.ValidateAsync(_userManager, new IdentityUser(), password);
         return !identityResult.Succeeded ? throw new ArgumentException("User creation " + identityResult) : true;
 
     }
