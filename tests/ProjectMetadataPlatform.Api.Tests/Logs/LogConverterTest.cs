@@ -179,7 +179,7 @@ public class LogConverterTest
             Action = Action.REMOVED_PROJECT_PLUGIN,
             Changes =
             [
-                new LogChange { Property = "Earth", OldValue = "intact", NewValue = "destroyed" }
+                new LogChange { Property = "Earth", OldValue = "intact", NewValue = "" }
             ]
         };
 
@@ -187,7 +187,7 @@ public class LogConverterTest
 
         Assert.Multiple(() =>
         {
-            Assert.That(logResponse.LogMessage, Is.EqualTo("Prostetnic Vogon Jeltz removed a plugin from project Solarsystem with properties: Earth = destroyed"));
+            Assert.That(logResponse.LogMessage, Is.EqualTo("Prostetnic Vogon Jeltz removed a plugin from project Solarsystem with properties: Earth = intact"));
             Assert.That(logResponse.Timestamp, Is.EqualTo("1970-01-01T00:00:00+01:00"));
         });
     }

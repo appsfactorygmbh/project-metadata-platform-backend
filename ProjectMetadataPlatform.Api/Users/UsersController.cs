@@ -147,6 +147,7 @@ public class UsersController : ControllerBase
     /// <param name="request">The request model containing the new user information.</param>
     /// <returns>The updated user information.</returns>
     /// <response code="200">The user was patched successfully.</response>
+    /// <response code="400">The request was invalid.</response>
     /// <response code="404">The user with the specified ID was not found.</response>
     /// <response code="500">An internal error occurred.</response>
     [HttpPatch("{userId}")]
@@ -158,6 +159,10 @@ public class UsersController : ControllerBase
         try
         {
             user = await _mediator.Send(command);
+        }
+        catch (ArgumentException e)
+        {
+            return BadRequest(e.Message);
         }
         catch (Exception e)
         {

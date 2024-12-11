@@ -167,10 +167,10 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     /// </summary>
     /// <param name="project">The project to delete.</param>
     /// <returns>A task representing the asynchronous operation, which upon completion returns the deleted project.</returns>
-    public async Task<Project> DeleteProjectAsync(Project project)
+    public Task<Project> DeleteProjectAsync(Project project)
     {
         Delete(project);
-        return project;
+        return Task.FromResult(project);
     }
 
     /// <inheritdoc/>

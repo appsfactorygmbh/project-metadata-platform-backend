@@ -136,7 +136,7 @@ public class LogConverter: ILogConverter
             return message;
         }
         message += " with properties: ";
-        message += string.Join(", ", changes.Select(change => $"{change.Property} = {change.NewValue}"));
+        message += string.Join(", ", changes.Select(change => $"{change.Property} = {change.OldValue}"));
         return message;
     }
 
