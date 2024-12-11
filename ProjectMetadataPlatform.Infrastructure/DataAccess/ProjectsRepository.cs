@@ -127,7 +127,7 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     /// <returns>Project is returned</returns>
     public async Task Add(Project project)
     {
-        if (await GetIf(p => p.Id == project.Id).AnyAsync() == false)
+        if (!await GetIf(p => p.Id == project.Id).AnyAsync())
         {
             Create(project);
         }
