@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -14,6 +15,12 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
             migrationBuilder.Sql("UPDATE \"AspNetUsers\" SET \"NormalizedEmail\" = 'ADMIN@ADMIN.ADMIN' WHERE \"UserName\" = 'admin';");
             migrationBuilder.Sql("UPDATE \"AspNetUsers\" SET \"UserName\" = \"Email\";");
             migrationBuilder.Sql("UPDATE \"AspNetUsers\" SET \"NormalizedUserName\" = \"NormalizedEmail\";");
+
+            if (migrationBuilder.IsNpgsql())
+            {
+                migrationBuilder.Sql(
+                    "UPDATE \"Logs\" l SET \"Email\" = \"AspNetUsers\".\"Email\" FROM \"AspNetUsers\" where \"UserId\" = \"AspNetUsers\".\"Id\" and \"AspNetUsers\".\"Email\" is not null and \"UserId\" is not null;");
+            }
 
             migrationBuilder.DropColumn(
                 name: "Name",
