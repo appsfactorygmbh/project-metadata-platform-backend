@@ -410,7 +410,7 @@ public class ProjectsController : ControllerBase
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
 
-        return Ok(NoContent());
+        return NoContent();
     }
 
     private async Task<int?> GetProjectId(string slug)

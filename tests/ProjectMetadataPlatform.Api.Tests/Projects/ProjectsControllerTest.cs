@@ -604,7 +604,7 @@ public class ProjectsControllerTest
 
         var result = await _controller.Delete(1);
 
-        Assert.That(result, Is.InstanceOf<OkObjectResult>());
+        Assert.That(result, Is.InstanceOf<NoContentResult>());
     }
 
     [Test]
@@ -683,7 +683,7 @@ public class ProjectsControllerTest
 
         var result = await _controller.Delete("heather");
 
-        Assert.That(result, Is.InstanceOf<OkObjectResult>());
+        Assert.That(result, Is.InstanceOf<NoContentResult>());
     }
 
 

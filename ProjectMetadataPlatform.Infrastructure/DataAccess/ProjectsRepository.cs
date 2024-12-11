@@ -125,14 +125,14 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     /// </summary>
     /// <param name="project">Project to be saved in the database</param>
     /// <returns>Project is returned</returns>
-    public async Task Add(Project project)
+    public Task Add(Project project)
     {
-
         if (GetIf(p => p.Id == project.Id).FirstOrDefault() == null)
         {
             Create(project);
         }
 
+        return Task.CompletedTask;
     }
 
     /// <summary>
@@ -140,9 +140,9 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     /// </summary>
     /// <param name="id"></param>
     /// <returns>True, if the project with the given id exists</returns>
-    public async Task<bool> CheckProjectExists(int id)
+    public Task<bool> CheckProjectExists(int id)
     {
-        return _context.Projects.Any(project => project.Id == id);
+        return Task.FromResult(_context.Projects.Any(project => project.Id == id));
     }
 
     /// <summary>
@@ -168,11 +168,10 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     /// </summary>
     /// <param name="project">The project to delete.</param>
     /// <returns>A task representing the asynchronous operation, which upon completion returns the deleted project.</returns>
-    public async Task<Project> DeleteProjectAsync(Project project)
+    public Task<Project> DeleteProjectAsync(Project project)
     {
         Delete(project);
-        _ = await _context.SaveChangesAsync();
-        return project;
+        return Task.FromResult(project);
     }
 
     /// <inheritdoc/>
