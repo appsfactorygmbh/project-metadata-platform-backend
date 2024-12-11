@@ -21,16 +21,18 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
     private readonly IPluginRepository _pluginRepository;
     private readonly ILogRepository _logRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ISlugHelper _slugHelper;
 
     /// <summary>
     /// Creates a new instance of <see cref="UpdateProjectCommand"/>.
     /// </summary>
-    public UpdateProjectCommandHandler(IProjectsRepository projectsRepository, IPluginRepository pluginRepository, ILogRepository logRepository, IUnitOfWork unitOfWork)
+    public UpdateProjectCommandHandler(IProjectsRepository projectsRepository, IPluginRepository pluginRepository, ILogRepository logRepository, IUnitOfWork unitOfWork, ISlugHelper slugHelper)
     {
         _projectsRepository = projectsRepository;
         _pluginRepository = pluginRepository;
         _logRepository = logRepository;
         _unitOfWork = unitOfWork;
+        _slugHelper = slugHelper;
     }
     /// <summary>
     /// Handles the request to update a project.
@@ -171,14 +173,30 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
 
         if (project.ProjectName != request.ProjectName)
         {
-            var change = new LogChange
+            var projectSlug = _slugHelper.GenerateSlug(request.ProjectName);
+
+            if (await _slugHelper.CheckProjectSlugExists(projectSlug))
+            {
+                throw new InvalidOperationException("A Project with this slug already exists: " + projectSlug);
+            }
+
+            var changeName = new LogChange
             {
                 Property = nameof(Project.ProjectName),
                 OldValue = project.ProjectName,
-                NewValue = request.ProjectName
+                NewValue = request.ProjectName,
             };
-            changes.Add(change);
+            var changeSlug = new LogChange()
+            {
+                Property = nameof(Project.Slug),
+                OldValue = project.Slug,
+                NewValue = projectSlug
+            };
+
+            changes.Add(changeSlug);
+            changes.Add(changeName);
             project.ProjectName = request.ProjectName;
+            project.Slug = projectSlug;
         }
 
         if (project.BusinessUnit != request.BusinessUnit)

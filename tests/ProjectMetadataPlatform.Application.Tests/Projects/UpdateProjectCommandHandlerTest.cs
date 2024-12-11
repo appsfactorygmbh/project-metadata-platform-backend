@@ -21,6 +21,7 @@ public class UpdateProjectCommandHandlerTest
     private Mock<IPluginRepository> _mockPluginRepo;
     private Mock<IUnitOfWork> _mockUnitOfWork;
     private Mock<ILogRepository> _mockLogRepository;
+    private Mock<ISlugHelper> _mockSlugHelper;
 
     [SetUp]
     public void Setup()
@@ -29,7 +30,8 @@ public class UpdateProjectCommandHandlerTest
         _mockPluginRepo = new Mock<IPluginRepository>();
         _mockUnitOfWork = new Mock<IUnitOfWork>();
         _mockLogRepository = new Mock<ILogRepository>();
-        _handler = new UpdateProjectCommandHandler(_mockProjectRepo.Object, _mockPluginRepo.Object, _mockLogRepository.Object, _mockUnitOfWork.Object);
+        _mockSlugHelper = new Mock<ISlugHelper>();
+        _handler = new UpdateProjectCommandHandler(_mockProjectRepo.Object, _mockPluginRepo.Object,_mockLogRepository.Object, _mockUnitOfWork.Object, _mockSlugHelper.Object);
     }
 
     [Test]
@@ -346,15 +348,17 @@ public class UpdateProjectCommandHandlerTest
         );
 
         _mockProjectRepo.Setup(repo => repo.GetProjectWithPluginsAsync(1)).ReturnsAsync(project);
-
+        _mockSlugHelper.Setup(repo => repo.GenerateSlug("New Project Name")).Returns("new project name");
+        _mockSlugHelper.Setup(s => s.CheckProjectSlugExists("new project name")).ReturnsAsync(false);
         await _handler.Handle(updateCommand, CancellationToken.None);
 
         _mockLogRepository.Verify(logRepo => logRepo.AddProjectLogForCurrentUser(
             project,
             Action.UPDATED_PROJECT,
             It.Is<List<LogChange>>(changes =>
-                changes.Count == 5 &&
+                changes.Count == 6 &&
                 changes.Any(change => change.Property == "ProjectName" && change.OldValue == "Old Project Name" && change.NewValue == "New Project Name") &&
+                changes.Any(change => change.Property == "Slug" && change.OldValue == "old project name" && change.NewValue == "new project name" ) &&
                 changes.Any(change => change.Property == "BusinessUnit" && change.OldValue == "Old Unit" && change.NewValue == "New Unit") &&
                 changes.Any(change => change.Property == "TeamNumber" && change.OldValue == "1" && change.NewValue == "2") &&
                 changes.Any(change => change.Property == "Department" && change.OldValue == "Old Department" && change.NewValue == "New Department") &&
@@ -832,5 +836,61 @@ public class UpdateProjectCommandHandlerTest
             It.IsAny<Action>(),
             It.IsAny<List<LogChange>>()
         ), Times.Never);
+    }
+
+    [Test]
+    public async Task AlreadyExitingSlug_Test()
+    {
+        var project = new Project
+        {
+            Id = 1,
+            ProjectName = "Example Project",
+            Slug = "example project",
+            BusinessUnit = "Example Business Unit",
+            TeamNumber = 1,
+            Department = "Example Department",
+            ClientName = "Example Client",
+            ProjectPlugins = new List<ProjectPlugins>
+            {
+                new ProjectPlugins
+                {
+                    PluginId = 1,
+                    Url = "http://example.com",
+                    DisplayName = "Example Plugin"
+                }
+            }
+        };
+
+        var updateCommand = new UpdateProjectCommand(
+            ProjectName: "New Project",
+            project.BusinessUnit,
+            project.TeamNumber,
+            project.Department,
+            project.ClientName,
+            project.Id,
+            new List<ProjectPlugins>
+            {
+                new ProjectPlugins
+                {
+                    PluginId = 1,
+                    Url = "http://example.com",
+                    DisplayName = "Example Plugin"
+                }
+            },
+            false
+        );
+
+        _mockProjectRepo.Setup(m => m.GetProjectWithPluginsAsync(1))
+            .ReturnsAsync(project);
+        _mockSlugHelper.Setup(m => m.GenerateSlug(It.IsAny<string>())).Returns("new project");
+        _mockSlugHelper.Setup(m => m.CheckProjectSlugExists("new project")).ReturnsAsync(true);
+        _mockPluginRepo.Setup(repo => repo.CheckPluginExists(1)).ReturnsAsync(true);
+
+        var ex = Assert.ThrowsAsync<InvalidOperationException>(async () =>
+        {
+            await _handler.Handle(updateCommand, CancellationToken.None);
+        });
+
+        Assert.That(ex.Message, Is.EqualTo("A Project with this slug already exists: new project"));
     }
 }
