@@ -64,46 +64,6 @@ public class DeleteUserCommandHandlerTest
     }
 
     [Test]
-    [Description("""
-                 Scenario: A user is being deleted. The email of the user has been changed in the past, from 'old@mail.de' to 'user@example.com'.
-                 Some logs have been created by the user to be deleted, or affecting the user to be deleted. They were created before the email change.
-
-                 Expected: The email of the logs should be adjusted to the latest email of the user to be deleted.
-                 """)]
-    public async Task AdjustsEmailOfLogsCreatedByOrAffectingUserToDelete()
-    {
-        var user = new IdentityUser { Id = "1", Email = "user@example.com"};
-        _mockUsersRepo.Setup(repository => repository.GetUserByIdAsync("1")).ReturnsAsync(user);
-        _mockUsersRepo.Setup(repository => repository.DeleteUserAsync(user)).ReturnsAsync(user);
-
-        var logByUserToDelete = new Log
-        {
-            AuthorId = "1", AuthorEmail = "old@mail.de", AffectedUserId = "2", AffectedUserEmail = "different@mail.de"
-        };
-        var logAffectingUserToDelete = new Log
-        {
-            AuthorId = "2", AuthorEmail = "different@mail.de", AffectedUserId = "1", AffectedUserEmail = "old@mail.de"
-        };
-        var logThatShouldNotBeChanged = new Log
-        {
-            AuthorId = "2", AuthorEmail = "different@mail.de", AffectedUserId = "2", AffectedUserEmail = "different@mail.de"
-        };
-        _mockLogRepository.Setup(repository => repository.GetLogsWithSearch(It.IsAny<string>()))
-            .ReturnsAsync([logByUserToDelete, logAffectingUserToDelete, logThatShouldNotBeChanged]);
-
-        await _handler.Handle(new DeleteUserCommand("1"), CancellationToken.None);
-        Assert.Multiple(() =>
-        {
-            Assert.That(logByUserToDelete.AuthorEmail, Is.EqualTo("user@example.com"));
-            Assert.That(logByUserToDelete.AffectedUserEmail, Is.EqualTo("different@mail.de"));
-            Assert.That(logAffectingUserToDelete.AuthorEmail, Is.EqualTo("different@mail.de"));
-            Assert.That(logAffectingUserToDelete.AffectedUserEmail, Is.EqualTo("user@example.com"));
-            Assert.That(logThatShouldNotBeChanged.AuthorEmail, Is.EqualTo("different@mail.de"));
-            Assert.That(logThatShouldNotBeChanged.AffectedUserEmail, Is.EqualTo("different@mail.de"));
-        });
-    }
-
-    [Test]
     public async Task DeleteUser_InvalidUser_Test()
     {
         _mockUsersRepo.Setup(m => m.GetUserByIdAsync("1")).ReturnsAsync((IdentityUser?)null);

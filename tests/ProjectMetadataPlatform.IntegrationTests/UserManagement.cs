@@ -151,7 +151,7 @@ public class UserManagement : IntegrationTestsBase
     }
 
     [Test]
-    public async Task LastKnownEmailOfDeletedUserIsUsedInLogs()
+    public async Task EmailOfDeletedUserAtCreationTimeOfTheLogIsUsedInLogs()
     {
         // Arrange
         var client = CreateClient();

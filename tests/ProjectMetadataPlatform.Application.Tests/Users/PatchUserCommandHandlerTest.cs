@@ -105,6 +105,7 @@ public class PatchUserCommandHandlerTest
         var newPassword = "newPassword";
         var newPasswordHash = "newPasswordHash";
 
+        _mockUsersRepo.Setup(repo => repo.CheckPasswordFormat("newPassword")).ReturnsAsync(true);
         _mockUsersRepo.Setup(repo => repo.GetUserByIdAsync("42")).ReturnsAsync(user);
         _mockUsersRepo.Setup(repo => repo.StoreUser(It.IsAny<IdentityUser>())).ReturnsAsync((IdentityUser p) => p);
         _mockPasswordHasher.Setup(ph => ph.HashPassword(user, newPassword)).Returns(newPasswordHash);

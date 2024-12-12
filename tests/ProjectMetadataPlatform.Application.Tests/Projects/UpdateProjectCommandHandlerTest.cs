@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -29,7 +29,7 @@ public class UpdateProjectCommandHandlerTest
         _mockPluginRepo = new Mock<IPluginRepository>();
         _mockUnitOfWork = new Mock<IUnitOfWork>();
         _mockLogRepository = new Mock<ILogRepository>();
-        _handler = new UpdateProjectCommandHandler(_mockProjectRepo.Object, _mockPluginRepo.Object,_mockLogRepository.Object, _mockUnitOfWork.Object);
+        _handler = new UpdateProjectCommandHandler(_mockProjectRepo.Object, _mockPluginRepo.Object, _mockLogRepository.Object, _mockUnitOfWork.Object);
     }
 
     [Test]
@@ -65,16 +65,14 @@ public class UpdateProjectCommandHandlerTest
 
         _mockProjectRepo.Setup(m => m.GetProjectWithPluginsAsync(1))
             .ReturnsAsync(exampleProject);
-
-        _mockPluginRepo.Setup(m => m.CheckPluginExists(It.IsAny<int>()))
-            .ReturnsAsync(true);
+        _mockPluginRepo.Setup(repo => repo.GetGlobalPluginsAsync()).ReturnsAsync([new Plugin { Id = 100, PluginName = "Example Plugin" }]);
 
         var result = await _handler.Handle(new UpdateProjectCommand(exampleProject.ProjectName, exampleProject.BusinessUnit, exampleProject.TeamNumber, exampleProject.Department, exampleProject.ClientName, exampleProject.Id, projectPluginList, false), It.IsAny<CancellationToken>());
         Assert.That(result, Is.EqualTo(1));
     }
 
     [Test]
-    public async Task UpdateProjectNotFound_Test()
+    public void UpdateProjectNotFound_Test()
     {
         var exampleProject = new Project
         {
@@ -126,7 +124,7 @@ public class UpdateProjectCommandHandlerTest
     }
 
     [Test]
-    public async Task UpdatePlugintNotFound_Test()
+    public void UpdatePluginNotFound_Test()
     {
         var exampleProject = new Project
         {
@@ -159,8 +157,7 @@ public class UpdateProjectCommandHandlerTest
         _mockProjectRepo.Setup(m => m.GetProjectWithPluginsAsync(1))
             .ReturnsAsync(exampleProject);
 
-        _mockPluginRepo.Setup(m => m.CheckPluginExists(100))
-            .ReturnsAsync(false);
+        _mockPluginRepo.Setup(repo => repo.GetGlobalPluginsAsync()).ReturnsAsync([]);
 
         var exception = Assert.ThrowsAsync<InvalidOperationException>(async () =>
             await _handler.Handle(new UpdateProjectCommand(
@@ -251,10 +248,14 @@ public class UpdateProjectCommandHandlerTest
                 new ProjectPlugins { PluginId = 1, Url = "http://another-example.com", DisplayName = "Another example Plugin" },
                 new ProjectPlugins { PluginId = 3, Url = "http://example2.com", DisplayName = "Example 2 Plugin" }
             ]
-            ,false);
+            , false);
 
         _mockProjectRepo.Setup(repository => repository.GetProjectWithPluginsAsync(1)).ReturnsAsync(project);
-        _mockPluginRepo.Setup(repository => repository.CheckPluginExists(It.IsAny<int>())).ReturnsAsync(true);
+        _mockPluginRepo.Setup(repo => repo.GetGlobalPluginsAsync()).ReturnsAsync([
+            new Plugin { Id = 1, PluginName = "Plugin1" },
+            new Plugin { Id = 2, PluginName = "Plugin2" },
+            new Plugin { Id = 3, PluginName = "Plugin3" }
+        ]);
 
         //Act
         await _handler.Handle(updateCommand, CancellationToken.None);
@@ -443,7 +444,7 @@ public class UpdateProjectCommandHandlerTest
     }
 
     [Test]
-    public async Task LogsChanges_HandlesLogRepositoryException()
+    public void LogsChanges_HandlesLogRepositoryException()
     {
         var project = new Project
         {
@@ -633,7 +634,7 @@ public class UpdateProjectCommandHandlerTest
             Department = "Test Department",
             ProjectPlugins = new List<ProjectPlugins>
             {
-                new ProjectPlugins
+                new()
                 {
                     PluginId = 1,
                     Url = "http://example.com",
@@ -655,6 +656,7 @@ public class UpdateProjectCommandHandlerTest
         );
 
         _mockProjectRepo.Setup(repo => repo.GetProjectWithPluginsAsync(project.Id)).ReturnsAsync(project);
+        _mockPluginRepo.Setup(repo => repo.GetGlobalPluginsAsync()).ReturnsAsync([new Plugin { Id = 1, PluginName = "ExamplePlugin" }]);
 
         await _handler.Handle(updateCommand, CancellationToken.None);
 
@@ -662,7 +664,7 @@ public class UpdateProjectCommandHandlerTest
             project,
             Action.REMOVED_PROJECT_PLUGIN,
             It.Is<List<LogChange>>(changes =>
-                changes.Any(change => change.Property == "PluginId" && change.OldValue == "1" && change.NewValue == String.Empty) &&
+                changes.Any(change => change.Property == "Plugin" && change.OldValue == "ExamplePlugin" && change.NewValue == String.Empty) &&
                 changes.Any(change => change.Property == "Url" && change.OldValue == "http://example.com" && change.NewValue == String.Empty) &&
                 changes.Any(change => change.Property == "DisplayName" && change.OldValue == "Example Plugin" && change.NewValue == String.Empty)
             )
@@ -694,7 +696,7 @@ public class UpdateProjectCommandHandlerTest
             project.Id,
             new List<ProjectPlugins>
             {
-                new ProjectPlugins
+                new()
                 {
                     PluginId = 1,
                     Url = "http://example.com",
@@ -705,7 +707,7 @@ public class UpdateProjectCommandHandlerTest
         );
 
         _mockProjectRepo.Setup(repo => repo.GetProjectWithPluginsAsync(project.Id)).ReturnsAsync(project);
-        _mockPluginRepo.Setup(repo => repo.CheckPluginExists(1)).ReturnsAsync(true);
+        _mockPluginRepo.Setup(repo => repo.GetGlobalPluginsAsync()).ReturnsAsync([new Plugin { Id = 1, PluginName = "ExamplePlugin" }]);
 
         await _handler.Handle(updateCommand, CancellationToken.None);
 
@@ -713,7 +715,7 @@ public class UpdateProjectCommandHandlerTest
             project,
             Action.ADDED_PROJECT_PLUGIN,
             It.Is<List<LogChange>>(changes =>
-                changes.Any(change => change.Property == "PluginId" && change.OldValue == String.Empty && change.NewValue == "1") &&
+                changes.Any(change => change.Property == "Plugin" && change.OldValue == String.Empty && change.NewValue == "ExamplePlugin") &&
                 changes.Any(change => change.Property == "Url" && change.OldValue == String.Empty && change.NewValue == "http://example.com") &&
                 changes.Any(change => change.Property == "DisplayName" && change.OldValue == String.Empty && change.NewValue == "Example Plugin")
             )
@@ -734,7 +736,7 @@ public class UpdateProjectCommandHandlerTest
             Department = "Test Department",
             ProjectPlugins = new List<ProjectPlugins>
             {
-                new ProjectPlugins
+                new()
                 {
                     PluginId = 1,
                     Url = "http://example.com",
@@ -764,7 +766,7 @@ public class UpdateProjectCommandHandlerTest
         );
 
         _mockProjectRepo.Setup(repo => repo.GetProjectWithPluginsAsync(project.Id)).ReturnsAsync(project);
-        _mockPluginRepo.Setup(repo => repo.CheckPluginExists(1)).ReturnsAsync(true);
+        _mockPluginRepo.Setup(repo => repo.GetGlobalPluginsAsync()).ReturnsAsync([new Plugin { Id = 1, PluginName = "Example Plugin" }]);
 
         await _handler.Handle(updateCommand, CancellationToken.None);
 
@@ -791,7 +793,7 @@ public class UpdateProjectCommandHandlerTest
             Department = "Test Department",
             ProjectPlugins = new List<ProjectPlugins>
             {
-                new ProjectPlugins
+                new()
                 {
                     PluginId = 1,
                     Url = "http://example.com",
@@ -810,7 +812,7 @@ public class UpdateProjectCommandHandlerTest
             project.Id,
             new List<ProjectPlugins>
             {
-                new ProjectPlugins
+                new()
                 {
                     PluginId = 1,
                     Url = "http://example.com",
@@ -821,7 +823,7 @@ public class UpdateProjectCommandHandlerTest
         );
 
         _mockProjectRepo.Setup(repo => repo.GetProjectWithPluginsAsync(project.Id)).ReturnsAsync(project);
-        _mockPluginRepo.Setup(repo => repo.CheckPluginExists(1)).ReturnsAsync(true);
+        _mockPluginRepo.Setup(repo => repo.GetGlobalPluginsAsync()).ReturnsAsync([new Plugin { Id = 1, PluginName = "Example Plugin" }]);
 
         await _handler.Handle(updateCommand, CancellationToken.None);
 

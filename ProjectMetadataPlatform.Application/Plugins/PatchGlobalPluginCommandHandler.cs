@@ -70,7 +70,7 @@ public class PatchGlobalPluginCommandHandler : IRequestHandler<PatchGlobalPlugin
             await _logRepository.AddGlobalPluginLogForCurrentUser(plugin, plugin.IsArchived ? Action.ARCHIVED_GLOBAL_PLUGIN : Action.UNARCHIVED_GLOBAL_PLUGIN, []);
         }
 
-        Plugin updatedPlugin = await _pluginRepository.StorePlugin(plugin);
+        var updatedPlugin = await _pluginRepository.StorePlugin(plugin);
         await _unitOfWork.CompleteAsync();
 
         return updatedPlugin;

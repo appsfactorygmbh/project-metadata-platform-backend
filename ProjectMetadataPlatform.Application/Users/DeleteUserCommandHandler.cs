@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
@@ -65,11 +64,6 @@ public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand,Identi
 
         var change = new LogChange { OldValue = user.Email!, NewValue = "", Property = nameof(IdentityUser.Email) };
         await _logRepository.AddUserLogForCurrentUser(user, Action.REMOVED_USER, [change]);
-
-        // Use the search method because GetAllLogs returns the logs untracked by the db context.
-        var logsByDeletedUser = await _logRepository.GetLogsWithSearch("");
-        logsByDeletedUser.Where(log => log.AuthorId == user.Id).ToList().ForEach(log => log.AuthorEmail = user.Email);
-        logsByDeletedUser.Where(log => log.AffectedUserId == user.Id).ToList().ForEach(log => log.AffectedUserEmail = user.Email);
 
         var response = await _usersRepository.DeleteUserAsync(user);
         await _unitOfWork.CompleteAsync();

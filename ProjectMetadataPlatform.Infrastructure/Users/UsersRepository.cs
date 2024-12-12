@@ -90,9 +90,11 @@ public class UsersRepository : RepositoryBase<IdentityUser>, IUsersRepository
     /// <returns>The stored user.</returns>
     public async Task<IdentityUser> StoreUser(IdentityUser user)
     {
-        _ = user.Id == "" ? await _userManager.CreateAsync(user) : await _userManager.UpdateAsync(user);
+        var identityResult = user.Id == "" ? await _userManager.CreateAsync(user) : await _userManager.UpdateAsync(user);
 
-        return user;
+        return identityResult.Errors.Any(e => e.Code == "DuplicateUserName")
+            ? throw new ArgumentException("User creation Failed : DuplicateEmail")
+            : !identityResult.Succeeded ? throw new ArgumentException("User creation " + identityResult) : user;
     }
 
     /// <summary>
@@ -108,5 +110,19 @@ public class UsersRepository : RepositoryBase<IdentityUser>, IUsersRepository
 
         var task = await _userManager.DeleteAsync(user);
         return !task.Succeeded ? throw new ArgumentException("User deletion failed. With id " + user.Id + task) : user;
+    }
+
+    /// <summary>
+    /// Checks if the given password is in the correct format.
+    /// </summary>
+    /// <param name="password"> password to be checked.</param>
+    /// <returns>true if the format is correct.</returns>
+    /// <exception cref="ArgumentException">format was false</exception>
+    public async Task<bool> CheckPasswordFormat(string password)
+    {
+        var passwordValidator = new PasswordValidator<IdentityUser>();
+        var identityResult = await passwordValidator.ValidateAsync(_userManager, new IdentityUser(), password);
+        return !identityResult.Succeeded ? throw new ArgumentException("User creation " + identityResult) : true;
+
     }
 }

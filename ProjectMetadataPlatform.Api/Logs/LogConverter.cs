@@ -24,18 +24,18 @@ public class LogConverter: ILogConverter
         message += " " + log.Action switch
         {
             Action.ADDED_PROJECT => BuildAddedProjectMessage(log.Changes),
-            Action.UPDATED_PROJECT => BuildUpdatedProjectMessage(log.Changes),
-            Action.ARCHIVED_PROJECT => BuildArchivedProjectMessage(log.Project?.ProjectName),
-            Action.UNARCHIVED_PROJECT => BuildUnArchivedProjectMessage(log.Project?.ProjectName),
-            Action.ADDED_PROJECT_PLUGIN => BuildAddedProjectPluginMessage(log.Project?.ProjectName, log.Changes),
-            Action.UPDATED_PROJECT_PLUGIN => BuildUpdatedProjectPluginMessage(log.Project?.ProjectName, log.Changes),
-            Action.REMOVED_PROJECT_PLUGIN => BuildRemovedProjectPluginMessage(log.Project?.ProjectName, log.Changes),
+            Action.UPDATED_PROJECT => BuildUpdatedProjectMessage(log.Changes, log.ProjectName ?? "<Unknown Project>"),
+            Action.ARCHIVED_PROJECT => BuildArchivedProjectMessage(log.ProjectName),
+            Action.UNARCHIVED_PROJECT => BuildUnArchivedProjectMessage(log.ProjectName),
+            Action.ADDED_PROJECT_PLUGIN => BuildAddedProjectPluginMessage(log.ProjectName, log.Changes),
+            Action.UPDATED_PROJECT_PLUGIN => BuildUpdatedProjectPluginMessage(log.ProjectName, log.Changes),
+            Action.REMOVED_PROJECT_PLUGIN => BuildRemovedProjectPluginMessage(log.ProjectName, log.Changes),
             Action.ADDED_USER => BuildAddedUserMessage(log.Changes),
             Action.UPDATED_USER => BuildUpdatedUserMessage(log),
             Action.REMOVED_USER => BuildRemovedUserMessage(log.AffectedUserEmail ?? "<Unknown User>"),
             Action.REMOVED_PROJECT => BuildRemovedProjectMessage(log.ProjectName ?? "<Unknown Project>"),
             Action.ADDED_GLOBAL_PLUGIN => BuildAddedGlobalPluginMessage(log.Changes),
-            Action.UPDATED_GLOBAL_PLUGIN => BuildUpdatedGlobalPluginMessage(log.Changes),
+            Action.UPDATED_GLOBAL_PLUGIN => BuildUpdatedGlobalPluginMessage(log.Changes, log.GlobalPluginName ?? "<Unknown Plugin>"),
             Action.ARCHIVED_GLOBAL_PLUGIN => BuildArchivedGlobalPluginMessage(log.GlobalPluginName ?? "<Unknown Plugin>"),
             Action.UNARCHIVED_GLOBAL_PLUGIN => BuildUnArchivedGlobalPluginMessage(log.GlobalPluginName?? "<Unknown Plugin>"),
             Action.REMOVED_GLOBAL_PLUGIN => BuildRemovedGlobalPluginMessage(log.GlobalPluginName ?? "<Unknown Plugin>"),
@@ -64,9 +64,10 @@ public class LogConverter: ILogConverter
     /// Builds a message for an updated project.
     /// </summary>
     /// <param name="changes">The list of changes.</param>
+    /// <param name="projectName">The name of the updated project.</param>
     /// <returns>The constructed message.</returns>
-    private static string BuildUpdatedProjectMessage(List<LogChange>? changes) {
-        var message = "updated project properties: ";
+    private static string BuildUpdatedProjectMessage(List<LogChange>? changes, string projectName) {
+        var message = $"updated project {projectName}: ";
         if (changes == null) {
             return message;
         }
@@ -135,7 +136,7 @@ public class LogConverter: ILogConverter
             return message;
         }
         message += " with properties: ";
-        message += string.Join(", ", changes.Select(change => $"{change.Property} = {change.NewValue}"));
+        message += string.Join(", ", changes.Select(change => $"{change.Property} = {change.OldValue}"));
         return message;
     }
 
@@ -210,9 +211,10 @@ public class LogConverter: ILogConverter
     /// Builds a message for an updated global plugin.
     /// </summary>
     /// <param name="changes">The list of changes.</param>
+    /// <param name="pluginName">The name of the updated plugin.</param>
     /// <returns>The constructed message.</returns>
-    private static string BuildUpdatedGlobalPluginMessage(List<LogChange>? changes) {
-        var message = "updated global plugin properties: ";
+    private static string BuildUpdatedGlobalPluginMessage(List<LogChange>? changes, string pluginName) {
+        var message = $"updated global plugin {pluginName}: ";
         if (changes == null) {
             return message;
         }

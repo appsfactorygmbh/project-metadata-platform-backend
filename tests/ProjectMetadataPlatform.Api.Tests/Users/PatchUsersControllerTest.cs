@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -56,13 +57,39 @@ public class PatchUsersControllerTest
 
         var request = new PatchUserRequest(null, "Black Midi");
 
-        ActionResult<GetUserResponse> result = await _controller.Patch("404", request);
+        var result = await _controller.Patch("404", request);
 
         Assert.That(result.Result, Is.InstanceOf<NotFoundObjectResult>());
 
         var notFoundResult = result.Result as NotFoundObjectResult;
         Assert.That(notFoundResult, Is.Not.Null);
         Assert.That(notFoundResult.Value, Is.EqualTo("No user with id 404 was found."));
+    }
+
+    [Test]
+    public async Task PatchUser_InvalidPassword_Test()
+    {
+        //prepare
+        _mediator.Setup(m => m.Send(It.IsAny<PatchUserCommand>(), It.IsAny<CancellationToken>())).ThrowsAsync(new ArgumentException("Invalid password"));
+        var request = new PatchUserRequest( "Example Email", "Example Password");
+        var result = await _controller.Patch("1",request);
+        Assert.That(result.Result, Is.InstanceOf<BadRequestObjectResult>());
+        var badRequestResult = result.Result as BadRequestObjectResult;
+        Assert.That(badRequestResult, Is.Not.Null);
+        Assert.That(badRequestResult.Value, Is.EqualTo("Invalid password"));
+    }
+
+    [Test]
+    public async Task PatchUser_InvalidRequest_Test()
+    {
+        var request = new PatchUserRequest( "", "");
+        _mediator.Setup(mediator => mediator.Send(It.IsAny<PatchUserCommand>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new ArgumentException());
+        ActionResult<GetUserResponse> result = await _controller.Patch("1",request);
+        Assert.That(result.Result, Is.InstanceOf<BadRequestObjectResult>());
+        var badRequestResult = result.Result as BadRequestObjectResult;
+        Assert.That(badRequestResult, Is.Not.Null);
+
     }
 
     [Test]
