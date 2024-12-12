@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
+using ProjectMetadataPlatform.Application.Helper;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Application.Projects;
 using ProjectMetadataPlatform.Domain.Plugins;
@@ -67,6 +68,9 @@ public class UpdateProjectCommandHandlerTest
 
         _mockProjectRepo.Setup(m => m.GetProjectWithPluginsAsync(1))
             .ReturnsAsync(exampleProject);
+
+        _mockPluginRepo.Setup(m => m.CheckPluginExists(It.IsAny<int>()))
+            .ReturnsAsync(true);
         _mockPluginRepo.Setup(repo => repo.GetGlobalPluginsAsync()).ReturnsAsync([new Plugin { Id = 100, PluginName = "Example Plugin" }]);
 
         var result = await _handler.Handle(new UpdateProjectCommand(exampleProject.ProjectName, exampleProject.BusinessUnit, exampleProject.TeamNumber, exampleProject.Department, exampleProject.ClientName, exampleProject.Id, projectPluginList, false), It.IsAny<CancellationToken>());
@@ -347,9 +351,13 @@ public class UpdateProjectCommandHandlerTest
             false
         );
 
+        var _slugHelper = new SlugHelper(_mockProjectRepo.Object);
+        var slug = _slugHelper.GenerateSlug("New Project Name");
+
         _mockProjectRepo.Setup(repo => repo.GetProjectWithPluginsAsync(1)).ReturnsAsync(project);
-        _mockSlugHelper.Setup(repo => repo.GenerateSlug("New Project Name")).Returns("new project name");
-        _mockSlugHelper.Setup(s => s.CheckProjectSlugExists("new project name")).ReturnsAsync(false);
+        _mockSlugHelper.Setup(s => s.GenerateSlug("New Project Name")).Returns(slug);
+        _mockSlugHelper.Setup(s => s.CheckProjectSlugExists(slug)).ReturnsAsync(false);
+
         await _handler.Handle(updateCommand, CancellationToken.None);
 
         _mockLogRepository.Verify(logRepo => logRepo.AddProjectLogForCurrentUser(
@@ -358,7 +366,7 @@ public class UpdateProjectCommandHandlerTest
             It.Is<List<LogChange>>(changes =>
                 changes.Count == 6 &&
                 changes.Any(change => change.Property == "ProjectName" && change.OldValue == "Old Project Name" && change.NewValue == "New Project Name") &&
-                changes.Any(change => change.Property == "Slug" && change.OldValue == "old project name" && change.NewValue == "new project name" ) &&
+                changes.Any(change => change.Property == "Slug" && change.OldValue == "old project name" && change.NewValue == "new_project_name" ) &&
                 changes.Any(change => change.Property == "BusinessUnit" && change.OldValue == "Old Unit" && change.NewValue == "New Unit") &&
                 changes.Any(change => change.Property == "TeamNumber" && change.OldValue == "1" && change.NewValue == "2") &&
                 changes.Any(change => change.Property == "Department" && change.OldValue == "Old Department" && change.NewValue == "New Department") &&
