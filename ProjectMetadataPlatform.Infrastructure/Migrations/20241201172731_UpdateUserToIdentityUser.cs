@@ -19,7 +19,7 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
             if (migrationBuilder.IsNpgsql())
             {
                 migrationBuilder.Sql(
-                    "UPDATE \"Logs\" l SET \"Email\" = \"AspNetUsers\".\"Email\" FROM \"AspNetUsers\" where \"UserId\" = \"AspNetUsers\".\"Id\" and \"AspNetUsers\".\"Email\" is not null and \"UserId\" is not null;");
+                    "UPDATE \"Logs\" l SET \"AuthorEmail\" = \"AspNetUsers\".\"Email\" FROM \"AspNetUsers\" where \"AuthorId\" = \"AspNetUsers\".\"Id\" and \"AspNetUsers\".\"Email\" is not null and \"AuthorId\" is not null;");
             }
 
             migrationBuilder.DropColumn(
