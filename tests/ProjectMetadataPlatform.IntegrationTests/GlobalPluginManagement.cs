@@ -43,9 +43,9 @@ public class GlobalPluginManagement : IntegrationTestsBase
         logs.GetArrayLength().Should().Be(2);
 
         logs[0].GetProperty("logMessage").GetString().Should().Be(
-            "admin@admin.admin added a new global plugin with properties: PluginName = GitLab, IsArchived = False, Keys[0] = key1");
+            "admin added a new global plugin with properties: PluginName = GitLab, IsArchived = False, Keys[0] = key1");
         logs[1].GetProperty("logMessage").GetString().Should().Be(
-            "admin@admin.admin added a new global plugin with properties: PluginName = Jira, IsArchived = False, Keys[0] = key2");
+            "admin added a new global plugin with properties: PluginName = Jira, IsArchived = False, Keys[0] = key2");
     }
 
     [Test]
@@ -79,10 +79,10 @@ public class GlobalPluginManagement : IntegrationTestsBase
         logs.GetArrayLength().Should().Be(2);
 
         logs[0].GetProperty("logMessage").GetString().Should().Be(
-            "admin@admin.admin added a new global plugin with properties: PluginName = GitLab, IsArchived = False, Keys[0] = key1");
+            "admin added a new global plugin with properties: PluginName = GitLab, IsArchived = False, Keys[0] = key1");
 
         logs[1].GetProperty("logMessage").GetString().Should().Be(
-            "admin@admin.admin updated global plugin GitLab: set PluginName from GitLab to Jira");
+            "admin updated global plugin GitLab: set PluginName from GitLab to Jira");
     }
 
     [Test]
@@ -131,13 +131,13 @@ public class GlobalPluginManagement : IntegrationTestsBase
         logs.GetArrayLength().Should().Be(3);
 
         logs[0].GetProperty("logMessage").GetString().Should().Be(
-            "admin@admin.admin added a new global plugin with properties: PluginName = GitLab, IsArchived = False, Keys[0] = key1");
+            "admin added a new global plugin with properties: PluginName = GitLab, IsArchived = False, Keys[0] = key1");
 
         logs[1].GetProperty("logMessage").GetString().Should().Be(
-            "admin@admin.admin archived global plugin GitLab");
+            "admin archived global plugin GitLab");
 
         logs[2].GetProperty("logMessage").GetString().Should().Be(
-            "admin@admin.admin unarchived global plugin GitLab");
+            "admin unarchived global plugin GitLab");
     }
 
     [Test]
@@ -171,12 +171,12 @@ public class GlobalPluginManagement : IntegrationTestsBase
         logs.GetArrayLength().Should().Be(3);
 
         logs[0].GetProperty("logMessage").GetString().Should().Be(
-            "admin@admin.admin added a new global plugin with properties: PluginName = GitLab, IsArchived = False, Keys[0] = key1");
+            "admin added a new global plugin with properties: PluginName = GitLab, IsArchived = False, Keys[0] = key1");
 
         logs[1].GetProperty("logMessage").GetString().Should().Be(
-            "admin@admin.admin archived global plugin GitLab");
+            "admin archived global plugin GitLab");
 
         logs[2].GetProperty("logMessage").GetString().Should().Be(
-            "admin@admin.admin removed global plugin GitLab");
+            "admin removed global plugin GitLab");
     }
 }

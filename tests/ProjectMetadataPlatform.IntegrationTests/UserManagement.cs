@@ -103,7 +103,7 @@ public class UserManagement : IntegrationTestsBase
             "admin added a new user with properties: Email = test@mail.de");
 
         logs[1].GetProperty("logMessage").GetString().Should().Be(
-            "admin updated user foo: set Email from test@mail.de to foo@bar.de, changed password");
+            "admin updated user test: set Email from test@mail.de to foo@bar.de, changed password");
     }
 
     [Test]
@@ -178,6 +178,6 @@ public class UserManagement : IntegrationTestsBase
         logs[0].GetProperty("logMessage").GetString().Should().Be(
             "admin added a new user with properties: Email = test@mail.de");
         logs[1].GetProperty("logMessage").GetString().Should().Be(
-            "foo (deleted user) added a new user with properties: Email = mail@m.de");
+            "test (deleted user) added a new user with properties: Email = mail@m.de");
     }
 }
