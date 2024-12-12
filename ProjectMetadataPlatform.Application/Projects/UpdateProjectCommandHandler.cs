@@ -77,8 +77,7 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
 
         foreach (var newPlugin in newPlugins)
         {
-            var addedPluginChanges = new List<LogChange>();
-            addedPluginChanges.AddRange(new List<LogChange>
+            var addedPluginChanges = new List<LogChange>()
             {
                 new()
                 {
@@ -93,14 +92,13 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
                     NewValue = newPlugin.DisplayName ?? string.Empty
                 },
                 new() { Property = nameof(ProjectPlugins.Url), OldValue = string.Empty, NewValue = newPlugin.Url }
-            });
+            };
             await _logRepository.AddProjectLogForCurrentUser(project, Action.ADDED_PROJECT_PLUGIN, addedPluginChanges);
         }
 
         foreach (var removedPlugin in removedPlugins)
         {
-            var removedPluginChanges = new List<LogChange>();
-            removedPluginChanges.AddRange(new List<LogChange>
+            var removedPluginChanges = new List<LogChange>()
             {
                 new()
                 {
@@ -115,7 +113,7 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
                     NewValue = string.Empty
                 },
                 new() { Property = nameof(ProjectPlugins.Url), OldValue = removedPlugin.Url, NewValue = string.Empty }
-            });
+            };
             await _logRepository.AddProjectLogForCurrentUser(project, Action.REMOVED_PROJECT_PLUGIN, removedPluginChanges);
         }
 
