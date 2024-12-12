@@ -60,6 +60,7 @@ code-quality:
 
 sonarqube:
   stage: test
+  tags: [imn]
   image: gitlab.dit.htwk-leipzig.de:5050/projekt2024_a_appsfactory_project_metadata_platform/backend/sonarqube-base
   variables:
     SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"
