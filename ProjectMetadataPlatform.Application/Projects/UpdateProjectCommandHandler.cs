@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Globalization;
@@ -45,12 +45,14 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
 
         await UpdateProjectProperties(request, project);
 
-        var invalidPluginIds = await request.Plugins
+        var globalPluginsById = (await _pluginRepository.GetGlobalPluginsAsync())
+            .ToDictionary(plugin => plugin.Id);
+
+        var invalidPluginIds = request.Plugins
             .Select(plugin => plugin.PluginId)
             .Distinct()
-            .ToAsyncEnumerable()
-            .WhereAwait(async pluginId => !await _pluginRepository.CheckPluginExists(pluginId))
-            .ToListAsync(cancellationToken);
+            .Where(pluginId => !globalPluginsById.ContainsKey(pluginId))
+            .ToList();
 
         if (invalidPluginIds.Count > 0)
         {
@@ -77,15 +79,9 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
             {
                 new()
                 {
-                    Property = nameof(ProjectPlugins.PluginId),
+                    Property = nameof(ProjectPlugins.Plugin),
                     OldValue = string.Empty,
-                    NewValue = newPlugin.PluginId.ToString()
-                },
-                new()
-                {
-                    Property = nameof(ProjectPlugins.ProjectId),
-                    OldValue = string.Empty,
-                    NewValue = newPlugin.ProjectId.ToString()
+                    NewValue = globalPluginsById[newPlugin.PluginId].PluginName
                 },
                 new()
                 {
@@ -105,14 +101,8 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
             {
                 new()
                 {
-                    Property = nameof(ProjectPlugins.PluginId),
-                    OldValue = removedPlugin.PluginId.ToString(),
-                    NewValue = string.Empty
-                },
-                new()
-                {
-                    Property = nameof(ProjectPlugins.ProjectId),
-                    OldValue = removedPlugin.ProjectId.ToString(),
+                    Property = nameof(ProjectPlugins.Plugin),
+                    OldValue = globalPluginsById[removedPlugin.PluginId].PluginName,
                     NewValue = string.Empty
                 },
                 new()
@@ -163,8 +153,8 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
         }
 
         project.ProjectPlugins = (project.ProjectPlugins ?? Enumerable.Empty<ProjectPlugins>())
-            .Except(removedPlugins ?? Enumerable.Empty<ProjectPlugins>())
-            .Concat(newPlugins ?? Enumerable.Empty<ProjectPlugins>())
+            .Except(removedPlugins)
+            .Concat(newPlugins)
             .ToList();
 
         await _unitOfWork.CompleteAsync();
@@ -177,7 +167,7 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
 
     private async Task UpdateProjectProperties(UpdateProjectCommand request, Project project)
     {
-        var changes = new List<LogChange> {};
+        var changes = new List<LogChange>();
 
         if (project.ProjectName != request.ProjectName)
         {
@@ -241,9 +231,9 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
 
         if (project.IsArchived != request.IsArchived)
         {
-            var archivedChanges = new List<LogChange> {};
+            var archivedChanges = new List<LogChange>();
 
-            var change = new LogChange()
+            var change = new LogChange
             {
                 Property = nameof(Project.IsArchived),
                 OldValue = project.IsArchived.ToString(),
