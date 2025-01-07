@@ -53,8 +53,29 @@ public class Project
     ///     Includes the logs for the project. Used for one to many relationship.
     /// </summary>
     public ICollection<Log>? Logs { get; set; }
-/// <summary>
+
+    /// <summary>
     /// A boolean indicating if a plugin is archived/deleted.
     /// </summary>
     public bool IsArchived { get; set; }
+
+    /// <summary>
+    /// Internal id of the offer associated with the project.
+    /// </summary>
+    public string OfferId { get; set; } = "";
+
+    /// <summary>
+    /// The company that is responsible for the project.
+    /// </summary>
+    public string Company { get; set; } = "";
+
+    /// <summary>
+    /// The state of the company.
+    /// </summary>
+    public CompanyState CompanyState { get; set; }
+
+    /// <summary>
+    /// The security level of the project.
+    /// </summary>
+    public SecurityLevel IsmsLevel { get; set; }
 }
