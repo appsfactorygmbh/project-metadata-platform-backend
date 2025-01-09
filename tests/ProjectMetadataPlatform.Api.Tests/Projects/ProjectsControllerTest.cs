@@ -69,7 +69,9 @@ public class ProjectsControllerTest
                 ClientName = "Nasa",
                 BusinessUnit = "BuWeather",
                 TeamNumber = 42,
-                Department = "Homelandsecurity"
+                Department = "Homelandsecurity",
+                Company = "Geostorm",
+                IsmsLevel = SecurityLevel.VERY_HIGH
             }
         };
         _mediator.Setup(m => m.Send(It.IsAny<GetAllProjectsQuery>(), It.IsAny<CancellationToken>()))
@@ -99,6 +101,8 @@ public class ProjectsControllerTest
             Assert.That(project.ClientName, Is.EqualTo("Nasa"));
             Assert.That(project.BusinessUnit, Is.EqualTo("BuWeather"));
             Assert.That(project.TeamNumber, Is.EqualTo(42));
+            Assert.That(project.Company, Is.EqualTo("Geostorm"));
+            Assert.That(project.IsmsLevel, Is.EqualTo("VERY_HIGH"));
         });
     }
 
@@ -116,7 +120,9 @@ public class ProjectsControllerTest
                 ClientName = "Nasa",
                 BusinessUnit = "BuWeather",
                 TeamNumber = 42,
-                Department = "Homelandsecurity"
+                Department = "Homelandsecurity",
+                Company = "NothingButTheBest GmbH",
+                IsmsLevel = SecurityLevel.HIGH
             }
         };
 
@@ -146,6 +152,8 @@ public class ProjectsControllerTest
             Assert.That(project.ClientName, Is.EqualTo("Nasa"));
             Assert.That(project.BusinessUnit, Is.EqualTo("BuWeather"));
             Assert.That(project.TeamNumber, Is.EqualTo(42));
+            Assert.That(project.Company, Is.EqualTo("NothingButTheBest GmbH"));
+            Assert.That(project.IsmsLevel, Is.EqualTo("HIGH"));
         });
     }
 

@@ -10,4 +10,4 @@ namespace ProjectMetadataPlatform.Api.Projects.Models;
 /// <param name="BusinessUnit">The business unit the project belongs to.</param>
 /// <param name="TeamNumber">The number of the team working on the project.</param>
 /// <param name="IsArchived">If the project is archived or not.</param>
-public record GetProjectsResponse(int Id, string Slug, string ProjectName, string ClientName, string BusinessUnit, int TeamNumber, bool IsArchived);
+public record GetProjectsResponse(int Id, string Slug, string ProjectName, string ClientName, string BusinessUnit, int TeamNumber, bool IsArchived, string Company, string IsmsLevel);

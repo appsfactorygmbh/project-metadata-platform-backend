@@ -55,7 +55,9 @@ public class ProjectsController : ControllerBase
             project.ClientName,
             project.BusinessUnit,
             project.TeamNumber,
-            project.IsArchived));
+            project.IsArchived,
+            project.Company,
+            project.IsmsLevel.ToString()));
 
         return Ok(response);
     }
