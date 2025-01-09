@@ -23,6 +23,11 @@ public class Plugin
     public required string PluginName { get; set; }
 
     /// <summary>
+    /// THe base url of the plugin.
+    /// </summary>
+    public string? BaseUrl { get; set; }
+
+    /// <summary>
     ///     Holds the relation between Projects and Plugins.
     /// </summary>
     public ICollection<ProjectPlugins>? ProjectPlugins { get; set; }
