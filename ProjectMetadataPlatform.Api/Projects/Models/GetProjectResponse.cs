@@ -11,6 +11,10 @@ namespace ProjectMetadataPlatform.Api.Projects.Models;
 /// <param name="TeamNumber">The number of the team working on the project.</param>
 /// <param name="Department">The name of the department associated with the project.</param>
 /// <param name="IsArchived">If the project is archived or not.</param>
+/// <param name="OfferId">Internal id of the offer associated with the project.</param>
+/// <param name="Company">The company that is responsible for the project.</param>
+/// <param name="CompanyState">The state of the company. (INTERNAL or EXTERNAL)</param>
+/// <param name="IsmsLevel">The security level of the project (NORMAL, HIGH, VERY_HIGH)</param>
 public record GetProjectResponse(
     int Id,
     string Slug,
@@ -19,4 +23,8 @@ public record GetProjectResponse(
     string BusinessUnit,
     int TeamNumber,
     string Department,
-    bool IsArchived);
+    bool IsArchived,
+    string OfferId,
+    string Company,
+    string CompanyState,
+    string IsmsLevel);

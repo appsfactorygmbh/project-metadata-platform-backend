@@ -131,7 +131,11 @@ public class ProjectsController : ControllerBase
             project.BusinessUnit,
             project.TeamNumber,
             project.Department,
-            project.IsArchived);
+            project.IsArchived,
+            project.OfferId,
+            project.Company,
+            project.CompanyState.ToString(),
+            project.IsmsLevel.ToString());
 
         return Ok(response);
     }
