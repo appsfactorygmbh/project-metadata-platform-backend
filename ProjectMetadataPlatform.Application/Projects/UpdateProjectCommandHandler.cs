@@ -75,83 +75,9 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
 
         var removedPlugins = currentPlugins.Except(existingPlugins).ToList();
 
-        foreach (var newPlugin in newPlugins)
-        {
-            var addedPluginChanges = new List<LogChange>()
-            {
-                new()
-                {
-                    Property = nameof(ProjectPlugins.Plugin),
-                    OldValue = string.Empty,
-                    NewValue = globalPluginsById[newPlugin.PluginId].PluginName
-                },
-                new()
-                {
-                    Property = nameof(ProjectPlugins.DisplayName),
-                    OldValue = string.Empty,
-                    NewValue = newPlugin.DisplayName ?? string.Empty
-                },
-                new() { Property = nameof(ProjectPlugins.Url), OldValue = string.Empty, NewValue = newPlugin.Url }
-            };
-            await _logRepository.AddProjectLogForCurrentUser(project, Action.ADDED_PROJECT_PLUGIN, addedPluginChanges);
-        }
-
-        foreach (var removedPlugin in removedPlugins)
-        {
-            var removedPluginChanges = new List<LogChange>()
-            {
-                new()
-                {
-                    Property = nameof(ProjectPlugins.Plugin),
-                    OldValue = globalPluginsById[removedPlugin.PluginId].PluginName,
-                    NewValue = string.Empty
-                },
-                new()
-                {
-                    Property = nameof(ProjectPlugins.DisplayName),
-                    OldValue = removedPlugin.DisplayName ?? string.Empty,
-                    NewValue = string.Empty
-                },
-                new() { Property = nameof(ProjectPlugins.Url), OldValue = removedPlugin.Url, NewValue = string.Empty }
-            };
-            await _logRepository.AddProjectLogForCurrentUser(project, Action.REMOVED_PROJECT_PLUGIN, removedPluginChanges);
-        }
-
-        foreach (var existingPlugin in existingPlugins)
-        {
-            var updatedPluginChanges = new List<LogChange>();
-
-            var requestPlugin = request.Plugins.First(plugin
-                => GetProjectPluginKey(plugin) == GetProjectPluginKey(existingPlugin));
-
-            if (existingPlugin.DisplayName != requestPlugin.DisplayName)
-            {
-                updatedPluginChanges.Add(new LogChange
-                {
-                    Property = nameof(ProjectPlugins.DisplayName),
-                    OldValue = existingPlugin.DisplayName ?? string.Empty,
-                    NewValue = requestPlugin.DisplayName ?? string.Empty
-                });
-                existingPlugin.DisplayName = requestPlugin.DisplayName;
-            }
-
-            if (existingPlugin.Url != requestPlugin.Url)
-            {
-                updatedPluginChanges.Add(new LogChange
-                {
-                    Property = nameof(ProjectPlugins.Url),
-                    OldValue = existingPlugin.Url,
-                    NewValue = requestPlugin.Url
-                });
-            }
-
-            if (updatedPluginChanges.Count > 0)
-            {
-                await _logRepository.AddProjectLogForCurrentUser(project, Action.UPDATED_PROJECT_PLUGIN, updatedPluginChanges);
-            }
-
-            existingPlugin.Url = requestPlugin.Url;
-        }
+        await AddNewPluginLogs(newPlugins, project, globalPluginsById);
+        await AddRemovedPluginLogs(removedPlugins, project, globalPluginsById);
+        await AddUpdatedPluginLogs(existingPlugins, project, request);
 
         project.ProjectPlugins = (project.ProjectPlugins ?? Enumerable.Empty<ProjectPlugins>())
             .Except(removedPlugins)
@@ -313,6 +239,91 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
         if (changes.Count > 0)
         {
             await _logRepository.AddProjectLogForCurrentUser(project, Action.UPDATED_PROJECT, changes);
+        }
+    }
+
+    private async Task AddNewPluginLogs(List<ProjectPlugins> newPlugins, Project project, Dictionary<int, Plugin> globalPluginsById)
+    {
+        foreach (var addedPluginChanges in newPlugins.Select(newPlugin => new List<LogChange>()
+                 {
+                     new()
+                     {
+                         Property = nameof(ProjectPlugins.Plugin),
+                         OldValue = string.Empty,
+                         NewValue = globalPluginsById[newPlugin.PluginId].PluginName
+                     },
+                     new()
+                     {
+                         Property = nameof(ProjectPlugins.DisplayName),
+                         OldValue = string.Empty,
+                         NewValue = newPlugin.DisplayName ?? string.Empty
+                     },
+                     new() { Property = nameof(ProjectPlugins.Url), OldValue = string.Empty, NewValue = newPlugin.Url }
+                 }))
+        {
+            await _logRepository.AddProjectLogForCurrentUser(project, Action.ADDED_PROJECT_PLUGIN, addedPluginChanges);
+        }
+    }
+
+    private async Task AddRemovedPluginLogs(List<ProjectPlugins> removedPlugins, Project project, Dictionary<int, Plugin> globalPluginsById)
+    {
+        foreach (var removedPluginChanges in removedPlugins.Select(removedPlugin => new List<LogChange>()
+                 {
+                     new()
+                     {
+                         Property = nameof(ProjectPlugins.Plugin),
+                         OldValue = globalPluginsById[removedPlugin.PluginId].PluginName,
+                         NewValue = string.Empty
+                     },
+                     new()
+                     {
+                         Property = nameof(ProjectPlugins.DisplayName),
+                         OldValue = removedPlugin.DisplayName ?? string.Empty,
+                         NewValue = string.Empty
+                     },
+                     new() { Property = nameof(ProjectPlugins.Url), OldValue = removedPlugin.Url, NewValue = string.Empty }
+                 }))
+        {
+            await _logRepository.AddProjectLogForCurrentUser(project, Action.REMOVED_PROJECT_PLUGIN, removedPluginChanges);
+        }
+    }
+
+    private async Task AddUpdatedPluginLogs(List<ProjectPlugins> existingPlugins, Project project, UpdateProjectCommand request)
+    {
+        foreach (var existingPlugin in existingPlugins)
+        {
+            var updatedPluginChanges = new List<LogChange>();
+
+            var requestPlugin = request.Plugins.First(plugin
+                => GetProjectPluginKey(plugin) == GetProjectPluginKey(existingPlugin));
+
+            if (existingPlugin.DisplayName != requestPlugin.DisplayName)
+            {
+                updatedPluginChanges.Add(new LogChange
+                {
+                    Property = nameof(ProjectPlugins.DisplayName),
+                    OldValue = existingPlugin.DisplayName ?? string.Empty,
+                    NewValue = requestPlugin.DisplayName ?? string.Empty
+                });
+                existingPlugin.DisplayName = requestPlugin.DisplayName;
+            }
+
+            if (existingPlugin.Url != requestPlugin.Url)
+            {
+                updatedPluginChanges.Add(new LogChange
+                {
+                    Property = nameof(ProjectPlugins.Url),
+                    OldValue = existingPlugin.Url,
+                    NewValue = requestPlugin.Url
+                });
+            }
+
+            if (updatedPluginChanges.Count > 0)
+            {
+                await _logRepository.AddProjectLogForCurrentUser(project, Action.UPDATED_PROJECT_PLUGIN, updatedPluginChanges);
+            }
+
+            existingPlugin.Url = requestPlugin.Url;
         }
     }
 }
