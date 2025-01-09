@@ -11,4 +11,4 @@ namespace ProjectMetadataPlatform.Application.Projects;
 /// <param name="BusinessUnit">Optional. A list of business units to filter the projects by.</param>
 /// <param name="TeamNumber">Optional. A list of team numbers to filter the projects by.</param>
 /// <param name="IsArchived">Optional. The archival status of the projects to filter by.</param>
-public record ProjectFilterRequest(string? ProjectName, string? ClientName, List<string>? BusinessUnit, List<int>? TeamNumber, bool? IsArchived);
+public record ProjectFilterRequest(string? ProjectName, string? ClientName, List<string>? BusinessUnit, List<int>? TeamNumber, bool? IsArchived, List<string>? Company, string? IsmsLevel );

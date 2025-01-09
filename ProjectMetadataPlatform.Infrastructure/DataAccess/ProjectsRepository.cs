@@ -40,7 +40,9 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
             filteredQuery = filteredQuery.Where(project => project.ProjectName.ToLower().Contains(lowerTextSearch)
                                                   || project.ClientName.ToLower().Contains(lowerTextSearch)
                                                   || project.BusinessUnit.ToLower().Contains(lowerTextSearch)
-                                                  || project.TeamNumber.ToString().Contains(lowerTextSearch));
+                                                  || project.TeamNumber.ToString().Contains(lowerTextSearch)
+                                                  || project.Company.ToLower().Contains(lowerTextSearch)
+                                                  || project.IsmsLevel.ToString().Contains(lowerTextSearch));
 
         }
 
@@ -83,6 +85,21 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
             if(query.Request.IsArchived is not null)
             {
                 filteredQuery = filteredQuery.Where(project => project.IsArchived == query.Request.IsArchived);
+            }
+
+            if (query.Request.Company is { Count: > 0 })
+            {
+                var lowerCompanies = query.Request.Company.Select(c => c.ToLower()).ToList();
+                filteredQuery = filteredQuery.Where(project =>
+                    lowerCompanies.Contains(project.Company.ToLower())
+                );
+            }
+
+            if (query.Request.IsmsLevel is not null)
+            {
+                filteredQuery = filteredQuery.Where(project =>
+                    project.IsmsLevel.ToString().Contains(query.Request.IsmsLevel)
+                );
             }
         }
 
@@ -160,6 +177,28 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     public async Task<IEnumerable<int>> GetTeamNumbersAsync()
     {
         return await _context.Projects.Select(project => project.TeamNumber).Distinct().ToListAsync();
+    }
+
+    /// <summary>
+    /// Asynchronously retrieves a distinct list of company names from all projects.
+    /// </summary>
+    /// <returns>
+    /// A task representing the asynchronous operation, which upon completion returns a collection of distinct company names.
+    /// </returns>
+    public async Task <IEnumerable<string>> GetCompaniesAsync()
+    {
+        return await _context.Projects.Select(project => project.Company).Distinct().ToListAsync();
+    }
+
+    /// <summary>
+    /// Asynchronously retrieves a distinct list of ISMS (Information Security Management System) levels from all projects.
+    /// </summary>
+    /// <returns>
+    /// A task representing the asynchronous operation, which upon completion returns a collection of distinct ISMS levels.
+    /// </returns>
+    public async Task <IEnumerable<SecurityLevel>> GetIsmsLevelsAsync()
+    {
+        return await _context.Projects.Select(project => project.IsmsLevel).Distinct().ToListAsync();
     }
 
     /// <summary>

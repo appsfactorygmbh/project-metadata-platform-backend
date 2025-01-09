@@ -85,7 +85,9 @@ public class GetAllProjectsQueryHandlerTest
             "Metatron",
             new List<string> { "666", "777" },
             new List<int> { 42, 43 },
-            null
+            null,
+            new List<string>{"Ag der Ags"},
+            "HIGH"
         );
         var projects = new List<Project>
         {
@@ -97,7 +99,9 @@ public class GetAllProjectsQueryHandlerTest
                 BusinessUnit = "666",
                 ClientName = "Metatron",
                 Department = "Mars",
-                TeamNumber = 42
+                TeamNumber = 42,
+                Company = "Ag der Ags",
+                IsmsLevel = SecurityLevel.HIGH
             },
             new Project
             {
@@ -107,7 +111,9 @@ public class GetAllProjectsQueryHandlerTest
                 BusinessUnit = "777",
                 ClientName = "Lucifer",
                 Department = "Venus",
-                TeamNumber = 43
+                TeamNumber = 43,
+                Company = "Ag der Ags",
+                IsmsLevel = SecurityLevel.HIGH
             },
             new Project
             {
@@ -117,7 +123,9 @@ public class GetAllProjectsQueryHandlerTest
                 BusinessUnit = "999",
                 ClientName = "Satan",
                 Department = "Earth",
-                TeamNumber = 44
+                TeamNumber = 44,
+                Company = "Ark",
+                IsmsLevel = SecurityLevel.HIGH
             },
         };
 
@@ -125,7 +133,9 @@ public class GetAllProjectsQueryHandlerTest
             p => filters.ProjectName.Contains(p.ProjectName) &&
                  filters.ClientName.Contains(p.ClientName) &&
                  filters.BusinessUnit.Contains(p.BusinessUnit) &&
-                 filters.TeamNumber.Contains(p.TeamNumber)));
+                 filters.TeamNumber.Contains(p.TeamNumber) &&
+                 filters.Company.Contains(p.Company) &&
+                 filters.IsmsLevel == p.IsmsLevel.ToString()));
         var request = new GetAllProjectsQuery(filters, "");
         var result = await _handler.Handle(request, It.IsAny<CancellationToken>());
 
@@ -145,7 +155,9 @@ public class GetAllProjectsQueryHandlerTest
             "Gilgamesh",
             new List<string> { "666", "777" },
             new List<int> { 42, 43 },
-            true
+            true,
+            new List<string> {"Unknown"},
+            "High"
         );
         var projects = new List<Project>
         {
@@ -157,7 +169,10 @@ public class GetAllProjectsQueryHandlerTest
                 BusinessUnit = "666",
                 ClientName = "Metatron",
                 Department = "Mars",
-                TeamNumber = 42
+                TeamNumber = 42,
+                Company = "High Five",
+                IsmsLevel = SecurityLevel.HIGH
+
             },
             new Project
             {
@@ -167,7 +182,9 @@ public class GetAllProjectsQueryHandlerTest
                 BusinessUnit = "777",
                 ClientName = "Lucifer",
                 Department = "Venus",
-                TeamNumber = 43
+                TeamNumber = 43,
+                Company = "Space Y",
+                IsmsLevel = SecurityLevel.HIGH
             },
             new Project
             {
@@ -177,7 +194,9 @@ public class GetAllProjectsQueryHandlerTest
                 BusinessUnit = "999",
                 ClientName = "Satan",
                 Department = "Earth",
-                TeamNumber = 44
+                TeamNumber = 44,
+                Company = "Unknown",
+                IsmsLevel = SecurityLevel.HIGH
             },
         };
 
@@ -185,7 +204,9 @@ public class GetAllProjectsQueryHandlerTest
             p => filters.ProjectName.Contains(p.ProjectName) &&
                  filters.ClientName.Contains(p.ClientName) &&
                  filters.BusinessUnit.Contains(p.BusinessUnit) &&
-                 filters.TeamNumber.Contains(p.TeamNumber)));
+                 filters.TeamNumber.Contains(p.TeamNumber) &&
+                 filters.Company.Contains(p.Company) &&
+                 filters.IsmsLevel == p.IsmsLevel.ToString()));
         var request = new GetAllProjectsQuery(filters, "");
         var result = await _handler.Handle(request, It.IsAny<CancellationToken>());
 
@@ -206,7 +227,9 @@ public class GetAllProjectsQueryHandlerTest
             null,
             new List<string> { "666", "777" },
             new List<int> { 42, 43 },
-            false
+            false,
+            null,
+            null
         );
         var projects = new List<Project>
         {
@@ -272,7 +295,9 @@ public class GetAllProjectsQueryHandlerTest
                 BusinessUnit = "666",
                 ClientName = "Metatron",
                 Department = "Mars",
-                TeamNumber = 42
+                TeamNumber = 42,
+                Company = "Unknown",
+                IsmsLevel = SecurityLevel.HIGH
             },
             new Project
             {
@@ -282,7 +307,9 @@ public class GetAllProjectsQueryHandlerTest
                 BusinessUnit = "777",
                 ClientName = "Lucifer",
                 Department = "Venus",
-                TeamNumber = 43
+                TeamNumber = 43,
+                Company = "Unknown",
+                IsmsLevel = SecurityLevel.HIGH
             },
             new Project
             {
@@ -292,7 +319,9 @@ public class GetAllProjectsQueryHandlerTest
                 BusinessUnit = "999",
                 ClientName = "Satan",
                 Department = "Earth",
-                TeamNumber = 44
+                TeamNumber = 44,
+                Company = "Unknown",
+                IsmsLevel = SecurityLevel.HIGH
             },
         };
 
