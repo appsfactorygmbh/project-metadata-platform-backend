@@ -1,3 +1,4 @@
+using System;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -30,6 +31,29 @@ public class ProjectManagement : IntegrationTestsBase
           "teamNumber": 4,
           "department": "testDepartment2",
           "clientName": "testClient2"
+        }
+        """);
+
+    private static readonly StringContent UpdateRequest = StringContent(
+        """
+        {
+          "projectName": "testProject",
+          "businessUnit": "BU2",
+          "teamNumber": 7,
+          "department": "testDepartment2",
+          "clientName": "testClient2"
+        }
+        """);
+
+    private static readonly StringContent UpdateisArchivedRequest = StringContent(
+        """
+        {
+          "projectName": "testProject",
+          "businessUnit": "BU1",
+          "teamNumber": 3,
+          "department": "testDepartment",
+          "clientName": "testClient",
+          "isArchived": true
         }
         """);
 
@@ -100,4 +124,78 @@ public class ProjectManagement : IntegrationTestsBase
         secondProject.GetProperty("clientName").GetString().Should().Be("testClient2");
         secondProject.GetProperty("id").GetInt32().Should().BeGreaterThan(0);
     }
+
+    [Test]
+    public async Task UpdateProject()
+    {
+        // Arrange
+        var client = CreateClient();
+        await GetAuthTokenAndAddItToDefaultRequestHeadersOfClient(client);
+
+        // Act
+        // Assert
+        var projectId = (await ToJsonElement(client.PutAsync("/Projects", CreateRequest), HttpStatusCode.Created))
+            .GetProperty("id").GetInt32()!;
+
+        var updateResponse = await client.PutAsync($"/Projects?projectId="+projectId, UpdateRequest);
+        updateResponse.StatusCode.Should().Be(HttpStatusCode.Created);
+        updateResponse.Headers.Location.Should().NotBeNull();
+
+        var getResponse = await client.GetAsync(updateResponse.Headers.Location);
+
+        getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        var getResponseContent = await getResponse.Content.ReadFromJsonAsync<JsonDocument>();
+
+        var rootElement = getResponseContent!.RootElement;
+        rootElement.GetProperty("projectName").GetString().Should().Be("testProject");
+        rootElement.GetProperty("businessUnit").GetString().Should().Be("BU2");
+        rootElement.GetProperty("teamNumber").GetInt32().Should().Be(7);
+        rootElement.GetProperty("department").GetString().Should().Be("testDepartment2");
+        rootElement.GetProperty("clientName").GetString().Should().Be("testClient2");
+        rootElement.GetProperty("id").GetInt32().Should().BeGreaterThan(0);
+
+        var logs = await ToJsonElement(client.GetAsync("/Logs"));
+        logs.GetArrayLength().Should().Be(2);
+
+        logs[0].GetProperty("logMessage").GetString().Should().Be(
+            "admin created a new project with properties: ProjectName = testProject, Slug = testproject, BusinessUnit = BU1, Department = testDepartment, ClientName = testClient, TeamNumber = 3");
+
+        logs[1].GetProperty("logMessage").GetString().Should().Be(
+            "admin updated project testProject:  set BusinessUnit from BU1 to BU2,  set TeamNumber from 3 to 7,  set Department from testDepartment to testDepartment2,  set ClientName from testClient to testClient2");
+    }
+
+    [Test]
+    public async Task DeleteProject()
+    {
+        // Arrange
+        var client = CreateClient();
+        await GetAuthTokenAndAddItToDefaultRequestHeadersOfClient(client);
+
+        // Act
+        // Assert
+        var projectId = (await ToJsonElement(client.PutAsync("/Projects", CreateRequest), HttpStatusCode.Created))
+            .GetProperty("id").GetInt32()!;
+        var projects = await ToJsonElement(client.GetAsync($"/Projects/"));
+        var count = projects.GetArrayLength();
+        await client.PutAsync($"/Projects?projectId="+projectId, UpdateisArchivedRequest);
+
+        (await client.DeleteAsync($"/Projects/{projectId}")).StatusCode.Should().Be(HttpStatusCode.NoContent);
+
+         var projects2 = await ToJsonElement(client.GetAsync($"/Projects/"));
+         projects2.GetArrayLength().Should().Be(count-1);
+
+         var logs = await ToJsonElement(client.GetAsync("/Logs"));
+
+         logs.GetArrayLength().Should().Be(3);
+
+         logs[0].GetProperty("logMessage").GetString().Should().Be(
+             "admin created a new project with properties: ProjectName = testProject, Slug = testproject, BusinessUnit = BU1, Department = testDepartment, ClientName = testClient, TeamNumber = 3");
+         logs[1].GetProperty("logMessage").GetString().Should().Be(
+             "admin archived project testProject");
+         logs[2].GetProperty("logMessage").GetString().Should().Be(
+             "admin removed project testProject");
+
+
+    }
+
 }
