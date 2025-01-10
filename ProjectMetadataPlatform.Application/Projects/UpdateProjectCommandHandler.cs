@@ -246,6 +246,54 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
             project.ClientName = request.ClientName;
         }
 
+        if (project.OfferId != request.OfferId)
+        {
+            var change = new LogChange
+            {
+                Property = nameof(Project.OfferId),
+                OldValue = project.OfferId,
+                NewValue = request.OfferId
+            };
+            changes.Add(change);
+            project.OfferId = request.OfferId;
+        }
+
+        if (project.Company != request.Company)
+        {
+            var change = new LogChange
+            {
+                Property = nameof(Project.Company),
+                OldValue = project.Company,
+                NewValue = request.Company
+            };
+            changes.Add(change);
+            project.Company = request.Company;
+        }
+
+        if (project.CompanyState != request.CompanyState)
+        {
+            var change = new LogChange
+            {
+                Property = nameof(Project.CompanyState),
+                OldValue = project.CompanyState.ToString(),
+                NewValue = request.CompanyState.ToString()
+            };
+            changes.Add(change);
+            project.CompanyState = request.CompanyState;
+        }
+
+        if (project.IsmsLevel != request.IsmsLevel)
+        {
+            var change = new LogChange
+            {
+                Property = nameof(Project.IsmsLevel),
+                OldValue = project.IsmsLevel.ToString(),
+                NewValue = request.IsmsLevel.ToString()
+            };
+            changes.Add(change);
+            project.IsmsLevel = request.IsmsLevel;
+        }
+
         if (project.IsArchived != request.IsArchived)
         {
             var archivedChanges = new List<LogChange>();

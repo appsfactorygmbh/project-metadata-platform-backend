@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using ProjectMetadataPlatform.Api.Plugins.Models;
+using ProjectMetadataPlatform.Domain.Projects;
 
 namespace ProjectMetadataPlatform.Api.Projects.Models;
 
@@ -19,5 +20,9 @@ public record CreateProjectRequest(
     int TeamNumber,
     string Department,
     string ClientName,
+    string OfferId,
+    string Company,
+    CompanyState CompanyState,
+    SecurityLevel IsmsLevel,
     List<UpdateProjectPluginRequest>? PluginList = null,
     bool IsArchived = false);
