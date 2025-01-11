@@ -1,3 +1,5 @@
+using ProjectMetadataPlatform.Domain.Projects;
+
 namespace ProjectMetadataPlatform.Api.Projects.Models;
 
 /// <summary>
@@ -26,5 +28,5 @@ public record GetProjectResponse(
     bool IsArchived,
     string OfferId,
     string Company,
-    string CompanyState,
-    string IsmsLevel);
+    CompanyState CompanyState,
+    SecurityLevel IsmsLevel);

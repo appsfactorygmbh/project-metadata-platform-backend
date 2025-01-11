@@ -96,8 +96,8 @@ public class GetProjectBySlugControllerTest
             Assert.That(project.Department, Is.EqualTo("Security"));
             Assert.That(project.OfferId, Is.EqualTo("1023"));
             Assert.That(project.Company, Is.EqualTo("Charlies Schokoladenfabrik"));
-            Assert.That(project.CompanyState, Is.EqualTo("EXTERNAL"));
-            Assert.That(project.IsmsLevel, Is.EqualTo("VERY_HIGH"));
+            Assert.That(project.CompanyState, Is.EqualTo(CompanyState.EXTERNAL));
+            Assert.That(project.IsmsLevel, Is.EqualTo(SecurityLevel.VERY_HIGH));
         });
     }
 }

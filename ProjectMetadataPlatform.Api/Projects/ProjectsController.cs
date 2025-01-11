@@ -134,8 +134,8 @@ public class ProjectsController : ControllerBase
             project.IsArchived,
             project.OfferId,
             project.Company,
-            project.CompanyState.ToString(),
-            project.IsmsLevel.ToString());
+            project.CompanyState,
+            project.IsmsLevel);
 
         return Ok(response);
     }
