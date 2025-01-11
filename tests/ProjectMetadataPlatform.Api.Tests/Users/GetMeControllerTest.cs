@@ -59,19 +59,13 @@ public class GetMeControllerTest
     }
 
     [Test]
-    public async Task getMe_Test_InternalError()
+    public void getMe_Test_InternalError()
     {
         _mediator.Setup(m => m.Send(It.IsAny<GetUserByEmailQuery>(), It.IsAny<System.Threading.CancellationToken>()))
             .ThrowsAsync(new InvalidOperationException("Internal error"));
         var controller = new UsersController(_mediator.Object, MockHttpContextAccessor("Dr. Nefario"));
 
-        var result = await controller.GetMe();
-        var objectResult = result.Result as StatusCodeResult;
-        Assert.Multiple(() =>
-        {
-            Assert.That(objectResult, Is.Not.Null);
-            Assert.That(objectResult!.StatusCode, Is.EqualTo(StatusCodes.Status500InternalServerError));
-        });
+        Assert.ThrowsAsync<InvalidOperationException>(() => controller.GetMe());
     }
 
     [Test]

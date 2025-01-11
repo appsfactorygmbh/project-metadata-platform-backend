@@ -65,14 +65,10 @@ public class GetUserControllerTest
     }
 
     [Test]
-    public async Task MediatorThrowsExceptionTest()
+    public void MediatorThrowsExceptionTest()
     {
         _mediator.Setup(mediator => mediator.Send(It.IsAny<GetUserQuery>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidDataException("An error message"));
-        var result = await _controller.GetUserById("1");
-        Assert.That(result.Result, Is.InstanceOf<StatusCodeResult>());
-
-        var badRequestResult = result.Result as StatusCodeResult;
-        Assert.That(badRequestResult!.StatusCode, Is.EqualTo(500));
+        Assert.ThrowsAsync<InvalidDataException>(() => _controller.GetUserById("1"));
     }
 }

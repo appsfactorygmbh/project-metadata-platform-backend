@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Api.Errors.ExceptionHandlers;
@@ -27,6 +28,18 @@ public class BasicExceptionHandlerTest
         Assert.That(result, Is.InstanceOf<NotFoundObjectResult>());
         var notFoundResult = (NotFoundObjectResult) result;
         Assert.That(notFoundResult.Value, Is.EqualTo(exception.Message));
+    }
+
+    [Test]
+    public void Handle_DatabaseException_ReturnsInternalServerError()
+    {
+        var exception = new DatabaseException(new Exception());
+
+        var result = _basicExceptionHandler.Handle(exception);
+
+        Assert.That(result, Is.InstanceOf<StatusCodeResult>());
+        var statusCodeResult = (StatusCodeResult) result;
+        Assert.That(statusCodeResult.StatusCode, Is.EqualTo(500));
     }
 
     [Test]

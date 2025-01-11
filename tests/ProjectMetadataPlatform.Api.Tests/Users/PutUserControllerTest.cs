@@ -76,16 +76,12 @@ public class PutUserControllerTest
     }
 
     [Test]
-    public async Task CreateUser_MediatorThrowsOtherExceptionTest()
+    public void CreateUser_MediatorThrowsOtherExceptionTest()
     {
         _mediator.Setup(mediator => mediator.Send(It.IsAny<CreateUserCommand>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidDataException("An error message"));
         var request = new CreateUserRequest( "Example Email", "Example Password");
-        ActionResult<CreateUserResponse> result = await _controller.Put(request);
-        Assert.That(result.Result, Is.InstanceOf<StatusCodeResult>());
-
-        var badRequestResult = result.Result as StatusCodeResult;
-        Assert.That(badRequestResult!.StatusCode, Is.EqualTo(500));
+        Assert.ThrowsAsync<InvalidDataException>(() => _controller.Put(request));
     }
 
 }

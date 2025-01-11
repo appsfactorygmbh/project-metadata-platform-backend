@@ -49,13 +49,6 @@ public class AuthController : ControllerBase
         {
             return BadRequest(e.Message);
         }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.Message);
-            Console.WriteLine(e.StackTrace);
-            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-        }
-
     }
 
     /// <summary>
@@ -85,13 +78,6 @@ public class AuthController : ControllerBase
         {
             return BadRequest(e.Message);
         }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.Message);
-            Console.WriteLine(e.StackTrace);
-            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-        }
-
     }
 
 }

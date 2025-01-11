@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -6,6 +7,7 @@ using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.Projects;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using ProjectMetadataPlatform.Application.Interfaces;
+using ProjectMetadataPlatform.Domain.Errors.BasicExceptions;
 
 namespace ProjectMetadataPlatform.Infrastructure.DataAccess;
 
@@ -194,6 +196,13 @@ public sealed class ProjectMetadataPlatformDbContext : IdentityDbContext<Identit
     /// <inheritdoc />
     public async Task CompleteAsync()
     {
-        await SaveChangesAsync();
+        try
+        {
+            await SaveChangesAsync();
+        }
+        catch (Exception e)
+        {
+            throw new DatabaseException(e);
+        }
     }
 }

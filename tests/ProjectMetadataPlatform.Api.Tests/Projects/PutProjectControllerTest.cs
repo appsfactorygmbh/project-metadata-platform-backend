@@ -128,17 +128,14 @@ public class PutProjectControllerTest
     }
 
     [Test]
-    public async Task CreateProject_MediatorThrowsOtherExceptionTest()
+    public void CreateProject_MediatorThrowsOtherExceptionTest()
     {
         _mediator.Setup(mediator => mediator.Send(It.IsAny<CreateProjectCommand>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidDataException("An error message"));
+
         var request = new CreateProjectRequest("p", "b", 1, "d", "c",
             "o", "c", CompanyState.EXTERNAL, SecurityLevel.NORMAL);
-        ActionResult<CreateProjectResponse> result = await _controller.Put(request);
-        Assert.That(result.Result, Is.InstanceOf<StatusCodeResult>());
-
-        var badRequestResult = result.Result as StatusCodeResult;
-        Assert.That(badRequestResult!.StatusCode, Is.EqualTo(500));
+        Assert.ThrowsAsync<InvalidDataException>(() => _controller.Put(request));
     }
 
     [Test]

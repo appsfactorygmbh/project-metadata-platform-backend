@@ -52,18 +52,7 @@ public class PluginsController : ControllerBase
 
         var command = new CreatePluginCommand(request.PluginName, request.IsArchived, request.Keys, request.BaseUrl);
 
-        int pluginId;
-        try
-        {
-            pluginId = await _mediator.Send(command);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.Message);
-            Console.WriteLine(e.StackTrace);
-
-            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-        }
+        var pluginId = await _mediator.Send(command);
 
         var response = new CreatePluginResponse(pluginId);
         var uri = "/Plugins/" + pluginId;
@@ -86,18 +75,7 @@ public class PluginsController : ControllerBase
     {
         var command = new PatchGlobalPluginCommand(pluginId, request.PluginName, request.IsArchived);
 
-        Plugin? plugin;
-        try
-        {
-            plugin = await _mediator.Send(command);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.Message);
-            Console.WriteLine(e.StackTrace);
-
-            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-        }
+        var plugin = await _mediator.Send(command);
 
         if (plugin == null)
         {
@@ -118,17 +96,7 @@ public class PluginsController : ControllerBase
     public async Task<ActionResult<IEnumerable<GetGlobalPluginResponse>>> GetGlobal()
     {
         var query = new GetGlobalPluginsQuery();
-        IEnumerable<Plugin> plugins;
-        try
-        {
-            plugins = await _mediator.Send(query);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.Message);
-            Console.WriteLine(e.StackTrace);
-            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-        }
+        var plugins = await _mediator.Send(query);
 
         string[] keys = [];
         var response = plugins.Select(plugin => new GetGlobalPluginResponse(
@@ -163,25 +131,16 @@ public class PluginsController : ControllerBase
         }
         var command = new DeleteGlobalPluginCommand(pluginId);
 
-        try
+        var success = await _mediator.Send(command);
+        if (success == null)
         {
-            var success = await _mediator.Send(command);
-            if (success == null)
-            {
-                return NotFound("No Plugin with id " + pluginId + " was found.");
-            }
-            else if ((bool)!success)
-            {
-                return StatusCode(StatusCodes.Status400BadRequest,"the plugin was not archived");
-            }
-            return Ok(new DeleteGlobalPluginResponse(pluginId));
+            return NotFound("No Plugin with id " + pluginId + " was found.");
         }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.Message);
-            Console.WriteLine(e.StackTrace);
 
-            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+        if ((bool)!success)
+        {
+            return StatusCode(StatusCodes.Status400BadRequest,"the plugin was not archived");
         }
+        return Ok(new DeleteGlobalPluginResponse(pluginId));
     }
 }

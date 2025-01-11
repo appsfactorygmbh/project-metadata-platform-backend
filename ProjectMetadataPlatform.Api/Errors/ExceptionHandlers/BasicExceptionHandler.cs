@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ProjectMetadataPlatform.Api.Interfaces;
 using ProjectMetadataPlatform.Domain.Errors.BasicExceptions;
@@ -21,8 +22,15 @@ public class BasicExceptionHandler: ControllerBase, IExceptionHandler<IBasicExce
         return exception switch
         {
             EntityNotFoundException entityNotFoundException => NotFound(entityNotFoundException.Message),
+            DatabaseException databaseException => HandleDatabaseException(databaseException),
             _ => StatusCode(StatusCodes.Status500InternalServerError)
         };
+    }
 
+    private StatusCodeResult HandleDatabaseException(DatabaseException databaseException)
+    {
+        Console.WriteLine(databaseException.Message);
+        Console.WriteLine(databaseException.StackTrace);
+        return StatusCode(StatusCodes.Status500InternalServerError);
     }
 }
