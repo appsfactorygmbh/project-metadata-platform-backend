@@ -17,6 +17,7 @@ namespace ProjectMetadataPlatform.Application.Projects;
 /// <param name="Company">Company responsible for project.</param>
 /// <param name="CompanyState">State of company.</param>
 /// <param name="IsmsLevel">Security Level of project.</param>
+/// <param name="Plugins">The List of the projects plugins.</param>
 public record CreateProjectCommand(
     string ProjectName,
     string BusinessUnit,
