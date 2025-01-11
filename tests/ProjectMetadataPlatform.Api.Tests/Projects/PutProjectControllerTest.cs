@@ -35,7 +35,7 @@ public class PutProjectControllerTest
         //prepare
         _mediator.Setup(m => m.Send(It.IsAny<CreateProjectCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(1);
         var request = new CreateProjectRequest("Example Project", "Example Business Unit", 1, "Example Department",
-            "Example Client", [new UpdateProjectPluginRequest("Url", "PluginName", 3)]);
+            "Example Client", "Example OfferId", "Example Company", CompanyState.EXTERNAL, SecurityLevel.NORMAL, [new UpdateProjectPluginRequest("Url", "PluginName", 3)]);
         ActionResult<CreateProjectResponse> result = await _controller.Put(request);
         Assert.That(result.Result, Is.InstanceOf<CreatedResult>());
         var createdResult = result.Result as CreatedResult;
@@ -53,7 +53,8 @@ public class PutProjectControllerTest
         });
         _mediator.Verify(mediator => mediator.Send(It.Is<CreateProjectCommand>(command =>
                 command.Plugins.Count == 1 && command.ProjectName == "Example Project" && command.BusinessUnit == "Example Business Unit" &&
-                command.TeamNumber == 1 && command.Department == "Example Department" && command.ClientName == "Example Client" &&
+                command.TeamNumber == 1 && command.Department == "Example Department" && command.ClientName == "Example Client" && command.OfferId == "Example OfferId" &&
+                command.Company == "Example Company" && command.CompanyState == CompanyState.EXTERNAL && command.IsmsLevel == SecurityLevel.NORMAL &&
                 command.Plugins.Single().PluginId == 3 && command.Plugins.Single().Url == "Url" && command.Plugins.Single().DisplayName == "PluginName"),
             It.IsAny<CancellationToken>()));
     }
@@ -64,11 +65,12 @@ public class PutProjectControllerTest
         //prepare
         _mediator.Setup(m => m.Send(It.IsAny<CreateProjectCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(1);
         var request = new CreateProjectRequest("Example Project", "Example Business Unit", 1, "Example Department",
-            "Example Client");
+            "Example Client", "Example OfferId", "Example Company", CompanyState.EXTERNAL, SecurityLevel.NORMAL);
         await _controller.Put(request);
         _mediator.Verify(mediator => mediator.Send(It.Is<CreateProjectCommand>(command =>
                 command.Plugins.Count == 0 && command.ProjectName == "Example Project" && command.BusinessUnit == "Example Business Unit" &&
-                command.TeamNumber == 1 && command.Department == "Example Department" && command.ClientName == "Example Client"),
+                command.TeamNumber == 1 && command.Department == "Example Department" && command.ClientName == "Example Client" &&
+                command.OfferId == "Example OfferId" && command.Company == "Example Company" && command.CompanyState == CompanyState.EXTERNAL && command.IsmsLevel == SecurityLevel.NORMAL),
             It.IsAny<CancellationToken>()));
     }
 
@@ -78,18 +80,19 @@ public class PutProjectControllerTest
         //prepare
         _mediator.Setup(m => m.Send(It.IsAny<CreateProjectCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(1);
         var request = new CreateProjectRequest("Example Project", "Example Business Unit", 1, "Example Department",
-            "Example Client");
+            "Example Client", "Example OfferId", "Example Company", CompanyState.EXTERNAL, SecurityLevel.NORMAL);
         await _controller.Put(request, 1);
         _mediator.Verify(mediator => mediator.Send(It.Is<UpdateProjectCommand>(command =>
                 command.Plugins.Count == 0 && command.ProjectName == "Example Project" && command.BusinessUnit == "Example Business Unit" &&
-                command.TeamNumber == 1 && command.Department == "Example Department" && command.ClientName == "Example Client"),
+                command.TeamNumber == 1 && command.Department == "Example Department" && command.ClientName == "Example Client" &&
+                command.OfferId == "Example OfferId" && command.Company == "Example Company" && command.CompanyState == CompanyState.EXTERNAL && command.IsmsLevel == SecurityLevel.NORMAL),
             It.IsAny<CancellationToken>()));
     }
 
     [Test]
     public async Task CreateProject_BadRequestTest()
     {
-        var request = new CreateProjectRequest("", " ", 1, "", "");
+        var request = new CreateProjectRequest("", " ", 1, "", "", " ", " ", CompanyState.EXTERNAL, SecurityLevel.NORMAL);
         ActionResult<CreateProjectResponse> result = await _controller.Put(request);
         Assert.That(result.Result, Is.InstanceOf<BadRequestObjectResult>());
     }
@@ -99,7 +102,8 @@ public class PutProjectControllerTest
     {
         _mediator.Setup(mediator => mediator.Send(It.IsAny<CreateProjectCommand>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidOperationException("A Project with this slug already exists: example_project"));
-        var request = new CreateProjectRequest("Tour Eiffel", "BusinessUnit 9001", 42, "Côte-d'Or", "France");
+        var request = new CreateProjectRequest("Tour Eiffel", "BusinessUnit 9001", 42, "Côte-d'Or", "France",
+            "OfferId", "Company", CompanyState.EXTERNAL, SecurityLevel.NORMAL);
         var result = await _controller.Put(request);
 
         Assert.That(result.Result, Is.InstanceOf<BadRequestObjectResult>());
@@ -113,7 +117,8 @@ public class PutProjectControllerTest
     {
         _mediator.Setup(mediator => mediator.Send(It.IsAny<CreateProjectCommand>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidOperationException("An error message"));
-        var request = new CreateProjectRequest("p", "b", 1, "d", "c");
+        var request = new CreateProjectRequest("p", "b", 1, "d", "c",
+            "o", "c", CompanyState.EXTERNAL, SecurityLevel.NORMAL);
         ActionResult<CreateProjectResponse> result = await _controller.Put(request);
         Assert.That(result.Result, Is.InstanceOf<BadRequestObjectResult>());
 
@@ -127,7 +132,8 @@ public class PutProjectControllerTest
     {
         _mediator.Setup(mediator => mediator.Send(It.IsAny<CreateProjectCommand>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidDataException("An error message"));
-        var request = new CreateProjectRequest("p", "b", 1, "d", "c");
+        var request = new CreateProjectRequest("p", "b", 1, "d", "c",
+            "o", "c", CompanyState.EXTERNAL, SecurityLevel.NORMAL);
         ActionResult<CreateProjectResponse> result = await _controller.Put(request);
         Assert.That(result.Result, Is.InstanceOf<StatusCodeResult>());
 
@@ -144,6 +150,10 @@ public class PutProjectControllerTest
             1,
             "Example Department",
             "Example Client",
+            "Example OfferId",
+            "Example Company",
+            CompanyState.EXTERNAL,
+            SecurityLevel.NORMAL,
             [new UpdateProjectPluginRequest("Url", "PluginName", 3)]);
         var result = await _controller.Put(request, 1);
 
@@ -165,6 +175,8 @@ public class PutProjectControllerTest
         _mediator.Verify(mediator => mediator.Send(It.Is<UpdateProjectCommand>(command =>
                 command.Plugins.Count == 1 && command.ProjectName == "Example Project" && command.BusinessUnit == "Example Business Unit" &&
                 command.TeamNumber == 1 && command.Department == "Example Department" && command.ClientName == "Example Client" &&
+                command.OfferId == "Example OfferId" && command.Company == "Example Company" && command.CompanyState == CompanyState.EXTERNAL &&
+                command.IsmsLevel == SecurityLevel.NORMAL &&
                 command.Plugins.Single().PluginId == 3 && command.Plugins.Single().Url == "Url" &&
                 command.Plugins.Single().DisplayName == "PluginName" && command.Plugins.Single().ProjectId == 1),
             It.IsAny<CancellationToken>()));
@@ -180,6 +192,10 @@ public class PutProjectControllerTest
             1,
             "Example Department",
             "Example Client",
+            "Example OfferId",
+            "Example Company",
+            CompanyState.EXTERNAL,
+            SecurityLevel.NORMAL,
             [new UpdateProjectPluginRequest("Url", "PluginName", 3)],
             true
         );
@@ -206,6 +222,10 @@ public class PutProjectControllerTest
                 command.TeamNumber == 1 &&
                 command.Department == "Example Department" &&
                 command.ClientName == "Example Client" &&
+                command.OfferId == "Example OfferId" &&
+                command.Company == "Example Company" &&
+                command.CompanyState == CompanyState.EXTERNAL &&
+                command.IsmsLevel == SecurityLevel.NORMAL &&
                 command.Plugins.Single().PluginId == 3 &&
                 command.Plugins.Single().Url == "Url" &&
                 command.Plugins.Single().DisplayName == "PluginName" &&
@@ -221,7 +241,7 @@ public class PutProjectControllerTest
 
         _mediator.Setup(m => m.Send(It.IsAny<UpdateProjectCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(1);
         var updateRequest = new CreateProjectRequest("UpdatedProject", "Updated Business Unit", 2, "Updated Department",
-            "Updated Client", new List<UpdateProjectPluginRequest> { new UpdateProjectPluginRequest("UpdatedUrl", "UpdatedPluginName", 4) });
+            "Updated Client", "Updated OfferId", "Updated Company", CompanyState.INTERNAL, SecurityLevel.HIGH, new List<UpdateProjectPluginRequest> { new UpdateProjectPluginRequest("UpdatedUrl", "UpdatedPluginName", 4) });
         var updateResult = await _controller.Put(updateRequest, "updatedproject");
 
         Assert.That(updateResult, Is.Not.Null);
@@ -240,6 +260,8 @@ public class PutProjectControllerTest
         _mediator.Verify(mediator => mediator.Send(It.Is<UpdateProjectCommand>(command =>
                 command.Plugins.Count == 1 && command.ProjectName == "UpdatedProject" && command.BusinessUnit == "Updated Business Unit" &&
                 command.TeamNumber == 2 && command.Department == "Updated Department" && command.ClientName == "Updated Client" &&
+                command.OfferId == "Updated OfferId" && command.Company == "Updated Company" && command.CompanyState == CompanyState.INTERNAL &&
+                command.IsmsLevel == SecurityLevel.HIGH &&
                 command.Plugins.Single().PluginId == 4 && command.Plugins.Single().Url == "UpdatedUrl" && command.Plugins.Single().DisplayName == "UpdatedPluginName"),
             It.IsAny<CancellationToken>()));
     }
@@ -249,7 +271,8 @@ public class PutProjectControllerTest
     {
         _mediator.Setup(m => m.Send(It.IsAny<GetProjectIdBySlugQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync((int?)null);
         var updateRequest = new CreateProjectRequest("UpdatedProject", "Updated Business Unit", 2, "Updated Department",
-            "Updated Client", new List<UpdateProjectPluginRequest> { new UpdateProjectPluginRequest("UpdatedUrl", "UpdatedPluginName", 4) });
+            "Updated Client", "Updated OfferId", "Updated Company", CompanyState.INTERNAL, SecurityLevel.HIGH,
+            new List<UpdateProjectPluginRequest> { new UpdateProjectPluginRequest("UpdatedUrl", "UpdatedPluginName", 4) });
         var updateResult = await _controller.Put(updateRequest, "updatedproject");
 
         Assert.That(updateResult, Is.Not.Null);
@@ -263,7 +286,8 @@ public class PutProjectControllerTest
 
         _mediator.Setup(m => m.Send(It.IsAny<UpdateProjectCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(1);
         var updateRequest = new CreateProjectRequest("UpdatedProject", "Updated Business Unit", 2, "Updated Department",
-            "Updated Client", new List<UpdateProjectPluginRequest> { new UpdateProjectPluginRequest("UpdatedUrl", "UpdatedPluginName", 4) }, true);
+            "Updated Client", "Updated OfferId", "Updated Company", CompanyState.INTERNAL, SecurityLevel.HIGH,
+            new List<UpdateProjectPluginRequest> { new UpdateProjectPluginRequest("UpdatedUrl", "UpdatedPluginName", 4) }, true);
         var updateResult = await _controller.Put(updateRequest, "updatedproject");
 
         Assert.That(updateResult, Is.Not.Null);
@@ -282,6 +306,8 @@ public class PutProjectControllerTest
         _mediator.Verify(mediator => mediator.Send(It.Is<UpdateProjectCommand>(command =>
                 command.Plugins.Count == 1 && command.ProjectName == "UpdatedProject" && command.BusinessUnit == "Updated Business Unit" &&
                 command.TeamNumber == 2 && command.Department == "Updated Department" && command.ClientName == "Updated Client" &&
+                command.OfferId == "Updated OfferId" && command.Company == "Updated Company" && command.CompanyState == CompanyState.INTERNAL &&
+                command.IsmsLevel == SecurityLevel.HIGH &&
                 command.Plugins.Single().PluginId == 4 && command.Plugins.Single().Url == "UpdatedUrl" && command.Plugins.Single().DisplayName == "UpdatedPluginName" && command.IsArchived == true),
             It.IsAny<CancellationToken>()));
     }

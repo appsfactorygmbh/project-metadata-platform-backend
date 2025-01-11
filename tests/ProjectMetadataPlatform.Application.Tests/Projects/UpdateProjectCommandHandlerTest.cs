@@ -47,6 +47,10 @@ public class UpdateProjectCommandHandlerTest
             TeamNumber = 1,
             Department = "Example Department",
             ClientName = "Example Client",
+            OfferId = "Example OfferId",
+            Company = "Example Company",
+            CompanyState = CompanyState.EXTERNAL,
+            IsmsLevel = SecurityLevel.HIGH,
             ProjectPlugins = new List<ProjectPlugins>()
         };
         var examplePlugin = new Plugin
@@ -73,7 +77,9 @@ public class UpdateProjectCommandHandlerTest
             .ReturnsAsync(true);
         _mockPluginRepo.Setup(repo => repo.GetGlobalPluginsAsync()).ReturnsAsync([new Plugin { Id = 100, PluginName = "Example Plugin" }]);
 
-        var result = await _handler.Handle(new UpdateProjectCommand(exampleProject.ProjectName, exampleProject.BusinessUnit, exampleProject.TeamNumber, exampleProject.Department, exampleProject.ClientName, exampleProject.Id, projectPluginList, false), It.IsAny<CancellationToken>());
+        var result = await _handler.Handle(new UpdateProjectCommand(exampleProject.ProjectName, exampleProject.BusinessUnit, exampleProject.TeamNumber, exampleProject.Department, exampleProject.ClientName,
+            exampleProject.OfferId, exampleProject.Company, exampleProject.CompanyState, exampleProject.IsmsLevel,
+            exampleProject.Id, projectPluginList, false), It.IsAny<CancellationToken>());
         Assert.That(result, Is.EqualTo(1));
     }
 
@@ -89,6 +95,10 @@ public class UpdateProjectCommandHandlerTest
             TeamNumber = 1,
             Department = "Example Department",
             ClientName = "Example Client",
+            OfferId = "Example OfferId",
+            Company = "Example Company",
+            CompanyState = CompanyState.EXTERNAL,
+            IsmsLevel = SecurityLevel.HIGH,
             ProjectPlugins = new List<ProjectPlugins>()
         };
         var examplePlugin = new Plugin
@@ -121,6 +131,10 @@ public class UpdateProjectCommandHandlerTest
                     exampleProject.TeamNumber,
                     exampleProject.Department,
                     exampleProject.ClientName,
+                    exampleProject.OfferId,
+                    exampleProject.Company,
+                    exampleProject.CompanyState,
+                    exampleProject.IsmsLevel,
                     exampleProject.Id,
                     projectPluginList,
                     exampleProject.IsArchived),
@@ -141,6 +155,10 @@ public class UpdateProjectCommandHandlerTest
             TeamNumber = 1,
             Department = "Example Department",
             ClientName = "Example Client",
+            OfferId = "Example OfferId",
+            Company = "Example Company",
+            CompanyState = CompanyState.EXTERNAL,
+            IsmsLevel = SecurityLevel.HIGH,
             ProjectPlugins = new List<ProjectPlugins>()
         };
         var examplePlugin = new Plugin
@@ -172,6 +190,10 @@ public class UpdateProjectCommandHandlerTest
                     exampleProject.TeamNumber,
                     exampleProject.Department,
                     exampleProject.ClientName,
+                    exampleProject.OfferId,
+                    exampleProject.Company,
+                    exampleProject.CompanyState,
+                    exampleProject.IsmsLevel,
                     exampleProject.Id,
                     projectPluginList,
                     exampleProject.IsArchived),
@@ -193,6 +215,10 @@ public class UpdateProjectCommandHandlerTest
             BusinessUnit = "Unit 1",
             TeamNumber = 1,
             Department = "Department 1",
+            OfferId = "Offer 1",
+            Company = "DeutscheBahn",
+            CompanyState = CompanyState.EXTERNAL,
+            IsmsLevel = SecurityLevel.HIGH,
             ProjectPlugins = []
         };
 
@@ -201,6 +227,10 @@ public class UpdateProjectCommandHandlerTest
             2,
             "Department 2",
             "Deutsche Bahn",
+            "Offer 2",
+            "DB",
+            CompanyState.INTERNAL,
+            SecurityLevel.NORMAL,
             1,
             new List<ProjectPlugins>(),
             false);
@@ -219,6 +249,10 @@ public class UpdateProjectCommandHandlerTest
             Assert.That(project.Department, Is.EqualTo("Department 2"));
             Assert.That(project.ClientName, Is.EqualTo("Deutsche Bahn"));
             Assert.That(project.ProjectName, Is.EqualTo("DB App"));
+            Assert.That(project.OfferId, Is.EqualTo("Offer 2"));
+            Assert.That(project.Company, Is.EqualTo("DB"));
+            Assert.That(project.CompanyState, Is.EqualTo(CompanyState.INTERNAL));
+            Assert.That(project.IsmsLevel, Is.EqualTo(SecurityLevel.NORMAL));
         });
     }
 
@@ -235,6 +269,10 @@ public class UpdateProjectCommandHandlerTest
             BusinessUnit = "Unit 1",
             TeamNumber = 1,
             Department = "Department 1",
+            OfferId = "Offer 1",
+            Company = "DeutscheBahn",
+            CompanyState = CompanyState.EXTERNAL,
+            IsmsLevel = SecurityLevel.HIGH,
             ProjectPlugins =
             [
                 new ProjectPlugins { PluginId = 1, Url = "http://example.com", DisplayName = "Example Plugin" },
@@ -248,6 +286,10 @@ public class UpdateProjectCommandHandlerTest
             2,
             "Department 2",
             "Deutsche Bahn",
+            "Offer 2",
+            "DB",
+            CompanyState.INTERNAL,
+            SecurityLevel.NORMAL,
             1,
             [
                 new ProjectPlugins { PluginId = 1, Url = "http://example.com", DisplayName = "Example Plugin" },
@@ -304,6 +346,10 @@ public class UpdateProjectCommandHandlerTest
             BusinessUnit = "Unit 1",
             TeamNumber = 1,
             Department = "Department 1",
+            OfferId = "Offer 1",
+            Company = "DeutscheBahn",
+            CompanyState = CompanyState.EXTERNAL,
+            IsmsLevel = SecurityLevel.HIGH,
             ProjectPlugins = [],
             IsArchived = false
         };
@@ -313,6 +359,10 @@ public class UpdateProjectCommandHandlerTest
             2,
             "Department 2",
             "Deutsche Bahn",
+            "Offer 2",
+            "DB",
+            CompanyState.INTERNAL,
+            SecurityLevel.NORMAL,
             1,
             new List<ProjectPlugins>(),
             true);
@@ -337,6 +387,10 @@ public class UpdateProjectCommandHandlerTest
             TeamNumber = 1,
             Department = "Old Department",
             ClientName = "Old Client",
+            OfferId = "Old Offer",
+            Company = "Old Company",
+            CompanyState = CompanyState.EXTERNAL,
+            IsmsLevel = SecurityLevel.HIGH,
             IsArchived = false
         };
 
@@ -346,6 +400,10 @@ public class UpdateProjectCommandHandlerTest
             2,
             "New Department",
             "New Client",
+            "New Offer",
+            "New Company",
+            CompanyState.INTERNAL,
+            SecurityLevel.NORMAL,
             1,
             new List<ProjectPlugins>(),
             false
@@ -364,13 +422,17 @@ public class UpdateProjectCommandHandlerTest
             project,
             Action.UPDATED_PROJECT,
             It.Is<List<LogChange>>(changes =>
-                changes.Count == 6 &&
+                changes.Count == 10 &&
                 changes.Any(change => change.Property == "ProjectName" && change.OldValue == "Old Project Name" && change.NewValue == "New Project Name") &&
                 changes.Any(change => change.Property == "Slug" && change.OldValue == "old project name" && change.NewValue == "new_project_name" ) &&
                 changes.Any(change => change.Property == "BusinessUnit" && change.OldValue == "Old Unit" && change.NewValue == "New Unit") &&
                 changes.Any(change => change.Property == "TeamNumber" && change.OldValue == "1" && change.NewValue == "2") &&
                 changes.Any(change => change.Property == "Department" && change.OldValue == "Old Department" && change.NewValue == "New Department") &&
-                changes.Any(change => change.Property == "ClientName" && change.OldValue == "Old Client" && change.NewValue == "New Client")
+                changes.Any(change => change.Property == "ClientName" && change.OldValue == "Old Client" && change.NewValue == "New Client") &&
+                changes.Any(change => change.Property == "OfferId" && change.OldValue == "Old Offer" && change.NewValue == "New Offer") &&
+                changes.Any(change => change.Property == "Company" && change.OldValue == "Old Company" && change.NewValue == "New Company") &&
+                changes.Any(change => change.Property == "CompanyState" && change.OldValue == "EXTERNAL" && change.NewValue == "INTERNAL") &&
+                changes.Any(change => change.Property == "IsmsLevel" && change.OldValue == "HIGH" && change.NewValue == "NORMAL")
             )
         ), Times.Once);
     }
@@ -387,6 +449,10 @@ public class UpdateProjectCommandHandlerTest
             BusinessUnit = "Business Unit A",
             TeamNumber = 5,
             Department = "Department A",
+            OfferId = "Offer A",
+            Company = "Company A",
+            CompanyState = CompanyState.EXTERNAL,
+            IsmsLevel = SecurityLevel.VERY_HIGH,
             ProjectPlugins = new List<ProjectPlugins>(),
             IsArchived = false
         };
@@ -397,6 +463,10 @@ public class UpdateProjectCommandHandlerTest
             project.TeamNumber,
             project.Department,
             project.ClientName,
+            project.OfferId,
+            project.Company,
+            project.CompanyState,
+            project.IsmsLevel,
             project.Id,
             project.ProjectPlugins.ToList(),
             project.IsArchived
@@ -425,6 +495,10 @@ public class UpdateProjectCommandHandlerTest
             BusinessUnit = "Unit 1",
             TeamNumber = 5,
             Department = "Department A",
+            OfferId = "Offer A",
+            Company = "Company A",
+            CompanyState = CompanyState.EXTERNAL,
+            IsmsLevel = SecurityLevel.VERY_HIGH,
             ProjectPlugins = new List<ProjectPlugins>(),
             IsArchived = false
         };
@@ -435,6 +509,10 @@ public class UpdateProjectCommandHandlerTest
             5,
             "Department A",
             "Updated Client",
+            "Updated Offer",
+            "Company A",
+            CompanyState.EXTERNAL,
+            SecurityLevel.VERY_HIGH,
             1,
             project.ProjectPlugins.ToList(),
             false
@@ -448,9 +526,10 @@ public class UpdateProjectCommandHandlerTest
             project,
             Action.UPDATED_PROJECT,
             It.Is<List<LogChange>>(changes =>
-                changes.Count == 2 &&
+                changes.Count == 3 &&
                 changes.Any(change => change.Property == "BusinessUnit" && change.OldValue == "Unit 1" && change.NewValue == "Updated Unit") &&
-                changes.Any(change => change.Property == "ClientName" && change.OldValue == "Client A" && change.NewValue == "Updated Client")
+                changes.Any(change => change.Property == "ClientName" && change.OldValue == "Client A" && change.NewValue == "Updated Client") &&
+                changes.Any(change => change.Property == "OfferId" && change.OldValue == "Offer A" && change.NewValue == "Updated Offer")
             )
         ), Times.Once);
     }
@@ -467,6 +546,10 @@ public class UpdateProjectCommandHandlerTest
             BusinessUnit = "Unit 3",
             TeamNumber = 4,
             Department = "Department C",
+            OfferId = "Offer A",
+            Company = "Company A",
+            CompanyState = CompanyState.EXTERNAL,
+            IsmsLevel = SecurityLevel.VERY_HIGH,
             IsArchived = false
         };
 
@@ -476,6 +559,10 @@ public class UpdateProjectCommandHandlerTest
             5,
             "New Department",
             "New Client",
+            "Updated Offer",
+            "Company A",
+            CompanyState.EXTERNAL,
+            SecurityLevel.VERY_HIGH,
             project.Id,
             new List<ProjectPlugins>(),
             false
@@ -513,6 +600,10 @@ public class UpdateProjectCommandHandlerTest
             BusinessUnit = "Test Unit",
             TeamNumber = 1,
             Department = "Test Department",
+            OfferId = "Offer A",
+            Company = "Company A",
+            CompanyState = CompanyState.EXTERNAL,
+            IsmsLevel = SecurityLevel.VERY_HIGH,
             ProjectPlugins = new List<ProjectPlugins>(),
             IsArchived = false
         };
@@ -523,6 +614,10 @@ public class UpdateProjectCommandHandlerTest
             project.TeamNumber,
             project.Department,
             project.ClientName,
+            project.OfferId,
+            project.Company,
+            project.CompanyState,
+            project.IsmsLevel,
             project.Id,
             new List<ProjectPlugins>(),
             true
@@ -559,6 +654,10 @@ public class UpdateProjectCommandHandlerTest
             BusinessUnit = "Test Unit",
             TeamNumber = 1,
             Department = "Test Department",
+            OfferId = "Offer A",
+            Company = "Company A",
+            CompanyState = CompanyState.EXTERNAL,
+            IsmsLevel = SecurityLevel.VERY_HIGH,
             ProjectPlugins = new List<ProjectPlugins>(),
             IsArchived = true
         };
@@ -569,6 +668,10 @@ public class UpdateProjectCommandHandlerTest
             project.TeamNumber,
             project.Department,
             project.ClientName,
+            project.OfferId,
+            project.Company,
+            project.CompanyState,
+            project.IsmsLevel,
             project.Id,
             new List<ProjectPlugins>(),
             false
@@ -604,6 +707,10 @@ public class UpdateProjectCommandHandlerTest
             BusinessUnit = "Test Unit",
             TeamNumber = 1,
             Department = "Test Department",
+            OfferId = "Offer A",
+            Company = "Company A",
+            CompanyState = CompanyState.EXTERNAL,
+            IsmsLevel = SecurityLevel.VERY_HIGH,
             ProjectPlugins = new List<ProjectPlugins>(),
             IsArchived = true
         };
@@ -614,6 +721,10 @@ public class UpdateProjectCommandHandlerTest
             project.TeamNumber,
             project.Department,
             project.ClientName,
+            project.OfferId,
+            project.Company,
+            project.CompanyState,
+            project.IsmsLevel,
             project.Id,
             new List<ProjectPlugins>(),
             true
@@ -644,6 +755,10 @@ public class UpdateProjectCommandHandlerTest
             BusinessUnit = "Test Unit",
             TeamNumber = 1,
             Department = "Test Department",
+            OfferId = "Offer A",
+            Company = "Company A",
+            CompanyState = CompanyState.EXTERNAL,
+            IsmsLevel = SecurityLevel.VERY_HIGH,
             ProjectPlugins = new List<ProjectPlugins>
             {
                 new()
@@ -662,6 +777,10 @@ public class UpdateProjectCommandHandlerTest
             project.TeamNumber,
             project.Department,
             project.ClientName,
+            project.OfferId,
+            project.Company,
+            project.CompanyState,
+            project.IsmsLevel,
             project.Id,
             new List<ProjectPlugins>(),
             false
@@ -695,6 +814,10 @@ public class UpdateProjectCommandHandlerTest
             BusinessUnit = "Test Unit",
             TeamNumber = 1,
             Department = "Test Department",
+            OfferId = "Offer A",
+            Company = "Company A",
+            CompanyState = CompanyState.EXTERNAL,
+            IsmsLevel = SecurityLevel.VERY_HIGH,
             ProjectPlugins = new List<ProjectPlugins>(),
             IsArchived = false
         };
@@ -705,6 +828,10 @@ public class UpdateProjectCommandHandlerTest
             project.TeamNumber,
             project.Department,
             project.ClientName,
+            project.OfferId,
+            project.Company,
+            project.CompanyState,
+            project.IsmsLevel,
             project.Id,
             new List<ProjectPlugins>
             {
@@ -746,6 +873,10 @@ public class UpdateProjectCommandHandlerTest
             BusinessUnit = "Test Unit",
             TeamNumber = 1,
             Department = "Test Department",
+            OfferId = "Offer A",
+            Company = "Company A",
+            CompanyState = CompanyState.EXTERNAL,
+            IsmsLevel = SecurityLevel.VERY_HIGH,
             ProjectPlugins = new List<ProjectPlugins>
             {
                 new()
@@ -764,6 +895,10 @@ public class UpdateProjectCommandHandlerTest
             project.TeamNumber,
             project.Department,
             project.ClientName,
+            project.OfferId,
+            project.Company,
+            project.CompanyState,
+            project.IsmsLevel,
             project.Id,
             new List<ProjectPlugins>
             {
@@ -803,6 +938,10 @@ public class UpdateProjectCommandHandlerTest
             BusinessUnit = "Test Unit",
             TeamNumber = 1,
             Department = "Test Department",
+            OfferId = "Offer A",
+            Company = "Company A",
+            CompanyState = CompanyState.EXTERNAL,
+            IsmsLevel = SecurityLevel.VERY_HIGH,
             ProjectPlugins = new List<ProjectPlugins>
             {
                 new()
@@ -821,6 +960,10 @@ public class UpdateProjectCommandHandlerTest
             project.TeamNumber,
             project.Department,
             project.ClientName,
+            project.OfferId,
+            project.Company,
+            project.CompanyState,
+            project.IsmsLevel,
             project.Id,
             new List<ProjectPlugins>
             {
@@ -858,6 +1001,10 @@ public class UpdateProjectCommandHandlerTest
             TeamNumber = 1,
             Department = "Example Department",
             ClientName = "Example Client",
+            OfferId = "Offer A",
+            Company = "Company A",
+            CompanyState = CompanyState.EXTERNAL,
+            IsmsLevel = SecurityLevel.VERY_HIGH,
             ProjectPlugins = new List<ProjectPlugins>
             {
                 new ProjectPlugins
@@ -875,6 +1022,10 @@ public class UpdateProjectCommandHandlerTest
             project.TeamNumber,
             project.Department,
             project.ClientName,
+            project.OfferId,
+            project.Company,
+            project.CompanyState,
+            project.IsmsLevel,
             project.Id,
             new List<ProjectPlugins>
             {

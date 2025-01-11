@@ -12,6 +12,10 @@ namespace ProjectMetadataPlatform.Api.Projects.Models;
 /// <param name="BusinessUnit">The name of the Business Unit associated with the project.</param>
 /// <param name="TeamNumber">The number of the team working on the project.</param>
 /// <param name="Department">The name of the department associated with the project.</param>
+/// <param name="OfferId">Id of the offer associated with project.</param>
+/// <param name="Company">Company responsible for project.</param>
+/// <param name="CompanyState">State of company.</param>
+/// <param name="IsmsLevel">Security Level of project.</param>
 /// <param name="PluginList">An optional list of plugins associated to the project.</param>
 /// <param name="IsArchived">Indicates if the project is archived.</param>
 public record CreateProjectRequest(

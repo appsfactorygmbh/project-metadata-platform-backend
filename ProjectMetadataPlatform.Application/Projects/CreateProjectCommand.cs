@@ -13,6 +13,10 @@ namespace ProjectMetadataPlatform.Application.Projects;
 /// <param name="TeamNumber">Number of the team</param>
 /// <param name="Department">Name of the department</param>
 /// <param name="ClientName">Name of the client</param>
+/// <param name="OfferId">Id of the offer associated with project.</param>
+/// <param name="Company">Company responsible for project.</param>
+/// <param name="CompanyState">State of company.</param>
+/// <param name="IsmsLevel">Security Level of project.</param>
 public record CreateProjectCommand(
     string ProjectName,
     string BusinessUnit,
