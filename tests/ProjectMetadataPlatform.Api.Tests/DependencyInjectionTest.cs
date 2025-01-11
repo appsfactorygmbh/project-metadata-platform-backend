@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Api.Interfaces;
+using ProjectMetadataPlatform.Domain.Errors.Interfaces;
 
 namespace ProjectMetadataPlatform.Api.Tests;
 
@@ -15,7 +16,10 @@ public class DependencyInjectionTests
         serviceCollection.AddApiDependencies();
 
         var serviceProvider = serviceCollection.BuildServiceProvider();
-
-        Assert.That(serviceProvider.GetService<ILogConverter>(), Is.Not.Null);
+        Assert.Multiple(() =>
+        {
+            Assert.That(serviceProvider.GetService<ILogConverter>(), Is.Not.Null);
+            Assert.That(serviceProvider.GetService<IExceptionHandler<IBasicException>>(), Is.Not.Null);
+        });
     }
 }
