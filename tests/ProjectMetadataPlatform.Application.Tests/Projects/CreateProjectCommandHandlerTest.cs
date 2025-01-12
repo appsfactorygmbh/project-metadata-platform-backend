@@ -52,6 +52,10 @@ public class CreateProjectCommandHandlerTest
             TeamNumber = 1,
             Department = "Example Department",
             ClientName = "Example Client",
+            OfferId = "Example OfferId",
+            Company = "Example Company",
+            CompanyState = CompanyState.EXTERNAL,
+            IsmsLevel = SecurityLevel.HIGH,
             ProjectPlugins = plugins
         };
         _mockProjectRepo.Setup(m => m.Add(It.IsAny<Project>())).Callback<Project>(p => p.Id = 1);
@@ -63,7 +67,8 @@ public class CreateProjectCommandHandlerTest
         int result =
             await _handler.Handle(
                 new CreateProjectCommand("Example Project", "Example Business Unit", 1, "Example Department",
-                    "Example Client", plugins), It.IsAny<CancellationToken>());
+                    "Example Client", "Example OfferId", "Example Company", CompanyState.EXTERNAL, SecurityLevel.HIGH,
+                    plugins), It.IsAny<CancellationToken>());
 
         Assert.That(result, Is.EqualTo(1));
         _mockLogRepo.Verify(m => m.AddProjectLogForCurrentUser(It.IsAny<Project>(), Action.ADDED_PROJECT,It.IsAny<List<LogChange>>()), Times.Once);
@@ -88,7 +93,7 @@ public class CreateProjectCommandHandlerTest
         {
             await _handler.Handle(
                 new CreateProjectCommand("Example Project", "Example Business Unit", 1, "Example Department",
-                    "Example Client", plugins), It.IsAny<CancellationToken>());
+                    "Example Client", "Example OfferId", "Example Company", CompanyState.EXTERNAL, SecurityLevel.HIGH, plugins), It.IsAny<CancellationToken>());
         });
 
         Assert.That(ex.Message, Is.EqualTo("A Project with this slug already exists: example_project"));

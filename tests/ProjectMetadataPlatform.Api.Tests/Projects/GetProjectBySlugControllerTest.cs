@@ -60,7 +60,11 @@ public class GetProjectBySlugControllerTest
             ClientName = "Appsfactory",
             BusinessUnit = "BusinessUnit",
             TeamNumber = 200,
-            Department = "Security"
+            Department = "Security",
+            OfferId = "1023",
+            Company = "Charlies Schokoladenfabrik",
+            CompanyState = CompanyState.EXTERNAL,
+            IsmsLevel = SecurityLevel.VERY_HIGH
         };
         _mediator.Setup(m => m.Send(It.Is<GetProjectIdBySlugQuery>(q => q.Slug == "metadataplatform"), It.IsAny<CancellationToken>()))
             .ReturnsAsync(50);
@@ -90,6 +94,10 @@ public class GetProjectBySlugControllerTest
             Assert.That(project.BusinessUnit, Is.EqualTo("BusinessUnit"));
             Assert.That(project.TeamNumber, Is.EqualTo(200));
             Assert.That(project.Department, Is.EqualTo("Security"));
+            Assert.That(project.OfferId, Is.EqualTo("1023"));
+            Assert.That(project.Company, Is.EqualTo("Charlies Schokoladenfabrik"));
+            Assert.That(project.CompanyState, Is.EqualTo(CompanyState.EXTERNAL));
+            Assert.That(project.IsmsLevel, Is.EqualTo(SecurityLevel.VERY_HIGH));
         });
     }
 }

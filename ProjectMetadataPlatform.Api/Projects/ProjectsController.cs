@@ -131,7 +131,11 @@ public class ProjectsController : ControllerBase
             project.BusinessUnit,
             project.TeamNumber,
             project.Department,
-            project.IsArchived);
+            project.IsArchived,
+            project.OfferId,
+            project.Company,
+            project.CompanyState,
+            project.IsmsLevel);
 
         return Ok(response);
     }
@@ -312,14 +316,14 @@ public class ProjectsController : ControllerBase
 
             IRequest<int> command = projectId == null
                 ? new CreateProjectCommand(project.ProjectName, project.BusinessUnit, project.TeamNumber,
-                    project.Department, project.ClientName, (project.PluginList ?? []).Select(p => new ProjectPlugins
+                    project.Department, project.ClientName, project.OfferId, project.Company, project.CompanyState, project.IsmsLevel, (project.PluginList ?? []).Select(p => new ProjectPlugins
                     {
                         PluginId = p.Id,
                         DisplayName = p.DisplayName,
                         Url = p.Url
                     }).ToList())
                 : new UpdateProjectCommand(project.ProjectName, project.BusinessUnit, project.TeamNumber,
-                    project.Department, project.ClientName, projectId.Value, (project.PluginList ?? []).Select(p => new ProjectPlugins
+                    project.Department, project.ClientName, project.OfferId, project.Company, project.CompanyState, project.IsmsLevel, projectId.Value, (project.PluginList ?? []).Select(p => new ProjectPlugins
                     {
                         ProjectId = projectId.Value,
                         PluginId = p.Id,

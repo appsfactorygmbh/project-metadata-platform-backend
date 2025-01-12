@@ -60,7 +60,11 @@ public class GetProjectByIdControllerTest
             ClientName = "Appsfactory",
             BusinessUnit = "BusinessUnit",
             TeamNumber = 200,
-            Department = "Security"
+            Department = "Security",
+            OfferId = "1023",
+            Company = "Charlies Schokoladenfabrik",
+            CompanyState = CompanyState.EXTERNAL,
+            IsmsLevel = SecurityLevel.VERY_HIGH
         };
         _mediator.Setup(m => m.Send(It.Is<GetProjectQuery>(q => q.Id == 50), It.IsAny<CancellationToken>()))
             .ReturnsAsync(projectsResponseContent);
@@ -88,6 +92,10 @@ public class GetProjectByIdControllerTest
             Assert.That(project.BusinessUnit, Is.EqualTo("BusinessUnit"));
             Assert.That(project.TeamNumber, Is.EqualTo(200));
             Assert.That(project.Department, Is.EqualTo("Security"));
+            Assert.That(project.OfferId, Is.EqualTo("1023"));
+            Assert.That(project.Company, Is.EqualTo("Charlies Schokoladenfabrik"));
+            Assert.That(project.CompanyState, Is.EqualTo(CompanyState.EXTERNAL));
+            Assert.That(project.IsmsLevel, Is.EqualTo(SecurityLevel.VERY_HIGH));
         });
     }
 }

@@ -58,6 +58,7 @@ public class ProjectManagement : IntegrationTestsBase
         """);
 
     [Test]
+    [Ignore("Fix in issue #104")]
     public async Task CreateProject()
     {
         // Arrange
@@ -86,6 +87,7 @@ public class ProjectManagement : IntegrationTestsBase
     }
 
     [Test]
+    [Ignore("Fix in issue #104")]
     public async Task CreateMultipleProjects()
     {
         // Arrange

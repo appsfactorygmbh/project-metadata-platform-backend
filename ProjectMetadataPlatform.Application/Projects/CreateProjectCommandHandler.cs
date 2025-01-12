@@ -66,7 +66,8 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
         {
             ProjectName = request.ProjectName, Slug = projectSlug, BusinessUnit = request.BusinessUnit,
             TeamNumber = request.TeamNumber, Department = request.Department, ClientName = request.ClientName,
-            ProjectPlugins = request.Plugins
+            OfferId = request.OfferId, Company = request.Company, CompanyState = request.CompanyState,
+            IsmsLevel = request.IsmsLevel, ProjectPlugins = request.Plugins
         };
 
         await _projectsRepository.Add(project);
@@ -78,7 +79,11 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
             new() { OldValue = "", NewValue = project.BusinessUnit, Property = nameof(Project.BusinessUnit) },
             new() { OldValue = "", NewValue = project.Department, Property = nameof(Project.Department) },
             new() { OldValue = "", NewValue = project.ClientName, Property = nameof(Project.ClientName) },
-            new() { OldValue = "", NewValue = project.TeamNumber.ToString(), Property = nameof(Project.TeamNumber) }
+            new() { OldValue = "", NewValue = project.TeamNumber.ToString(), Property = nameof(Project.TeamNumber) },
+            new() { OldValue = "", NewValue = project.OfferId, Property = nameof(Project.OfferId) },
+            new() { OldValue = "", NewValue = project.Company, Property = nameof(Project.Company) },
+            new() { OldValue = "", NewValue = project.CompanyState.ToString(), Property = nameof(Project.CompanyState) },
+            new() { OldValue = "", NewValue = project.IsmsLevel.ToString(), Property = nameof(Project.IsmsLevel) }
         };
         await _logRepository.AddProjectLogForCurrentUser(project, Domain.Logs.Action.ADDED_PROJECT, changes);
         foreach (var plugin in project.ProjectPlugins)
