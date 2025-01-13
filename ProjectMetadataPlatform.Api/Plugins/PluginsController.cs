@@ -104,7 +104,7 @@ public class PluginsController : ControllerBase
             return NotFound("No Plugin with id " + pluginId + " was found.");
         }
 
-        var response = new GetGlobalPluginResponse(plugin.PluginName, plugin.Id, plugin.IsArchived, []);
+        var response = new GetGlobalPluginResponse(plugin.PluginName, plugin.Id, plugin.IsArchived, [], plugin.BaseUrl);
         return Ok(response);
     }
 
@@ -135,7 +135,9 @@ public class PluginsController : ControllerBase
             plugin.PluginName,
             plugin.Id,
             plugin.IsArchived,
-            keys));
+            keys,
+            plugin.BaseUrl
+            ));
 
         return Ok(response);
     }
