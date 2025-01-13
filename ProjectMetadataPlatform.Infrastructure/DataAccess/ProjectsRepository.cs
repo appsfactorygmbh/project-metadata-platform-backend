@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -31,7 +32,7 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     /// <returns>A task representing the asynchronous operation. When this task completes, it returns a collection of projects.</returns>
     public async Task<IEnumerable<Project>> GetProjectsAsync(GetAllProjectsQuery query)
     {
-        var filteredQuery = _context.Projects.AsQueryable();
+        var filteredQuery = _context.Projects.AsEnumerable();
 
         if (!string.IsNullOrWhiteSpace(query.Search))
         {
@@ -42,7 +43,8 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
                                                   || project.BusinessUnit.ToLower().Contains(lowerTextSearch)
                                                   || project.TeamNumber.ToString().Contains(lowerTextSearch)
                                                   || project.Company.ToLower().Contains(lowerTextSearch)
-                                                  || project.IsmsLevel.ToString().Contains(lowerTextSearch));
+                                                  || project.IsmsLevel.ToString().ToLower().Contains(lowerTextSearch)
+                                                  );
 
         }
 
@@ -98,12 +100,12 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
             if (query.Request.IsmsLevel is not null)
             {
                 filteredQuery = filteredQuery.Where(project =>
-                    project.IsmsLevel.ToString().Contains(query.Request.IsmsLevel)
+                    project.IsmsLevel.ToString().ToLower().Contains(query.Request.IsmsLevel.ToLower())
                 );
             }
         }
 
-        return await filteredQuery.ToListAsync();
+        return filteredQuery.ToList();
     }
 
     /// <summary>
