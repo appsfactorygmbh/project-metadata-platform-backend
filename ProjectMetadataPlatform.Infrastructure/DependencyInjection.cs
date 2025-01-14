@@ -94,7 +94,7 @@ public static class DependencyInjection
                 ValidIssuer = tokenDescriptorInformation.ValidIssuer,
                 ValidAudience = tokenDescriptorInformation.ValidAudience,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenDescriptorInformation.IssuerSigningKey)),
-                ClockSkew = EnvironmentUtils.GetEnvVarOrLoadFromFile("PMP_JWT_CLOCK_SKEW_SECONDS") is { } clockSkew
+                ClockSkew = Environment.GetEnvironmentVariable("PMP_JWT_CLOCK_SKEW_SECONDS") is { } clockSkew
                     ? TimeSpan.FromSeconds(double.Parse(clockSkew, CultureInfo.InvariantCulture))
                     : TimeSpan.FromMinutes(5)
             });
