@@ -13,7 +13,6 @@ using ProjectMetadataPlatform.Api.Plugins;
 using ProjectMetadataPlatform.Api.Plugins.Models;
 using ProjectMetadataPlatform.Application.Plugins;
 using ProjectMetadataPlatform.Domain.Plugins;
-using ProjectMetadataPlatform.Domain.Projects;
 
 namespace ProjectMetadataPlatform.Api.Tests.Plugins;
 
@@ -146,13 +145,13 @@ public class Tests
     [Test]
     public async Task UpdateGlobalPlugin_Test()
     {
-        var plugin = new Plugin { Id = 1, PluginName = "horn ox", IsArchived = true };
+        var plugin = new Plugin { Id = 1, PluginName = "horn ox", IsArchived = true, BaseUrl = "https://hornox.com" };
         _mediator.Setup(m => m.Send(It.IsAny<PatchGlobalPluginCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(plugin);
 
         var request = new PatchGlobalPluginRequest(null, true);
 
-        ActionResult<GetGlobalPluginResponse> result = await _controller.Patch(1, request);
+        var result = await _controller.Patch(1, request);
         var okResult = result.Result as OkObjectResult;
         var resultValue = okResult?.Value as GetGlobalPluginResponse;
 
@@ -162,6 +161,7 @@ public class Tests
             Assert.That(resultValue!.Name, Is.EqualTo("horn ox"));
             Assert.That(resultValue.IsArchived, Is.EqualTo(true));
             Assert.That(resultValue.Id, Is.EqualTo(1));
+            Assert.That(resultValue.BaseUrl, Is.EqualTo("https://hornox.com"));
         });
     }
 
@@ -205,10 +205,10 @@ public class Tests
     public async Task GetGlobalPlugins_Test()
     {
 
-        var plugin = new Plugin { Id = 1, PluginName = "plugin 1", IsArchived = false };
-        List<Plugin> pluginlist = new List<Plugin> { plugin };
+        var plugin = new Plugin { Id = 1, PluginName = "plugin 1", IsArchived = false, BaseUrl = "https://plugin1.com" };
+        var pluginList = new List<Plugin> { plugin };
 
-        _mediator.Setup(m => m.Send(It.IsAny<GetGlobalPluginsQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(pluginlist);
+        _mediator.Setup(m => m.Send(It.IsAny<GetGlobalPluginsQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(pluginList);
         var result = await _controller.GetGlobal();
 
         Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
@@ -229,7 +229,8 @@ public class Tests
             Assert.That(resultObj.Name, Is.EqualTo("plugin 1"));
             Assert.That(resultObj.Id, Is.EqualTo(1));
             Assert.That(resultObj.IsArchived, Is.False);
-            Assert.That(resultObj.Keys, Is.EqualTo(System.Array.Empty<string>()));
+            Assert.That(resultObj.Keys, Is.EqualTo(Array.Empty<string>()));
+            Assert.That(resultObj.BaseUrl, Is.EqualTo("https://plugin1.com"));
         });
     }
 
