@@ -1,5 +1,4 @@
-using System;
-using System.Data.Common;
+﻿using System.Data.Common;
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -13,18 +12,6 @@ public class PmpWebApplicationFactory : WebApplicationFactory<Program>
 {
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        Environment.SetEnvironmentVariable("PMP_DB_URL", " ");
-        Environment.SetEnvironmentVariable("PMP_DB_PORT", " ");
-        Environment.SetEnvironmentVariable("PMP_DB_USER", " ");
-        Environment.SetEnvironmentVariable("PMP_DB_PASSWORD", " ");
-        Environment.SetEnvironmentVariable("PMP_DB_NAME", " ");
-        Environment.SetEnvironmentVariable("JWT_VALID_ISSUER", "validIssue");
-        Environment.SetEnvironmentVariable("JWT_VALID_AUDIENCE", "validAudience");
-        Environment.SetEnvironmentVariable("JWT_ISSUER_SIGNING_KEY", "superSecretKeyThatIsAtLeast257BitLong");
-        Environment.SetEnvironmentVariable("REFRESH_TOKEN_EXPIRATION_HOURS", "6");
-        Environment.SetEnvironmentVariable("ACCESS_TOKEN_EXPIRATION_MINUTES", "15");
-        Environment.SetEnvironmentVariable("PMP_MIGRATE_DB_ON_STARTUP", "true");
-
         builder.ConfigureServices(services =>
         {
             var dbContextDescriptor = services.SingleOrDefault(descriptor =>

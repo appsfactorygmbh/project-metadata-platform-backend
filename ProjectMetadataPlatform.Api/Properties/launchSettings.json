@@ -18,7 +18,8 @@
         "JWT_VALID_AUDIENCE" : "validAudience",
         "JWT_ISSUER_SIGNING_KEY" : "superSecretKeyThatIsAtLeast257BitLong@345",
         "REFRESH_TOKEN_EXPIRATION_HOURS" : "6",
-        "ACCESS_TOKEN_EXPIRATION_MINUTES" : "15"
+        "ACCESS_TOKEN_EXPIRATION_MINUTES" : "0.05",
+        "PMP_MIGRATE_DB_ON_STARTUP": "true"
       }
     },
     "https": {
@@ -38,7 +39,8 @@
         "JWT_VALID_AUDIENCE" : "validAudience",
         "JWT_ISSUER_SIGNING_KEY" : "superSecretKeyThatIsAtLeast257BitLong@345",
         "REFRESH_TOKEN_EXPIRATION_HOURS" : "6",
-        "ACCESS_TOKEN_EXPIRATION_MINUTES" : "15"
+        "ACCESS_TOKEN_EXPIRATION_MINUTES" : "0.05",
+        "PMP_MIGRATE_DB_ON_STARTUP": "true"
       }
     }
   }

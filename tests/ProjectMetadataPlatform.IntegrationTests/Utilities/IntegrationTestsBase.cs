@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -32,6 +32,18 @@ public class IntegrationTestsBase : IDisposable
     [SetUp]
     public async Task BaseSetup()
     {
+        Environment.SetEnvironmentVariable("PMP_DB_URL", " ");
+        Environment.SetEnvironmentVariable("PMP_DB_PORT", " ");
+        Environment.SetEnvironmentVariable("PMP_DB_USER", " ");
+        Environment.SetEnvironmentVariable("PMP_DB_PASSWORD", " ");
+        Environment.SetEnvironmentVariable("PMP_DB_NAME", " ");
+        Environment.SetEnvironmentVariable("JWT_VALID_ISSUER", "validIssue");
+        Environment.SetEnvironmentVariable("JWT_VALID_AUDIENCE", "validAudience");
+        Environment.SetEnvironmentVariable("JWT_ISSUER_SIGNING_KEY", "superSecretKeyThatIsAtLeast257BitLong");
+        Environment.SetEnvironmentVariable("REFRESH_TOKEN_EXPIRATION_HOURS", "6");
+        Environment.SetEnvironmentVariable("ACCESS_TOKEN_EXPIRATION_MINUTES", "15");
+        Environment.SetEnvironmentVariable("PMP_MIGRATE_DB_ON_STARTUP", "true");
+
         var platformDbContext = _factory.Services.GetRequiredService<ProjectMetadataPlatformDbContext>();
         var allEntitiesPlugins = platformDbContext.Plugins.ToList();
         var allEntitiesProjects = platformDbContext.Projects.ToList();
