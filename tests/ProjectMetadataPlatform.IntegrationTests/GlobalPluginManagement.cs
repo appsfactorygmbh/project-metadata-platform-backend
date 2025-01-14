@@ -33,14 +33,12 @@ public class GlobalPluginManagement : IntegrationTestsBase
         plugins[0].GetProperty("name").GetString().Should().Be("GitLab");
         plugins[0].GetProperty("isArchived").GetBoolean().Should().BeFalse();
         plugins[0].GetProperty("keys").EnumerateArray().Should().BeEmpty();
-        //TODO: uncomment this after issue 107 is merged.
-        //plugins[0].GetProperty("BaseUrl").GetString().Should().Be("https://gitlab.com");
+        plugins[0].GetProperty("baseUrl").GetString().Should().Be("https://gitlab.com");
         plugins[1].GetProperty("id").GetInt32().Should().Be(pluginId2);
         plugins[1].GetProperty("name").GetString().Should().Be("Jira");
         plugins[1].GetProperty("isArchived").GetBoolean().Should().BeFalse();
         plugins[1].GetProperty("keys").EnumerateArray().Should().BeEmpty();
-        //TODO: uncomment this after issue 107 is merged.
-        //plugins[1].GetProperty("BaseUrl").GetString().Should().Be("https://jira.com");
+        plugins[1].GetProperty("baseUrl").GetString().Should().Be("https://jira.com");
 
         var logs = await ToJsonElement(client.GetAsync("/Logs"));
 
