@@ -72,6 +72,14 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
 
         await _projectsRepository.Add(project);
 
+        await AddCreatedProjectLog(project);
+
+        await _unitOfWork.CompleteAsync();
+        return project.Id;
+    }
+
+    async Task AddCreatedProjectLog(Project project)
+    {
         var changes = new List<LogChange>
         {
             new() { OldValue = "", NewValue = project.ProjectName, Property = nameof(Project.ProjectName) },
@@ -101,8 +109,5 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
             await _logRepository.AddProjectLogForCurrentUser(project, Domain.Logs.Action.ADDED_PROJECT_PLUGIN,
                 pluginChanges);
         }
-
-        await _unitOfWork.CompleteAsync();
-        return project.Id;
     }
 }
