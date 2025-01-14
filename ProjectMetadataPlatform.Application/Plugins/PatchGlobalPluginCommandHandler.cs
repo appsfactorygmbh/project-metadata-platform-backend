@@ -68,16 +68,19 @@ public class PatchGlobalPluginCommandHandler : IRequestHandler<PatchGlobalPlugin
 
     private async Task AddUpdatedPluginNameLog(Plugin plugin, PatchGlobalPluginCommand request)
     {
-        var changes = new List<LogChange>
+        if (request.PluginName != null)
         {
-            new()
+            var changes = new List<LogChange>
             {
-                Property = nameof(plugin.PluginName),
-                OldValue = plugin.PluginName,
-                NewValue = request.PluginName
-            }
-        };
+                new()
+                {
+                    Property = nameof(plugin.PluginName),
+                    OldValue = plugin.PluginName,
+                    NewValue = request.PluginName
+                }
+            };
 
-        await _logRepository.AddGlobalPluginLogForCurrentUser(plugin, Action.UPDATED_GLOBAL_PLUGIN, changes);
+            await _logRepository.AddGlobalPluginLogForCurrentUser(plugin, Action.UPDATED_GLOBAL_PLUGIN, changes);
+        }
     }
 }
