@@ -44,7 +44,8 @@ public class CreatePluginCommandHandler : IRequestHandler<CreatePluginCommand, i
             PluginName = request.Name,
             IsArchived = request.IsArchived,
             //keys are not used in the current implementation
-            ProjectPlugins = []
+            ProjectPlugins = [],
+            BaseUrl = request.BaseUrl
         };
 
         var logChanges = new List<LogChange>
@@ -60,6 +61,12 @@ public class CreatePluginCommandHandler : IRequestHandler<CreatePluginCommand, i
                 Property = nameof(Plugin.IsArchived),
                 OldValue = "",
                 NewValue = request.IsArchived.ToString()
+            },
+            new ()
+            {
+                Property = nameof(Plugin.BaseUrl),
+                OldValue = "",
+                NewValue = request.BaseUrl
             }
         };
         logChanges.AddRange(request.Keys.Select((t, i) => new LogChange { Property = "Keys[" + i + "]", OldValue = "", NewValue = t }));

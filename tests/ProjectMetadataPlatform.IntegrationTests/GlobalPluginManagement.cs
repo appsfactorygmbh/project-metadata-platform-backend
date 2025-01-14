@@ -9,8 +9,8 @@ namespace ProjectMetadataPlatform.IntegrationTests;
 
 public class GlobalPluginManagement : IntegrationTestsBase
 {
-    private static readonly StringContent CreateRequest = StringContent("""{ "pluginName": "GitLab", "isArchived": false, "keys": [ "key1" ] }""");
-    private static readonly StringContent CreateRequest2 = StringContent("""{ "pluginName": "Jira", "isArchived": false, "keys": [ "key2" ] }""");
+    private static readonly StringContent CreateRequest = StringContent("""{ "pluginName": "GitLab", "isArchived": false, "keys": [ "key1" ] }, "BaseUrl": "https://gitlab.com" }""");
+    private static readonly StringContent CreateRequest2 = StringContent("""{ "pluginName": "Jira", "isArchived": false, "keys": [ "key2" ], "BaseUrl": "https://jira.com" }""");
 
     [Test]
     public async Task CreateMultiplePlugins()
@@ -33,10 +33,12 @@ public class GlobalPluginManagement : IntegrationTestsBase
         plugins[0].GetProperty("name").GetString().Should().Be("GitLab");
         plugins[0].GetProperty("isArchived").GetBoolean().Should().BeFalse();
         plugins[0].GetProperty("keys").EnumerateArray().Should().BeEmpty();
+        plugins[0].GetProperty("BaseUrl").GetString().Should().Be("https://gitlab.com");
         plugins[1].GetProperty("id").GetInt32().Should().Be(pluginId2);
         plugins[1].GetProperty("name").GetString().Should().Be("Jira");
         plugins[1].GetProperty("isArchived").GetBoolean().Should().BeFalse();
         plugins[1].GetProperty("keys").EnumerateArray().Should().BeEmpty();
+        plugins[1].GetProperty("BaseUrl").GetString().Should().Be("https://jira.com");
 
         var logs = await ToJsonElement(client.GetAsync("/Logs"));
 
