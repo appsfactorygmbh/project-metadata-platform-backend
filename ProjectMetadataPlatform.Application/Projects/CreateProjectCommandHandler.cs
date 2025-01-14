@@ -95,6 +95,7 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
         };
         await _logRepository.AddProjectLogForCurrentUser(project, Domain.Logs.Action.ADDED_PROJECT, changes);
         if (project.ProjectPlugins != null)
+        {
             foreach (var plugin in project.ProjectPlugins)
             {
                 var pluginChanges = new List<LogChange>
@@ -112,5 +113,6 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
                 await _logRepository.AddProjectLogForCurrentUser(project, Domain.Logs.Action.ADDED_PROJECT_PLUGIN,
                     pluginChanges);
             }
+        }
     }
 }
