@@ -27,6 +27,11 @@ public class BasicExceptionHandler: ControllerBase, IExceptionHandler<IBasicExce
         };
     }
 
+    /// <summary>
+    /// Handles database exceptions and returns a 500 Internal Server Error status.
+    /// </summary>
+    /// <param name="databaseException">The database exception to handle.</param>
+    /// <returns>A StatusCodeResult representing the result of handling the database exception.</returns>
     private StatusCodeResult HandleDatabaseException(DatabaseException databaseException)
     {
         Console.WriteLine(databaseException.Message);
