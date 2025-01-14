@@ -78,7 +78,7 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
         return project.Id;
     }
 
-    async Task AddCreatedProjectLog(Project project)
+    private async Task AddCreatedProjectLog(Project project)
     {
         var changes = new List<LogChange>
         {
