@@ -6,4 +6,5 @@ namespace ProjectMetadataPlatform.Api.Plugins.Models;
 /// <param name="Id">Id of the plugin</param>
 /// <param name="IsArchived">If the plugin is archived or not</param>
 /// <param name="Keys">empty array keys</param>
-public record GetGlobalPluginResponse(string Name, int Id, bool IsArchived, string[] Keys);
+/// <param name="BaseUrl">Base URL of the plugin</param>
+public record GetGlobalPluginResponse(string Name, int Id, bool IsArchived, string[] Keys, string? BaseUrl);
