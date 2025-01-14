@@ -17,6 +17,7 @@ namespace ProjectMetadataPlatform.Api.Projects;
 /// <summary>
 /// Endpoints for managing projects.
 /// </summary>
+
 [ApiController]
 [Authorize]
 [Route("[controller]")]
