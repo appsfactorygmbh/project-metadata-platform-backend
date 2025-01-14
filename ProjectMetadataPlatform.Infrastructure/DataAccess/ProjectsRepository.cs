@@ -105,7 +105,7 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
             }
         }
 
-        return filteredQuery.ToList();
+        return filteredQuery;
     }
 
     /// <summary>
@@ -179,28 +179,6 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     public async Task<IEnumerable<int>> GetTeamNumbersAsync()
     {
         return await _context.Projects.Select(project => project.TeamNumber).Distinct().ToListAsync();
-    }
-
-    /// <summary>
-    /// Asynchronously retrieves a distinct list of company names from all projects.
-    /// </summary>
-    /// <returns>
-    /// A task representing the asynchronous operation, which upon completion returns a collection of distinct company names.
-    /// </returns>
-    public async Task <IEnumerable<string>> GetCompaniesAsync()
-    {
-        return await _context.Projects.Select(project => project.Company).Distinct().ToListAsync();
-    }
-
-    /// <summary>
-    /// Asynchronously retrieves a distinct list of ISMS (Information Security Management System) levels from all projects.
-    /// </summary>
-    /// <returns>
-    /// A task representing the asynchronous operation, which upon completion returns a collection of distinct ISMS levels.
-    /// </returns>
-    public async Task <IEnumerable<SecurityLevel>> GetIsmsLevelsAsync()
-    {
-        return await _context.Projects.Select(project => project.IsmsLevel).Distinct().ToListAsync();
     }
 
     /// <summary>
