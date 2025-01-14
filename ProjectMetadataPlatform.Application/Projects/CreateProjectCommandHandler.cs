@@ -11,7 +11,7 @@ using ProjectMetadataPlatform.Domain.Projects;
 namespace ProjectMetadataPlatform.Application.Projects;
 
 /// <summary>
-///     Handler for the <see cref="CreateProjectCommand" />.
+/// Handler for the <see cref="CreateProjectCommand" />.
 /// </summary>
 public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand, int>
 {
@@ -22,7 +22,7 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
     private readonly ISlugHelper _slugHelper;
 
     /// <summary>
-    ///     Creates a new instance of <see cref="CreateProjectCommandHandler" />.
+    /// Creates a new instance of <see cref="CreateProjectCommandHandler" />.
     /// </summary>
     /// <param name="projectsRepository">Repository for Projects</param>
     /// <param name="pluginRepository">Repository for Plugins</param>
@@ -40,7 +40,7 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
     }
 
     /// <summary>
-    ///     Handles the request to create a project.
+    /// Handles the request to create a project.
     /// </summary>
     /// <param name="request">Request to be handled</param>
     /// <param name="cancellationToken"></param>

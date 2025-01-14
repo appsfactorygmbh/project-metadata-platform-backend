@@ -15,7 +15,7 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
 {
     private readonly ProjectMetadataPlatformDbContext _context;
     /// <summary>
-    ///     Initializes a new instance of the <see cref="ProjectsRepository" /> class.
+    /// Initializes a new instance of the <see cref="ProjectsRepository" /> class.
     /// </summary>
     /// <param name="dbContext">The database context for accessing project data.</param>
     public ProjectsRepository(ProjectMetadataPlatformDbContext dbContext) : base(dbContext)
@@ -24,7 +24,7 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     }
 
     /// <summary>
-    ///     Asynchronously retrieves all projects with specific search pattern or filter matches from the database.
+    /// Asynchronously retrieves all projects with specific search pattern or filter matches from the database.
     /// </summary>
     /// ///
     /// <param name="query">The query containing filters and search pattern.</param>
@@ -90,7 +90,7 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     }
 
     /// <summary>
-    ///     Asynchronously retrieves all projects from the database.
+    /// Asynchronously retrieves all projects from the database.
     /// </summary>
     /// <returns>A task representing the asynchronous operation. When this task completes, it returns a collection of projects.</returns>
     public async Task<IEnumerable<Project>> GetProjectsAsync()
@@ -99,7 +99,7 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     }
 
     /// <summary>
-    ///     Asynchronously retrieves a project from the database by its identifier.
+    /// Asynchronously retrieves a project from the database by its identifier.
     /// </summary>
     /// <param name="id">Identification number for a project</param>
     /// <returns>A task representing the asynchronous operation. When this task completes, it returns one project.</returns>
@@ -121,7 +121,7 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     }
 
     /// <summary>
-    ///     Saves project to the database and returns it.
+    /// Saves project to the database and returns it.
     /// </summary>
     /// <param name="project">Project to be saved in the database</param>
     /// <returns>Project is returned</returns>

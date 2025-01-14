@@ -6,13 +6,13 @@ using ProjectMetadataPlatform.Domain.Auth;
 namespace ProjectMetadataPlatform.Infrastructure.DataAccess.ModelConfigs;
 
 /// <summary>
-///     Data Base Configuration for the Refresh Tokens.
+/// Data Base Configuration for the Refresh Tokens.
 /// </summary>
 public class RefreshTokenModelConfig : IEntityTypeConfiguration<RefreshToken>
 {
 
     /// <summary>
-    ///     Configures the RefreshToken entity.
+    /// Configures the RefreshToken entity.
     /// </summary>
     /// <param name="builder"></param>
     public void Configure(EntityTypeBuilder<RefreshToken> builder)

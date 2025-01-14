@@ -1,7 +1,7 @@
 namespace ProjectMetadataPlatform.Api.Projects.Models;
 
 /// <summary>
-///     Represents a response for the GetProjects API call.
+/// Represents a response for the GetProjects API call.
 /// </summary>
 /// <param name="Id">The id of the project.</param>
 /// <param name="Slug">The Slug for the project name.</param>

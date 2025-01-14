@@ -5,52 +5,52 @@ using ProjectMetadataPlatform.Domain.Plugins;
 namespace ProjectMetadataPlatform.Domain.Projects;
 
 /// <summary>
-///     The representation of a project in the Database.
+/// The representation of a project in the Database.
 /// </summary>
 public class Project
 {
     /// <summary>
-    ///     Gets or sets the id of the project.
+    /// Gets or sets the id of the project.
     /// </summary>
     public int Id { get; set; }
 
     /// <summary>
-    ///     Gets or sets the name of the project. This property is required.
+    /// Gets or sets the name of the project. This property is required.
     /// </summary>
     public required string ProjectName { get; set; }
 
     /// <summary>
-    ///     Gets or sets the short version of the ProjectName that can be used to identify a Project in requests instead of the Id. This property is required.
+    /// Gets or sets the short version of the ProjectName that can be used to identify a Project in requests instead of the Id. This property is required.
     /// </summary>
     public required string Slug { get; set; }
 
     /// <summary>
-    ///     Gets or sets the name of the client associated with the project. This property is required.
+    /// Gets or sets the name of the client associated with the project. This property is required.
     /// </summary>
     public required string ClientName { get; set; }
 
     /// <summary>
-    ///     Gets or sets the business unit associated with the project. This property is required.
+    /// Gets or sets the business unit associated with the project. This property is required.
     /// </summary>
     public required string BusinessUnit { get; set; }
 
     /// <summary>
-    ///     Gets or sets the team number associated with the project. This property is required.
+    /// Gets or sets the team number associated with the project. This property is required.
     /// </summary>
     public required int TeamNumber { get; set; }
 
     /// <summary>
-    ///     Gets or sets the department associated with the project. This property is required.
+    /// Gets or sets the department associated with the project. This property is required.
     /// </summary>
     public required string Department { get; set; }
 
     /// <summary>
-    ///     Is used for the many-to-many relation in EF core.
+    /// Is used for the many-to-many relation in EF core.
     /// </summary>
     public ICollection<ProjectPlugins>? ProjectPlugins { get; set; }
 
     /// <summary>
-    ///     Includes the logs for the project. Used for one to many relationship.
+    /// Includes the logs for the project. Used for one to many relationship.
     /// </summary>
     public ICollection<Log>? Logs { get; set; }
 

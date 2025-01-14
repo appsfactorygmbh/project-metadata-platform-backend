@@ -10,23 +10,22 @@ using ProjectMetadataPlatform.Application.Interfaces;
 namespace ProjectMetadataPlatform.Infrastructure.DataAccess;
 
 /// <summary>
-///     DbContext for the project metadata platform database.
+/// DbContext for the project metadata platform database.
 /// </summary>
 public sealed class ProjectMetadataPlatformDbContext : IdentityDbContext<IdentityUser>, IUnitOfWork
 {
     /// <summary>
-    ///     Represents the table for the relation between Project and Plugin entities.
+    /// Represents the table for the relation between Project and Plugin entities.
     /// </summary>
-
     public DbSet<ProjectPlugins> ProjectPluginsRelation { get; set; }
 
     /// <summary>
-    ///     Represents the table for plugin entities.
+    /// Represents the table for plugin entities.
     /// </summary>
     public DbSet<Plugin> Plugins { get; set; }
 
     /// <summary>
-    ///     Represents the table for project entities.
+    /// Represents the table for project entities.
     /// </summary>
     public DbSet<Project> Projects { get; set; }
 
@@ -63,6 +62,10 @@ public sealed class ProjectMetadataPlatformDbContext : IdentityDbContext<Identit
         SeedData(builder);
     }
 
+    /// <summary>
+    /// Seeds the database with initial data for projects and plugins.
+    /// </summary>
+    /// <param name="modelBuilder">The model builder used to configure the database.</param>
     private static void SeedData(ModelBuilder modelBuilder)
     {
         var project1 = new Project

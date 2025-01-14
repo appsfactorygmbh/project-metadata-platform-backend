@@ -5,12 +5,12 @@ using ProjectMetadataPlatform.Application.Interfaces;
 namespace ProjectMetadataPlatform.Application;
 
 /// <summary>
-///     Methods for dependency injection.
+/// Methods for dependency injection.
 /// </summary>
 public static class DependencyInjection
 {
     /// <summary>
-    ///     Adds the necessary dependencies for the application layer.
+    /// Adds the necessary dependencies for the application layer.
     /// </summary>
     /// <param name="serviceCollection">The service collection.</param>
     /// <returns>The service collection with the add dependencies.</returns>

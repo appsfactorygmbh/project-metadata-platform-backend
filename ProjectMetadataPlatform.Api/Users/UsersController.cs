@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Identity;
 namespace ProjectMetadataPlatform.Api.Users;
 
 /// <summary>
-///    Endpoint for user management.
+/// Endpoint for user management.
 /// </summary>
 [ApiController]
 [Authorize]
@@ -24,7 +24,7 @@ public class UsersController : ControllerBase
     private readonly IMediator _mediator;
     private readonly IHttpContextAccessor _httpContextAccessor;
     /// <summary>
-    ///     Creates a new instance of the <see cref="UsersController" /> class.
+    /// Creates a new instance of the <see cref="UsersController" /> class.
     /// </summary>
     /// <param name="mediator">The mediator instance used for sending commands and queries.</param>
     /// <param name="httpContextAccessor">The http context accessor instance used for accessing the current user.</param>
@@ -35,7 +35,7 @@ public class UsersController : ControllerBase
     }
 
     /// <summary>
-    ///    Creates a new user.
+    /// Creates a new user.
     /// </summary>
     /// <param name="request">Request containing user information</param>
     /// <returns>Statuscode representing the result of user creation</returns>
@@ -76,12 +76,14 @@ public class UsersController : ControllerBase
     }
 
     /// <summary>
-    ///     Gets all users.
+    /// Gets all users.
     /// </summary>
     /// <returns>All users.</returns>
     /// <response code="200">The users are returned successfully.</response>
     /// <response code="500">An internal error occurred.</response>
     [HttpGet]
+    [ProducesResponseType(typeof(IEnumerable<GetUserResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<IEnumerable<GetUserResponse>>> Get()
     {
         var query = new GetAllUsersQuery();
@@ -113,6 +115,9 @@ public class UsersController : ControllerBase
     /// <response code="404">The user with the specified ID was not found.</response>
     /// <response code="500">An internal error occurred.</response>
     [HttpGet("{userId}")]
+    [ProducesResponseType(typeof(GetUserResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<GetUserResponse>> GetUserById(string userId)
     {
         var query = new GetUserQuery(userId);
@@ -150,6 +155,10 @@ public class UsersController : ControllerBase
     /// <response code="400">The request was invalid.</response>
     /// <response code="404">The user with the specified ID was not found.</response>
     /// <response code="500">An internal error occurred.</response>
+    [ProducesResponseType(typeof(GetUserResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [HttpPatch("{userId}")]
     public async Task<ActionResult<GetUserResponse>> Patch(string userId, [FromBody] PatchUserRequest request)
     {
@@ -182,14 +191,18 @@ public class UsersController : ControllerBase
     }
 
     /// <summary>
-    ///    Gets the current authenticated user's information.
+    /// Gets the current authenticated user's information.
     /// </summary>
     /// <returns>The current user's information.</returns>
     /// <response code="200">The user information is returned successfully.</response>
-    /// <response code="500">An internal error occurred.</response>
-    /// <response code="404">The user was not found.</response>
     /// <response code="401">The user is not authenticated.</response>
+    /// <response code="404">The user was not found.</response>
+    /// <response code="500">An internal error occurred.</response>
     [HttpGet("Me")]
+    [ProducesResponseType(typeof(GetUserResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<GetUserResponse>> GetMe()
     {
         var email = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.Email);
@@ -227,10 +240,14 @@ public class UsersController : ControllerBase
     /// <param name="userId">The userId of the user to delete.</param>
     /// <returns>A status code representing the result of the delete operation.</returns>
     /// <response code="204">The user was deleted successfully.</response>
-    /// <response code="400">The user tried deleting themself. The request is invalid.</response>
+    /// <response code="400">The user tried deleting themselves. The request is invalid.</response>
     /// <response code="404">The user was not found.</response>
     /// <response code="500">An internal error occurred.</response>
     [HttpDelete("{userId}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> Delete(string userId)
     {
         var command = new DeleteUserCommand(userId);

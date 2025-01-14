@@ -47,7 +47,7 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
     };
 
     /// <summary>
-    ///     initialising context and httpContextAccessor to provide user information
+    /// initialising context and httpContextAccessor to provide user information
     /// </summary>
     /// <param name="dbContext"></param>
     /// <param name="httpContextAccessor"></param>

@@ -3,7 +3,7 @@ using ProjectMetadataPlatform.Domain.Projects;
 namespace ProjectMetadataPlatform.Api.Projects.Models;
 
 /// <summary>
-///     Represents a response to the GetProject API call.
+/// Represents a response to the GetProject API call.
 /// </summary>
 /// <param name="Id">The identification number for the project.</param>
 /// <param name="Slug">The Slug for the project name.</param>

@@ -14,7 +14,7 @@ public partial class SlugHelper: ISlugHelper
     private readonly IProjectsRepository _projectsRepository;
 
     /// <summary>
-    ///     Creates a new instance of <see cref="SlugHelper" />.
+    /// Creates a new instance of <see cref="SlugHelper" />.
     /// </summary>
     /// <param name="projectsRepository">Repository for Projects</param>
     public SlugHelper(IProjectsRepository projectsRepository)

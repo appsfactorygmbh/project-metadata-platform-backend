@@ -8,7 +8,7 @@ using ProjectMetadataPlatform.Domain.Plugins;
 namespace ProjectMetadataPlatform.Application.Plugins;
 
 /// <summary>
-///     Handler for the <see cref="GetAllPluginsForProjectIdQuery" />
+/// Handler for the <see cref="GetAllPluginsForProjectIdQuery" />
 /// </summary>
 public class
     GetAllPluginsForProjectIdQueryHandler : IRequestHandler<GetAllPluginsForProjectIdQuery, List<ProjectPlugins>>
@@ -16,7 +16,7 @@ public class
     private readonly IPluginRepository _pluginRepository;
 
     /// <summary>
-    ///     Creates a new instance of<see cref="GetAllPluginsForProjectIdQueryHandler" />.
+    /// Creates a new instance of<see cref="GetAllPluginsForProjectIdQueryHandler" />.
     /// </summary>
     /// <param name="pluginRepository"></param>
     public GetAllPluginsForProjectIdQueryHandler(IPluginRepository pluginRepository)
@@ -25,7 +25,7 @@ public class
     }
 
     /// <summary>
-    ///     Handles the request to get all plugins for a given project id.
+    /// Handles the request to get all plugins for a given project id.
     /// </summary>
     /// <param name="request">the request that needs to be handled</param>
     /// <param name="cancellationToken"></param>

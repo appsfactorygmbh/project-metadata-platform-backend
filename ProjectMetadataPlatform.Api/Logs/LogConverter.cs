@@ -262,8 +262,8 @@ public class LogConverter: ILogConverter
     /// <summary>
     /// Extracts the Name out of the email of a user.
     /// </summary>
-    /// <param name="email">Email to extract the name from</param>
-    /// <returns>The input if there is not @ in the string or the extracted name</returns>
+    /// <param name="email">Email to extract the name from.</param>
+    /// <returns>The input if there is not @ in the string or the extracted name.</returns>
     private static string GetNameFromEmail(String email)
     {
         var splitEmail = email.Split("@");

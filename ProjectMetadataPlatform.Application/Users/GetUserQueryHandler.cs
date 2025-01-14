@@ -7,7 +7,7 @@ using ProjectMetadataPlatform.Application.Interfaces;
 namespace ProjectMetadataPlatform.Application.Users;
 
 /// <summary>
-/// Handles the GetUserQuery.
+/// Handles the <see cref="GetUserQuery"/>.
 /// </summary>
 public class GetUserQueryHandler : IRequestHandler<GetUserQuery, IdentityUser?>
 {

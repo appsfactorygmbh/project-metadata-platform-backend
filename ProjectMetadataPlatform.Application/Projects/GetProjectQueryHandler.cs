@@ -12,7 +12,7 @@ public class GetProjectQueryHandler : IRequestHandler<GetProjectQuery, Project?>
     private readonly IProjectsRepository _projectsRepository;
 
     /// <summary>
-    ///     Creates a new instance of <see cref="GetProjectQueryHandler" />.
+    /// Creates a new instance of <see cref="GetProjectQueryHandler" />.
     /// </summary>
     public GetProjectQueryHandler(IProjectsRepository projectsRepository)
     {

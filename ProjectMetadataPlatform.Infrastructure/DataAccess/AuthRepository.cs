@@ -17,7 +17,7 @@ public class AuthRepository : RepositoryBase<RefreshToken>, IAuthRepository
     private readonly UserManager<IdentityUser> _userManager;
     private readonly ProjectMetadataPlatformDbContext _context;
     /// <summary>
-    ///     Initializes a new instance of the <see cref="ProjectsRepository" /> class.
+    /// Initializes a new instance of the <see cref="ProjectsRepository" /> class.
     /// </summary>
     /// <param name="dbContext"></param>
     /// <param name="userManager"></param>

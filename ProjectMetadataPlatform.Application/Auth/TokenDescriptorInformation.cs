@@ -13,7 +13,7 @@ public record TokenDescriptorInformation(string ValidIssuer, string ValidAudienc
     /// <summary>
     /// Reads the token descriptor information from the corresponding environment variables.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>The information read from the env.</returns>
     /// <exception cref="InvalidOperationException">If not all necessary environment variables are set.</exception>
     public static TokenDescriptorInformation ReadFromEnvVariables()
     {

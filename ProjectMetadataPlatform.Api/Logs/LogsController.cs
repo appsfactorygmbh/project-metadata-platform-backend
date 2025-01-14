@@ -15,7 +15,7 @@ using ProjectMetadataPlatform.Domain.Logs;
 namespace ProjectMetadataPlatform.Api.Logs;
 
 /// <summary>
-/// API controller for managing log entries.
+/// Endpoints for managing log entries.
 /// </summary>
 [ApiController]
 [Authorize]
@@ -52,6 +52,9 @@ public class LogsController: ControllerBase
     /// <response code="404">Not Project with the given id was found.</response>
     /// <response code="500">If an error occurs while processing the request.</response>
     [HttpGet]
+    [ProducesResponseType(typeof(IEnumerable<LogResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<IEnumerable<LogResponse>>> Get(int? projectId, string? search, string? userId, int? globalPluginId, string? projectSlug)
     {
         var projectFromSlugId = (int?)null;

@@ -163,9 +163,22 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
         return project.Id;
     }
 
+    /// <summary>
+    /// Extracts the key components from the given project plugin.
+    /// </summary>
+    /// <param name="projectPlugin">The project plugin containing the key components.</param>
+    /// <returns>A tuple containing the project ID, plugin ID, and URL.</returns>
     private static (int ProjectId, int PluginId, string Url) GetProjectPluginKey(ProjectPlugins projectPlugin)
         => (projectPlugin.ProjectId, projectPlugin.PluginId, projectPlugin.Url);
 
+
+    /// <summary>
+    /// Updates the properties of a project based on the specified request.
+    /// Logs all changes made to the project's properties.
+    /// </summary>
+    /// <param name="request">The request containing the new project properties.</param>
+    /// <param name="project">The existing project to be updated.</param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     private async Task UpdateProjectProperties(UpdateProjectCommand request, Project project)
     {
         var changes = new List<LogChange>();

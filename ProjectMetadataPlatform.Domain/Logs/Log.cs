@@ -7,12 +7,12 @@ using ProjectMetadataPlatform.Domain.Projects;
 namespace ProjectMetadataPlatform.Domain.Logs;
 
 /// <summary>
-///     Representation of a Log in database.
+/// Representation of a Log in database.
 /// </summary>
 public class Log
 {
     /// <summary>
-    ///     The id of the Log
+    /// The id of the Log
     /// </summary>
     public int Id { get; set; }
 

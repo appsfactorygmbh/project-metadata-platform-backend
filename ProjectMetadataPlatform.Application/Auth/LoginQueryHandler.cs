@@ -9,14 +9,14 @@ using ProjectMetadataPlatform.Domain.Auth;
 namespace ProjectMetadataPlatform.Application.Auth;
 
 /// <summary>
-///     Handler for the <see cref="LoginQuery" />
+/// Handler for the <see cref="LoginQuery" />
 /// </summary>
 public class LoginQueryHandler : IRequestHandler<LoginQuery, JwtTokens>
 {
     private readonly IAuthRepository _authRepository;
 
     /// <summary>
-    ///     Creates a new instance of<see cref="LoginQueryHandler" />.
+    /// Creates a new instance of<see cref="LoginQueryHandler" />.
     /// </summary>
     /// <param name="authRepository"></param>
     public LoginQueryHandler(IAuthRepository authRepository)
@@ -25,11 +25,11 @@ public class LoginQueryHandler : IRequestHandler<LoginQuery, JwtTokens>
     }
 
     /// <summary>
-    ///   Return the JWT tokens for the given login request.
+    /// Return the JWT tokens for the given login request.
     /// </summary>
     /// <param name="request"></param>
     /// <param name="cancellationToken"></param>
-    /// <returns>JwtTokens when successful</returns>
+    /// <returns>JwtTokens when successful.</returns>
     public async Task<JwtTokens> Handle(LoginQuery request, CancellationToken cancellationToken)
     {
         if (!_authRepository.CheckLogin(request.Email, request.Password).Result)

@@ -6,7 +6,7 @@ namespace ProjectMetadataPlatform.Domain.Logs;
 public class LogChange
 {
     /// <summary>
-    ///     The id of the Log change
+    /// The id of the Log change
     /// </summary>
     public int Id { get; set; }
 
