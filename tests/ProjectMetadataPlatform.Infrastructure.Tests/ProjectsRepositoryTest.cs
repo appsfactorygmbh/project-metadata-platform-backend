@@ -67,7 +67,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
             new List<int> { 42, 43 },
             true,
             new List<string> {"AppsFact"},
-            "VERY_HIGH"
+            SecurityLevel.VERY_HIGH
         );
         var projects = new List<Project>
         {

@@ -87,7 +87,7 @@ public class GetAllProjectsQueryHandlerTest
             new List<int> { 42, 43 },
             null,
             new List<string>{"Ag der Ags"},
-            "HIGH"
+            SecurityLevel.HIGH
         );
         var projects = new List<Project>
         {
@@ -135,7 +135,7 @@ public class GetAllProjectsQueryHandlerTest
                  filters.BusinessUnit.Contains(p.BusinessUnit) &&
                  filters.TeamNumber.Contains(p.TeamNumber) &&
                  filters.Company.Contains(p.Company) &&
-                 filters.IsmsLevel == p.IsmsLevel.ToString()));
+                 filters.IsmsLevel == p.IsmsLevel));
         var request = new GetAllProjectsQuery(filters, "");
         var result = await _handler.Handle(request, It.IsAny<CancellationToken>());
 
@@ -157,7 +157,7 @@ public class GetAllProjectsQueryHandlerTest
             new List<int> { 42, 43 },
             true,
             new List<string> {"Unknown"},
-            "High"
+            SecurityLevel.HIGH
         );
         var projects = new List<Project>
         {
@@ -206,7 +206,7 @@ public class GetAllProjectsQueryHandlerTest
                  filters.BusinessUnit.Contains(p.BusinessUnit) &&
                  filters.TeamNumber.Contains(p.TeamNumber) &&
                  filters.Company.Contains(p.Company) &&
-                 filters.IsmsLevel == p.IsmsLevel.ToString()));
+                 filters.IsmsLevel == p.IsmsLevel));
         var request = new GetAllProjectsQuery(filters, "");
         var result = await _handler.Handle(request, It.IsAny<CancellationToken>());
 

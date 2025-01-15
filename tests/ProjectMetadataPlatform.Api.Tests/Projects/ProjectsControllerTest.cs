@@ -102,7 +102,7 @@ public class ProjectsControllerTest
             Assert.That(project.BusinessUnit, Is.EqualTo("BuWeather"));
             Assert.That(project.TeamNumber, Is.EqualTo(42));
             Assert.That(project.Company, Is.EqualTo("Geostorm"));
-            Assert.That(project.IsmsLevel, Is.EqualTo("VERY_HIGH"));
+            Assert.That(project.IsmsLevel == SecurityLevel.VERY_HIGH);
         });
     }
 
@@ -153,7 +153,7 @@ public class ProjectsControllerTest
             Assert.That(project.BusinessUnit, Is.EqualTo("BuWeather"));
             Assert.That(project.TeamNumber, Is.EqualTo(42));
             Assert.That(project.Company, Is.EqualTo("NothingButTheBest GmbH"));
-            Assert.That(project.IsmsLevel, Is.EqualTo("HIGH"));
+            Assert.That(project.IsmsLevel == SecurityLevel.HIGH);
         });
     }
 
@@ -388,8 +388,7 @@ public class ProjectsControllerTest
             new List<int> { 42, 43 },
             true,
             new List<string> {"Optimus Prime"},
-            "High"
-
+            SecurityLevel.HIGH
         );
 
         _mediator.Setup(m => m.Send(It.IsAny<GetAllProjectsQuery>(), CancellationToken.None))
@@ -433,7 +432,7 @@ public class ProjectsControllerTest
             Assert.That(response.ToArray()[0].TeamNumber, Is.EqualTo(42));
             Assert.That(response.ToArray()[0].IsArchived, Is.EqualTo(true));
             Assert.That(response.ToArray()[0].Company, Is.EqualTo("Optimus Prime"));
-            Assert.That(response.ToArray()[0].IsmsLevel, Is.EqualTo("HIGH"));
+            Assert.That(response.ToArray()[0].IsmsLevel == SecurityLevel.HIGH);
         }));
     }
 
@@ -449,7 +448,7 @@ public class ProjectsControllerTest
             new List<int> { 42, 43 },
             false,
             new List<string> {"Minas Tirith"},
-            "Low"
+            SecurityLevel.NORMAL
         );
 
         _mediator.Setup(m => m.Send(It.IsAny<GetAllProjectsQuery>(), CancellationToken.None))

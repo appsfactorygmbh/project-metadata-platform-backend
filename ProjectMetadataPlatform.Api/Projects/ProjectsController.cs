@@ -57,7 +57,7 @@ public class ProjectsController : ControllerBase
             project.TeamNumber,
             project.IsArchived,
             project.Company,
-            project.IsmsLevel.ToString()));
+            project.IsmsLevel));
 
          return Ok(response);
     }

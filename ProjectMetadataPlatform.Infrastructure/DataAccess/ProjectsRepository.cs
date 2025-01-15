@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -30,9 +31,10 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     /// ///
     /// <param name="query">The query containing filters and search pattern.</param>
     /// <returns>A task representing the asynchronous operation. When this task completes, it returns a collection of projects.</returns>
+    [SuppressMessage("Performance", "CA1862:\"StringComparison\"-Methodenüberladungen verwenden, um Zeichenfolgenvergleiche ohne Beachtung der Groß-/Kleinschreibung durchzuführen")]
     public async Task<IEnumerable<Project>> GetProjectsAsync(GetAllProjectsQuery query)
     {
-        var filteredQuery = _context.Projects.AsEnumerable();
+        var filteredQuery = _context.Projects.AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(query.Search))
         {
@@ -100,12 +102,12 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
             if (query.Request.IsmsLevel is not null)
             {
                 filteredQuery = filteredQuery.Where(project =>
-                    project.IsmsLevel.ToString().ToLower().Contains(query.Request.IsmsLevel.ToLower())
+                    project.IsmsLevel.ToString().ToLower().Contains(query.Request.IsmsLevel.ToString().ToLower())
                 );
             }
         }
 
-        return filteredQuery;
+        return await filteredQuery.ToListAsync();
     }
 
     /// <summary>
