@@ -35,7 +35,7 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     public async Task<IEnumerable<Project>> GetProjectsAsync(GetAllProjectsQuery query)
     {
         var filteredQuery = _context.Projects.AsQueryable();
-        var IsmsLevel = query.Request?.IsmsLevel;
+        var ismsLevel = query.Request?.IsmsLevel;
 
         if (!string.IsNullOrWhiteSpace(query.Search))
         {
@@ -46,7 +46,7 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
                                                   || project.BusinessUnit.ToLower().Contains(lowerTextSearch)
                                                   || project.TeamNumber.ToString().Contains(lowerTextSearch)
                                                   || project.Company.ToLower().Contains(lowerTextSearch)
-                                                  || project.IsmsLevel == IsmsLevel
+                                                  || project.IsmsLevel == ismsLevel
                                                   );
 
         }
