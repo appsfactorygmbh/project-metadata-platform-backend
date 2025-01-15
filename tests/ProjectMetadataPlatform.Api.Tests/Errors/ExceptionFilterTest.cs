@@ -8,8 +8,8 @@ using Moq;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Api.Errors;
 using ProjectMetadataPlatform.Api.Interfaces;
+using ProjectMetadataPlatform.Domain.Errors;
 using ProjectMetadataPlatform.Domain.Errors.BasicExceptions;
-using ProjectMetadataPlatform.Domain.Errors.Interfaces;
 using RouteData = Microsoft.AspNetCore.Routing.RouteData;
 
 namespace ProjectMetadataPlatform.Api.Tests.Errors;
@@ -17,13 +17,13 @@ namespace ProjectMetadataPlatform.Api.Tests.Errors;
 public class ExceptionFilterTest
 {
     private ExceptionFilter _filter;
-    private Mock<IExceptionHandler<IBasicException>> _basicExceptionHandler;
+    private Mock<IExceptionHandler<PmpException>> _basicExceptionHandler;
     private Mock<ExceptionContext> _context;
 
     [SetUp]
     public void SetUp()
     {
-        _basicExceptionHandler = new Mock<IExceptionHandler<IBasicException>>();
+        _basicExceptionHandler = new Mock<IExceptionHandler<PmpException>>();
         _context = SetupExceptionContext();
         _filter = new ExceptionFilter(_basicExceptionHandler.Object);
     }
@@ -44,7 +44,7 @@ public class ExceptionFilterTest
         _context.SetupGet(c => c.Exception).Returns(mockException.Object);
 
         var result = new StatusCodeResult(404);
-        _basicExceptionHandler.Setup(h => h.Handle(It.IsAny<IBasicException>())).Returns(result);
+        _basicExceptionHandler.Setup(h => h.Handle(It.IsAny<PmpException>())).Returns(result);
 
         _context.SetupSet(c => c.Result = It.IsAny<IActionResult>()).Callback((IActionResult r) =>
         {
@@ -53,7 +53,7 @@ public class ExceptionFilterTest
 
         _filter.OnException(_context.Object);
 
-        _basicExceptionHandler.Verify(h => h.Handle(It.IsAny<IBasicException>()), Times.Once);
+        _basicExceptionHandler.Verify(h => h.Handle(It.IsAny<PmpException>()), Times.Once);
         _context.VerifySet(c => c.Result = It.IsAny<IActionResult>(), Times.Once);
     }
 
@@ -72,7 +72,7 @@ public class ExceptionFilterTest
 
         _filter.OnException(_context.Object);
 
-        _basicExceptionHandler.Verify(h => h.Handle(It.IsAny<IBasicException>()), Times.Never);
+        _basicExceptionHandler.Verify(h => h.Handle(It.IsAny<PmpException>()), Times.Never);
         _context.VerifySet(c => c.Result = It.IsAny<IActionResult>(), Times.Once);
     }
 }

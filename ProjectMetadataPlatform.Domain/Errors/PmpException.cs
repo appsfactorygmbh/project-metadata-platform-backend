@@ -5,7 +5,7 @@ namespace ProjectMetadataPlatform.Domain.Errors;
 /// <summary>
 /// Represents a base exception class for the Project Metadata Platform.
 /// </summary>
-public class PmpException : Exception
+public abstract class PmpException : Exception
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="PmpException"/> class with a specified error message.

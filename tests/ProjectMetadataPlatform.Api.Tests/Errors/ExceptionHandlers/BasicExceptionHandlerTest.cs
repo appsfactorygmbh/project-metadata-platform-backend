@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Api.Errors.ExceptionHandlers;
+using ProjectMetadataPlatform.Domain.Errors;
 using ProjectMetadataPlatform.Domain.Errors.BasicExceptions;
-using ProjectMetadataPlatform.Domain.Errors.Interfaces;
 
 namespace ProjectMetadataPlatform.Api.Tests.Errors.ExceptionHandlers;
 
@@ -39,13 +39,13 @@ public class BasicExceptionHandlerTest
 
         Assert.That(result, Is.InstanceOf<StatusCodeResult>());
         var statusCodeResult = (StatusCodeResult) result;
-        Assert.That(statusCodeResult.StatusCode, Is.EqualTo(500));
+        Assert.That(statusCodeResult.StatusCode, Is.EqualTo(502));
     }
 
     [Test]
     public void Handle_UnknownException_ReturnsInternalServerError()
     {
-        var mockException = new Mock<IBasicException>();
+        var mockException = new Mock<PmpException>("Some message");
 
         var result = _basicExceptionHandler.Handle(mockException.Object);
 

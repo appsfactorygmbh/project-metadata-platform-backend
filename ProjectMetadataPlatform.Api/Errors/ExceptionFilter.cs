@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using ProjectMetadataPlatform.Api.Interfaces;
-using ProjectMetadataPlatform.Domain.Errors.Interfaces;
+using ProjectMetadataPlatform.Domain.Errors;
 
 namespace ProjectMetadataPlatform.Api.Errors;
 
@@ -15,13 +15,13 @@ public class ExceptionFilter: IExceptionFilter
     /// <summary>
     /// Handler for basic exceptions.
     /// </summary>
-    private readonly IExceptionHandler<IBasicException> _basicExceptionHandler;
+    private readonly IExceptionHandler<PmpException> _basicExceptionHandler;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ExceptionFilter"/> class.
     /// </summary>
     /// <param name="basicExceptionHandler">The handler for basic exceptions.</param>
-    public ExceptionFilter(IExceptionHandler<IBasicException> basicExceptionHandler)
+    public ExceptionFilter(IExceptionHandler<PmpException> basicExceptionHandler)
     {
         _basicExceptionHandler = basicExceptionHandler;
     }
@@ -37,7 +37,7 @@ public class ExceptionFilter: IExceptionFilter
 
         context.Result = exception switch
         {
-            IBasicException basicEx => _basicExceptionHandler.Handle(basicEx),
+            PmpException basicEx => _basicExceptionHandler.Handle(basicEx),
             _ => HandleUnknownError(exception)
         };
     }

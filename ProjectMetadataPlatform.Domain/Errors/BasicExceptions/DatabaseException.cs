@@ -1,5 +1,4 @@
 ﻿using System;
-using ProjectMetadataPlatform.Domain.Errors.Interfaces;
 
 namespace ProjectMetadataPlatform.Domain.Errors.BasicExceptions;
 
@@ -7,4 +6,4 @@ namespace ProjectMetadataPlatform.Domain.Errors.BasicExceptions;
 /// Represents an exception that occurs while accessing the database.
 /// </summary>
 public class DatabaseException(Exception innerException)
-    : PmpException("An Error occured while accessing the database.", innerException), IBasicException;
+    : PmpException("An Error occured while accessing the database.", innerException);
