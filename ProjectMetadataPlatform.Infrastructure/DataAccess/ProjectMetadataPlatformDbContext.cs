@@ -75,7 +75,11 @@ public sealed class ProjectMetadataPlatformDbContext : IdentityDbContext<Identit
             ClientName = "Deutsche Bahn",
             BusinessUnit = "Unit 1",
             TeamNumber = 1,
-            Department = "Department 1"
+            Department = "Department 1",
+            OfferId = "Offer1",
+            Company = "AppsFactory",
+            CompanyState = CompanyState.INTERNAL,
+            IsmsLevel = SecurityLevel.NORMAL
         };
 
         var project2 = new Project
@@ -86,7 +90,11 @@ public sealed class ProjectMetadataPlatformDbContext : IdentityDbContext<Identit
             ClientName = "ARD",
             BusinessUnit = "Unit 2",
             TeamNumber = 2,
-            Department = "Department 2"
+            Department = "Department 2",
+            OfferId = "Offer2",
+            Company = "AppsCompany",
+            CompanyState = CompanyState.EXTERNAL,
+            IsmsLevel = SecurityLevel.HIGH
         };
 
         var project3 = new Project
@@ -97,7 +105,11 @@ public sealed class ProjectMetadataPlatformDbContext : IdentityDbContext<Identit
             ClientName = "AOK",
             BusinessUnit = "Unit 3",
             TeamNumber = 3,
-            Department = "Department 3"
+            Department = "Department 3",
+            OfferId = "Offer3",
+            Company = "AppsFactory",
+            CompanyState = CompanyState.INTERNAL,
+            IsmsLevel = SecurityLevel.VERY_HIGH
         };
 
         var plugin1 = new Plugin { Id = 100, PluginName = "Gitlab" };
