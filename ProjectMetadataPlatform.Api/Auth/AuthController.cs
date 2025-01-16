@@ -46,7 +46,7 @@ public class AuthController : ControllerBase
         try
         {
             var tokens = await _mediator.Send(query);
-            return Ok(new LoginResponse(tokens.AccessToken, tokens.RefreshToken));
+            return new LoginResponse(tokens.AccessToken, tokens.RefreshToken);
         }
         catch (InvalidOperationException e)
         {
