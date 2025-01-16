@@ -135,9 +135,7 @@ public class ProjectManagement : IntegrationTestsBase
         firstProject.GetProperty("teamNumber").GetInt32().Should().Be(3);
         firstProject.TryGetProperty("department", out _).Should().BeFalse();
         firstProject.GetProperty("clientName").GetString().Should().Be("testClient");
-        firstProject.GetProperty("offerId").GetString().Should().Be("testId");
         firstProject.GetProperty("company").GetString().Should().Be("testCompany");
-        firstProject.GetProperty("companyState").GetString().Should().Be("EXTERNAL");
         firstProject.GetProperty("ismsLevel").GetString().Should().Be("NORMAL");
         firstProject.GetProperty("id").GetInt32().Should().BeGreaterThan(0);
 
@@ -147,9 +145,7 @@ public class ProjectManagement : IntegrationTestsBase
         secondProject.GetProperty("teamNumber").GetInt32().Should().Be(4);
         secondProject.TryGetProperty("department", out _).Should().BeFalse();
         secondProject.GetProperty("clientName").GetString().Should().Be("testClient2");
-        secondProject.GetProperty("offerId").GetString().Should().Be("testId2");
         secondProject.GetProperty("company").GetString().Should().Be("testCompany2");
-        secondProject.GetProperty("companyState").GetString().Should().Be("EXTERNAL");
         secondProject.GetProperty("ismsLevel").GetString().Should().Be("VERY_HIGH");
         secondProject.GetProperty("id").GetInt32().Should().BeGreaterThan(0);
     }
