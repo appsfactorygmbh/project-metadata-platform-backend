@@ -10,6 +10,7 @@ using ProjectMetadataPlatform.Api.Errors;
 using ProjectMetadataPlatform.Api.Interfaces;
 using ProjectMetadataPlatform.Domain.Errors;
 using ProjectMetadataPlatform.Domain.Errors.BasicExceptions;
+using ProjectMetadataPlatform.Domain.Errors.ProjectExceptions;
 using RouteData = Microsoft.AspNetCore.Routing.RouteData;
 
 namespace ProjectMetadataPlatform.Api.Tests.Errors;
@@ -18,14 +19,16 @@ public class ExceptionFilterTest
 {
     private ExceptionFilter _filter;
     private Mock<IExceptionHandler<PmpException>> _basicExceptionHandler;
+    private Mock<IExceptionHandler<ProjectException>> _projectExceptionHandler;
     private Mock<ExceptionContext> _context;
 
     [SetUp]
     public void SetUp()
     {
         _basicExceptionHandler = new Mock<IExceptionHandler<PmpException>>();
+        _projectExceptionHandler = new Mock<IExceptionHandler<ProjectException>>();
         _context = SetupExceptionContext();
-        _filter = new ExceptionFilter(_basicExceptionHandler.Object);
+        _filter = new ExceptionFilter(_basicExceptionHandler.Object, _projectExceptionHandler.Object);
     }
 
     private static Mock<ExceptionContext> SetupExceptionContext()
@@ -54,6 +57,26 @@ public class ExceptionFilterTest
         _filter.OnException(_context.Object);
 
         _basicExceptionHandler.Verify(h => h.Handle(It.IsAny<PmpException>()), Times.Once);
+        _context.VerifySet(c => c.Result = It.IsAny<IActionResult>(), Times.Once);
+    }
+
+    [Test]
+    public void CallsProjectsExceptionHandlerForProjectException_Test()
+    {
+        var mockException = new Mock<ProjectException>("some error message");
+        _context.SetupGet(c => c.Exception).Returns(mockException.Object);
+
+        var result = new StatusCodeResult(500);
+        _projectExceptionHandler.Setup(h => h.Handle(It.IsAny<ProjectException>())).Returns(result);
+
+        _context.SetupSet(c => c.Result = It.IsAny<IActionResult>()).Callback((IActionResult r) =>
+        {
+            Assert.That(r, Is.EqualTo(result));
+        });
+
+        _filter.OnException(_context.Object);
+
+        _projectExceptionHandler.Verify(h => h.Handle(It.IsAny<ProjectException>()), Times.Once);
         _context.VerifySet(c => c.Result = It.IsAny<IActionResult>(), Times.Once);
     }
 

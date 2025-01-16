@@ -25,11 +25,11 @@ public class GetProjectBySlugControllerTest
         _controller = new ProjectsController(_mediator.Object);
     }
 
-        [Test]
+    [Test]
     public async Task GetProjectBySlug_NonexistentProject_Test()
     {
-        _mediator.Setup(m => m.Send(It.Is<GetProjectIdBySlugQuery>(q => q.Slug == "test"), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((int?)null);
+        // _mediator.Setup(m => m.Send(It.Is<GetProjectIdBySlugQuery>(q => q.Slug == "test"), It.IsAny<CancellationToken>()))
+        //     .ReturnsAsync((int?)null);
         var result = await _controller.Get("test");
         Assert.That(result, Is.Not.Null);
 

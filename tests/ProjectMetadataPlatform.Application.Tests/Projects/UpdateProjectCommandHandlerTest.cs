@@ -8,6 +8,7 @@ using NUnit.Framework;
 using ProjectMetadataPlatform.Application.Helper;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Application.Projects;
+using ProjectMetadataPlatform.Domain.Errors.ProjectExceptions;
 using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.Projects;
 using ProjectMetadataPlatform.Domain.Logs;
@@ -124,7 +125,7 @@ public class UpdateProjectCommandHandlerTest
         _mockPluginRepo.Setup(m => m.CheckPluginExists(It.IsAny<int>()))
             .ReturnsAsync(true);
 
-        var exception = Assert.ThrowsAsync<InvalidOperationException>(async () =>
+        var exception = Assert.ThrowsAsync<ProjectNotFoundException>(async () =>
             await _handler.Handle(new UpdateProjectCommand(
                     exampleProject.ProjectName,
                     exampleProject.BusinessUnit,
@@ -140,7 +141,7 @@ public class UpdateProjectCommandHandlerTest
                     exampleProject.IsArchived),
                 CancellationToken.None)
         );
-        Assert.That(exception.Message, Is.EqualTo("Project does not exist."));
+        Assert.That(exception.Message, Is.EqualTo("The project with id 1 was not found."));
     }
 
     [Test]
@@ -1045,7 +1046,7 @@ public class UpdateProjectCommandHandlerTest
         _mockSlugHelper.Setup(m => m.CheckProjectSlugExists("new project")).ReturnsAsync(true);
         _mockPluginRepo.Setup(repo => repo.CheckPluginExists(1)).ReturnsAsync(true);
 
-        var ex = Assert.ThrowsAsync<InvalidOperationException>(async () =>
+        var ex = Assert.ThrowsAsync<ProjectSlugAlreadyExistsException>(async () =>
         {
             await _handler.Handle(updateCommand, CancellationToken.None);
         });

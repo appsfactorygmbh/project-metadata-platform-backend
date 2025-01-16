@@ -31,6 +31,18 @@ public class BasicExceptionHandlerTest
     }
 
     [Test]
+    public void Handle_EntityAlreadyExistsException_ReturnsConflict()
+    {
+        var exception = new EntityAlreadyExistsException("Entity already exists");
+
+        var result = _basicExceptionHandler.Handle(exception);
+
+        Assert.That(result, Is.InstanceOf<ConflictObjectResult>());
+        var conflictResult = (ConflictObjectResult) result;
+        Assert.That(conflictResult.Value, Is.EqualTo(exception.Message));
+    }
+
+    [Test]
     public void Handle_DatabaseException_ReturnsInternalServerError()
     {
         var exception = new DatabaseException(new Exception());

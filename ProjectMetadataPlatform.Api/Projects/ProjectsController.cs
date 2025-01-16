@@ -169,17 +169,7 @@ public class ProjectsController : ControllerBase
     public async Task<ActionResult<IEnumerable<GetPluginResponse>>> GetUnarchivedPlugins(int id)
     {
         var query = new GetAllUnarchivedPluginsForProjectIdQuery(id);
-        IEnumerable<ProjectPlugins> unarchivedProjectPlugins;
-
-        try
-        {
-            unarchivedProjectPlugins = await _mediator.Send(query);
-        }
-        catch(ArgumentException ex)
-        {
-            Console.WriteLine(ex.Message);
-            return NotFound($"Project with Id {id} not found.");
-        }
+        var unarchivedProjectPlugins = await _mediator.Send(query);
 
         var response = unarchivedProjectPlugins
             .Where(plugin => plugin.Plugin != null)
@@ -219,11 +209,13 @@ public class ProjectsController : ControllerBase
     /// <response code="201">The Project has been created successfully.</response>
     /// <response code="400">The request data is invalid.</response>
     /// <response code="404">The project with the specified slug was not found.</response>
+    /// <response code="409">The project with the slug generated from the name already exists.</response>
     /// <response code="500">An internal error occurred.</response>
     [HttpPut("{slug}")]
     [ProducesResponseType(typeof(CreateProjectResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<ActionResult<CreateProjectResponse>> Put([FromBody] CreateProjectRequest project,
         string slug)
     {
@@ -239,10 +231,12 @@ public class ProjectsController : ControllerBase
     /// <returns>A response containing the id of the created project.</returns>
     /// <response code="201">The Project has been created successfully.</response>
     /// <response code="400">The request data is invalid.</response>
+    /// <response code="409">The project with the slug generated from the name already exists.</response>
     /// <response code="500">An internal error occurred.</response>
     [HttpPut]
     [ProducesResponseType(typeof(CreateProjectResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<ActionResult<CreateProjectResponse>> Put([FromBody] CreateProjectRequest project, int? projectId = null)
     {
         try
@@ -360,19 +354,7 @@ public class ProjectsController : ControllerBase
     public async Task<ActionResult> Delete(int id)
     {
         var command = new DeleteProjectCommand(id);
-        try
-        {
-            _ = await _mediator.Send(command);
-        }
-        catch (ArgumentException e)
-        {
-            return BadRequest(e.Message);
-        }
-        catch (InvalidOperationException e)
-        {
-            return BadRequest(e.Message);
-        }
-
+        _ = await _mediator.Send(command);
         return NoContent();
     }
 

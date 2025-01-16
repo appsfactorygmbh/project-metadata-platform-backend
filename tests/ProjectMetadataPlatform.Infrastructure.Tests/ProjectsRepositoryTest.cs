@@ -1,10 +1,10 @@
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Application.Projects;
+using ProjectMetadataPlatform.Domain.Errors.ProjectExceptions;
 using ProjectMetadataPlatform.Domain.Projects;
 using ProjectMetadataPlatform.Infrastructure.DataAccess;
 
@@ -439,7 +439,6 @@ public class ProjectsRepositoryTests : TestsWithDatabase
 
         Assert.Multiple(() =>
         {
-            Assert.That(result, Is.Not.Null);
             Assert.That(result, Is.EqualTo(1));
         });
     }
@@ -462,8 +461,6 @@ public class ProjectsRepositoryTests : TestsWithDatabase
         _context.Projects.Add(project2);
         await _context.SaveChangesAsync();
 
-        var result = await _repository.GetProjectIdBySlugAsync("regen");
-
-        Assert.That(result, Is.Null);
+        Assert.ThrowsAsync<ProjectNotFoundException>(() => _repository.GetProjectIdBySlugAsync("regen"));
     }
 }

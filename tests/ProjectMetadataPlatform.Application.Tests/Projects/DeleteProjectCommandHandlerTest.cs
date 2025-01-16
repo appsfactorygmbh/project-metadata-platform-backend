@@ -7,6 +7,7 @@ using Moq;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Application.Projects;
+using ProjectMetadataPlatform.Domain.Errors.ProjectExceptions;
 using ProjectMetadataPlatform.Domain.Logs;
 using ProjectMetadataPlatform.Domain.Projects;
 using Action = ProjectMetadataPlatform.Domain.Logs.Action;
@@ -68,17 +69,17 @@ public class DeleteProjectCommandHandlerTest
         };
         _mockProjectRepo.Setup(m => m.GetProjectAsync(It.IsAny<int>())).ReturnsAsync(project);
 
-        var ex = Assert.ThrowsAsync<ArgumentException>(() => _handler.Handle(new DeleteProjectCommand(1), It.IsAny<CancellationToken>()));
-        Assert.That(ex.Message, Is.EqualTo("Project is not archived."));
+        var ex = Assert.ThrowsAsync<ProjectNotArchivedException>(() => _handler.Handle(new DeleteProjectCommand(1), It.IsAny<CancellationToken>()));
+        Assert.That(ex.Message, Is.EqualTo("The project 1 is not archived."));
     }
 
     [Test]
     public void DeleteProject_NotFound_Test()
     {
-        _mockProjectRepo.Setup(m => m.GetProjectAsync(It.IsAny<int>())).ReturnsAsync((Project?)null);
+        _mockProjectRepo.Setup(m => m.GetProjectAsync(It.IsAny<int>())).ThrowsAsync(new ProjectNotFoundException("Project not found."));
 
-        var ex = Assert.ThrowsAsync<ArgumentException>(() => _handler.Handle(new DeleteProjectCommand(1), It.IsAny<CancellationToken>()));
-        Assert.That(ex.Message, Is.EqualTo("Project not found."));
+        var ex = Assert.ThrowsAsync<ProjectNotFoundException>(() => _handler.Handle(new DeleteProjectCommand(1), It.IsAny<CancellationToken>()));
+        Assert.That(ex.Message, Is.EqualTo("The project with slug Project not found. was not found."));
     }
 
     [Test]

@@ -4,6 +4,7 @@ using Moq;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Application.Helper;
 using ProjectMetadataPlatform.Application.Interfaces;
+using ProjectMetadataPlatform.Domain.Errors.ProjectExceptions;
 using ProjectMetadataPlatform.Domain.Projects;
 
 namespace ProjectMetadataPlatform.Application.Tests.Helper;
@@ -91,9 +92,9 @@ public class SlugHelperTest
     {
         const string slug = "example_project";
 
-        _mockProjectsRepository.Setup(m => m.GetProjectIdBySlugAsync(It.IsAny<string>())).ReturnsAsync((int?)null);
+        _mockProjectsRepository.Setup(m => m.GetProjectIdBySlugAsync(It.IsAny<string>())).ThrowsAsync(new ProjectNotFoundException("Project not found"));
 
-        Assert.ThrowsAsync<InvalidOperationException>(() => _slugHelper.GetProjectIdBySlug(slug));
+        Assert.ThrowsAsync<ProjectNotFoundException>(() => _slugHelper.GetProjectIdBySlug(slug));
     }
 
     [Test]
@@ -111,7 +112,7 @@ public class SlugHelperTest
     public async Task ProjectSlugExists_Test_ReturnsFalse()
     {
         const string slug = "example_project";
-        _mockProjectsRepository.Setup(m => m.GetProjectIdBySlugAsync(It.IsAny<string>())).ReturnsAsync((int?)null);
+        _mockProjectsRepository.Setup(m => m.GetProjectIdBySlugAsync(It.IsAny<string>())).ThrowsAsync(new ProjectNotFoundException("Project not found"));
 
         var result = await _slugHelper.CheckProjectSlugExists(slug);
 

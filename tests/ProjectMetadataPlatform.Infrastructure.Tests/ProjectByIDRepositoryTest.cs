@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using NUnit.Framework;
+using ProjectMetadataPlatform.Domain.Errors.ProjectExceptions;
 using ProjectMetadataPlatform.Domain.Projects;
 using ProjectMetadataPlatform.Infrastructure.DataAccess;
 
@@ -19,13 +20,9 @@ public class ProjectByIDRepositoryTest : TestsWithDatabase
     }
 
     [Test]
-    public async Task GetProjectByIDAsync_NonexistentProject()
+    public void GetProjectByIDAsync_NonexistentProject()
     {
-        // Act
-        Project? result = await _repository.GetProjectAsync(1);
-
-        // Assert
-        Assert.That(result, Is.Null);
+        Assert.ThrowsAsync<ProjectNotFoundException>(() => _repository.GetProjectAsync(1));
     }
 
     [Test]
