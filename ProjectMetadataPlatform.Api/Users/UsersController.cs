@@ -99,7 +99,7 @@ public class UsersController : ControllerBase
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
 
-        IEnumerable<GetUserResponse> response = users.Select(user => new GetUserResponse(
+        var response = users.Select(user => new GetUserResponse(
             user.Id,
             user.Email ?? ""
             ));
