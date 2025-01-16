@@ -33,7 +33,7 @@ public class CreatePluginCommandHandlerTest
     {
         _mockPluginRepo.Setup(m => m.StorePlugin(It.IsAny<Plugin>())).Callback<Plugin>(p => p.Id = 13);
 
-        int result = await _handler.Handle(new CreatePluginCommand("Airlock", true, []), It.IsAny<CancellationToken>());
+        int result = await _handler.Handle(new CreatePluginCommand("Airlock", true, [],"https://airlock.com"), It.IsAny<CancellationToken>());
         Assert.Multiple(() =>
         {
             Assert.That(result, Is.EqualTo(13));
@@ -44,7 +44,8 @@ public class CreatePluginCommandHandlerTest
             Action.ADDED_GLOBAL_PLUGIN,
             It.Is<List<LogChange>>(changes =>
                 changes.Any(change => change.Property == "PluginName" && change.OldValue == "" && change.NewValue == "Airlock") &&
-                changes.Any(change => change.Property == "IsArchived" && change.OldValue == "" && change.NewValue == "True")
+                changes.Any(change => change.Property == "IsArchived" && change.OldValue == "" && change.NewValue == "True") &&
+                changes.Any(change => change.Property == "BaseUrl" && change.OldValue == "" && change.NewValue == "https://airlock.com")
             )
         ), Times.Once);
     }

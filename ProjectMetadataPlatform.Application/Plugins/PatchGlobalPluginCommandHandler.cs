@@ -25,7 +25,8 @@ public class PatchGlobalPluginCommandHandler : IRequestHandler<PatchGlobalPlugin
     /// <param name="pluginRepository">The plugin repository to use for plugin operations.</param>
     /// <param name="logRepository">The log repository to use for logging operations.</param>
     /// <param name="unitOfWork">The unit of work to use for transactional operations.</param>
-    public PatchGlobalPluginCommandHandler(IPluginRepository pluginRepository, ILogRepository logRepository, IUnitOfWork unitOfWork)
+    public PatchGlobalPluginCommandHandler(IPluginRepository pluginRepository, ILogRepository logRepository,
+        IUnitOfWork unitOfWork)
     {
         _pluginRepository = pluginRepository;
         _logRepository = logRepository;
@@ -42,26 +43,15 @@ public class PatchGlobalPluginCommandHandler : IRequestHandler<PatchGlobalPlugin
     public async Task<Plugin?> Handle(PatchGlobalPluginCommand request, CancellationToken cancellationToken)
     {
         var plugin = await _pluginRepository.GetPluginByIdAsync(request.Id);
-        if(plugin == null)
+        if (plugin == null)
         {
             return null;
         }
 
         if (request.PluginName != null && !string.Equals(plugin.PluginName, request.PluginName, StringComparison.Ordinal))
         {
-            var changes = new List<LogChange>
-            {
-                new()
-                {
-                    Property = nameof(plugin.PluginName),
-                    OldValue = plugin.PluginName,
-                    NewValue = request.PluginName
-                }
-            };
-
+            await AddUpdatedPluginNameLog(plugin, request);
             plugin.PluginName = request.PluginName;
-
-            await _logRepository.AddGlobalPluginLogForCurrentUser(plugin, Action.UPDATED_GLOBAL_PLUGIN, changes);
         }
 
         if (request.IsArchived != null && plugin.IsArchived != request.IsArchived.Value)
@@ -74,5 +64,23 @@ public class PatchGlobalPluginCommandHandler : IRequestHandler<PatchGlobalPlugin
         await _unitOfWork.CompleteAsync();
 
         return updatedPlugin;
+    }
+
+    private async Task AddUpdatedPluginNameLog(Plugin plugin, PatchGlobalPluginCommand request)
+    {
+        if (request.PluginName != null)
+        {
+            var changes = new List<LogChange>
+            {
+                new()
+                {
+                    Property = nameof(plugin.PluginName),
+                    OldValue = plugin.PluginName,
+                    NewValue = request.PluginName
+                }
+            };
+
+            await _logRepository.AddGlobalPluginLogForCurrentUser(plugin, Action.UPDATED_GLOBAL_PLUGIN, changes);
+        }
     }
 }

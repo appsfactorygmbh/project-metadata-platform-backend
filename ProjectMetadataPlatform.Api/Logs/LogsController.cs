@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ProjectMetadataPlatform.Api.Interfaces;
 using ProjectMetadataPlatform.Api.Logs.Models;
@@ -71,11 +70,6 @@ public class LogsController: ControllerBase
         {
             return NotFound("No project with projectSlug " + projectSlug + " found");
         }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.StackTrace);
-            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-        }
 
 
         var query = new GetLogsQuery(projectId ?? projectFromSlugId, search, userId, globalPluginId);
@@ -89,11 +83,6 @@ public class LogsController: ControllerBase
         catch (InvalidOperationException)
         {
             return NotFound("No project with id " + projectId + " found");
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.StackTrace);
-            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
 
         return Ok(logs.Select(_converter.BuildLogMessage));

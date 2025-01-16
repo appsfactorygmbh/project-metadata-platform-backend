@@ -44,19 +44,12 @@ public class DeleteUserControllerTest
     }
 
     [Test]
-    public async Task DeleteUser_InternalError_Test()
+    public void DeleteUser_InternalError_Test()
     {
         _mediator.Setup(m => m.Send(It.IsAny<DeleteUserCommand>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidOperationException("Test exception"));
 
-        var result = await _controller.Delete("");
-
-        var objectResult = result as StatusCodeResult;
-        Assert.Multiple(() =>
-        {
-            Assert.That(objectResult, Is.Not.Null);
-            Assert.That(objectResult.StatusCode, Is.EqualTo(StatusCodes.Status500InternalServerError));
-        });
+        Assert.ThrowsAsync<InvalidOperationException>(() => _controller.Delete(""));
     }
 
     [Test]

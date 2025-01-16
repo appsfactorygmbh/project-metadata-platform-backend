@@ -33,7 +33,7 @@ public class Tests
         _mediator.Setup(m => m.Send(It.IsAny<CreatePluginCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(42);
 
-        var request = new CreatePluginRequest("Solid Rocket Booster", true, new List<string>());
+        var request = new CreatePluginRequest("Solid Rocket Booster", true, new List<string>(), "https://booster.de");
 
         ActionResult<CreatePluginResponse> result = await _controller.Put(request);
 
@@ -53,21 +53,14 @@ public class Tests
     }
 
     [Test]
-    public async Task CreatePlugin_WithError_Test()
+    public void CreatePlugin_WithError_Test()
     {
         _mediator.Setup(m => m.Send(It.IsAny<CreatePluginCommand>(), It.IsAny<CancellationToken>()))
             .Throws(new IOException());
 
-        var request = new CreatePluginRequest("Drogue chute", false, new List<string>());
+        var request = new CreatePluginRequest("Drogue chute", false, [], "https://chute.de");
 
-        ActionResult<CreatePluginResponse> result = await _controller.Put(request);
-
-        Assert.That(result.Result, Is.InstanceOf<StatusCodeResult>());
-        var statusResult = result.Result as StatusCodeResult;
-
-        Assert.That(statusResult, Is.Not.Null);
-
-        Assert.That(statusResult.StatusCode, Is.EqualTo(500));
+        Assert.ThrowsAsync<IOException>(() => _controller.Put(request));
     }
 
     [Test]
@@ -76,7 +69,7 @@ public class Tests
         _mediator.Setup(m => m.Send(It.IsAny<CreatePluginCommand>(), It.IsAny<CancellationToken>()))
             .Throws(new IOException());
 
-        var request = new CreatePluginRequest("", false, new List<string>());
+        var request = new CreatePluginRequest("", false, new List<string>(), "https://empty.de");
 
         ActionResult<CreatePluginResponse> result = await _controller.Put(request);
 
@@ -89,39 +82,28 @@ public class Tests
     }
 
     [Test]
-    public async Task DeletePlugin_MediatorThrowsExceptionTest()
+    public void DeletePlugin_MediatorThrowsExceptionTest()
     {
         _mediator.Setup(mediator => mediator.Send(It.IsAny<DeleteGlobalPluginCommand>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidDataException("An error message"));
-        var result = await _controller.Delete(1);
-        Assert.That(result.Result, Is.InstanceOf<StatusCodeResult>());
-
-        var badRequestResult = result.Result as StatusCodeResult;
-        Assert.That(badRequestResult!.StatusCode, Is.EqualTo(500));
+        Assert.ThrowsAsync<InvalidDataException>(() => _controller.Delete(1));
     }
 
     [Test]
-    public async Task PatchPlugin_MediatorThrowsExceptionTest()
+    public void PatchPlugin_MediatorThrowsExceptionTest()
     {
         _mediator.Setup(mediator => mediator.Send(It.IsAny<PatchGlobalPluginCommand>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidDataException("An error message"));
-        var result = await _controller.Patch(1, new PatchGlobalPluginRequest());
-        Assert.That(result.Result, Is.InstanceOf<StatusCodeResult>());
-
-        var badRequestResult = result.Result as StatusCodeResult;
-        Assert.That(badRequestResult!.StatusCode, Is.EqualTo(500));
+        var exception = Assert.ThrowsAsync<InvalidDataException>(() => _controller.Patch(1, new PatchGlobalPluginRequest()));
+        Assert.That(exception.Message, Is.EqualTo("An error message"));
     }
 
     [Test]
-    public async Task GetGlobalPlugins_MediatorThrowsExceptionTest()
+    public void GetGlobalPlugins_MediatorThrowsExceptionTest()
     {
         _mediator.Setup(mediator => mediator.Send(It.IsAny<GetGlobalPluginsQuery>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidDataException("An error message"));
-        var result = await _controller.GetGlobal();
-        Assert.That(result.Result, Is.InstanceOf<StatusCodeResult>());
-
-        var badRequestResult = result.Result as StatusCodeResult;
-        Assert.That(badRequestResult!.StatusCode, Is.EqualTo(500));
+        Assert.ThrowsAsync<InvalidDataException>(() => _controller.GetGlobal());
     }
 
     [Test]
@@ -130,7 +112,7 @@ public class Tests
         _mediator.Setup(m => m.Send(It.IsAny<CreatePluginCommand>(), It.IsAny<CancellationToken>()))
             .Throws(new IOException());
 
-        var request = new CreatePluginRequest("         ", false, new List<string>());
+        var request = new CreatePluginRequest("         ", false, new List<string>(), "https://whitespace.de");
 
         ActionResult<CreatePluginResponse> result = await _controller.Put(request);
 

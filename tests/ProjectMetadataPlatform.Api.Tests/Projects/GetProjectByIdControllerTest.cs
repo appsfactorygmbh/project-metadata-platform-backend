@@ -37,15 +37,11 @@ public class GetProjectByIdControllerTest
     }
 
     [Test]
-    public async Task MediatorThrowsExceptionTest()
+    public void MediatorThrowsExceptionTest()
     {
         _mediator.Setup(mediator => mediator.Send(It.IsAny<GetProjectQuery>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidDataException("An error message"));
-        var result = await _controller.Get(1);
-        Assert.That(result.Result, Is.InstanceOf<StatusCodeResult>());
-
-        var badRequestResult = result.Result as StatusCodeResult;
-        Assert.That(badRequestResult!.StatusCode, Is.EqualTo(500));
+        Assert.ThrowsAsync<InvalidDataException>(() => _controller.Get(1));
     }
 
     [Test]

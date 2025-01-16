@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -29,6 +30,10 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     /// ///
     /// <param name="query">The query containing filters and search pattern.</param>
     /// <returns>A task representing the asynchronous operation. When this task completes, it returns a collection of projects.</returns>
+    [SuppressMessage("Performance", "CA1862:\"StringComparison\"-Methodenüberladungen verwenden, um Zeichenfolgenvergleiche ohne Beachtung der Groß-/Kleinschreibung durchzuführen")]
+    [SuppressMessage("Globalization", "CA1304:CultureInfo angeben")]
+    [SuppressMessage("Globalization", "CA1311:Geben Sie eine Kultur an oder verwenden Sie eine invariante Version")]
+    [SuppressMessage("Globalization", "CA1305:IFormatProvider angeben")]
     public async Task<IEnumerable<Project>> GetProjectsAsync(GetAllProjectsQuery query)
     {
         var filteredQuery = _context.Projects.AsQueryable();
@@ -40,7 +45,9 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
             filteredQuery = filteredQuery.Where(project => project.ProjectName.ToLower().Contains(lowerTextSearch)
                                                   || project.ClientName.ToLower().Contains(lowerTextSearch)
                                                   || project.BusinessUnit.ToLower().Contains(lowerTextSearch)
-                                                  || project.TeamNumber.ToString().Contains(lowerTextSearch));
+                                                  || project.TeamNumber.ToString().Contains(lowerTextSearch)
+                                                  || project.Company.ToLower().Contains(lowerTextSearch)
+                                                  );
 
         }
 
@@ -83,6 +90,21 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
             if(query.Request.IsArchived is not null)
             {
                 filteredQuery = filteredQuery.Where(project => project.IsArchived == query.Request.IsArchived);
+            }
+
+            if (query.Request.Company is { Count: > 0 })
+            {
+                var lowerCompanies = query.Request.Company.Select(c => c.ToLower()).ToList();
+                filteredQuery = filteredQuery.Where(project =>
+                    lowerCompanies.Contains(project.Company.ToLower())
+                );
+            }
+
+            if (query.Request.IsmsLevel is not null)
+            {
+                filteredQuery = filteredQuery.Where(project =>
+                    project.IsmsLevel == query.Request.IsmsLevel
+                );
             }
         }
 

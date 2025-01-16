@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -326,14 +327,11 @@ public class LogsControllerTest
     }
 
     [Test]
-    public async Task GetLogs_ThrowsException_Test()
+    public void GetLogs_ThrowsException_Test()
     {
-        _mediator.Setup(m => m.Send(It.IsAny<GetLogsQuery>(), default)).ThrowsAsync(new FormatException("Something went wrong"));
+        _mediator.Setup(m => m.Send(It.IsAny<GetLogsQuery>(), CancellationToken.None)).ThrowsAsync(new FormatException("Something went wrong"));
 
-        var result = await _controller.Get(null, null, null, null, null);
-
-        Assert.That(result.Result, Is.InstanceOf<StatusCodeResult>());
-        var statusCodeResult = result.Result as StatusCodeResult;
-        Assert.That(statusCodeResult?.StatusCode, Is.EqualTo(500));
+        var exception = Assert.ThrowsAsync<FormatException>(() => _controller.Get(null, null, null, null, null));
+        Assert.That(exception.Message, Is.EqualTo("Something went wrong"));
     }
 }

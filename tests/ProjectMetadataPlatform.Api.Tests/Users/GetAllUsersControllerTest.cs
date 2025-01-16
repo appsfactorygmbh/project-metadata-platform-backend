@@ -83,19 +83,12 @@ public class GetAllUsersControllerTest
     }
 
     [Test]
-    public async Task Get_ReturnsMediatorException()
+    public void Get_ReturnsMediatorException()
     {
         _mediator.Setup(m => m.Send(It.IsAny<GetAllUsersQuery>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidOperationException("Test exception"));
 
-        var result = await _controller.Get();
-
-        var objectResult = result.Result as StatusCodeResult;
-        Assert.Multiple(() =>
-        {
-            Assert.That(objectResult, Is.Not.Null);
-            Assert.That(objectResult.StatusCode, Is.EqualTo(StatusCodes.Status500InternalServerError));
-        });
+        Assert.ThrowsAsync<InvalidOperationException>(() => _controller.Get());
     }
 
 }

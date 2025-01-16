@@ -65,7 +65,9 @@ public class ProjectsRepositoryTests : TestsWithDatabase
             "Metatron",
             new List<string> { "666", "777" },
             new List<int> { 42, 43 },
-            true
+            true,
+            new List<string> {"AppsFact"},
+            SecurityLevel.VERY_HIGH
         );
         var projects = new List<Project>
         {
@@ -78,7 +80,9 @@ public class ProjectsRepositoryTests : TestsWithDatabase
                 ClientName = "Metatron",
                 Department = "Mars",
                 TeamNumber = 42,
-                IsArchived = true
+                IsArchived = true,
+                Company = "AppsFact",
+                IsmsLevel = SecurityLevel.VERY_HIGH
             },
             new Project
             {
@@ -89,7 +93,9 @@ public class ProjectsRepositoryTests : TestsWithDatabase
                 ClientName = "Lucifer",
                 Department = "Venus",
                 TeamNumber = 43,
-                IsArchived = true
+                IsArchived = true,
+                Company = "AppsFact",
+                IsmsLevel = SecurityLevel.VERY_HIGH
             },
             new Project
             {
@@ -100,7 +106,9 @@ public class ProjectsRepositoryTests : TestsWithDatabase
                 ClientName = "Satan",
                 Department = "Earth",
                 TeamNumber = 44,
-                IsArchived = false
+                IsArchived = false,
+                Company = "AppsFact",
+                IsmsLevel = SecurityLevel.VERY_HIGH
             },
         };
 
@@ -121,6 +129,8 @@ public class ProjectsRepositoryTests : TestsWithDatabase
             Assert.That(result.Any(p => p.BusinessUnit == "666"), Is.True);
             Assert.That(result.Any(p => p.TeamNumber == 42), Is.True);
             Assert.That(result.Any(p => p.IsArchived), Is.True);
+            Assert.That(result.Any(p => p.Company == "AppsFact" ),Is.True);
+            Assert.That(result.Any(p => p.IsmsLevel == SecurityLevel.VERY_HIGH ), Is.True);
         }));
     }
 
@@ -133,6 +143,8 @@ public class ProjectsRepositoryTests : TestsWithDatabase
             "Gilgamesch",
             new List<string> { "666", "777" },
             new List<int> { 42, 43 },
+            null,
+            new List <string> {"Nothing else"},
             null
         );
         var projects = new List<Project>
@@ -145,7 +157,9 @@ public class ProjectsRepositoryTests : TestsWithDatabase
                 BusinessUnit = "666",
                 ClientName = "Metatron",
                 Department = "Mars",
-                TeamNumber = 42
+                TeamNumber = 42,
+                Company = "AddOn",
+                IsmsLevel = SecurityLevel.HIGH
             },
             new Project
             {
@@ -155,7 +169,9 @@ public class ProjectsRepositoryTests : TestsWithDatabase
                 BusinessUnit = "777",
                 ClientName = "Lucifer",
                 Department = "Venus",
-                TeamNumber = 43
+                TeamNumber = 43,
+                Company = "AddOn",
+                IsmsLevel = SecurityLevel.HIGH
             },
         };
 

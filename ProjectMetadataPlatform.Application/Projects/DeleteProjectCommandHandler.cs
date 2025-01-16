@@ -53,6 +53,14 @@ public class DeleteProjectCommandHandler : IRequestHandler<DeleteProjectCommand,
 
         var deletedProject = await _projectsRepository.DeleteProjectAsync(project);
 
+        await AddDeletedProjectLog(project);
+
+        await _unitOfWork.CompleteAsync();
+        return deletedProject;
+    }
+
+    private async Task AddDeletedProjectLog(Project project)
+    {
         var changes = new List<LogChange>
         {
             new() { OldValue = project.ProjectName, NewValue = "", Property = nameof(Project.ProjectName) },
@@ -61,8 +69,7 @@ public class DeleteProjectCommandHandler : IRequestHandler<DeleteProjectCommand,
             new() { OldValue = project.ClientName, NewValue = "", Property = nameof(Project.ClientName) },
             new() { OldValue = project.TeamNumber.ToString(), NewValue = "", Property = nameof(Project.TeamNumber) }
         };
+
         await _logRepository.AddProjectLogForCurrentUser(project, Action.REMOVED_PROJECT, changes);
-        await _unitOfWork.CompleteAsync();
-        return deletedProject;
     }
 }

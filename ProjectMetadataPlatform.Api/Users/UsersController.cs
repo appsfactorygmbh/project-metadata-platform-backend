@@ -63,13 +63,7 @@ public class UsersController : ControllerBase
         {
             return BadRequest(e.Message);
         }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.Message);
-            Console.WriteLine(e.StackTrace);
 
-            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-        }
         var response = new CreateUserResponse(id);
         var uri = "/Users/" + id;
         return Created(uri,response);
@@ -87,17 +81,7 @@ public class UsersController : ControllerBase
     public async Task<ActionResult<IEnumerable<GetUserResponse>>> Get()
     {
         var query = new GetAllUsersQuery();
-        IEnumerable<IdentityUser> users;
-        try
-        {
-            users = await _mediator.Send(query);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.Message);
-            Console.WriteLine(e.StackTrace);
-            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-        }
+        var users = await _mediator.Send(query);
 
         var response = users.Select(user => new GetUserResponse(
             user.Id,
@@ -121,17 +105,7 @@ public class UsersController : ControllerBase
     public async Task<ActionResult<GetUserResponse>> GetUserById(string userId)
     {
         var query = new GetUserQuery(userId);
-        IdentityUser? user;
-        try
-        {
-            user = await _mediator.Send(query);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.Message);
-            Console.WriteLine(e.StackTrace);
-            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-        }
+        var user = await _mediator.Send(query);
 
         if (user == null)
         {
@@ -173,13 +147,6 @@ public class UsersController : ControllerBase
         {
             return BadRequest(e.Message);
         }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.Message);
-            Console.WriteLine(e.StackTrace);
-
-            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-        }
 
         if (user == null)
         {
@@ -214,17 +181,8 @@ public class UsersController : ControllerBase
 
         var query = new GetUserByEmailQuery(email);
 
-        IdentityUser? user;
-        try
-        {
-            user = await _mediator.Send(query);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.Message);
-            Console.WriteLine(e.StackTrace);
-            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-        }
+        var user = await _mediator.Send(query);
+
         if (user == null)
         {
             return NotFound("User not found.");
@@ -259,12 +217,6 @@ public class UsersController : ControllerBase
         catch (InvalidOperationException e) when(e.Message == "A User can't delete themself.")
         {
             return BadRequest(e.Message);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.Message);
-            Console.WriteLine(e.StackTrace);
-            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
 
         return user == null ? NotFound("No user with id " + userId + " was found.") : NoContent();

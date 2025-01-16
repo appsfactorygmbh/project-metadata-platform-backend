@@ -11,7 +11,6 @@ using ProjectMetadataPlatform.Api.Projects.Models;
 using ProjectMetadataPlatform.Application.Plugins;
 using ProjectMetadataPlatform.Application.Projects;
 using ProjectMetadataPlatform.Domain.Plugins;
-using ProjectMetadataPlatform.Domain.Projects;
 
 namespace ProjectMetadataPlatform.Api.Projects;
 
@@ -48,16 +47,7 @@ public class ProjectsController : ControllerBase
     public async Task<ActionResult<IEnumerable<GetProjectsResponse>>> Get([FromQuery] ProjectFilterRequest? request, string? search = " ")
     {
         var query = new GetAllProjectsQuery(request, search);
-        IEnumerable<Project> projects;
-        try
-        {
-            projects = await _mediator.Send(query);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.StackTrace);
-            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-        }
+        var projects = await _mediator.Send(query);
 
         var response = projects.Select(project => new GetProjectsResponse(
             project.Id,
@@ -66,9 +56,11 @@ public class ProjectsController : ControllerBase
             project.ClientName,
             project.BusinessUnit,
             project.TeamNumber,
-            project.IsArchived));
+            project.IsArchived,
+            project.Company,
+            project.IsmsLevel));
 
-        return Ok(response);
+         return Ok(response);
     }
 
     /// <summary>
@@ -85,17 +77,7 @@ public class ProjectsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<GetProjectResponse>> Get(string slug)
     {
-        int? projectId;
-        try
-        {
-            projectId = await GetProjectId(slug);
-        }
-        catch(Exception e)
-        {
-             Console.Write(e.GetType());
-            Console.Write(e.StackTrace);
-            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-        }
+        var projectId = await GetProjectId(slug);
         return projectId == null ? NotFound($"Project with Slug {slug} not found.") : await Get((int) projectId);
     }
 
@@ -114,16 +96,7 @@ public class ProjectsController : ControllerBase
     public async Task<ActionResult<GetProjectResponse>> Get(int id)
     {
         var query = new GetProjectQuery(id);
-        Project? project;
-        try
-        {
-            project = await _mediator.Send(query);
-        }
-        catch (Exception e)
-        {
-            Console.Write(e.StackTrace);
-            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-        }
+        var project = await _mediator.Send(query);
 
         if (project == null)
         {
@@ -160,15 +133,7 @@ public class ProjectsController : ControllerBase
     public async Task<ActionResult<IEnumerable<GetPluginResponse>>> GetPlugins(int id)
     {
         var query = new GetAllPluginsForProjectIdQuery(id);
-        IEnumerable<ProjectPlugins> projectPlugins;
-        try
-        {
-            projectPlugins = await _mediator.Send(query);
-        }
-        catch
-        {
-            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-        }
+        var projectPlugins = await _mediator.Send(query);
 
         var response = projectPlugins.Select(plugin
             => new GetPluginResponse(plugin.Plugin!.PluginName, plugin.Url,
@@ -191,17 +156,7 @@ public class ProjectsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<IEnumerable<GetPluginResponse>>> GetPluginsBySlug(string slug)
     {
-        int? projectId;
-        try
-        {
-            projectId = await GetProjectId(slug);
-        }
-        catch(Exception e)
-        {
-            Console.Write(e.GetType());
-            Console.Write(e.StackTrace);
-            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-        }
+        var projectId = await GetProjectId(slug);
         return projectId == null ? NotFound($"Project with Slug {slug} not found.") : await GetPlugins((int) projectId);
     }
 
@@ -231,11 +186,6 @@ public class ProjectsController : ControllerBase
             Console.WriteLine(ex.Message);
             return NotFound($"Project with Id {id} not found.");
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex.Message);
-            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-        }
 
         var response = unarchivedProjectPlugins
             .Where(plugin => plugin.Plugin != null)
@@ -263,17 +213,7 @@ public class ProjectsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<IEnumerable<GetPluginResponse>>> GetUnarchivedPluginsBySlug(string slug)
     {
-        int? projectId;
-        try
-        {
-            projectId = await GetProjectId(slug);
-        }
-        catch(Exception e)
-        {
-            Console.Write(e.GetType());
-            Console.Write(e.StackTrace);
-            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-        }
+        var projectId = await GetProjectId(slug);
         return projectId == null ? NotFound($"Project with Slug {slug} not found.") : await GetUnarchivedPlugins((int) projectId);
     }
 
@@ -295,17 +235,7 @@ public class ProjectsController : ControllerBase
     public async Task<ActionResult<CreateProjectResponse>> Put([FromBody] CreateProjectRequest project,
         string slug)
     {
-        int? projectId;
-        try
-        {
-            projectId = await GetProjectId(slug);
-        }
-        catch(Exception e)
-        {
-            Console.Write(e.GetType());
-            Console.Write(e.StackTrace);
-            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-        }
+        var projectId = await GetProjectId(slug);
         return projectId == null ? NotFound($"Project with Slug {slug} not found.") : await Put(project, projectId);
     }
 
@@ -359,12 +289,6 @@ public class ProjectsController : ControllerBase
         {
             return BadRequest(e.Message);
         }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.Message);
-            Console.WriteLine(e.StackTrace);
-            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-        }
     }
 
     /// <summary>
@@ -384,21 +308,9 @@ public class ProjectsController : ControllerBase
     public async Task<ActionResult<IEnumerable<string>>> GetAllBusinessUnits()
     {
         var query = new GetAllBusinessUnitsQuery();
-        IEnumerable<string> businessunits;
+        var businessUnits = await _mediator.Send(query);
 
-        try
-        {
-            businessunits = await _mediator.Send(query);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.StackTrace);
-            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-        }
-
-        var response = businessunits;
-
-        return Ok(response);
+        return Ok(businessUnits);
     }
 
     /// <summary>
@@ -418,21 +330,9 @@ public class ProjectsController : ControllerBase
     public async Task<ActionResult<IEnumerable<int>>> GetAllTeamNumbers()
     {
         var query = new GetAllTeamNumbersQuery();
-        IEnumerable<int> teamNumbers;
+        var teamNumbers = await _mediator.Send(query);
 
-        try
-        {
-            teamNumbers = await _mediator.Send(query);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.StackTrace);
-            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-        }
-
-        var response = teamNumbers;
-
-        return Ok(response);
+        return Ok(teamNumbers);
     }
 
     /// <summary>
@@ -451,17 +351,7 @@ public class ProjectsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> Delete(string slug)
     {
-        int? projectId;
-        try
-        {
-            projectId = await GetProjectId(slug);
-        }
-        catch(Exception e)
-        {
-            Console.Write(e.GetType());
-            Console.Write(e.StackTrace);
-            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-        }
+        var projectId = await GetProjectId(slug);
         return projectId == null ? NotFound($"Project with Slug {slug} not found.") : await Delete((int) projectId);
 
     }
@@ -494,11 +384,6 @@ public class ProjectsController : ControllerBase
         catch (InvalidOperationException e)
         {
             return BadRequest(e.Message);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.StackTrace);
-            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
 
         return NoContent();
