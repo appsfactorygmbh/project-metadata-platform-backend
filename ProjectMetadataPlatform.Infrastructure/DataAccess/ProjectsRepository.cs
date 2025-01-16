@@ -32,10 +32,12 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     /// <param name="query">The query containing filters and search pattern.</param>
     /// <returns>A task representing the asynchronous operation. When this task completes, it returns a collection of projects.</returns>
     [SuppressMessage("Performance", "CA1862:\"StringComparison\"-Methodenüberladungen verwenden, um Zeichenfolgenvergleiche ohne Beachtung der Groß-/Kleinschreibung durchzuführen")]
+    [SuppressMessage("Globalization", "CA1304:CultureInfo angeben")]
+    [SuppressMessage("Globalization", "CA1311:Geben Sie eine Kultur an oder verwenden Sie eine invariante Version")]
+    [SuppressMessage("Globalization", "CA1305:IFormatProvider angeben")]
     public async Task<IEnumerable<Project>> GetProjectsAsync(GetAllProjectsQuery query)
     {
         var filteredQuery = _context.Projects.AsQueryable();
-        var ismsLevel = query.Request?.IsmsLevel;
 
         if (!string.IsNullOrWhiteSpace(query.Search))
         {
@@ -46,7 +48,6 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
                                                   || project.BusinessUnit.ToLower().Contains(lowerTextSearch)
                                                   || project.TeamNumber.ToString().Contains(lowerTextSearch)
                                                   || project.Company.ToLower().Contains(lowerTextSearch)
-                                                  || project.IsmsLevel == ismsLevel
                                                   );
 
         }
