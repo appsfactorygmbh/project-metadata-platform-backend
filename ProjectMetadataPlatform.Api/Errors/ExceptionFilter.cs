@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -18,8 +19,8 @@ public class ExceptionFilter: IExceptionFilter
     /// Handler for basic exceptions.
     /// </summary>
     private readonly IExceptionHandler<PmpException> _basicExceptionHandler;
-    private readonly IExceptionHandler<ProjectException> _projectExceptionHandler;
     private readonly IExceptionHandler<LogException> _logExceptionHandler;
+    private readonly IExceptionHandler<ProjectException> _projectExceptionHandler;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ExceptionFilter"/> class.
