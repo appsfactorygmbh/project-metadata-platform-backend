@@ -41,12 +41,14 @@ public class ProjectsExceptionHandlerTest
     }
 
     [Test]
-    public void Handle_UnknownException_ReturnsNull()
+    public void Handle_UnknownException_ReturnsInternalServerError()
     {
         var mockException = new Mock<ProjectException>("Some message");
 
         var result = _projectsExceptionHandler.Handle(mockException.Object);
 
-        Assert.That(result, Is.Null);
+        Assert.That(result, Is.InstanceOf<StatusCodeResult>());
+        var statusCodeResult = (StatusCodeResult) result;
+        Assert.That(statusCodeResult.StatusCode, Is.EqualTo(500));
     }
 }
