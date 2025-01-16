@@ -2,6 +2,7 @@ using System;
 using System.Security.Authentication;
 using System.Threading.Tasks;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ProjectMetadataPlatform.Api.Auth.Models;
 using ProjectMetadataPlatform.Application.Auth;
