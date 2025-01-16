@@ -69,7 +69,9 @@ public class ProjectsControllerTest
                 ClientName = "Nasa",
                 BusinessUnit = "BuWeather",
                 TeamNumber = 42,
-                Department = "Homelandsecurity"
+                Department = "Homelandsecurity",
+                Company = "Geostorm",
+                IsmsLevel = SecurityLevel.VERY_HIGH
             }
         };
         _mediator.Setup(m => m.Send(It.IsAny<GetAllProjectsQuery>(), It.IsAny<CancellationToken>()))
@@ -99,6 +101,8 @@ public class ProjectsControllerTest
             Assert.That(project.ClientName, Is.EqualTo("Nasa"));
             Assert.That(project.BusinessUnit, Is.EqualTo("BuWeather"));
             Assert.That(project.TeamNumber, Is.EqualTo(42));
+            Assert.That(project.Company, Is.EqualTo("Geostorm"));
+            Assert.That(project.IsmsLevel == SecurityLevel.VERY_HIGH);
         });
     }
 
@@ -116,7 +120,9 @@ public class ProjectsControllerTest
                 ClientName = "Nasa",
                 BusinessUnit = "BuWeather",
                 TeamNumber = 42,
-                Department = "Homelandsecurity"
+                Department = "Homelandsecurity",
+                Company = "NothingButTheBest GmbH",
+                IsmsLevel = SecurityLevel.HIGH
             }
         };
 
@@ -146,19 +152,17 @@ public class ProjectsControllerTest
             Assert.That(project.ClientName, Is.EqualTo("Nasa"));
             Assert.That(project.BusinessUnit, Is.EqualTo("BuWeather"));
             Assert.That(project.TeamNumber, Is.EqualTo(42));
+            Assert.That(project.Company, Is.EqualTo("NothingButTheBest GmbH"));
+            Assert.That(project.IsmsLevel == SecurityLevel.HIGH);
         });
     }
 
     [Test]
-    public async Task GetAllProjects_MediatorThrowsExceptionTest()
+    public void GetAllProjects_MediatorThrowsExceptionTest()
     {
         _mediator.Setup(mediator => mediator.Send(It.IsAny<GetAllProjectsQuery>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidDataException("An error message"));
-        var result = await _controller.Get(null, "search");
-        Assert.That(result.Result, Is.InstanceOf<StatusCodeResult>());
-
-        var badRequestResult = result.Result as StatusCodeResult;
-        Assert.That(badRequestResult!.StatusCode, Is.EqualTo(500));
+        Assert.ThrowsAsync<InvalidDataException>(() => _controller.Get(null, "search"));
     }
 
     [Test]
@@ -180,15 +184,12 @@ public class ProjectsControllerTest
     }
 
     [Test]
-    public async Task MediatorThrowsExceptionTest()
+    public void MediatorThrowsExceptionTest()
     {
         _mediator.Setup(mediator => mediator.Send(It.IsAny<GetAllPluginsForProjectIdQuery>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidDataException("An error message"));
-        var result = await _controller.GetPlugins(1);
-        Assert.That(result.Result, Is.InstanceOf<StatusCodeResult>());
 
-        var badRequestResult = result.Result as StatusCodeResult;
-        Assert.That(badRequestResult!.StatusCode, Is.EqualTo(500));
+        Assert.ThrowsAsync<InvalidDataException>(() => _controller.GetPlugins(1));
     }
 
     [Test]
@@ -265,35 +266,22 @@ public class ProjectsControllerTest
     }
 
     [Test]
-    public async Task GetPluginsForProjectByProjectSlug_MediatorThrowsExceptionWhenRequestingPlugins_Test()
+    public void GetPluginsForProjectByProjectSlug_MediatorThrowsExceptionWhenRequestingPlugins_Test()
     {
         _mediator.Setup(m => m.Send(It.Is<GetProjectIdBySlugQuery>(r => r.Slug == "Meitner"), It.IsAny<CancellationToken>())).ReturnsAsync(109);
         _mediator.Setup(mediator => mediator.Send(It.Is<GetAllPluginsForProjectIdQuery>(r => r.Id == 109), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidDataException("An error message"));
-        var result = await _controller.GetPluginsBySlug("Meitner");
-        Assert.That(result.Result, Is.InstanceOf<StatusCodeResult>());
 
-        var badRequestResult = result.Result as StatusCodeResult;
-        Assert.That(badRequestResult!.StatusCode, Is.EqualTo(500));
-
-        _mediator.Verify(m => m.Send(It.Is<GetProjectIdBySlugQuery>(r => r.Slug == "Meitner"), It.IsAny<CancellationToken>()), Times.Once);
-        _mediator.Verify(m => m.Send(It.Is<GetAllPluginsForProjectIdQuery>(r => r.Id == 109), It.IsAny<CancellationToken>()), Times.Once);
+        Assert.ThrowsAsync<InvalidDataException>(() => _controller.GetPluginsBySlug("Meitner"));
     }
 
     [Test]
-    public async Task GetPluginsForProjectByProjectSlug_MediatorThrowsExceptionWhenRequestingIdBySlug_Test()
+    public void GetPluginsForProjectByProjectSlug_MediatorThrowsExceptionWhenRequestingIdBySlug_Test()
     {
         _mediator.Setup(m => m.Send(It.Is<GetProjectIdBySlugQuery>(r => r.Slug == "Curie"), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidDataException("An error message"));
 
-        var result = await _controller.GetPluginsBySlug("Curie");
-        Assert.That(result.Result, Is.InstanceOf<StatusCodeResult>());
-
-        var badRequestResult = result.Result as StatusCodeResult;
-        Assert.That(badRequestResult!.StatusCode, Is.EqualTo(500));
-
-        _mediator.Verify(m => m.Send(It.Is<GetProjectIdBySlugQuery>(r => r.Slug == "Curie"), It.IsAny<CancellationToken>()), Times.Once);
-        _mediator.Verify(m => m.Send(It.IsAny<GetAllPluginsForProjectIdQuery>(), It.IsAny<CancellationToken>()), Times.Never);
+        Assert.ThrowsAsync<InvalidDataException>(() => _controller.GetPluginsBySlug("Curie"));
     }
 
     [Test]
@@ -398,8 +386,9 @@ public class ProjectsControllerTest
             "Metatron",
             new List<string> { "666", "777" },
             new List<int> { 42, 43 },
-            true
-
+            true,
+            new List<string> {"Optimus Prime"},
+            SecurityLevel.HIGH
         );
 
         _mediator.Setup(m => m.Send(It.IsAny<GetAllProjectsQuery>(), CancellationToken.None))
@@ -414,7 +403,9 @@ public class ProjectsControllerTest
                     ClientName = "Metatron",
                     Department = "Mars",
                     TeamNumber = 42,
-                    IsArchived = true
+                    IsArchived = true,
+                    Company = "Optimus Prime",
+                    IsmsLevel = SecurityLevel.HIGH
                 }
             });
 
@@ -440,6 +431,8 @@ public class ProjectsControllerTest
             Assert.That(response.ToArray()[0].ClientName, Is.EqualTo("Metatron"));
             Assert.That(response.ToArray()[0].TeamNumber, Is.EqualTo(42));
             Assert.That(response.ToArray()[0].IsArchived, Is.EqualTo(true));
+            Assert.That(response.ToArray()[0].Company, Is.EqualTo("Optimus Prime"));
+            Assert.That(response.ToArray()[0].IsmsLevel == SecurityLevel.HIGH);
         }));
     }
 
@@ -453,7 +446,9 @@ public class ProjectsControllerTest
             "Gilgamesch",
             new List<string> { "666", "777" },
             new List<int> { 42, 43 },
-            false
+            false,
+            new List<string> {"Minas Tirith"},
+            SecurityLevel.NORMAL
         );
 
         _mediator.Setup(m => m.Send(It.IsAny<GetAllProjectsQuery>(), CancellationToken.None))
@@ -511,17 +506,12 @@ public class ProjectsControllerTest
     }
 
     [Test]
-    public async Task GetUnarchivedPlugins_WhenMediatorThrows_Returns500()
+    public void GetUnarchivedPlugins_WhenMediatorThrows_Returns500()
     {
         _mediator.Setup(m => m.Send(It.IsAny<GetAllUnarchivedPluginsForProjectIdQuery>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new Exception("Database error"));
 
-        var result = await _controller.GetUnarchivedPlugins(1);
-
-        Assert.That(result.Result, Is.InstanceOf<StatusCodeResult>());
-
-        var statusCodeResult = result.Result as StatusCodeResult;
-        Assert.That(statusCodeResult!.StatusCode, Is.EqualTo(StatusCodes.Status500InternalServerError));
+        Assert.ThrowsAsync<Exception>(() => _controller.GetUnarchivedPlugins(1));
     }
 
     [Test]
@@ -625,22 +615,14 @@ public class ProjectsControllerTest
     }
 
     [Test]
-    public async Task GetUnarchivedPluginsBySlug_WhenMediatorThrows_Returns500()
+    public void GetUnarchivedPluginsBySlug_WhenMediatorThrows_Returns500()
     {
         _mediator.Setup(m => m.Send(It.Is<GetAllUnarchivedPluginsForProjectIdQuery>(x => x.Id == 1), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new Exception("Database error"));
         _mediator.Setup(m => m.Send(It.Is<GetProjectIdBySlugQuery>(x => x.Slug == "project_1"), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new Exception("Database error"));
 
-        var result = await _controller.GetUnarchivedPluginsBySlug("project_1");
-
-        Assert.That(result.Result, Is.InstanceOf<StatusCodeResult>());
-
-        var statusCodeResult = result.Result as StatusCodeResult;
-        Assert.That(statusCodeResult!.StatusCode, Is.EqualTo(StatusCodes.Status500InternalServerError));
-
-        _mediator.Verify(m => m.Send(It.Is<GetProjectIdBySlugQuery>(x => x.Slug == "project_1"), It.IsAny<CancellationToken>()), Times.Once);
-        _mediator.Verify(m => m.Send(It.Is<GetAllUnarchivedPluginsForProjectIdQuery>(x => x.Id == 1), It.IsAny<CancellationToken>()), Times.Never);
+        Assert.ThrowsAsync<Exception>(() => _controller.GetUnarchivedPluginsBySlug("project_1"));
     }
 
     [Test]
@@ -778,17 +760,12 @@ public class ProjectsControllerTest
     }
 
     [Test]
-    public async Task DeleteProject_InternalServerError()
+    public void DeleteProject_InternalServerError()
     {
         _mediator.Setup(m => m.Send(It.IsAny<DeleteProjectCommand>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new Exception("Database error"));
 
-        var result = await _controller.Delete(1);
-
-        Assert.That(result, Is.InstanceOf<StatusCodeResult>());
-
-        var statusCodeResult = result as StatusCodeResult;
-        Assert.That(statusCodeResult!.StatusCode, Is.EqualTo(StatusCodes.Status500InternalServerError));
+        Assert.ThrowsAsync<Exception>(() => _controller.Delete(1));
     }
 
     [Test]
@@ -833,15 +810,11 @@ public class ProjectsControllerTest
     }
 
     [Test]
-    public async Task DeleteProjectBySlug_InternalServerError()
+    public void DeleteProjectBySlug_InternalServerError()
     {
         _mediator.Setup(mediator => mediator.Send(It.IsAny<GetProjectIdBySlugQuery>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidDataException("An error message"));
-        var result = await _controller.Delete("test");
-        Assert.That(result, Is.InstanceOf<StatusCodeResult>());
-
-        var badRequestResult = result as StatusCodeResult;
-        Assert.That(badRequestResult!.StatusCode, Is.EqualTo(500));
+        Assert.ThrowsAsync<InvalidDataException>(() => _controller.Delete("test"));
     }
 
 }

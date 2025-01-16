@@ -1,4 +1,5 @@
-using System;
+﻿using System;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -92,7 +93,10 @@ public static class DependencyInjection
                 ValidateIssuerSigningKey = true,
                 ValidIssuer = tokenDescriptorInformation.ValidIssuer,
                 ValidAudience = tokenDescriptorInformation.ValidAudience,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenDescriptorInformation.IssuerSigningKey))
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenDescriptorInformation.IssuerSigningKey)),
+                ClockSkew = Environment.GetEnvironmentVariable("PMP_JWT_CLOCK_SKEW_SECONDS") is { } clockSkew
+                    ? TimeSpan.FromSeconds(double.Parse(clockSkew, CultureInfo.InvariantCulture))
+                    : TimeSpan.FromMinutes(5)
             });
     }
 

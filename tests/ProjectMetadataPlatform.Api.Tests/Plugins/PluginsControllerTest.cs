@@ -13,7 +13,6 @@ using ProjectMetadataPlatform.Api.Plugins;
 using ProjectMetadataPlatform.Api.Plugins.Models;
 using ProjectMetadataPlatform.Application.Plugins;
 using ProjectMetadataPlatform.Domain.Plugins;
-using ProjectMetadataPlatform.Domain.Projects;
 
 namespace ProjectMetadataPlatform.Api.Tests.Plugins;
 
@@ -34,7 +33,7 @@ public class Tests
         _mediator.Setup(m => m.Send(It.IsAny<CreatePluginCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(42);
 
-        var request = new CreatePluginRequest("Solid Rocket Booster", true, new List<string>());
+        var request = new CreatePluginRequest("Solid Rocket Booster", true, new List<string>(), "https://booster.de");
 
         ActionResult<CreatePluginResponse> result = await _controller.Put(request);
 
@@ -54,21 +53,14 @@ public class Tests
     }
 
     [Test]
-    public async Task CreatePlugin_WithError_Test()
+    public void CreatePlugin_WithError_Test()
     {
         _mediator.Setup(m => m.Send(It.IsAny<CreatePluginCommand>(), It.IsAny<CancellationToken>()))
             .Throws(new IOException());
 
-        var request = new CreatePluginRequest("Drogue chute", false, new List<string>());
+        var request = new CreatePluginRequest("Drogue chute", false, [], "https://chute.de");
 
-        ActionResult<CreatePluginResponse> result = await _controller.Put(request);
-
-        Assert.That(result.Result, Is.InstanceOf<StatusCodeResult>());
-        var statusResult = result.Result as StatusCodeResult;
-
-        Assert.That(statusResult, Is.Not.Null);
-
-        Assert.That(statusResult.StatusCode, Is.EqualTo(500));
+        Assert.ThrowsAsync<IOException>(() => _controller.Put(request));
     }
 
     [Test]
@@ -77,7 +69,7 @@ public class Tests
         _mediator.Setup(m => m.Send(It.IsAny<CreatePluginCommand>(), It.IsAny<CancellationToken>()))
             .Throws(new IOException());
 
-        var request = new CreatePluginRequest("", false, new List<string>());
+        var request = new CreatePluginRequest("", false, new List<string>(), "https://empty.de");
 
         ActionResult<CreatePluginResponse> result = await _controller.Put(request);
 
@@ -90,39 +82,28 @@ public class Tests
     }
 
     [Test]
-    public async Task DeletePlugin_MediatorThrowsExceptionTest()
+    public void DeletePlugin_MediatorThrowsExceptionTest()
     {
         _mediator.Setup(mediator => mediator.Send(It.IsAny<DeleteGlobalPluginCommand>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidDataException("An error message"));
-        var result = await _controller.Delete(1);
-        Assert.That(result.Result, Is.InstanceOf<StatusCodeResult>());
-
-        var badRequestResult = result.Result as StatusCodeResult;
-        Assert.That(badRequestResult!.StatusCode, Is.EqualTo(500));
+        Assert.ThrowsAsync<InvalidDataException>(() => _controller.Delete(1));
     }
 
     [Test]
-    public async Task PatchPlugin_MediatorThrowsExceptionTest()
+    public void PatchPlugin_MediatorThrowsExceptionTest()
     {
         _mediator.Setup(mediator => mediator.Send(It.IsAny<PatchGlobalPluginCommand>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidDataException("An error message"));
-        var result = await _controller.Patch(1, new PatchGlobalPluginRequest());
-        Assert.That(result.Result, Is.InstanceOf<StatusCodeResult>());
-
-        var badRequestResult = result.Result as StatusCodeResult;
-        Assert.That(badRequestResult!.StatusCode, Is.EqualTo(500));
+        var exception = Assert.ThrowsAsync<InvalidDataException>(() => _controller.Patch(1, new PatchGlobalPluginRequest()));
+        Assert.That(exception.Message, Is.EqualTo("An error message"));
     }
 
     [Test]
-    public async Task GetGlobalPlugins_MediatorThrowsExceptionTest()
+    public void GetGlobalPlugins_MediatorThrowsExceptionTest()
     {
         _mediator.Setup(mediator => mediator.Send(It.IsAny<GetGlobalPluginsQuery>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidDataException("An error message"));
-        var result = await _controller.GetGlobal();
-        Assert.That(result.Result, Is.InstanceOf<StatusCodeResult>());
-
-        var badRequestResult = result.Result as StatusCodeResult;
-        Assert.That(badRequestResult!.StatusCode, Is.EqualTo(500));
+        Assert.ThrowsAsync<InvalidDataException>(() => _controller.GetGlobal());
     }
 
     [Test]
@@ -131,7 +112,7 @@ public class Tests
         _mediator.Setup(m => m.Send(It.IsAny<CreatePluginCommand>(), It.IsAny<CancellationToken>()))
             .Throws(new IOException());
 
-        var request = new CreatePluginRequest("         ", false, new List<string>());
+        var request = new CreatePluginRequest("         ", false, new List<string>(), "https://whitespace.de");
 
         ActionResult<CreatePluginResponse> result = await _controller.Put(request);
 
@@ -146,13 +127,13 @@ public class Tests
     [Test]
     public async Task UpdateGlobalPlugin_Test()
     {
-        var plugin = new Plugin { Id = 1, PluginName = "horn ox", IsArchived = true };
+        var plugin = new Plugin { Id = 1, PluginName = "horn ox", IsArchived = true, BaseUrl = "https://hornox.com" };
         _mediator.Setup(m => m.Send(It.IsAny<PatchGlobalPluginCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(plugin);
 
         var request = new PatchGlobalPluginRequest(null, true);
 
-        ActionResult<GetGlobalPluginResponse> result = await _controller.Patch(1, request);
+        var result = await _controller.Patch(1, request);
         var okResult = result.Result as OkObjectResult;
         var resultValue = okResult?.Value as GetGlobalPluginResponse;
 
@@ -162,6 +143,7 @@ public class Tests
             Assert.That(resultValue!.Name, Is.EqualTo("horn ox"));
             Assert.That(resultValue.IsArchived, Is.EqualTo(true));
             Assert.That(resultValue.Id, Is.EqualTo(1));
+            Assert.That(resultValue.BaseUrl, Is.EqualTo("https://hornox.com"));
         });
     }
 
@@ -205,10 +187,10 @@ public class Tests
     public async Task GetGlobalPlugins_Test()
     {
 
-        var plugin = new Plugin { Id = 1, PluginName = "plugin 1", IsArchived = false };
-        List<Plugin> pluginlist = new List<Plugin> { plugin };
+        var plugin = new Plugin { Id = 1, PluginName = "plugin 1", IsArchived = false, BaseUrl = "https://plugin1.com" };
+        var pluginList = new List<Plugin> { plugin };
 
-        _mediator.Setup(m => m.Send(It.IsAny<GetGlobalPluginsQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(pluginlist);
+        _mediator.Setup(m => m.Send(It.IsAny<GetGlobalPluginsQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(pluginList);
         var result = await _controller.GetGlobal();
 
         Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
@@ -229,7 +211,8 @@ public class Tests
             Assert.That(resultObj.Name, Is.EqualTo("plugin 1"));
             Assert.That(resultObj.Id, Is.EqualTo(1));
             Assert.That(resultObj.IsArchived, Is.False);
-            Assert.That(resultObj.Keys, Is.EqualTo(System.Array.Empty<string>()));
+            Assert.That(resultObj.Keys, Is.EqualTo(Array.Empty<string>()));
+            Assert.That(resultObj.BaseUrl, Is.EqualTo("https://plugin1.com"));
         });
     }
 

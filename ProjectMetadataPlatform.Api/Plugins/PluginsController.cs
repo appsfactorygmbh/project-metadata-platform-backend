@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,7 +7,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ProjectMetadataPlatform.Api.Plugins.Models;
 using ProjectMetadataPlatform.Application.Plugins;
-using ProjectMetadataPlatform.Domain.Plugins;
 
 namespace ProjectMetadataPlatform.Api.Plugins;
 
@@ -50,20 +48,9 @@ public class PluginsController : ControllerBase
             return StatusCode(StatusCodes.Status400BadRequest, "PluginName can't be empty or whitespaces");
         }
 
-        var command = new CreatePluginCommand(request.PluginName, request.IsArchived, request.Keys);
+        var command = new CreatePluginCommand(request.PluginName, request.IsArchived, request.Keys, request.BaseUrl);
 
-        int pluginId;
-        try
-        {
-            pluginId = await _mediator.Send(command);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.Message);
-            Console.WriteLine(e.StackTrace);
-
-            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-        }
+        var pluginId = await _mediator.Send(command);
 
         var response = new CreatePluginResponse(pluginId);
         var uri = "/Plugins/" + pluginId;
@@ -86,25 +73,14 @@ public class PluginsController : ControllerBase
     {
         var command = new PatchGlobalPluginCommand(pluginId, request.PluginName, request.IsArchived);
 
-        Plugin? plugin;
-        try
-        {
-            plugin = await _mediator.Send(command);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.Message);
-            Console.WriteLine(e.StackTrace);
-
-            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-        }
+        var plugin = await _mediator.Send(command);
 
         if (plugin == null)
         {
             return NotFound("No Plugin with id " + pluginId + " was found.");
         }
 
-        var response = new GetGlobalPluginResponse(plugin.PluginName, plugin.Id, plugin.IsArchived, []);
+        var response = new GetGlobalPluginResponse(plugin.PluginName, plugin.Id, plugin.IsArchived, [], plugin.BaseUrl);
         return Ok(response);
     }
 
@@ -118,24 +94,16 @@ public class PluginsController : ControllerBase
     public async Task<ActionResult<IEnumerable<GetGlobalPluginResponse>>> GetGlobal()
     {
         var query = new GetGlobalPluginsQuery();
-        IEnumerable<Plugin> plugins;
-        try
-        {
-            plugins = await _mediator.Send(query);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.Message);
-            Console.WriteLine(e.StackTrace);
-            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-        }
+        var plugins = await _mediator.Send(query);
 
         string[] keys = [];
         var response = plugins.Select(plugin => new GetGlobalPluginResponse(
             plugin.PluginName,
             plugin.Id,
             plugin.IsArchived,
-            keys));
+            keys,
+            plugin.BaseUrl
+            ));
 
         return Ok(response);
     }
@@ -161,25 +129,16 @@ public class PluginsController : ControllerBase
         }
         var command = new DeleteGlobalPluginCommand(pluginId);
 
-        try
+        var success = await _mediator.Send(command);
+        if (success == null)
         {
-            var success = await _mediator.Send(command);
-            if (success == null)
-            {
-                return NotFound("No Plugin with id " + pluginId + " was found.");
-            }
-            else if ((bool)!success)
-            {
-                return StatusCode(StatusCodes.Status400BadRequest,"the plugin was not archived");
-            }
-            return Ok(new DeleteGlobalPluginResponse(pluginId));
+            return NotFound("No Plugin with id " + pluginId + " was found.");
         }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.Message);
-            Console.WriteLine(e.StackTrace);
 
-            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+        if ((bool)!success)
+        {
+            return StatusCode(StatusCodes.Status400BadRequest,"the plugin was not archived");
         }
+        return Ok(new DeleteGlobalPluginResponse(pluginId));
     }
 }

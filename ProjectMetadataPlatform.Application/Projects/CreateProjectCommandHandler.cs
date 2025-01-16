@@ -72,6 +72,14 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
 
         await _projectsRepository.Add(project);
 
+        await AddCreatedProjectLog(project);
+
+        await _unitOfWork.CompleteAsync();
+        return project.Id;
+    }
+
+    private async Task AddCreatedProjectLog(Project project)
+    {
         var changes = new List<LogChange>
         {
             new() { OldValue = "", NewValue = project.ProjectName, Property = nameof(Project.ProjectName) },
@@ -86,23 +94,25 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
             new() { OldValue = "", NewValue = project.IsmsLevel.ToString(), Property = nameof(Project.IsmsLevel) }
         };
         await _logRepository.AddProjectLogForCurrentUser(project, Domain.Logs.Action.ADDED_PROJECT, changes);
-        foreach (var plugin in project.ProjectPlugins)
+        if (project.ProjectPlugins != null)
         {
-            var pluginChanges = new List<LogChange>
+            foreach (var plugin in project.ProjectPlugins)
             {
-                new() { OldValue = "", NewValue = plugin.Url, Property = nameof(ProjectPlugins.Url) }
-            };
-            if (plugin.DisplayName != null)
-            {
-                pluginChanges.Add(new LogChange
-                    { OldValue = "", NewValue = plugin.DisplayName, Property = nameof(ProjectPlugins.DisplayName) });
+                var pluginChanges = new List<LogChange>
+                {
+                    new() { OldValue = "", NewValue = plugin.Url, Property = nameof(ProjectPlugins.Url) }
+                };
+                if (plugin.DisplayName != null)
+                {
+                    pluginChanges.Add(new LogChange
+                    {
+                        OldValue = "", NewValue = plugin.DisplayName, Property = nameof(ProjectPlugins.DisplayName)
+                    });
+                }
+
+                await _logRepository.AddProjectLogForCurrentUser(project, Domain.Logs.Action.ADDED_PROJECT_PLUGIN,
+                    pluginChanges);
             }
-
-            await _logRepository.AddProjectLogForCurrentUser(project, Domain.Logs.Action.ADDED_PROJECT_PLUGIN,
-                pluginChanges);
         }
-
-        await _unitOfWork.CompleteAsync();
-        return project.Id;
     }
 }
