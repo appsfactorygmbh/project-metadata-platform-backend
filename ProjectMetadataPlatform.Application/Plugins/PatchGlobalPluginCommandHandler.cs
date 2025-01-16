@@ -62,7 +62,6 @@ public class PatchGlobalPluginCommandHandler : IRequestHandler<PatchGlobalPlugin
 
         if (request.BaseUrl != null && !string.Equals(plugin.BaseUrl, request.BaseUrl, StringComparison.Ordinal))
         {
-            plugin.BaseUrl = request.BaseUrl;
             var changes = new List<LogChange>
             {
                 new()
@@ -72,6 +71,7 @@ public class PatchGlobalPluginCommandHandler : IRequestHandler<PatchGlobalPlugin
                     NewValue = request.BaseUrl
                 }
             };
+            plugin.BaseUrl = request.BaseUrl;
             await _logRepository.AddGlobalPluginLogForCurrentUser(plugin, Action.UPDATED_GLOBAL_PLUGIN, changes);
         }
 

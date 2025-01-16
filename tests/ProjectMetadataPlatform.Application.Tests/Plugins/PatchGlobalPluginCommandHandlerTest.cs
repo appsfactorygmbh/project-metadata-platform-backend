@@ -214,6 +214,52 @@ public class PatchGlobalPluginCommandHandlerTest
         });
     }
 
+    [Test]
+    public async Task PatchGlobalPlugin_UpdateBaserUrl_Test()
+    {
+        // Arrange
+        var plugin = new Plugin { Id = 42, PluginName = "Mercury Redstone", IsArchived = false, BaseUrl = "https://mercuryredstone.com" };
+
+        _mockPluginRepo.Setup(repo => repo.GetPluginByIdAsync(42)).ReturnsAsync(plugin);
+        _mockPluginRepo.Setup(repo => repo.StorePlugin(It.IsAny<Plugin>())).ReturnsAsync((Plugin p) => p);
+
+        List<LogChange> capturedLogChanges = null;
+
+        _mockLogRepo.Setup(m => m.AddGlobalPluginLogForCurrentUser(
+                It.IsAny<Plugin>(),
+                Action.UPDATED_GLOBAL_PLUGIN,
+                It.IsAny<List<LogChange>?>()))
+            .Callback<Plugin, Action, List<LogChange>>((plugin, action, logChanges) =>
+                capturedLogChanges = logChanges);
+
+        _mockUnitOfWork.Setup(uow => uow.CompleteAsync()).Returns(Task.CompletedTask);
+
+        // Act
+        var result = await _handler.Handle(new PatchGlobalPluginCommand(42, null, null, "https://mercuryatlas.com"), It.IsAny<CancellationToken>());
+
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(result!.BaseUrl, Is.EqualTo("https://mercuryatlas.com"));
+            Assert.That(result.PluginName, Is.EqualTo(plugin.PluginName));
+            Assert.That(result.IsArchived, Is.EqualTo(plugin.IsArchived));
+            Assert.That(result.Id, Is.EqualTo(plugin.Id));
+
+            _mockLogRepo.Verify(m => m.AddGlobalPluginLogForCurrentUser(
+                It.IsAny<Plugin>(),
+                Action.UPDATED_GLOBAL_PLUGIN,
+                It.IsAny<List<LogChange>>()), Times.Once);
+
+            Assert.That(capturedLogChanges, Is.Not.Null);
+            Assert.That(capturedLogChanges.Count, Is.EqualTo(1));
+            Assert.That(capturedLogChanges.First().Property, Is.EqualTo(nameof(plugin.BaseUrl)));
+            Assert.That(capturedLogChanges.First().OldValue, Is.EqualTo("https://mercuryredstone.com"));
+            Assert.That(capturedLogChanges.First().NewValue, Is.EqualTo("https://mercuryatlas.com"));
+
+            _mockUnitOfWork.Verify(uow => uow.CompleteAsync(), Times.Once);
+        });
+    }
+
 
     private async Task PatchGlobalPlugin_NotFound_TestBody()
     {
