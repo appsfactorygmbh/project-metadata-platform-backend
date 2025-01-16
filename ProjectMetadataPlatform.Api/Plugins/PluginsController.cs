@@ -71,7 +71,7 @@ public class PluginsController : ControllerBase
         int pluginId,
         [FromBody] PatchGlobalPluginRequest request)
     {
-        var command = new PatchGlobalPluginCommand(pluginId, request.PluginName, request.IsArchived);
+        var command = new PatchGlobalPluginCommand(pluginId, request.PluginName, request.IsArchived, request.BaseUrl);
 
         var plugin = await _mediator.Send(command);
 

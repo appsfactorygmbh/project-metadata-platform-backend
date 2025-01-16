@@ -60,6 +60,21 @@ public class PatchGlobalPluginCommandHandler : IRequestHandler<PatchGlobalPlugin
             await _logRepository.AddGlobalPluginLogForCurrentUser(plugin, plugin.IsArchived ? Action.ARCHIVED_GLOBAL_PLUGIN : Action.UNARCHIVED_GLOBAL_PLUGIN, []);
         }
 
+        if (request.BaseUrl != null && !string.Equals(plugin.BaseUrl, request.BaseUrl, StringComparison.Ordinal))
+        {
+            plugin.BaseUrl = request.BaseUrl;
+            var changes = new List<LogChange>
+            {
+                new()
+                {
+                    Property = nameof(plugin.BaseUrl),
+                    OldValue = plugin.BaseUrl,
+                    NewValue = request.BaseUrl
+                }
+            };
+            await _logRepository.AddGlobalPluginLogForCurrentUser(plugin, Action.UPDATED_GLOBAL_PLUGIN, changes);
+        }
+
         var updatedPlugin = await _pluginRepository.StorePlugin(plugin);
         await _unitOfWork.CompleteAsync();
 
