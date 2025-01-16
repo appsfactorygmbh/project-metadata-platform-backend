@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using ProjectMetadataPlatform.Application.Interfaces;
+using ProjectMetadataPlatform.Domain.Errors.ProjectExceptions;
 using ProjectMetadataPlatform.Domain.Logs;
 using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.Projects;
@@ -59,7 +60,7 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
 
         if (await _slugHelper.CheckProjectSlugExists(projectSlug))
         {
-            throw new InvalidOperationException("A Project with this slug already exists: " + projectSlug);
+            throw new ProjectSlugAlreadyExistsException(projectSlug);
         }
 
         var project = new Project

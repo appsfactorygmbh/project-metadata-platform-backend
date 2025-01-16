@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using ProjectMetadataPlatform.Application.Interfaces;
+using ProjectMetadataPlatform.Domain.Errors.ProjectExceptions;
 using ProjectMetadataPlatform.Domain.Logs;
 using ProjectMetadataPlatform.Domain.Projects;
 using Action = ProjectMetadataPlatform.Domain.Logs.Action;
@@ -46,9 +47,9 @@ public class DeleteProjectCommandHandler : IRequestHandler<DeleteProjectCommand,
         switch (project)
         {
             case null:
-                throw new ArgumentException("Project not found.");
+                throw new ProjectNotFoundException(request.Id);
             case { IsArchived: false }:
-                throw new ArgumentException("Project is not archived.");
+                throw new ProjectNotArchivedException(project);
         }
 
         var deletedProject = await _projectsRepository.DeleteProjectAsync(project);

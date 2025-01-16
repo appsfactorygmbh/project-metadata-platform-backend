@@ -22,6 +22,7 @@ public class BasicExceptionHandler: ControllerBase, IExceptionHandler<PmpExcepti
         return exception switch
         {
             EntityNotFoundException entityNotFoundException => NotFound(entityNotFoundException.Message),
+            EntityAlreadyExistsException entityAlreadyExistsException => Conflict(entityAlreadyExistsException.Message),
             DatabaseException databaseException => HandleDatabaseException(databaseException),
             _ => HandleUnknownException(exception)
         };

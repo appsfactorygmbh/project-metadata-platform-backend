@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using ProjectMetadataPlatform.Application.Interfaces;
+using ProjectMetadataPlatform.Domain.Errors.ProjectExceptions;
 using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.Projects;
 using ProjectMetadataPlatform.Domain.Logs;
@@ -44,7 +45,7 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
     public async Task<int> Handle(UpdateProjectCommand request, CancellationToken cancellationToken)
     {
         var project = await _projectsRepository.GetProjectWithPluginsAsync(request.Id)
-                      ?? throw new InvalidOperationException("Project does not exist.");
+                      ?? throw new ProjectNotFoundException(request.Id);
 
         await UpdateProjectProperties(request, project);
 
@@ -115,7 +116,7 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
 
             if (await _slugHelper.CheckProjectSlugExists(projectSlug))
             {
-                throw new InvalidOperationException("A Project with this slug already exists: " + projectSlug);
+                throw new ProjectSlugAlreadyExistsException(projectSlug);
             }
 
             var changeName = new LogChange

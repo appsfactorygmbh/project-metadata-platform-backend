@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Application.Projects;
+using ProjectMetadataPlatform.Domain.Errors.ProjectExceptions;
 using ProjectMetadataPlatform.Domain.Projects;
 
 namespace ProjectMetadataPlatform.Infrastructure.DataAccess;
@@ -125,9 +126,9 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     /// </summary>
     /// <param name="id">Identification number for a project</param>
     /// <returns>A task representing the asynchronous operation. When this task completes, it returns one project.</returns>
-    public async Task<Project?> GetProjectAsync(int id)
+    public async Task<Project> GetProjectAsync(int id)
     {
-        return await GetIf(p => p.Id == id).FirstOrDefaultAsync();
+        return await GetIf(p => p.Id == id).FirstOrDefaultAsync() ?? throw new ProjectNotFoundException(id);
     }
 
     /// <summary>
@@ -135,11 +136,11 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     /// </summary>
     /// <param name="id">Identification number for a project</param>
     /// <returns>A task representing the asynchronous operation. When this task completes, it returns one project.</returns>
-    public async Task<Project?> GetProjectWithPluginsAsync(int id)
+    public async Task<Project> GetProjectWithPluginsAsync(int id)
     {
         return await GetIf(p => p.Id == id)
             .Include(p => p.ProjectPlugins)
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync() ?? throw new ProjectNotFoundException(id);
     }
 
     /// <summary>
@@ -196,9 +197,9 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     }
 
     /// <inheritdoc/>
-    public async Task<int?> GetProjectIdBySlugAsync(string slug)
+    public async Task<int> GetProjectIdBySlugAsync(string slug)
     {
         return await _context.Projects.Where(p => p.Slug == slug)
-            .Select(p => (int?)p.Id).FirstOrDefaultAsync();
+            .Select(p => (int?)p.Id).FirstOrDefaultAsync() ?? throw new ProjectNotFoundException(slug);
     }
 }

@@ -27,13 +27,13 @@ public interface IProjectsRepository
     ///     Returns a project.
     /// </summary>
     /// <returns>One project or null.</returns>
-    Task<Project?> GetProjectAsync(int id);
+    Task<Project> GetProjectAsync(int id);
 
     /// <summary>
     ///     Returns a project.
     /// </summary>
     /// <returns>One project or null.</returns>
-    Task<Project?> GetProjectWithPluginsAsync(int id);
+    Task<Project> GetProjectWithPluginsAsync(int id);
 
     /// <summary>
     ///     Saves a project to the database.
@@ -73,5 +73,5 @@ public interface IProjectsRepository
     /// </summary>
     /// <param name="slug">The projects unique slug.</param>
     /// <returns>A task representing the asynchronous operation, which upon completion returns the requested project id or null.</returns>
-    Task<int?> GetProjectIdBySlugAsync(string slug);
+    Task<int> GetProjectIdBySlugAsync(string slug);
 }

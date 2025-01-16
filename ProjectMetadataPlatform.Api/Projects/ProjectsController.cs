@@ -76,7 +76,7 @@ public class ProjectsController : ControllerBase
     public async Task<ActionResult<GetProjectResponse>> Get(string slug)
     {
         var projectId = await GetProjectId(slug);
-        return projectId == null ? NotFound($"Project with Slug {slug} not found.") : await Get((int) projectId);
+        return await Get(projectId);
     }
 
     /// <summary>
@@ -152,7 +152,7 @@ public class ProjectsController : ControllerBase
     public async Task<ActionResult<IEnumerable<GetPluginResponse>>> GetPluginsBySlug(string slug)
     {
         var projectId = await GetProjectId(slug);
-        return projectId == null ? NotFound($"Project with Slug {slug} not found.") : await GetPlugins((int) projectId);
+        return await GetPlugins(projectId);
     }
 
     /// <summary>
@@ -207,7 +207,7 @@ public class ProjectsController : ControllerBase
     public async Task<ActionResult<IEnumerable<GetPluginResponse>>> GetUnarchivedPluginsBySlug(string slug)
     {
         var projectId = await GetProjectId(slug);
-        return projectId == null ? NotFound($"Project with Slug {slug} not found.") : await GetUnarchivedPlugins((int) projectId);
+        return await GetUnarchivedPlugins(projectId);
     }
 
     /// <summary>
@@ -228,7 +228,7 @@ public class ProjectsController : ControllerBase
         string slug)
     {
         var projectId = await GetProjectId(slug);
-        return projectId == null ? NotFound($"Project with Slug {slug} not found.") : await Put(project, projectId);
+        return await Put(project, projectId);
     }
 
     /// <summary>
@@ -340,7 +340,7 @@ public class ProjectsController : ControllerBase
     public async Task<ActionResult> Delete(string slug)
     {
         var projectId = await GetProjectId(slug);
-        return projectId == null ? NotFound($"Project with Slug {slug} not found.") : await Delete((int) projectId);
+        return await Delete(projectId);
 
     }
 
@@ -381,7 +381,7 @@ public class ProjectsController : ControllerBase
     /// </summary>
     /// <param name="slug">The slug of the project.</param>
     /// <returns>The id of the project.</returns>
-    private async Task<int?> GetProjectId(string slug)
+    private async Task<int> GetProjectId(string slug)
     {
         var query = new GetProjectIdBySlugQuery(slug);
         return await _mediator.Send(query);
