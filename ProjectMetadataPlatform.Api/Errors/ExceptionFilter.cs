@@ -1,10 +1,12 @@
 ﻿using System;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using ProjectMetadataPlatform.Api.Interfaces;
 using ProjectMetadataPlatform.Domain.Errors;
 using ProjectMetadataPlatform.Domain.Errors.ProjectExceptions;
+using ProjectMetadataPlatform.Domain.Errors.LogExceptions;
 
 namespace ProjectMetadataPlatform.Api.Errors;
 
@@ -18,16 +20,22 @@ public class ExceptionFilter: IExceptionFilter
     /// </summary>
     private readonly IExceptionHandler<PmpException> _basicExceptionHandler;
     private readonly IExceptionHandler<ProjectException> _projectExceptionHandler;
+    private readonly IExceptionHandler<LogException> _logExceptionHandler;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ExceptionFilter"/> class.
     /// </summary>
     /// <param name="basicExceptionHandler">The handler for basic exceptions.</param>
+    /// <param name="logExceptionHandler">The handler for log exceptions.></param>
     /// <param name="projectExceptionHandler">The handler for project exceptions.</param>
-    public ExceptionFilter(IExceptionHandler<PmpException> basicExceptionHandler, IExceptionHandler<ProjectException> projectExceptionHandler)
+    public ExceptionFilter(
+        IExceptionHandler<PmpException> basicExceptionHandler,
+        IExceptionHandler<ProjectException> projectExceptionHandler,
+        IExceptionHandler<LogException> logExceptionHandler)
     {
         _basicExceptionHandler = basicExceptionHandler;
         _projectExceptionHandler = projectExceptionHandler;
+        _logExceptionHandler = logExceptionHandler;
     }
 
     /// <summary>
@@ -42,6 +50,7 @@ public class ExceptionFilter: IExceptionFilter
         var response = exception switch
         {
             ProjectException projectEx => _projectExceptionHandler.Handle(projectEx),
+            LogException logEx => _logExceptionHandler.Handle(logEx),
             PmpException basicEx => _basicExceptionHandler.Handle(basicEx),
             _ => HandleUnknownError(exception)
         };
