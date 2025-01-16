@@ -10,6 +10,7 @@ using ProjectMetadataPlatform.Domain.Logs;
 using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.Projects;
 using Microsoft.AspNetCore.Identity;
+using ProjectMetadataPlatform.Domain.Errors.LogExceptions;
 using ProjectMetadataPlatform.Infrastructure.DataAccess;
 using static System.DateTimeOffset;
 using Action = ProjectMetadataPlatform.Domain.Logs.Action;
@@ -76,7 +77,7 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
 
         if (!actionWhiteList.Contains(action))
         {
-            throw new ArgumentException("Invalid action for project log");
+            throw new LogActionNotSupportedException(action);;
         }
 
         var log = await PrepareGenericLogForCurrentUser(action, changes);
@@ -100,7 +101,7 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
 
         if (!actionWhiteList.Contains(action))
         {
-            throw new ArgumentException("Invalid action for user log");
+            throw new LogActionNotSupportedException(action);
         }
 
         var log = await PrepareGenericLogForCurrentUser(action, changes);
@@ -126,7 +127,7 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
 
         if (!actionWhiteList.Contains(action))
         {
-            throw new ArgumentException("Invalid action for GlobalPlugin log");
+            throw new LogActionNotSupportedException(action);
         }
 
         var log = await PrepareGenericLogForCurrentUser(action, changes);
