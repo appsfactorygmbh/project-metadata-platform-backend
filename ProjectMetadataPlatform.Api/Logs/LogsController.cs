@@ -58,19 +58,11 @@ public class LogsController: ControllerBase
     {
         var projectFromSlugId = (int?)null;
 
-        try
+        if (projectSlug != null && projectId == null)
         {
-            if (projectSlug != null && projectId == null)
-            {
-                var projectIdFromSlugQuery = new GetProjectIdBySlugQuery(projectSlug);
-                projectFromSlugId = await _mediator.Send(projectIdFromSlugQuery);
-            }
+            var projectIdFromSlugQuery = new GetProjectIdBySlugQuery(projectSlug);
+            projectFromSlugId = await _mediator.Send(projectIdFromSlugQuery);
         }
-        catch (InvalidOperationException)
-        {
-            return NotFound("No project with projectSlug " + projectSlug + " found");
-        }
-
 
         var query = new GetLogsQuery(projectId ?? projectFromSlugId, search, userId, globalPluginId);
 
