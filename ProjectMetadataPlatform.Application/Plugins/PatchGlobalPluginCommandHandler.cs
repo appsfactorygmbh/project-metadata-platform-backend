@@ -48,10 +48,7 @@ public class PatchGlobalPluginCommandHandler : IRequestHandler<PatchGlobalPlugin
             return null;
         }
 
-        if (request.PluginName != null || request.BaseUrl != null)
-        {
-            await AddUpdatedPluginLog(plugin, request);
-        }
+        await AddUpdatedPluginLog(plugin, request);
 
         if (request.PluginName != null && !string.Equals(plugin.PluginName, request.PluginName, StringComparison.Ordinal))
         {
