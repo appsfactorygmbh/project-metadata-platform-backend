@@ -48,10 +48,19 @@ public class PatchGlobalPluginCommandHandler : IRequestHandler<PatchGlobalPlugin
             return null;
         }
 
+        if (request.PluginName != null || request.BaseUrl != null)
+        {
+            await AddUpdatedPluginLog(plugin, request);
+        }
+
         if (request.PluginName != null && !string.Equals(plugin.PluginName, request.PluginName, StringComparison.Ordinal))
         {
-            await AddUpdatedPluginNameLog(plugin, request);
             plugin.PluginName = request.PluginName;
+        }
+
+        if (request.BaseUrl != null && !string.Equals(plugin.BaseUrl, request.BaseUrl, StringComparison.Ordinal))
+        {
+            plugin.BaseUrl = request.BaseUrl;
         }
 
         if (request.IsArchived != null && plugin.IsArchived != request.IsArchived.Value)
@@ -60,41 +69,40 @@ public class PatchGlobalPluginCommandHandler : IRequestHandler<PatchGlobalPlugin
             await _logRepository.AddGlobalPluginLogForCurrentUser(plugin, plugin.IsArchived ? Action.ARCHIVED_GLOBAL_PLUGIN : Action.UNARCHIVED_GLOBAL_PLUGIN, []);
         }
 
-        if (request.BaseUrl != null && !string.Equals(plugin.BaseUrl, request.BaseUrl, StringComparison.Ordinal))
-        {
-            var changes = new List<LogChange>
-            {
-                new()
-                {
-                    Property = nameof(plugin.BaseUrl),
-                    OldValue = plugin.BaseUrl,
-                    NewValue = request.BaseUrl
-                }
-            };
-            plugin.BaseUrl = request.BaseUrl;
-            await _logRepository.AddGlobalPluginLogForCurrentUser(plugin, Action.UPDATED_GLOBAL_PLUGIN, changes);
-        }
-
         var updatedPlugin = await _pluginRepository.StorePlugin(plugin);
         await _unitOfWork.CompleteAsync();
 
         return updatedPlugin;
     }
 
-    private async Task AddUpdatedPluginNameLog(Plugin plugin, PatchGlobalPluginCommand request)
+    private async Task AddUpdatedPluginLog(Plugin plugin, PatchGlobalPluginCommand request)
     {
+        var changes = new List<LogChange>();
+
         if (request.PluginName != null)
         {
-            var changes = new List<LogChange>
-            {
+            changes.Add(
                 new()
                 {
                     Property = nameof(plugin.PluginName),
                     OldValue = plugin.PluginName,
                     NewValue = request.PluginName
-                }
-            };
+                });
+        }
 
+        if (request.BaseUrl != null)
+        {
+            changes.Add(
+                new()
+                {
+                    Property = nameof(plugin.BaseUrl),
+                    OldValue = plugin.BaseUrl ?? "",
+                    NewValue = request.BaseUrl
+                });
+        }
+
+        if (changes.Count > 0)
+        {
             await _logRepository.AddGlobalPluginLogForCurrentUser(plugin, Action.UPDATED_GLOBAL_PLUGIN, changes);
         }
     }
