@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using System.Security.Authentication;
 using System.Threading.Tasks;
 using MediatR;
@@ -79,7 +78,7 @@ public class AuthController : ControllerBase
         try
         {
             var tokens = await _mediator.Send(query);
-            return new LoginResponse(tokens.AccessToken, tokens.RefreshToken);
+            return new LoginResponse(tokens.AccessToken!, tokens.RefreshToken!);
         }
         catch (AuthenticationException e)
         {
