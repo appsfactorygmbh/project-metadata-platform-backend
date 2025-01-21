@@ -51,7 +51,6 @@ public class GlobalPluginManagement : IntegrationTestsBase
     }
 
     [Test]
-    [Ignore("Fix by Software Architect")]
     public async Task UpdatePlugin()
     {
         // Arrange
@@ -85,7 +84,7 @@ public class GlobalPluginManagement : IntegrationTestsBase
             "admin added a new global plugin with properties: PluginName = GitLab, IsArchived = False, BaseUrl = https://gitlab.com, Keys[0] = key1");
 
         logs[1].GetProperty("logMessage").GetString().Should().Be(
-            "admin updated global plugin GitLab: set PluginName from GitLab to Jira");
+            "admin updated global plugin GitLab: set PluginName from GitLab to Jira, set BaseUrl from https://gitlab.com to https://jira.com");
     }
 
     [Test]
