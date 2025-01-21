@@ -62,7 +62,7 @@ public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
     {
         if (plugin.Id == 0)
         {
-            _ = _context.Plugins.Add(plugin);
+            _ =  _context.Plugins.Add(plugin);
         }
         else
         {
@@ -78,10 +78,10 @@ public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
     /// </summary>
     /// <param name="id">The unique identifier of the plugin to retrieve.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains the Plugin that matches the provided id.</returns>
-    public Task<Plugin?> GetPluginByIdAsync(int id)
+    public async Task<Plugin?> GetPluginByIdAsync(int id)
     {
         var queryResult = GetIf(plugin => plugin.Id == id);
-        return queryResult.FirstOrDefaultAsync();
+        return await queryResult.FirstOrDefaultAsync();
     }
 
     /// <summary>
