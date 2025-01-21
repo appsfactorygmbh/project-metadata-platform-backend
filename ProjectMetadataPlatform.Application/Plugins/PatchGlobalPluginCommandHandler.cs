@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using ProjectMetadataPlatform.Application.Interfaces;
+using ProjectMetadataPlatform.Domain.Errors.PluginExceptions;
 using ProjectMetadataPlatform.Domain.Logs;
 using ProjectMetadataPlatform.Domain.Plugins;
 using Action = ProjectMetadataPlatform.Domain.Logs.Action;
@@ -45,7 +46,7 @@ public class PatchGlobalPluginCommandHandler : IRequestHandler<PatchGlobalPlugin
         var plugin = await _pluginRepository.GetPluginByIdAsync(request.Id);
         if (plugin == null)
         {
-            return null;
+            throw new PluginNotFoundException(request.Id);
         }
 
         if (request.PluginName != null && !string.Equals(plugin.PluginName, request.PluginName, StringComparison.Ordinal))

@@ -75,11 +75,6 @@ public class PluginsController : ControllerBase
 
         var plugin = await _mediator.Send(command);
 
-        if (plugin == null)
-        {
-            return NotFound("No Plugin with id " + pluginId + " was found.");
-        }
-
         var response = new GetGlobalPluginResponse(plugin.PluginName, plugin.Id, plugin.IsArchived, [], plugin.BaseUrl);
         return Ok(response);
     }
@@ -129,16 +124,8 @@ public class PluginsController : ControllerBase
         }
         var command = new DeleteGlobalPluginCommand(pluginId);
 
-        var success = await _mediator.Send(command);
-        if (success == null)
-        {
-            return NotFound("No Plugin with id " + pluginId + " was found.");
-        }
+        _ = await _mediator.Send(command);
 
-        if ((bool)!success)
-        {
-            return StatusCode(StatusCodes.Status400BadRequest,"the plugin was not archived");
-        }
         return Ok(new DeleteGlobalPluginResponse(pluginId));
     }
 }

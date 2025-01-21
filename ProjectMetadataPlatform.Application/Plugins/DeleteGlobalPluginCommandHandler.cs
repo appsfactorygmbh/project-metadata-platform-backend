@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using ProjectMetadataPlatform.Application.Interfaces;
+using ProjectMetadataPlatform.Domain.Errors.PluginExceptions;
 using ProjectMetadataPlatform.Domain.Logs;
 
 namespace ProjectMetadataPlatform.Application.Plugins;
@@ -39,12 +40,7 @@ public class DeleteGlobalPluginCommandHandler : IRequestHandler<DeleteGlobalPlug
     /// <returns>the response of the request</returns>
     public async Task<bool?> Handle(DeleteGlobalPluginCommand request, CancellationToken cancellationToken)
     {
-        var plugin = await _pluginRepository.GetPluginByIdAsync(request.Id);
-        if (plugin == null)
-        {
-            return null;
-        }
-
+        var plugin = await _pluginRepository.GetPluginByIdAsync(request.Id) ?? throw new PluginNotFoundException(request.Id);
         if (plugin.IsArchived)
         {
             await _pluginRepository.DeleteGlobalPlugin(plugin);
@@ -55,7 +51,8 @@ public class DeleteGlobalPluginCommandHandler : IRequestHandler<DeleteGlobalPlug
             await _unitOfWork.CompleteAsync();
             return true;
         }
-        return false;
+
+        throw new PluginNotArchivedException(plugin);
     }
 }
 
