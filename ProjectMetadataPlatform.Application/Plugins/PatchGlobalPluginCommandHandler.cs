@@ -43,12 +43,7 @@ public class PatchGlobalPluginCommandHandler : IRequestHandler<PatchGlobalPlugin
     /// <returns>A task that represents the asynchronous operation. The task result contains the Plugin that was updated.</returns>
     public async Task<Plugin> Handle(PatchGlobalPluginCommand request, CancellationToken cancellationToken)
     {
-        var plugin = await _pluginRepository.GetPluginByIdAsync(request.Id);
-        if (plugin == null)
-        {
-            throw new PluginNotFoundException(request.Id);
-        }
-
+        var plugin = await _pluginRepository.GetPluginByIdAsync(request.Id) ?? throw new PluginNotFoundException(request.Id);
         if (request.PluginName != null && !string.Equals(plugin.PluginName, request.PluginName, StringComparison.Ordinal))
         {
             await AddUpdatedPluginNameLog(plugin, request);

@@ -82,7 +82,7 @@ public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
     public Task<Plugin> GetPluginByIdAsync(int id)
     {
         var queryResult = GetIf(plugin => plugin.Id == id) ?? throw new PluginNotFoundException(id);
-        return queryResult.FirstOrDefaultAsync();
+        return queryResult.FirstAsync();
     }
 
     /// <summary>

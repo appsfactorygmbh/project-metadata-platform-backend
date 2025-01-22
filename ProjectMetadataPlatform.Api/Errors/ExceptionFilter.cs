@@ -23,6 +23,7 @@ public class ExceptionFilter: IExceptionFilter
     /// Initializes a new instance of the <see cref="ExceptionFilter"/> class.
     /// </summary>
     /// <param name="basicExceptionHandler">The handler for basic exceptions.</param>
+    /// <param name="pluginExceptionHandler">The handler for global plugin exceptions.</param>
     public ExceptionFilter(IExceptionHandler<PmpException> basicExceptionHandler, IExceptionHandler<PluginException> pluginExceptionHandler)
     {
         _basicExceptionHandler = basicExceptionHandler;
