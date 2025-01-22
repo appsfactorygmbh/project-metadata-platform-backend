@@ -45,7 +45,6 @@ public class UsersController : ControllerBase
     [HttpPut]
     [ProducesResponseType(typeof(CreateUserResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<CreateUserResponse>> Put([FromBody] CreateUserRequest request)
     {
         if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
@@ -77,7 +76,6 @@ public class UsersController : ControllerBase
     /// <response code="500">An internal error occurred.</response>
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<GetUserResponse>), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<IEnumerable<GetUserResponse>>> Get()
     {
         var query = new GetAllUsersQuery();
@@ -101,7 +99,6 @@ public class UsersController : ControllerBase
     [HttpGet("{userId}")]
     [ProducesResponseType(typeof(GetUserResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<GetUserResponse>> GetUserById(string userId)
     {
         var query = new GetUserQuery(userId);
@@ -132,7 +129,6 @@ public class UsersController : ControllerBase
     [ProducesResponseType(typeof(GetUserResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [HttpPatch("{userId}")]
     public async Task<ActionResult<GetUserResponse>> Patch(string userId, [FromBody] PatchUserRequest request)
     {
@@ -169,7 +165,6 @@ public class UsersController : ControllerBase
     [ProducesResponseType(typeof(GetUserResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<GetUserResponse>> GetMe()
     {
         var email = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.Email);
@@ -205,7 +200,6 @@ public class UsersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> Delete(string userId)
     {
         var command = new DeleteUserCommand(userId);

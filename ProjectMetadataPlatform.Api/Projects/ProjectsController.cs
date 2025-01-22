@@ -43,7 +43,6 @@ public class ProjectsController : ControllerBase
     /// <response code="500">An internal error occurred.</response>
     [HttpGet]
     [ProducesResponseType(typeof(GetProjectsResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<IEnumerable<GetProjectsResponse>>> Get([FromQuery] ProjectFilterRequest? request, string? search = " ")
     {
         var query = new GetAllProjectsQuery(request, search);
@@ -74,7 +73,6 @@ public class ProjectsController : ControllerBase
     [HttpGet("{slug}")]
     [ProducesResponseType(typeof(GetProjectResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<GetProjectResponse>> Get(string slug)
     {
         var projectId = await GetProjectId(slug);
@@ -92,7 +90,6 @@ public class ProjectsController : ControllerBase
     [HttpGet("{id:int}")]
     [ProducesResponseType(typeof(GetProjectResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<GetProjectResponse>> Get(int id)
     {
         var query = new GetProjectQuery(id);
@@ -129,7 +126,6 @@ public class ProjectsController : ControllerBase
     /// <response code="500">An internal error occurred.</response>
     [HttpGet("{id:int}/plugins")]
     [ProducesResponseType(typeof(IEnumerable<GetPluginResponse>), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<IEnumerable<GetPluginResponse>>> GetPlugins(int id)
     {
         var query = new GetAllPluginsForProjectIdQuery(id);
@@ -153,7 +149,6 @@ public class ProjectsController : ControllerBase
     [HttpGet("{slug}/plugins")]
     [ProducesResponseType(typeof(IEnumerable<GetPluginResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<IEnumerable<GetPluginResponse>>> GetPluginsBySlug(string slug)
     {
         var projectId = await GetProjectId(slug);
@@ -171,7 +166,6 @@ public class ProjectsController : ControllerBase
     [HttpGet("{id:int}/unarchivedPlugins")]
     [ProducesResponseType(typeof(IEnumerable<GetPluginResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<IEnumerable<GetPluginResponse>>> GetUnarchivedPlugins(int id)
     {
         var query = new GetAllUnarchivedPluginsForProjectIdQuery(id);
@@ -210,7 +204,6 @@ public class ProjectsController : ControllerBase
     [HttpGet("{slug}/unarchivedPlugins")]
     [ProducesResponseType(typeof(IEnumerable<GetPluginResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<IEnumerable<GetPluginResponse>>> GetUnarchivedPluginsBySlug(string slug)
     {
         var projectId = await GetProjectId(slug);
@@ -231,7 +224,6 @@ public class ProjectsController : ControllerBase
     [ProducesResponseType(typeof(CreateProjectResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<CreateProjectResponse>> Put([FromBody] CreateProjectRequest project,
         string slug)
     {
@@ -251,7 +243,6 @@ public class ProjectsController : ControllerBase
     [HttpPut]
     [ProducesResponseType(typeof(CreateProjectResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<CreateProjectResponse>> Put([FromBody] CreateProjectRequest project, int? projectId = null)
     {
         try
@@ -304,7 +295,6 @@ public class ProjectsController : ControllerBase
     /// <response code="500">Indicates an internal error occurred while processing the request.</response>
     [HttpGet("filterData/businessunits")]
     [ProducesResponseType(typeof(IEnumerable<string>), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<IEnumerable<string>>> GetAllBusinessUnits()
     {
         var query = new GetAllBusinessUnitsQuery();
@@ -326,7 +316,6 @@ public class ProjectsController : ControllerBase
     /// <response code="500">Indicates an internal error occurred while processing the request.</response>
     [HttpGet("filterData/teamnumbers")]
     [ProducesResponseType(typeof(IEnumerable<int>), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<IEnumerable<int>>> GetAllTeamNumbers()
     {
         var query = new GetAllTeamNumbersQuery();
@@ -348,7 +337,6 @@ public class ProjectsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> Delete(string slug)
     {
         var projectId = await GetProjectId(slug);
@@ -369,7 +357,6 @@ public class ProjectsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> Delete(int id)
     {
         var command = new DeleteProjectCommand(id);

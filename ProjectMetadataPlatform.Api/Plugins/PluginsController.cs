@@ -40,7 +40,6 @@ public class PluginsController : ControllerBase
     [HttpPut]
     [ProducesResponseType(typeof(CreatePluginResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<CreatePluginResponse>> Put([FromBody] CreatePluginRequest request)
     {
         if (string.IsNullOrWhiteSpace(request.PluginName))
@@ -69,7 +68,6 @@ public class PluginsController : ControllerBase
     [HttpPatch("{pluginId:int}")]
     [ProducesResponseType(typeof(GetGlobalPluginResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<GetGlobalPluginResponse>> Patch(
         int pluginId,
         [FromBody] PatchGlobalPluginRequest request)
@@ -95,7 +93,6 @@ public class PluginsController : ControllerBase
     /// <response code="500">An internal error occurred.</response>
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<GetGlobalPluginResponse>), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<IEnumerable<GetGlobalPluginResponse>>> GetGlobal()
     {
         var query = new GetGlobalPluginsQuery();
@@ -129,7 +126,6 @@ public class PluginsController : ControllerBase
     [ProducesResponseType(typeof(DeleteGlobalPluginResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<DeleteGlobalPluginResponse>> Delete(int pluginId)
     {
         if (pluginId <= 0)

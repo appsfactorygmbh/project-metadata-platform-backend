@@ -39,7 +39,6 @@ public class AuthController : ControllerBase
     [HttpPost("basic")]
     [ProducesResponseType(typeof(LoginResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<LoginResponse>> Post([FromBody] LoginRequest request)
     {
         var query = new LoginQuery(request.Email, request.Password);
@@ -65,7 +64,6 @@ public class AuthController : ControllerBase
     [HttpGet("refresh")]
     [ProducesResponseType(typeof(LoginResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<LoginResponse>> Get([FromHeader(Name = "Authorization")] string refreshToken)
     {
 

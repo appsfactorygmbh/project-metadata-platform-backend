@@ -54,7 +54,6 @@ public class LogsController: ControllerBase
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<LogResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<IEnumerable<LogResponse>>> Get(int? projectId, string? search, string? userId, int? globalPluginId, string? projectSlug)
     {
         var projectFromSlugId = (int?)null;
