@@ -36,10 +36,12 @@ public class PluginsController : ControllerBase
     /// <returns>An HTTP Created Response and the Id of the new Plugin.</returns>
     /// <response code="201">The Plugin was created successfully.</response>
     /// <response code="400">The request data is invalid.</response>
+    /// <response code="409">The Plugin name already exists.</response>
     /// <response code="500">An internal error occurred.</response>
     [HttpPut]
     [ProducesResponseType(typeof(CreatePluginResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<ActionResult<CreatePluginResponse>> Put([FromBody] CreatePluginRequest request)
     {
         if (string.IsNullOrWhiteSpace(request.PluginName))
@@ -64,10 +66,12 @@ public class PluginsController : ControllerBase
     /// <returns>The updated version of the Plugin.</returns>
     /// <response code="200">The Plugin was updated successfully.</response>
     /// <response code="404">No Plugin with the requested id was found.</response>
+    /// <response code="409">The Plugin name already exists.</response>
     /// <response code="500">An internal error occurred.</response>
     [HttpPatch("{pluginId:int}")]
     [ProducesResponseType(typeof(GetGlobalPluginResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<ActionResult<GetGlobalPluginResponse>> Patch(
         int pluginId,
         [FromBody] PatchGlobalPluginRequest request)

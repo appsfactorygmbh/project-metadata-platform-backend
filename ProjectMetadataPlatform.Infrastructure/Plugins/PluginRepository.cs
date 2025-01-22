@@ -113,6 +113,7 @@ public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
         return Task.FromResult(true);
     }
 
+    /// <inheritdoc />
     public async Task<bool> CheckGlobalPluginNameExists(string name)
     {
         var queryResult = GetIf(plugin => plugin.PluginName == name);

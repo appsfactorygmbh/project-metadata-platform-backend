@@ -41,6 +41,7 @@ public class PatchGlobalPluginCommandHandler : IRequestHandler<PatchGlobalPlugin
     /// <param name="request">The PatchGlobalPluginCommand request to handle.</param>
     /// <param name="cancellationToken">A cancellation token that can be used to cancel the work.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains the Plugin that was updated.</returns>
+    /// <exception cref="PluginNameAlreadyExistsException">The Plugin name already exists.</exception>
     public async Task<Plugin> Handle(PatchGlobalPluginCommand request, CancellationToken cancellationToken)
     {
         if (request.PluginName != null && await _pluginRepository.CheckGlobalPluginNameExists(request.PluginName))

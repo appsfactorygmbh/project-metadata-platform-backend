@@ -38,6 +38,7 @@ public class CreatePluginCommandHandler : IRequestHandler<CreatePluginCommand, i
     /// <param name="request">the request that needs to be handled</param>
     /// <param name="cancellationToken"></param>
     /// <returns>the response of the request</returns>
+    /// <exception cref="PluginNameAlreadyExistsException">The Plugin name already exists.</exception>
     public async Task<int> Handle(CreatePluginCommand request, CancellationToken cancellationToken)
     {
         if (await _pluginRepository.CheckGlobalPluginNameExists(request.Name))

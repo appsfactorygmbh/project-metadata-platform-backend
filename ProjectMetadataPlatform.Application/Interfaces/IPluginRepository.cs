@@ -57,5 +57,10 @@ public interface IPluginRepository
     /// <returns>True, if the plugin is deleted in the database</returns>
     Task<bool> DeleteGlobalPlugin(Plugin plugin);
 
+    /// <summary>
+    /// Checks if a global plugin with the given name exists.
+    /// </summary>
+    /// <param name="name">The name to check.</param>
+    /// <returns>A boolean indicating whether a plugin with the given name exists.</returns>
     Task<bool> CheckGlobalPluginNameExists(string name);
 }
