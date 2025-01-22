@@ -8,6 +8,10 @@ public class UserExceptionHandler : ControllerBase, IExceptionHandler<UserExcept
 {
     public IActionResult? Handle(UserException exception)
     {
-        return BadRequest(exception.Message);
+        return  exception switch
+        {
+            UserAlreadyExistsException userAlreadyExistsException => Conflict(userAlreadyExistsException.Message),
+            _ => StatusCode(500, exception.Message)
+        };
     }
 }
