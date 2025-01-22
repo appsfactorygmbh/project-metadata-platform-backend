@@ -4,6 +4,7 @@ using ProjectMetadataPlatform.Api.Errors.ExceptionHandlers;
 using ProjectMetadataPlatform.Api.Interfaces;
 using ProjectMetadataPlatform.Api.Logs;
 using ProjectMetadataPlatform.Domain.Errors;
+using ProjectMetadataPlatform.Domain.Errors.UserException;
 using ProjectMetadataPlatform.Domain.Errors.LogExceptions;
 using ProjectMetadataPlatform.Domain.Errors.AuthExceptions;
 using ProjectMetadataPlatform.Domain.Errors.ProjectExceptions;
@@ -29,6 +30,7 @@ public static class DependencyInjection
         _ = serviceCollection.AddScoped<IExceptionHandler<PluginException>, PluginsExceptionHandler>();
         _ = serviceCollection.AddScoped<IExceptionHandler<LogException>, LogsExceptionHandler>();
         _ = serviceCollection.AddScoped<IExceptionHandler<AuthException>, AuthExceptionHandler>();
+        _ = serviceCollection.AddScoped<IExceptionHandler<UserException>, UserExceptionHandler>();
         _ = serviceCollection.AddControllers(options =>
         {
             options.Filters.Add<ExceptionFilter>();
