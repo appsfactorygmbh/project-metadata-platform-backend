@@ -55,14 +55,12 @@ public class BasicExceptionHandlerTest
     }
 
     [Test]
-    public void Handle_UnknownException_ReturnsInternalServerError()
+    public void Handle_UnknownException_ReturnsNull()
     {
         var mockException = new Mock<PmpException>("Some message");
 
         var result = _basicExceptionHandler.Handle(mockException.Object);
 
-        Assert.That(result, Is.InstanceOf<StatusCodeResult>());
-        var statusCodeResult = (StatusCodeResult) result;
-        Assert.That(statusCodeResult.StatusCode, Is.EqualTo(500));
+        Assert.That(result, Is.Null);
     }
 }

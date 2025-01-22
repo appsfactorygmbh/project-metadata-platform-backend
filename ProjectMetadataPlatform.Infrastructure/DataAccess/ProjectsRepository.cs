@@ -131,11 +131,7 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
         return await GetIf(p => p.Id == id).FirstOrDefaultAsync() ?? throw new ProjectNotFoundException(id);
     }
 
-    /// <summary>
-    /// Asynchronously retrieves a project and its plugins from the database by its identifier.
-    /// </summary>
-    /// <param name="id">Identification number for a project</param>
-    /// <returns>A task representing the asynchronous operation. When this task completes, it returns one project.</returns>
+    /// <inheritdoc />
     public async Task<Project> GetProjectWithPluginsAsync(int id)
     {
         return await GetIf(p => p.Id == id)

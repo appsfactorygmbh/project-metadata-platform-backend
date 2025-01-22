@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -46,6 +47,7 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
     /// <param name="request">Request to be handled</param>
     /// <param name="cancellationToken"></param>
     /// <returns>Response to the request</returns>
+    /// <exception cref="ProjectSlugAlreadyExistsException">When a project with the same slug already exists.</exception>
     public async Task<int> Handle(CreateProjectCommand request, CancellationToken cancellationToken)
     {
         foreach (var plugin in request.Plugins)
@@ -88,7 +90,7 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
             new() { OldValue = "", NewValue = project.BusinessUnit, Property = nameof(Project.BusinessUnit) },
             new() { OldValue = "", NewValue = project.Department, Property = nameof(Project.Department) },
             new() { OldValue = "", NewValue = project.ClientName, Property = nameof(Project.ClientName) },
-            new() { OldValue = "", NewValue = project.TeamNumber.ToString(), Property = nameof(Project.TeamNumber) },
+            new() { OldValue = "", NewValue = project.TeamNumber.ToString(CultureInfo.InvariantCulture), Property = nameof(Project.TeamNumber) },
             new() { OldValue = "", NewValue = project.OfferId, Property = nameof(Project.OfferId) },
             new() { OldValue = "", NewValue = project.Company, Property = nameof(Project.Company) },
             new() { OldValue = "", NewValue = project.CompanyState.ToString(), Property = nameof(Project.CompanyState) },

@@ -98,4 +98,24 @@ public class ExceptionFilterTest
         _basicExceptionHandler.Verify(h => h.Handle(It.IsAny<PmpException>()), Times.Never);
         _context.VerifySet(c => c.Result = It.IsAny<IActionResult>(), Times.Once);
     }
+
+    [Test]
+    public void HandlesNullReturnOfExceptionHandler_Test()
+    {
+        var mockException = new Mock<ProjectException>("some error message");
+        _context.SetupGet(c => c.Exception).Returns(mockException.Object);
+
+        _context.SetupSet(c => c.Result = It.IsAny<IActionResult>()).Callback((IActionResult r) =>
+        {
+            Assert.That(r, Is.InstanceOf<StatusCodeResult>());
+            var statusCodeResult = (StatusCodeResult) r;
+            Assert.That(statusCodeResult.StatusCode, Is.EqualTo(StatusCodes.Status500InternalServerError));
+        });
+        _projectExceptionHandler.Setup(h => h.Handle(It.IsAny<ProjectException>())).Returns((IActionResult?)null);
+
+        _filter.OnException(_context.Object);
+
+        _projectExceptionHandler.Verify(h => h.Handle(It.IsAny<ProjectException>()), Times.Once);
+        _context.VerifySet(c => c.Result = It.IsAny<IActionResult>(), Times.Once);
+    }
 }

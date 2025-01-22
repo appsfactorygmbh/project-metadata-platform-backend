@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using ProjectMetadataPlatform.Application.Projects;
+using ProjectMetadataPlatform.Domain.Errors.ProjectExceptions;
 using ProjectMetadataPlatform.Domain.Projects;
 
 namespace ProjectMetadataPlatform.Application.Interfaces;
@@ -33,6 +34,7 @@ public interface IProjectsRepository
     ///     Returns a project.
     /// </summary>
     /// <returns>One project or null.</returns>
+    /// <exception cref="ProjectNotFoundException">Thrown when the project is not found.</exception>
     Task<Project> GetProjectWithPluginsAsync(int id);
 
     /// <summary>
@@ -73,5 +75,6 @@ public interface IProjectsRepository
     /// </summary>
     /// <param name="slug">The projects unique slug.</param>
     /// <returns>A task representing the asynchronous operation, which upon completion returns the requested project id or null.</returns>
+    /// <exception cref="ProjectNotFoundException">Thrown when the project is not found.</exception>
     Task<int> GetProjectIdBySlugAsync(string slug);
 }

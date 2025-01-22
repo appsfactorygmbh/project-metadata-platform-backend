@@ -39,12 +39,14 @@ public class ExceptionFilter: IExceptionFilter
     {
         var exception = context.Exception;
 
-        context.Result = exception switch
+        var response = exception switch
         {
             ProjectException projectEx => _projectExceptionHandler.Handle(projectEx),
             PmpException basicEx => _basicExceptionHandler.Handle(basicEx),
             _ => HandleUnknownError(exception)
         };
+
+        context.Result = response ?? HandleUnknownError(exception);
     }
 
     /// <summary>
