@@ -7,6 +7,7 @@ using Moq;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Application.Plugins;
+using ProjectMetadataPlatform.Domain.Errors.PluginExceptions;
 using ProjectMetadataPlatform.Domain.Logs;
 using ProjectMetadataPlatform.Domain.Plugins;
 using Action = ProjectMetadataPlatform.Domain.Logs.Action;
@@ -197,21 +198,8 @@ public class PatchGlobalPluginCommandHandlerTest
         // Arrange
         _mockPluginRepo.Setup(repo => repo.GetPluginByIdAsync(42)).ReturnsAsync((Plugin?)null);
 
-        // Act
-        var result = await _handler.Handle(new PatchGlobalPluginCommand(42), It.IsAny<CancellationToken>());
-
         // Assert
-        Assert.Multiple(() =>
-        {
-            Assert.That(result, Is.Null);
-
-            _mockLogRepo.Verify(m => m.AddGlobalPluginLogForCurrentUser(
-                It.IsAny<Plugin>(),
-                It.IsAny<Action>(),
-                It.IsAny<List<LogChange>>()), Times.Never);
-
-            _mockUnitOfWork.Verify(uow => uow.CompleteAsync(), Times.Never);
-        });
+        Assert.ThrowsAsync<PluginNotFoundException>(() => _handler.Handle(new PatchGlobalPluginCommand(42), It.IsAny<CancellationToken>()));
     }
 
 

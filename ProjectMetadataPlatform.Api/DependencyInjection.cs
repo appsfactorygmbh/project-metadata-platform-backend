@@ -4,6 +4,7 @@ using ProjectMetadataPlatform.Api.Errors.ExceptionHandlers;
 using ProjectMetadataPlatform.Api.Interfaces;
 using ProjectMetadataPlatform.Api.Logs;
 using ProjectMetadataPlatform.Domain.Errors;
+using ProjectMetadataPlatform.Domain.Errors.PluginExceptions;
 
 namespace ProjectMetadataPlatform.Api;
 
@@ -21,6 +22,7 @@ public static class DependencyInjection
     {
         _ = serviceCollection.AddScoped<ILogConverter, LogConverter>();
         _ = serviceCollection.AddScoped<IExceptionHandler<PmpException>, BasicExceptionHandler>();
+        _ = serviceCollection.AddScoped<IExceptionHandler<PluginException>, PluginsExceptionHandler>();
         _ = serviceCollection.AddControllers(options =>
         {
             options.Filters.Add<ExceptionFilter>();

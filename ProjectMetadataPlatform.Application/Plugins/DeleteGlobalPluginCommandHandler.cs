@@ -11,7 +11,7 @@ namespace ProjectMetadataPlatform.Application.Plugins;
 /// <summary>
 /// Handler for the <see cref="DeleteGlobalPluginCommand"/>
 /// </summary>
-public class DeleteGlobalPluginCommandHandler : IRequestHandler<DeleteGlobalPluginCommand, bool?>
+public class DeleteGlobalPluginCommandHandler : IRequestHandler<DeleteGlobalPluginCommand, bool>
 {
     private readonly IPluginRepository _pluginRepository;
     private readonly ILogRepository _logRepository;
@@ -38,7 +38,7 @@ public class DeleteGlobalPluginCommandHandler : IRequestHandler<DeleteGlobalPlug
     /// <param name="request">the request that needs to be handled</param>
     /// <param name="cancellationToken"></param>
     /// <returns>the response of the request</returns>
-    public async Task<bool?> Handle(DeleteGlobalPluginCommand request, CancellationToken cancellationToken)
+    public async Task<bool> Handle(DeleteGlobalPluginCommand request, CancellationToken cancellationToken)
     {
         var plugin = await _pluginRepository.GetPluginByIdAsync(request.Id) ?? throw new PluginNotFoundException(request.Id);
         if (plugin.IsArchived)

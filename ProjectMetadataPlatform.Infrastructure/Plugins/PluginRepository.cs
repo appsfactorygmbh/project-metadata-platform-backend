@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using ProjectMetadataPlatform.Application.Interfaces;
+using ProjectMetadataPlatform.Domain.Errors.PluginExceptions;
 using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Infrastructure.DataAccess;
 
@@ -20,7 +21,7 @@ public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
     /// <param name="context"></param>
     public PluginRepository(ProjectMetadataPlatformDbContext context): base(context)
     {
-        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _context = context;
     }
     private readonly ProjectMetadataPlatformDbContext _context;
 
@@ -78,9 +79,9 @@ public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
     /// </summary>
     /// <param name="id">The unique identifier of the plugin to retrieve.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains the Plugin that matches the provided id.</returns>
-    public Task<Plugin?> GetPluginByIdAsync(int id)
+    public Task<Plugin> GetPluginByIdAsync(int id)
     {
-        var queryResult = GetIf(plugin => plugin.Id == id);
+        var queryResult = GetIf(plugin => plugin.Id == id) ?? throw new PluginNotFoundException(id);
         return queryResult.FirstOrDefaultAsync();
     }
 

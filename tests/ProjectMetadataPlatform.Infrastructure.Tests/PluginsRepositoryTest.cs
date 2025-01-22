@@ -371,17 +371,6 @@ public class PluginsRepositoryTest : TestsWithDatabase
     }
 
     [Test]
-    public void GetAllUnarchivedPluginsForProjectIdAsync_ShouldThrowExceptionWhenDbContextIsNull()
-    {
-        var exception = Assert.Throws<ArgumentNullException>(() =>
-        {
-            var repository = new PluginRepository(null);
-        });
-
-        Assert.That(exception.ParamName, Is.EqualTo("context"));
-    }
-
-    [Test]
     public async Task TestGetPluginsForNonExistentProjectThrowsException()
     {
         int nonExistentProjectId = 999;

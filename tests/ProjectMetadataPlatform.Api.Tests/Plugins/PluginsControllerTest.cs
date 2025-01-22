@@ -12,6 +12,7 @@ using NUnit.Framework;
 using ProjectMetadataPlatform.Api.Plugins;
 using ProjectMetadataPlatform.Api.Plugins.Models;
 using ProjectMetadataPlatform.Application.Plugins;
+using ProjectMetadataPlatform.Domain.Errors.PluginExceptions;
 using ProjectMetadataPlatform.Domain.Plugins;
 
 namespace ProjectMetadataPlatform.Api.Tests.Plugins;
@@ -66,9 +67,6 @@ public class Tests
     [Test]
     public async Task CreatePlugin_EmptyName_Test()
     {
-        _mediator.Setup(m => m.Send(It.IsAny<CreatePluginCommand>(), It.IsAny<CancellationToken>()))
-            .Throws(new IOException());
-
         var request = new CreatePluginRequest("", false, new List<string>(), "https://empty.de");
 
         ActionResult<CreatePluginResponse> result = await _controller.Put(request);
@@ -109,8 +107,6 @@ public class Tests
     [Test]
     public async Task CreatePlugin_WhiteSpacesName_Test()
     {
-        _mediator.Setup(m => m.Send(It.IsAny<CreatePluginCommand>(), It.IsAny<CancellationToken>()))
-            .Throws(new IOException());
 
         var request = new CreatePluginRequest("         ", false, new List<string>(), "https://whitespace.de");
 
@@ -148,7 +144,7 @@ public class Tests
     }
 
     [Test]
-    public async Task Patch_PluginNotFound_ReturnsNotFound()
+    public async Task Patch_PluginNotFound_ThrowsNotFound()
     {
         // Arrange
         var pluginId = 1;
@@ -156,17 +152,10 @@ public class Tests
 
         _mediator
             .Setup(m => m.Send(It.IsAny<PatchGlobalPluginCommand>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Plugin?)null); // Simulate a null response when plugin is not found
+            .ThrowsAsync(new PluginNotFoundException(1));
 
         // Act
-        ActionResult<GetGlobalPluginResponse> result = await _controller.Patch(pluginId, request);
-
-        // Assert
-        Assert.That(result.Result, Is.InstanceOf<NotFoundObjectResult>());
-
-        var notFoundResult = result.Result as NotFoundObjectResult;
-        Assert.That(notFoundResult, Is.Not.Null);
-        Assert.That(notFoundResult!.Value, Is.EqualTo("No Plugin with id " + pluginId + " was found."));
+        Assert.ThrowsAsync<PluginNotFoundException>(() => _controller.Patch(pluginId, request));
     }
 
     [Test]
@@ -238,23 +227,17 @@ public class Tests
     [Test]
     public async Task DeleteGlobalPlugin_PluginNotFound_Test()
     {
+
         _mediator.Setup(m => m.Send(It.IsAny<DeleteGlobalPluginCommand>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((bool?)(null));
+            .ThrowsAsync(new PluginNotFoundException(1));
 
-        ActionResult<DeleteGlobalPluginResponse> result = await _controller.Delete(37);
 
-        Assert.That(result.Result, Is.InstanceOf<NotFoundObjectResult>());
-
-        var notFoundResult = result.Result as NotFoundObjectResult;
-        Assert.That(notFoundResult, Is.Not.Null);
-        Assert.That(notFoundResult.Value, Is.EqualTo("No Plugin with id 37 was found."));
+        Assert.ThrowsAsync<PluginNotFoundException>(() => _controller.Delete(1));
     }
 
     [Test]
     public async Task DeleteGlobalPlugin_InvalidId_Test()
     {
-        _mediator.Setup(m => m.Send(It.IsAny<DeleteGlobalPluginCommand>(), It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new ArgumentException());
 
         ActionResult<DeleteGlobalPluginResponse> result = await _controller.Delete(0);
 

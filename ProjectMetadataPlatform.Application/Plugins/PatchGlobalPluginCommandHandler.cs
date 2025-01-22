@@ -14,7 +14,7 @@ namespace ProjectMetadataPlatform.Application.Plugins;
 /// <summary>
 /// Handles the PatchGlobalPluginCommand request.
 /// </summary>
-public class PatchGlobalPluginCommandHandler : IRequestHandler<PatchGlobalPluginCommand, Plugin?>
+public class PatchGlobalPluginCommandHandler : IRequestHandler<PatchGlobalPluginCommand, Plugin>
 {
     private readonly IPluginRepository _pluginRepository;
     private readonly ILogRepository _logRepository;
@@ -41,7 +41,7 @@ public class PatchGlobalPluginCommandHandler : IRequestHandler<PatchGlobalPlugin
     /// <param name="request">The PatchGlobalPluginCommand request to handle.</param>
     /// <param name="cancellationToken">A cancellation token that can be used to cancel the work.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains the Plugin that was updated.</returns>
-    public async Task<Plugin?> Handle(PatchGlobalPluginCommand request, CancellationToken cancellationToken)
+    public async Task<Plugin> Handle(PatchGlobalPluginCommand request, CancellationToken cancellationToken)
     {
         var plugin = await _pluginRepository.GetPluginByIdAsync(request.Id);
         if (plugin == null)
