@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using ProjectMetadataPlatform.Application.Interfaces;
+using ProjectMetadataPlatform.Domain.Errors.PluginExceptions;
 using ProjectMetadataPlatform.Domain.Logs;
 using ProjectMetadataPlatform.Domain.Plugins;
 
@@ -39,6 +40,11 @@ public class CreatePluginCommandHandler : IRequestHandler<CreatePluginCommand, i
     /// <returns>the response of the request</returns>
     public async Task<int> Handle(CreatePluginCommand request, CancellationToken cancellationToken)
     {
+        if (await _pluginRepository.CheckGlobalPluginNameExists(request.Name))
+        {
+            throw new PluginNameAlreadyExistsException(request.Name);
+        }
+
         var plugin = new Plugin
         {
             PluginName = request.Name,

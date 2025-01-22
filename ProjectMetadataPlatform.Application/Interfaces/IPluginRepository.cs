@@ -56,4 +56,6 @@ public interface IPluginRepository
     /// <param name="plugin"></param>
     /// <returns>True, if the plugin is deleted in the database</returns>
     Task<bool> DeleteGlobalPlugin(Plugin plugin);
+
+    Task<bool> CheckGlobalPluginNameExists(string name);
 }
