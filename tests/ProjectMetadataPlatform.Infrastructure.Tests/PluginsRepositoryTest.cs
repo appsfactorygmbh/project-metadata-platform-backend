@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
+using ProjectMetadataPlatform.Domain.Errors.PluginExceptions;
 using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.Projects;
 using ProjectMetadataPlatform.Infrastructure.DataAccess;
@@ -146,9 +147,7 @@ public class PluginsRepositoryTest : TestsWithDatabase
     [Test]
     public async Task GetGlobalPluginById_NotFound_Test()
     {
-        var plugin = await _repository.GetPluginByIdAsync(42);
-
-        Assert.That(plugin, Is.Null);
+        Assert.ThrowsAsync<PluginNotFoundException>(()=> _repository.GetPluginByIdAsync(42));
     }
 
     [Test]
