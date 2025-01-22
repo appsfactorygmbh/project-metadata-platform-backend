@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -40,6 +39,7 @@ public class PatchGlobalPluginCommandHandlerTest
         var plugin = new Plugin { Id = 42, PluginName = "Mercury Redstone", IsArchived = false };
 
         _mockPluginRepo.Setup(repo => repo.GetPluginByIdAsync(42)).ReturnsAsync(plugin);
+        _mockPluginRepo.Setup(repo => repo.CheckGlobalPluginNameExists("Mercury Atlas")).ReturnsAsync(false);
         _mockPluginRepo.Setup(repo => repo.StorePlugin(It.IsAny<Plugin>())).ReturnsAsync((Plugin p) => p);
 
         List<LogChange> capturedLogChanges = null;
@@ -76,6 +76,8 @@ public class PatchGlobalPluginCommandHandlerTest
 
             _mockUnitOfWork.Verify(uow => uow.CompleteAsync(), Times.Once);
         });
+
+        _mockPluginRepo.Verify(r => r.CheckGlobalPluginNameExists("Mercury Atlas"), Times.Once);
     }
 
     [Test]
@@ -190,8 +192,6 @@ public class PatchGlobalPluginCommandHandlerTest
         });
     }
 
-
-
     [Test]
     public async Task PatchGlobalPlugin_NotFound_Test()
     {
@@ -248,11 +248,12 @@ public class PatchGlobalPluginCommandHandlerTest
         });
     }
 
-
-    private async Task PatchGlobalPlugin_NotFound_TestBody()
+    [Test]
+    public void PatchGlobalPlugin_NameUpdatedButAlreadyExists_Test()
     {
-        _mockPluginRepo.Setup(repo => repo.GetPluginByIdAsync(43)).ThrowsAsync(new InvalidOperationException());
-
-        await _handler.Handle(new PatchGlobalPluginCommand(43, "Mercury Atlas"), It.IsAny<CancellationToken>());
+        _mockPluginRepo.Setup(repo => repo.CheckGlobalPluginNameExists("Atlas Agena")).ReturnsAsync(true);
+        Assert.ThrowsAsync<PluginNameAlreadyExistsException>(() =>
+            _handler.Handle(new PatchGlobalPluginCommand(42, "Atlas Agena"), It.IsAny<CancellationToken>()));
+        _mockPluginRepo.Verify(repo => repo.CheckGlobalPluginNameExists("Atlas Agena"), Times.Once);
     }
 }

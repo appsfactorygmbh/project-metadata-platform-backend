@@ -441,4 +441,37 @@ public class PluginsRepositoryTest : TestsWithDatabase
         Assert.That(reloadedProject1.ProjectPlugins, Is.Empty);
         Assert.That(reloadedProject2.ProjectPlugins, Is.Empty);
     }
+
+    [Test]
+    public async Task CheckPluginNameExists_Test()
+    {
+        var project = new Project
+        {
+            Id = 1,
+            ProjectName = "Regen",
+            Slug = "regen",
+            ClientName = "Nasa",
+            BusinessUnit = "BuWeather",
+            TeamNumber = 42,
+            Department = "Homelandsecurity"
+        };
+        _context.Projects.Add(project);
+
+        var plugin = new Plugin { Id = 1, PluginName = "Gitlab" };
+        _context.Plugins.Add(plugin);
+
+        await _context.SaveChangesAsync();
+
+        var result = await _repository.CheckGlobalPluginNameExists("Gitlab");
+
+        Assert.That(result, Is.True);
+    }
+
+    [Test]
+    public async Task CheckPluginNameExists_Not_Test()
+    {
+        var result = await _repository.CheckGlobalPluginNameExists("Bielefeld");
+
+        Assert.That(result, Is.False);
+    }
 }
