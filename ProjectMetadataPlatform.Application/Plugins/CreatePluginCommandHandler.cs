@@ -10,7 +10,7 @@ using ProjectMetadataPlatform.Domain.Plugins;
 namespace ProjectMetadataPlatform.Application.Plugins;
 
 /// <summary>
-///     Handler for the <see cref="CreatePluginCommand" />
+/// Handler for the <see cref="CreatePluginCommand" />
 /// </summary>
 public class CreatePluginCommandHandler : IRequestHandler<CreatePluginCommand, int>
 {
@@ -19,7 +19,7 @@ public class CreatePluginCommandHandler : IRequestHandler<CreatePluginCommand, i
     private readonly IUnitOfWork _unitOfWork;
 
     /// <summary>
-    ///     Creates a new instance of<see cref="GetAllPluginsForProjectIdQueryHandler" />.
+    /// Creates a new instance of<see cref="GetAllPluginsForProjectIdQueryHandler" />.
     /// </summary>
     /// <param name="pluginRepository">The repository for managing plugins.</param>
     /// <param name="logRepository">The repository for managing logs.</param>
@@ -32,7 +32,7 @@ public class CreatePluginCommandHandler : IRequestHandler<CreatePluginCommand, i
     }
 
     /// <summary>
-    ///     Creates a new Plugin with the given name
+    /// Creates a new Plugin with the given name
     /// </summary>
     /// <param name="request">the request that needs to be handled</param>
     /// <param name="cancellationToken"></param>

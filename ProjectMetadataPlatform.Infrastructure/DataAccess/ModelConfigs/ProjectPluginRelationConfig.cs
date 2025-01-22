@@ -5,12 +5,12 @@ using ProjectMetadataPlatform.Domain.Plugins;
 namespace ProjectMetadataPlatform.Infrastructure.DataAccess.ModelConfigs;
 
 /// <summary>
-///     Data Base Configuration for the relation between Project and Plugin.
+/// Data Base Configuration for the relation between Project and Plugin.
 /// </summary>
 public class ProjectPluginRelationConfig : IEntityTypeConfiguration<ProjectPlugins>
 {
     /// <summary>
-    ///     Configures the ProjectPlugins entity.
+    /// Configures the ProjectPlugins entity.
     /// </summary>
     /// <param name="builder"></param>
     public void Configure(EntityTypeBuilder<ProjectPlugins> builder)

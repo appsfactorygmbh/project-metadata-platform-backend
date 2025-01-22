@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Api.Interfaces;
 using ProjectMetadataPlatform.Domain.Errors;
+using ProjectMetadataPlatform.Domain.Errors.ProjectExceptions;
 
 namespace ProjectMetadataPlatform.Api.Tests;
 
@@ -20,6 +21,7 @@ public class DependencyInjectionTests
         {
             Assert.That(serviceProvider.GetService<ILogConverter>(), Is.Not.Null);
             Assert.That(serviceProvider.GetService<IExceptionHandler<PmpException>>(), Is.Not.Null);
+            Assert.That(serviceProvider.GetService<IExceptionHandler<ProjectException>>(), Is.Not.Null);
         });
     }
 }

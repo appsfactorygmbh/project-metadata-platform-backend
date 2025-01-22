@@ -3,12 +3,12 @@ using System.Collections.Generic;
 namespace ProjectMetadataPlatform.Domain.Plugins;
 
 /// <summary>
-///     The representation of a plugin in the database.
+/// The representation of a plugin in the database.
 /// </summary>
 public class Plugin
 {
     /// <summary>
-    ///     The id of the plugin.
+    /// The id of the plugin.
     /// </summary>
     public int Id { get; set; }
 
@@ -23,12 +23,12 @@ public class Plugin
     public required string PluginName { get; set; }
 
     /// <summary>
-    /// THe base url of the plugin.
+    /// The base url of the plugin.
     /// </summary>
     public string? BaseUrl { get; set; }
 
     /// <summary>
-    ///     Holds the relation between Projects and Plugins.
+    /// Holds the relation between Projects and Plugins.
     /// </summary>
     public ICollection<ProjectPlugins>? ProjectPlugins { get; set; }
 }

@@ -13,6 +13,7 @@ using ProjectMetadataPlatform.Api.Plugins.Models;
 using ProjectMetadataPlatform.Api.Projects;
 using ProjectMetadataPlatform.Api.Projects.Models;
 using ProjectMetadataPlatform.Application.Projects;
+using ProjectMetadataPlatform.Domain.Errors.ProjectExceptions;
 using ProjectMetadataPlatform.Domain.Projects;
 
 namespace ProjectMetadataPlatform.Api.Tests.Projects;
@@ -264,16 +265,13 @@ public class PutProjectControllerTest
     }
 
     [Test]
-    public async Task UpdateProjectWithSlug_NotFound_Test()
+    public void UpdateProjectWithSlug_NotFound_Test()
     {
-        _mediator.Setup(m => m.Send(It.IsAny<GetProjectIdBySlugQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync((int?)null);
+        _mediator.Setup(m => m.Send(It.IsAny<GetProjectIdBySlugQuery>(), It.IsAny<CancellationToken>())).ThrowsAsync(new ProjectNotFoundException("updatedproject"));
         var updateRequest = new CreateProjectRequest("UpdatedProject", "Updated Business Unit", 2, "Updated Department",
             "Updated Client", "Updated OfferId", "Updated Company", CompanyState.INTERNAL, SecurityLevel.HIGH,
-            new List<UpdateProjectPluginRequest> { new UpdateProjectPluginRequest("UpdatedUrl", "UpdatedPluginName", 4) });
-        var updateResult = await _controller.Put(updateRequest, "updatedproject");
-
-        Assert.That(updateResult, Is.Not.Null);
-        Assert.That(updateResult.Result, Is.InstanceOf<NotFoundObjectResult>());
+            [new UpdateProjectPluginRequest("UpdatedUrl", "UpdatedPluginName", 4)]);
+        Assert.ThrowsAsync<ProjectNotFoundException>(() => _controller.Put(updateRequest, "updatedproject"));
     }
 
     [Test]

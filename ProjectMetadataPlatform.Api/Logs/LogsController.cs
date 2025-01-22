@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ProjectMetadataPlatform.Api.Interfaces;
 using ProjectMetadataPlatform.Api.Logs.Models;
@@ -14,7 +15,7 @@ using ProjectMetadataPlatform.Domain.Logs;
 namespace ProjectMetadataPlatform.Api.Logs;
 
 /// <summary>
-/// API controller for managing log entries.
+/// Endpoints for managing log entries.
 /// </summary>
 [ApiController]
 [Authorize]
@@ -51,23 +52,17 @@ public class LogsController: ControllerBase
     /// <response code="404">Not Project with the given id was found.</response>
     /// <response code="500">If an error occurs while processing the request.</response>
     [HttpGet]
+    [ProducesResponseType(typeof(IEnumerable<LogResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<IEnumerable<LogResponse>>> Get(int? projectId, string? search, string? userId, int? globalPluginId, string? projectSlug)
     {
         var projectFromSlugId = (int?)null;
 
-        try
+        if (projectSlug != null && projectId == null)
         {
-            if (projectSlug != null && projectId == null)
-            {
-                var projectIdFromSlugQuery = new GetProjectIdBySlugQuery(projectSlug);
-                projectFromSlugId = await _mediator.Send(projectIdFromSlugQuery);
-            }
+            var projectIdFromSlugQuery = new GetProjectIdBySlugQuery(projectSlug);
+            projectFromSlugId = await _mediator.Send(projectIdFromSlugQuery);
         }
-        catch (InvalidOperationException)
-        {
-            return NotFound("No project with projectSlug " + projectSlug + " found");
-        }
-
 
         var query = new GetLogsQuery(projectId ?? projectFromSlugId, search, userId, globalPluginId);
 

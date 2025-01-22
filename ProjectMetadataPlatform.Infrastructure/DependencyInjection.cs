@@ -19,12 +19,12 @@ using ProjectMetadataPlatform.Infrastructure.Users;
 namespace ProjectMetadataPlatform.Infrastructure;
 
 /// <summary>
-///     Methods for dependency injection.
+/// Methods for dependency injection.
 /// </summary>
 public static class DependencyInjection
 {
     /// <summary>
-    ///     Adds the necessary dependencies for the infrastructure layer.
+    /// Adds the necessary dependencies for the infrastructure layer.
     /// </summary>
     /// <param name="serviceCollection">The service collection.</param>
     /// <returns>The service collection with the add dependencies.</returns>
@@ -59,7 +59,7 @@ public static class DependencyInjection
     }
 
     /// <summary>
-    ///    Configures the authentication for the project.
+    /// Configures the authentication for the project.
     /// </summary>
     /// <param name="serviceCollection"></param>
     private static void ConfigureAuth(this IServiceCollection serviceCollection)

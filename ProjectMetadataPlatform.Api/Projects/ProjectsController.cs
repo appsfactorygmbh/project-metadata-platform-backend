@@ -15,9 +15,8 @@ using ProjectMetadataPlatform.Domain.Plugins;
 namespace ProjectMetadataPlatform.Api.Projects;
 
 /// <summary>
-///     Endpoints for managing projects.
+/// Endpoints for managing projects.
 /// </summary>
-
 [ApiController]
 [Authorize]
 [Route("[controller]")]
@@ -26,7 +25,7 @@ public class ProjectsController : ControllerBase
     private readonly IMediator _mediator;
 
     /// <summary>
-    ///     Creates a new instance of the <see cref="ProjectsController" /> class.
+    /// Creates a new instance of the <see cref="ProjectsController" /> class.
     /// </summary>
     public ProjectsController(IMediator mediator)
     {
@@ -35,7 +34,7 @@ public class ProjectsController : ControllerBase
 
 
     /// <summary>
-    ///     Gets all projects or all projects that match the given search string.
+    /// Gets all projects or all projects that match the given search string.
     /// </summary>
     /// <param name="request">The collection of filters to search by.</param>
     /// <param name="search">Search string to filter the projects by.</param>
@@ -43,6 +42,7 @@ public class ProjectsController : ControllerBase
     /// <response code="200">The projects are returned successfully.</response>
     /// <response code="500">An internal error occurred.</response>
     [HttpGet]
+    [ProducesResponseType(typeof(GetProjectsResponse), StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<GetProjectsResponse>>> Get([FromQuery] ProjectFilterRequest? request, string? search = " ")
     {
         var query = new GetAllProjectsQuery(request, search);
@@ -63,7 +63,7 @@ public class ProjectsController : ControllerBase
     }
 
     /// <summary>
-    ///    Gets the project with the given slug.
+    /// Gets the project with the given slug.
     /// </summary>
     /// <param name="slug">The slug of the project.</param>
     /// <returns> The project.</returns>
@@ -71,14 +71,16 @@ public class ProjectsController : ControllerBase
     /// <response code="404">The project could not be found.</response>
     /// <response code="500">An internal error occurred.</response>
     [HttpGet("{slug}")]
+    [ProducesResponseType(typeof(GetProjectResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<GetProjectResponse>> Get(string slug)
     {
         var projectId = await GetProjectId(slug);
-        return projectId == null ? NotFound($"Project with Slug {slug} not found.") : await Get((int) projectId);
+        return await Get(projectId);
     }
 
     /// <summary>
-    ///     Gets the project with the given id.
+    /// Gets the project with the given id.
     /// </summary>
     /// <param name="id">The id of the project.</param>
     /// <returns>The project.</returns>
@@ -86,6 +88,8 @@ public class ProjectsController : ControllerBase
     /// <response code="404">The project could not be found.</response>
     /// <response code="500">An internal error occurred.</response>
     [HttpGet("{id:int}")]
+    [ProducesResponseType(typeof(GetProjectResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<GetProjectResponse>> Get(int id)
     {
         var query = new GetProjectQuery(id);
@@ -121,6 +125,7 @@ public class ProjectsController : ControllerBase
     /// <response code="200">All Plugins of the project are returned successfully.</response>
     /// <response code="500">An internal error occurred.</response>
     [HttpGet("{id:int}/plugins")]
+    [ProducesResponseType(typeof(IEnumerable<GetPluginResponse>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<GetPluginResponse>>> GetPlugins(int id)
     {
         var query = new GetAllPluginsForProjectIdQuery(id);
@@ -142,10 +147,12 @@ public class ProjectsController : ControllerBase
     /// <response code="404">No project with the given Slug could be found.</response>
     /// <response code="500">An internal error occurred.</response>
     [HttpGet("{slug}/plugins")]
+    [ProducesResponseType(typeof(IEnumerable<GetPluginResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<IEnumerable<GetPluginResponse>>> GetPluginsBySlug(string slug)
     {
         var projectId = await GetProjectId(slug);
-        return projectId == null ? NotFound($"Project with Slug {slug} not found.") : await GetPlugins((int) projectId);
+        return await GetPlugins(projectId);
     }
 
     /// <summary>
@@ -157,20 +164,12 @@ public class ProjectsController : ControllerBase
     /// <response code="404">If the project with the specified ID is not found</response>
     /// <response code="500">If there was an internal server error while processing the request</response>
     [HttpGet("{id:int}/unarchivedPlugins")]
+    [ProducesResponseType(typeof(IEnumerable<GetPluginResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<IEnumerable<GetPluginResponse>>> GetUnarchivedPlugins(int id)
     {
         var query = new GetAllUnarchivedPluginsForProjectIdQuery(id);
-        IEnumerable<ProjectPlugins> unarchivedProjectPlugins;
-
-        try
-        {
-            unarchivedProjectPlugins = await _mediator.Send(query);
-        }
-        catch(ArgumentException ex)
-        {
-            Console.WriteLine(ex.Message);
-            return NotFound($"Project with Id {id} not found.");
-        }
+        var unarchivedProjectPlugins = await _mediator.Send(query);
 
         var response = unarchivedProjectPlugins
             .Where(plugin => plugin.Plugin != null)
@@ -193,13 +192,16 @@ public class ProjectsController : ControllerBase
     /// <response code="404">No project with the given slug could be found.</response>
     /// <response code="500">An internal error occurred.</response>
     [HttpGet("{slug}/unarchivedPlugins")]
+    [ProducesResponseType(typeof(IEnumerable<GetPluginResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<IEnumerable<GetPluginResponse>>> GetUnarchivedPluginsBySlug(string slug)
     {
         var projectId = await GetProjectId(slug);
-        return projectId == null ? NotFound($"Project with Slug {slug} not found.") : await GetUnarchivedPlugins((int) projectId);
+        return await GetUnarchivedPlugins(projectId);
     }
-        /// <summary>
-    ///     Creates a new project or updates the one with given slug.
+
+    /// <summary>
+    /// Creates a new project or updates the one with given slug.
     /// </summary>
     /// <param name="project">The data of the new project.</param>
     /// <param name="slug">The slug, if an existing project should be overwritten.</param>
@@ -207,32 +209,34 @@ public class ProjectsController : ControllerBase
     /// <response code="201">The Project has been created successfully.</response>
     /// <response code="400">The request data is invalid.</response>
     /// <response code="404">The project with the specified slug was not found.</response>
+    /// <response code="409">The project with the slug generated from the name already exists.</response>
     /// <response code="500">An internal error occurred.</response>
     [HttpPut("{slug}")]
     [ProducesResponseType(typeof(CreateProjectResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<ActionResult<CreateProjectResponse>> Put([FromBody] CreateProjectRequest project,
         string slug)
     {
         var projectId = await GetProjectId(slug);
-        return projectId == null ? NotFound($"Project with Slug {slug} not found.") : await Put(project, projectId);
+        return await Put(project, projectId);
     }
 
     /// <summary>
-    ///     Creates a new project or updates the one with given id.
+    /// Creates a new project or updates the one with given id.
     /// </summary>
     /// <param name="project">The data of the new project.</param>
     /// <param name="projectId">The id, if an existing project should be overwritten.</param>
     /// <returns>A response containing the id of the created project.</returns>
     /// <response code="201">The Project has been created successfully.</response>
     /// <response code="400">The request data is invalid.</response>
+    /// <response code="409">The project with the slug generated from the name already exists.</response>
     /// <response code="500">An internal error occurred.</response>
     [HttpPut]
     [ProducesResponseType(typeof(CreateProjectResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<ActionResult<CreateProjectResponse>> Put([FromBody] CreateProjectRequest project, int? projectId = null)
     {
         try
@@ -284,6 +288,7 @@ public class ProjectsController : ControllerBase
     /// <response code="200">Returns the list of distinct business units successfully.</response>
     /// <response code="500">Indicates an internal error occurred while processing the request.</response>
     [HttpGet("filterData/businessunits")]
+    [ProducesResponseType(typeof(IEnumerable<string>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<string>>> GetAllBusinessUnits()
     {
         var query = new GetAllBusinessUnitsQuery();
@@ -304,6 +309,7 @@ public class ProjectsController : ControllerBase
     /// <response code="200">Returns the list of distinct team numbers successfully.</response>
     /// <response code="500">Indicates an internal error occurred while processing the request.</response>
     [HttpGet("filterData/teamnumbers")]
+    [ProducesResponseType(typeof(IEnumerable<int>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<int>>> GetAllTeamNumbers()
     {
         var query = new GetAllTeamNumbersQuery();
@@ -322,13 +328,17 @@ public class ProjectsController : ControllerBase
     /// <response code="404">The project with the specified slug was not found.</response>
     /// <response code="500">An internal error occurred.</response>
     [HttpDelete("{slug}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> Delete(string slug)
     {
         var projectId = await GetProjectId(slug);
-        return projectId == null ? NotFound($"Project with Slug {slug} not found.") : await Delete((int) projectId);
+        return await Delete(projectId);
 
     }
-        /// <summary>
+
+    /// <summary>
     /// Deletes the project with the given id.
     /// </summary>
     /// <param name="id">The id of the project to delete.</param>
@@ -338,26 +348,22 @@ public class ProjectsController : ControllerBase
     /// <response code="404">The project with the specified id was not found.</response>
     /// <response code="500">An internal error occurred.</response>
     [HttpDelete("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> Delete(int id)
     {
         var command = new DeleteProjectCommand(id);
-        try
-        {
-            _ = await _mediator.Send(command);
-        }
-        catch (ArgumentException e)
-        {
-            return BadRequest(e.Message);
-        }
-        catch (InvalidOperationException e)
-        {
-            return BadRequest(e.Message);
-        }
-
+        _ = await _mediator.Send(command);
         return NoContent();
     }
 
-    private async Task<int?> GetProjectId(string slug)
+    /// <summary>
+    /// Gets a project id by its slug.
+    /// </summary>
+    /// <param name="slug">The slug of the project.</param>
+    /// <returns>The id of the project.</returns>
+    private async Task<int> GetProjectId(string slug)
     {
         var query = new GetProjectIdBySlugQuery(slug);
         return await _mediator.Send(query);

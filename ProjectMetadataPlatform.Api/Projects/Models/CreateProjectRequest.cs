@@ -5,7 +5,7 @@ using ProjectMetadataPlatform.Domain.Projects;
 namespace ProjectMetadataPlatform.Api.Projects.Models;
 
 /// <summary>
-///     Represents a request to create a new project.
+/// Represents a request to create a new project.
 /// </summary>
 /// <param name="ProjectName">The name of the project.</param>
 /// <param name="ClientName">The name of the client for the project.</param>

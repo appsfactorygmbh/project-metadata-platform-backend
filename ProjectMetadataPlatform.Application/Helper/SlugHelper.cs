@@ -1,7 +1,7 @@
-﻿using System;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ProjectMetadataPlatform.Application.Interfaces;
+using ProjectMetadataPlatform.Domain.Errors.ProjectExceptions;
 
 namespace ProjectMetadataPlatform.Application.Helper;
 
@@ -14,7 +14,7 @@ public partial class SlugHelper: ISlugHelper
     private readonly IProjectsRepository _projectsRepository;
 
     /// <summary>
-    ///     Creates a new instance of <see cref="SlugHelper" />.
+    /// Creates a new instance of <see cref="SlugHelper" />.
     /// </summary>
     /// <param name="projectsRepository">Repository for Projects</param>
     public SlugHelper(IProjectsRepository projectsRepository)
@@ -31,13 +31,20 @@ public partial class SlugHelper: ISlugHelper
     /// <inheritdoc/>
     public async Task<int> GetProjectIdBySlug(string slug)
     {
-        var projectId = await _projectsRepository.GetProjectIdBySlugAsync(slug);
-        return projectId ?? throw new InvalidOperationException("Project with this slug does not exist: " + slug);
+        return await _projectsRepository.GetProjectIdBySlugAsync(slug);
     }
 
     /// <inheritdoc/>
     public async Task<bool> CheckProjectSlugExists(string slug)
     {
-        return await _projectsRepository.GetProjectIdBySlugAsync(slug) != null;
+        try
+        {
+            _ = await _projectsRepository.GetProjectIdBySlugAsync(slug);
+            return true;
+        }
+        catch (ProjectNotFoundException)
+        {
+            return false;
+        }
     }
 }

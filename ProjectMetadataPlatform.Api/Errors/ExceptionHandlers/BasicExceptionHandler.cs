@@ -17,26 +17,15 @@ public class BasicExceptionHandler: ControllerBase, IExceptionHandler<PmpExcepti
     /// </summary>
     /// <param name="exception">The basic exception to Handle.</param>
     /// <returns>An IActionResult representing the result of handling the exception.</returns>
-    public IActionResult Handle(PmpException exception)
+    public IActionResult? Handle(PmpException exception)
     {
         return exception switch
         {
             EntityNotFoundException entityNotFoundException => NotFound(entityNotFoundException.Message),
+            EntityAlreadyExistsException entityAlreadyExistsException => Conflict(entityAlreadyExistsException.Message),
             DatabaseException databaseException => HandleDatabaseException(databaseException),
-            _ => HandleUnknownException(exception)
+            _ => null
         };
-    }
-
-    /// <summary>
-    /// Handles all exceptions that are not caught manually and returns a 500 Internal Server Error status.
-    /// </summary>
-    /// <param name="exception">The database exception to handle.</param>
-    /// <returns>A StatusCodeResult representing the result of handling the database exception.</returns>
-    private StatusCodeResult HandleUnknownException(PmpException exception)
-    {
-        Console.WriteLine(exception.Message);
-        Console.WriteLine(exception.StackTrace);
-        return StatusCode(StatusCodes.Status500InternalServerError);
     }
 
     /// <summary>

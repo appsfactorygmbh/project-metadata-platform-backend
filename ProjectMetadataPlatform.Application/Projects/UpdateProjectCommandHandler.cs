@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using ProjectMetadataPlatform.Application.Interfaces;
+using ProjectMetadataPlatform.Domain.Errors.ProjectExceptions;
 using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.Projects;
 using ProjectMetadataPlatform.Domain.Logs;
@@ -41,10 +42,11 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
     /// <param name="request">Request to be handled</param>
     /// <param name="cancellationToken"></param>
     /// <returns>Response to the request</returns>
+    /// <exception cref="ProjectNotFoundException">Thrown when the project is not found.</exception>
     public async Task<int> Handle(UpdateProjectCommand request, CancellationToken cancellationToken)
     {
         var project = await _projectsRepository.GetProjectWithPluginsAsync(request.Id)
-                      ?? throw new InvalidOperationException("Project does not exist.");
+                      ?? throw new ProjectNotFoundException(request.Id);
 
         await UpdateProjectProperties(request, project);
 
@@ -89,9 +91,23 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
         return project.Id;
     }
 
+    /// <summary>
+    /// Extracts the key components from the given project plugin.
+    /// </summary>
+    /// <param name="projectPlugin">The project plugin containing the key components.</param>
+    /// <returns>A tuple containing the project ID, plugin ID, and URL.</returns>
     private static (int ProjectId, int PluginId, string Url) GetProjectPluginKey(ProjectPlugins projectPlugin)
         => (projectPlugin.ProjectId, projectPlugin.PluginId, projectPlugin.Url);
 
+
+    /// <summary>
+    /// Updates the properties of a project based on the specified request.
+    /// Logs all changes made to the project's properties.
+    /// </summary>
+    /// <param name="request">The request containing the new project properties.</param>
+    /// <param name="project">The existing project to be updated.</param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    /// <exception cref="ProjectSlugAlreadyExistsException">Thrown when a project with the same slug already exists.</exception>
     private async Task UpdateProjectProperties(UpdateProjectCommand request, Project project)
     {
         var changes = new List<LogChange>();
@@ -102,7 +118,7 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
 
             if (await _slugHelper.CheckProjectSlugExists(projectSlug))
             {
-                throw new InvalidOperationException("A Project with this slug already exists: " + projectSlug);
+                throw new ProjectSlugAlreadyExistsException(projectSlug);
             }
 
             var changeName = new LogChange

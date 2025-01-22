@@ -33,11 +33,11 @@ public class DeleteGlobalPluginCommandHandler : IRequestHandler<DeleteGlobalPlug
     }
 
     /// <summary>
-    /// Delete Plugin with the given id
+    /// Delete Plugin with the given id.
     /// </summary>
-    /// <param name="request">the request that needs to be handled</param>
+    /// <param name="request">The request that needs to be handled.</param>
     /// <param name="cancellationToken"></param>
-    /// <returns>the response of the request</returns>
+    /// <returns>The response of the request.</returns>
     public async Task<bool> Handle(DeleteGlobalPluginCommand request, CancellationToken cancellationToken)
     {
         var plugin = await _pluginRepository.GetPluginByIdAsync(request.Id) ?? throw new PluginNotFoundException(request.Id);

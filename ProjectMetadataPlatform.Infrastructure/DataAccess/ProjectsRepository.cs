@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Application.Projects;
+using ProjectMetadataPlatform.Domain.Errors.ProjectExceptions;
 using ProjectMetadataPlatform.Domain.Projects;
 
 namespace ProjectMetadataPlatform.Infrastructure.DataAccess;
@@ -16,7 +17,7 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
 {
     private readonly ProjectMetadataPlatformDbContext _context;
     /// <summary>
-    ///     Initializes a new instance of the <see cref="ProjectsRepository" /> class.
+    /// Initializes a new instance of the <see cref="ProjectsRepository" /> class.
     /// </summary>
     /// <param name="dbContext">The database context for accessing project data.</param>
     public ProjectsRepository(ProjectMetadataPlatformDbContext dbContext) : base(dbContext)
@@ -25,7 +26,7 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     }
 
     /// <summary>
-    ///     Asynchronously retrieves all projects with specific search pattern or filter matches from the database.
+    /// Asynchronously retrieves all projects with specific search pattern or filter matches from the database.
     /// </summary>
     /// ///
     /// <param name="query">The query containing filters and search pattern.</param>
@@ -112,7 +113,7 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     }
 
     /// <summary>
-    ///     Asynchronously retrieves all projects from the database.
+    /// Asynchronously retrieves all projects from the database.
     /// </summary>
     /// <returns>A task representing the asynchronous operation. When this task completes, it returns a collection of projects.</returns>
     public async Task<IEnumerable<Project>> GetProjectsAsync()
@@ -121,29 +122,25 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     }
 
     /// <summary>
-    ///     Asynchronously retrieves a project from the database by its identifier.
+    /// Asynchronously retrieves a project from the database by its identifier.
     /// </summary>
     /// <param name="id">Identification number for a project</param>
     /// <returns>A task representing the asynchronous operation. When this task completes, it returns one project.</returns>
-    public async Task<Project?> GetProjectAsync(int id)
+    public async Task<Project> GetProjectAsync(int id)
     {
-        return await GetIf(p => p.Id == id).FirstOrDefaultAsync();
+        return await GetIf(p => p.Id == id).FirstOrDefaultAsync() ?? throw new ProjectNotFoundException(id);
     }
 
-    /// <summary>
-    /// Asynchronously retrieves a project and its plugins from the database by its identifier.
-    /// </summary>
-    /// <param name="id">Identification number for a project</param>
-    /// <returns>A task representing the asynchronous operation. When this task completes, it returns one project.</returns>
-    public async Task<Project?> GetProjectWithPluginsAsync(int id)
+    /// <inheritdoc />
+    public async Task<Project> GetProjectWithPluginsAsync(int id)
     {
         return await GetIf(p => p.Id == id)
             .Include(p => p.ProjectPlugins)
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync() ?? throw new ProjectNotFoundException(id);
     }
 
     /// <summary>
-    ///     Saves project to the database and returns it.
+    /// Saves project to the database and returns it.
     /// </summary>
     /// <param name="project">Project to be saved in the database</param>
     /// <returns>Project is returned</returns>
@@ -196,9 +193,9 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     }
 
     /// <inheritdoc/>
-    public async Task<int?> GetProjectIdBySlugAsync(string slug)
+    public async Task<int> GetProjectIdBySlugAsync(string slug)
     {
         return await _context.Projects.Where(p => p.Slug == slug)
-            .Select(p => (int?)p.Id).FirstOrDefaultAsync();
+            .Select(p => (int?)p.Id).FirstOrDefaultAsync() ?? throw new ProjectNotFoundException(slug);
     }
 }

@@ -6,6 +6,7 @@ using Moq;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Application.Projects;
+using ProjectMetadataPlatform.Domain.Errors.ProjectExceptions;
 using ProjectMetadataPlatform.Domain.Logs;
 using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.Projects;
@@ -89,7 +90,7 @@ public class CreateProjectCommandHandlerTest
         _mockSlugHelper.Setup(m => m.GetProjectIdBySlug("example_project")).ReturnsAsync(1);
         _mockSlugHelper.Setup(m => m.CheckProjectSlugExists("example_project")).ReturnsAsync(true);
 
-        var ex = Assert.ThrowsAsync<InvalidOperationException>(async () =>
+        var ex = Assert.ThrowsAsync<ProjectSlugAlreadyExistsException>(async () =>
         {
             await _handler.Handle(
                 new CreateProjectCommand("Example Project", "Example Business Unit", 1, "Example Department",

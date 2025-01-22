@@ -1,7 +1,7 @@
 namespace ProjectMetadataPlatform.Api.Auth.Models;
 
 /// <summary>
-///   Request for logging in.
+/// Request for logging in.
 /// </summary>
 /// <param name="Email">Email of the User</param>
 /// <param name="Password">Password of the User</param>

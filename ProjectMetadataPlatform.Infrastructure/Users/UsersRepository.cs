@@ -12,14 +12,14 @@ using ProjectMetadataPlatform.Domain.Auth;
 namespace ProjectMetadataPlatform.Infrastructure.Users;
 
 /// <summary>
-///     The repository for users that handles the data access.
+/// The repository for users that handles the data access.
 /// </summary>
 public class UsersRepository : RepositoryBase<IdentityUser>, IUsersRepository
 {
     private readonly UserManager<IdentityUser> _userManager;
     private readonly ProjectMetadataPlatformDbContext _context;
     /// <summary>
-    ///     Initializes a new instance of the <see cref="UsersRepository" /> class.
+    /// Initializes a new instance of the <see cref="UsersRepository" /> class.
     /// </summary>
     /// <param name="dbContext">The database context for accessing project data.</param>
     /// <param name="userManager">Manager for users of the type user.</param>
@@ -30,7 +30,7 @@ public class UsersRepository : RepositoryBase<IdentityUser>, IUsersRepository
     }
 
     /// <summary>
-    ///     Asynchronously retrieves all projects from the database.
+    /// Asynchronously retrieves all projects from the database.
     /// </summary>
     /// <returns>A task representing the asynchronous operation. When this task completes, it returns a collection of projects.</returns>
     public async Task<IEnumerable<IdentityUser>> GetAllUsersAsync()

@@ -7,14 +7,14 @@ using Microsoft.AspNetCore.Identity;
 
 namespace ProjectMetadataPlatform.Application.Users;
 /// <summary>
-///    Query for retrieving all users.
+/// Query for retrieving all users.
 /// </summary>
 public class GetAllUsersQueryHandler : IRequestHandler<GetAllUsersQuery, IEnumerable<IdentityUser>>
 {
     private readonly IUsersRepository _usersRepository;
 
     /// <summary>
-    ///     Creates a new instance of <see cref="GetAllUsersQueryHandler" />.
+    /// Creates a new instance of <see cref="GetAllUsersQueryHandler" />.
     /// </summary>
     public GetAllUsersQueryHandler(IUsersRepository usersRepository)
     {
@@ -22,7 +22,7 @@ public class GetAllUsersQueryHandler : IRequestHandler<GetAllUsersQuery, IEnumer
     }
 
     /// <summary>
-    ///     Handles the request to retrieve all users.
+    /// Handles the request to retrieve all users.
     /// </summary>
     public async Task<IEnumerable<IdentityUser>> Handle(GetAllUsersQuery request, CancellationToken cancellationToken)
     {

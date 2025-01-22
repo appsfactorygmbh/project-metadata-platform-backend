@@ -44,10 +44,15 @@ public class PatchGlobalPluginCommandHandler : IRequestHandler<PatchGlobalPlugin
     public async Task<Plugin> Handle(PatchGlobalPluginCommand request, CancellationToken cancellationToken)
     {
         var plugin = await _pluginRepository.GetPluginByIdAsync(request.Id) ?? throw new PluginNotFoundException(request.Id);
+        await AddUpdatedPluginLog(plugin, request);
         if (request.PluginName != null && !string.Equals(plugin.PluginName, request.PluginName, StringComparison.Ordinal))
         {
-            await AddUpdatedPluginNameLog(plugin, request);
             plugin.PluginName = request.PluginName;
+        }
+
+        if (request.BaseUrl != null && !string.Equals(plugin.BaseUrl, request.BaseUrl, StringComparison.Ordinal))
+        {
+            plugin.BaseUrl = request.BaseUrl;
         }
 
         if (request.IsArchived != null && plugin.IsArchived != request.IsArchived.Value)
@@ -62,20 +67,34 @@ public class PatchGlobalPluginCommandHandler : IRequestHandler<PatchGlobalPlugin
         return updatedPlugin;
     }
 
-    private async Task AddUpdatedPluginNameLog(Plugin plugin, PatchGlobalPluginCommand request)
+    private async Task AddUpdatedPluginLog(Plugin plugin, PatchGlobalPluginCommand request)
     {
+        var changes = new List<LogChange>();
+
         if (request.PluginName != null)
         {
-            var changes = new List<LogChange>
-            {
+            changes.Add(
                 new()
                 {
                     Property = nameof(plugin.PluginName),
                     OldValue = plugin.PluginName,
                     NewValue = request.PluginName
-                }
-            };
+                });
+        }
 
+        if (request.BaseUrl != null)
+        {
+            changes.Add(
+                new()
+                {
+                    Property = nameof(plugin.BaseUrl),
+                    OldValue = plugin.BaseUrl ?? "",
+                    NewValue = request.BaseUrl
+                });
+        }
+
+        if (changes.Count > 0)
+        {
             await _logRepository.AddGlobalPluginLogForCurrentUser(plugin, Action.UPDATED_GLOBAL_PLUGIN, changes);
         }
     }

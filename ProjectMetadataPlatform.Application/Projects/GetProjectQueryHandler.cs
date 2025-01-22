@@ -7,12 +7,12 @@ using ProjectMetadataPlatform.Domain.Projects;
 namespace ProjectMetadataPlatform.Application.Projects;
 
 /// <inheritdoc />
-public class GetProjectQueryHandler : IRequestHandler<GetProjectQuery, Project?>
+public class GetProjectQueryHandler : IRequestHandler<GetProjectQuery, Project>
 {
     private readonly IProjectsRepository _projectsRepository;
 
     /// <summary>
-    ///     Creates a new instance of <see cref="GetProjectQueryHandler" />.
+    /// Creates a new instance of <see cref="GetProjectQueryHandler" />.
     /// </summary>
     public GetProjectQueryHandler(IProjectsRepository projectsRepository)
     {
@@ -20,7 +20,7 @@ public class GetProjectQueryHandler : IRequestHandler<GetProjectQuery, Project?>
     }
 
     /// <inheritdoc />
-    public Task<Project?> Handle(GetProjectQuery request, CancellationToken cancellationToken)
+    public Task<Project> Handle(GetProjectQuery request, CancellationToken cancellationToken)
     {
         return _projectsRepository.GetProjectAsync(request.Id);
     }

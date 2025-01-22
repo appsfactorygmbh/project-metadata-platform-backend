@@ -15,7 +15,7 @@ public class RefreshTokenQueryHandler : IRequestHandler<RefreshTokenQuery, JwtTo
     private readonly IAuthRepository _authRepository;
 
     /// <summary>
-    ///     Creates a new instance of<see cref="RefreshTokenQueryHandler" />.
+    /// Creates a new instance of<see cref="RefreshTokenQueryHandler" />.
     /// </summary>
     /// <param name="authRepository"></param>
     public RefreshTokenQueryHandler(IAuthRepository authRepository)
@@ -24,11 +24,11 @@ public class RefreshTokenQueryHandler : IRequestHandler<RefreshTokenQuery, JwtTo
     }
 
     /// <summary>
-    ///
+    /// Return the JWT tokens for the given refresh token request.
     /// </summary>
     /// <param name="request"></param>
     /// <param name="cancellationToken"></param>
-    /// <returns></returns>
+    /// <returns>The JWT tokens.</returns>
     /// <exception cref="AuthenticationException"></exception>
     public async Task<JwtTokens> Handle(RefreshTokenQuery request, CancellationToken cancellationToken)
     {

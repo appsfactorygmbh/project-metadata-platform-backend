@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using ProjectMetadataPlatform.Api;
@@ -13,7 +14,7 @@ using ProjectMetadataPlatform.Api.Swagger;
 
 
 
-WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -53,7 +54,12 @@ builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddCors(options
     => options.AddDefaultPolicy(policyBuilder => policyBuilder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
-builder.Services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+builder.Services.AddControllers(
+    options =>
+    {
+        options.Filters.Add(new ProducesResponseTypeAttribute(401));
+        options.Filters.Add(new ProducesResponseTypeAttribute(500));
+    }).AddJsonOptions(options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
 
 
 var app = builder.Build();

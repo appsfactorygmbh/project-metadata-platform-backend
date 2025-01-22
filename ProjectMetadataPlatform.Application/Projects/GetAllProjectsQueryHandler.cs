@@ -14,7 +14,7 @@ public class GetAllProjectsQueryHandler : IRequestHandler<GetAllProjectsQuery, I
 
 
     /// <summary>
-    ///     Creates a new instance of <see cref="GetAllProjectsQueryHandler" />.
+    /// Creates a new instance of <see cref="GetAllProjectsQueryHandler" />.
     /// </summary>
     public GetAllProjectsQueryHandler(IProjectsRepository projectsRepository)
     {

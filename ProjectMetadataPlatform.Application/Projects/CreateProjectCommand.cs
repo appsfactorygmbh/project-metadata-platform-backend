@@ -6,7 +6,7 @@ using ProjectMetadataPlatform.Domain.Projects;
 namespace ProjectMetadataPlatform.Application.Projects;
 
 /// <summary>
-///     Command to create a new project with the given attributes.
+/// Command to create a new project with the given attributes.
 /// </summary>
 /// <param name="ProjectName">Name of the project</param>
 /// <param name="BusinessUnit">Name of the business unit</param>

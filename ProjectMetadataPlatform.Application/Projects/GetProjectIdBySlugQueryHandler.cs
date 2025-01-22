@@ -8,7 +8,7 @@ namespace ProjectMetadataPlatform.Application.Projects;
 /// <summary>
 /// Handler for the <see cref="GetProjectIdBySlugQuery"/>.
 /// </summary>
-public class GetProjectIdBySlugQueryHandler : IRequestHandler<GetProjectIdBySlugQuery, int?>
+public class GetProjectIdBySlugQueryHandler : IRequestHandler<GetProjectIdBySlugQuery, int>
 {
     private readonly IProjectsRepository _projectsRepository;
 
@@ -28,7 +28,7 @@ public class GetProjectIdBySlugQueryHandler : IRequestHandler<GetProjectIdBySlug
     /// <param name="request">request containing the Slug of a project</param>
     /// <param name="cancellationToken"></param>
     /// <returns>Either a projectId or null.</returns>
-    public async Task<int?> Handle(GetProjectIdBySlugQuery request, CancellationToken cancellationToken)
+    public async Task<int> Handle(GetProjectIdBySlugQuery request, CancellationToken cancellationToken)
     {
         return await _projectsRepository.GetProjectIdBySlugAsync(request.Slug);
     }

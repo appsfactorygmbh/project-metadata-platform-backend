@@ -9,9 +9,7 @@ using ProjectMetadataPlatform.Domain.Logs;
 namespace ProjectMetadataPlatform.Application.Users;
 
 /// <summary>
-/// /// <summary>
-///     Handler for the <see cref="CreateUserCommand" />
-/// </summary>
+/// Handler for the <see cref="CreateUserCommand" />
 /// </summary>
 public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, string>
 {
@@ -21,7 +19,7 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, strin
 
 
     /// <summary>
-    ///    Creates a new instance of <see cref="CreateUserCommandHandler" />.
+    /// Creates a new instance of <see cref="CreateUserCommandHandler" />.
     /// </summary>
     /// <param name="usersRepository">Repository for accessing user data.</param>
     /// <param name="logRepository">Repository for logging data.</param>
@@ -35,7 +33,7 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, strin
 
 
     /// <summary>
-    ///    Creates a new User with the given data.
+    /// Creates a new User with the given data.
     /// </summary>
     /// <param name="request">Request for user creation.</param>
     /// <param name="cancellationToken">Token to monitor for cancellation requests.</param>

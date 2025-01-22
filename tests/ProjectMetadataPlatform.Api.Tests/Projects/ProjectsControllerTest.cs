@@ -17,6 +17,7 @@ using ProjectMetadataPlatform.Application.Projects;
 using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.Projects;
 using Microsoft.AspNetCore.Http;
+using ProjectMetadataPlatform.Domain.Errors.ProjectExceptions;
 
 namespace ProjectMetadataPlatform.Api.Tests.Projects;
 
@@ -250,16 +251,11 @@ public class ProjectsControllerTest
     }
 
     [Test]
-    public async Task GetPluginsForProjectByProjectSlug_SlugNotFound_Test()
+    public void GetPluginsForProjectByProjectSlug_SlugNotFound_Test()
     {
-        _mediator.Setup(m => m.Send(It.Is<GetProjectIdBySlugQuery>(r => r.Slug == "Mendelev"), It.IsAny<CancellationToken>())).ReturnsAsync((int?)null);
+        _mediator.Setup(m => m.Send(It.Is<GetProjectIdBySlugQuery>(r => r.Slug == "Mendelev"), It.IsAny<CancellationToken>())).ThrowsAsync(new ProjectNotFoundException("Mendelev"));
 
-        var result = await _controller.GetPluginsBySlug("Mendelev");
-
-        Assert.That(result, Is.Not.Null);
-        var notFoundResult = result.Result as NotFoundObjectResult;
-        Assert.That(notFoundResult, Is.Not.Null);
-        Assert.That(notFoundResult.Value, Is.EqualTo("Project with Slug Mendelev not found."));
+        Assert.ThrowsAsync<ProjectNotFoundException>(() => _controller.GetPluginsBySlug("Mendelev"));
 
         _mediator.Verify(m => m.Send(It.Is<GetProjectIdBySlugQuery>(r => r.Slug == "Mendelev"), It.IsAny<CancellationToken>()), Times.Once);
         _mediator.Verify(m => m.Send(It.Is<GetAllPluginsForProjectIdQuery>(r => r.Id == 101), It.IsAny<CancellationToken>()), Times.Never);
@@ -558,20 +554,14 @@ public class ProjectsControllerTest
     }
 
     [Test]
-    public async Task GetUnarchivedPlugins_ReturnsNotFound_WhenProjectDoesNotExist()
+    public void GetUnarchivedPlugins_ReturnsNotFound_WhenProjectDoesNotExist()
     {
         var nonExistentProjectId = 999;
 
         _mediator.Setup(m => m.Send(It.Is<GetAllUnarchivedPluginsForProjectIdQuery>(x => x.Id == nonExistentProjectId), It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new ArgumentException($"Project with Id {nonExistentProjectId} not found."));
+            .ThrowsAsync(new ProjectNotFoundException(nonExistentProjectId));
 
-        var result = await _controller.GetUnarchivedPlugins(nonExistentProjectId);
-
-        Assert.That(result.Result, Is.InstanceOf<NotFoundObjectResult>());
-
-        var notFoundResult = result.Result as NotFoundObjectResult;
-        Assert.That(notFoundResult!.StatusCode, Is.EqualTo(404));
-        Assert.That(notFoundResult.Value, Is.EqualTo($"Project with Id {nonExistentProjectId} not found."));
+        Assert.ThrowsAsync<ProjectNotFoundException>(() => _controller.GetUnarchivedPlugins(nonExistentProjectId));
     }
 
     [Test]
@@ -676,21 +666,14 @@ public class ProjectsControllerTest
     }
 
     [Test]
-    public async Task GetUnarchivedPluginsBySlug_ReturnsNotFound_WhenProjectDoesNotExist()
+    public void GetUnarchivedPluginsBySlug_ReturnsNotFound_WhenProjectDoesNotExist()
     {
         var nonExistentProjectId = 999;
 
-        _mediator.Setup(m => m.Send(It.Is<GetAllUnarchivedPluginsForProjectIdQuery>(x => x.Id == nonExistentProjectId), It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new ArgumentException($"Project with Id {nonExistentProjectId} not found."));
         _mediator.Setup(m => m.Send(It.Is<GetProjectIdBySlugQuery>(x => x.Slug == "non_existent_project"), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((int?)null);
+            .ThrowsAsync(new ProjectNotFoundException("non_existent_project"));
 
-        var result = await _controller.GetUnarchivedPluginsBySlug("non_existent_project");
-        Assert.That(result.Result, Is.InstanceOf<NotFoundObjectResult>());
-
-        var notFoundResult = result.Result as NotFoundObjectResult;
-        Assert.That(notFoundResult!.StatusCode, Is.EqualTo(404));
-        Assert.That(notFoundResult.Value, Is.EqualTo($"Project with Slug non_existent_project not found."));
+        Assert.ThrowsAsync<ProjectNotFoundException>(() => _controller.GetUnarchivedPluginsBySlug("non_existent_project"));
 
         _mediator.Verify(m => m.Send(It.Is<GetProjectIdBySlugQuery>(x => x.Slug == "non_existent_project"), It.IsAny<CancellationToken>()), Times.Once);;
         _mediator.Verify(m => m.Send(It.Is<GetAllUnarchivedPluginsForProjectIdQuery>(x => x.Id == nonExistentProjectId), It.IsAny<CancellationToken>()), Times.Never);
@@ -720,7 +703,7 @@ public class ProjectsControllerTest
     }
 
     [Test]
-    public async Task DeleteProject_WhenProjectIsNotArchived_ReturnsBadRequest()
+    public void DeleteProject_WhenProjectIsNotArchived_ReturnsBadRequest()
     {
         var project = new Project
         {
@@ -736,27 +719,19 @@ public class ProjectsControllerTest
 
         _mediator
             .Setup(m => m.Send(It.Is<DeleteProjectCommand>(x => x.Id == 1), It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new ArgumentException("Project is not archived."));
+            .ThrowsAsync(new ProjectNotArchivedException(project));
 
-        var result = await _controller.Delete(1);
-
-        Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
-        var badRequestResult = result as BadRequestObjectResult;
-        Assert.That(badRequestResult!.Value, Is.EqualTo("Project is not archived."));
+        Assert.ThrowsAsync<ProjectNotArchivedException>(() => _controller.Delete(1));
     }
 
     [Test]
-    public async Task DeleteProject_WhenProjectDoesNotExist_ReturnsBadRequest()
+    public void DeleteProject_WhenProjectDoesNotExist_ReturnsBadRequest()
     {
         _mediator
             .Setup(m => m.Send(It.Is<DeleteProjectCommand>(x => x.Id == 1), It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new ArgumentException("Project not found."));
+            .ThrowsAsync(new ProjectNotFoundException(1));
 
-        var result = await _controller.Delete(1);
-
-        Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
-        var badRequestResult = result as BadRequestObjectResult;
-        Assert.That(badRequestResult!.Value, Is.EqualTo("Project not found."));
+        Assert.ThrowsAsync<ProjectNotFoundException>(() => _controller.Delete(1));
     }
 
     [Test]
@@ -796,17 +771,12 @@ public class ProjectsControllerTest
 
 
     [Test]
-    public async Task DeleteProjectBySlug_WhenProjectDoesNotExist()
+    public void DeleteProjectBySlug_WhenProjectDoesNotExist()
     {
         _mediator.Setup(m => m.Send(It.Is<GetProjectIdBySlugQuery>(q => q.Slug == "test"), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((int?)null);
+            .ThrowsAsync(new ProjectNotFoundException("test"));
 
-
-        var result = await _controller.Delete("test");
-
-        Assert.That(result, Is.InstanceOf<NotFoundObjectResult>());
-        var notFoundRequestResult = result as NotFoundObjectResult;
-        Assert.That(notFoundRequestResult!.Value, Is.EqualTo("Project with Slug test not found."));
+        Assert.ThrowsAsync<ProjectNotFoundException>(() => _controller.Delete("test"));
     }
 
     [Test]

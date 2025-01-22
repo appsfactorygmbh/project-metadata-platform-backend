@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using ProjectMetadataPlatform.Application.Interfaces;
+using ProjectMetadataPlatform.Domain.Errors.ProjectExceptions;
 using ProjectMetadataPlatform.Domain.Logs;
 using ProjectMetadataPlatform.Domain.Projects;
 using Action = ProjectMetadataPlatform.Domain.Logs.Action;
@@ -38,7 +40,8 @@ public class DeleteProjectCommandHandler : IRequestHandler<DeleteProjectCommand,
     /// <param name="request">The DeleteProjectCommand.</param>
     /// <param name="cancellationToken">A cancellation token that can be used to cancel the work.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains the deleted project, or null if the project was not archived.</returns>
-    /// <exception cref="ArgumentException">Thrown when the project is not archived.</exception>
+    /// <exception cref="ProjectNotArchivedException">Thrown when the project is not archived.</exception>
+    /// <exception cref="ProjectNotFoundException">Thrown when the project is not found.</exception>
     public async Task<Project?> Handle(DeleteProjectCommand request, CancellationToken cancellationToken)
     {
         var project = await _projectsRepository.GetProjectAsync(request.Id);
@@ -46,9 +49,9 @@ public class DeleteProjectCommandHandler : IRequestHandler<DeleteProjectCommand,
         switch (project)
         {
             case null:
-                throw new ArgumentException("Project not found.");
+                throw new ProjectNotFoundException(request.Id);
             case { IsArchived: false }:
-                throw new ArgumentException("Project is not archived.");
+                throw new ProjectNotArchivedException(project);
         }
 
         var deletedProject = await _projectsRepository.DeleteProjectAsync(project);
@@ -67,7 +70,7 @@ public class DeleteProjectCommandHandler : IRequestHandler<DeleteProjectCommand,
             new() { OldValue = project.BusinessUnit, NewValue = "", Property = nameof(Project.BusinessUnit) },
             new() { OldValue = project.Department, NewValue = "", Property = nameof(Project.Department) },
             new() { OldValue = project.ClientName, NewValue = "", Property = nameof(Project.ClientName) },
-            new() { OldValue = project.TeamNumber.ToString(), NewValue = "", Property = nameof(Project.TeamNumber) }
+            new() { OldValue = project.TeamNumber.ToString(CultureInfo.InvariantCulture), NewValue = "", Property = nameof(Project.TeamNumber) }
         };
 
         await _logRepository.AddProjectLogForCurrentUser(project, Action.REMOVED_PROJECT, changes);

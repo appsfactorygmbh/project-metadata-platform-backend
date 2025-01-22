@@ -13,6 +13,7 @@ using ProjectMetadataPlatform.Api.Logs;
 using ProjectMetadataPlatform.Api.Logs.Models;
 using ProjectMetadataPlatform.Application.Logs;
 using ProjectMetadataPlatform.Application.Projects;
+using ProjectMetadataPlatform.Domain.Errors.ProjectExceptions;
 using ProjectMetadataPlatform.Domain.Logs;
 using Action = ProjectMetadataPlatform.Domain.Logs.Action;
 
@@ -324,6 +325,14 @@ public class LogsControllerTest
         _mediator.Verify(m => m.Send(It.Is<GetLogsQuery>(q => q.ProjectId == 42), default), Times.Once);
         _mediator.Verify(m => m.Send(It.Is<GetProjectIdBySlugQuery>(q => q.Slug == "deepthought"), default), Times.Never);
         _logConverter.Verify(lc => lc.BuildLogMessage(log), Times.Once);
+    }
+
+    [Test]
+    public void GetLogsByProjectSlugNoId_NotFoundThrowsException()
+    {
+        _mediator.Setup(m => m.Send(It.IsAny<GetProjectIdBySlugQuery>(), CancellationToken.None)).ThrowsAsync(new ProjectNotFoundException("answerToLifeTheUniverseAndEverything"));
+
+        Assert.ThrowsAsync<ProjectNotFoundException>(() => _controller.Get(null, null, null, null, "answerToLifeTheUniverseAndEverything"));
     }
 
     [Test]

@@ -4,7 +4,7 @@ using MediatR;
 namespace ProjectMetadataPlatform.Application.Plugins;
 
 /// <summary>
-///     Command to create a new Plugin with the given name.
+/// Command to create a new Plugin with the given name.
 /// </summary>
 /// <param name="Name">The name of the new plugin</param>
 /// <param name="IsArchived">A boolean indicating if a plugin is archived/deleted.</param>
