@@ -104,7 +104,7 @@ public class ExceptionFilterTest
     }
 
     [Test]
-    public void CallLogsExceptionHandlerForProjectException_Test()
+    public void CallLogsExceptionHandlerForLogException_Test()
     {
         var mockException = new Mock<LogException>("some error message");
         _context.SetupGet(c => c.Exception).Returns(mockException.Object);
