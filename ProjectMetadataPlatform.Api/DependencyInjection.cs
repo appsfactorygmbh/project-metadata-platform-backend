@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using ProjectMetadataPlatform.Api.Errors;
 using ProjectMetadataPlatform.Api.Errors.ExceptionHandlers;
@@ -24,9 +26,17 @@ public static class DependencyInjection
         _ = serviceCollection.AddScoped<IExceptionHandler<PmpException>, BasicExceptionHandler>();
         _ = serviceCollection.AddScoped<IExceptionHandler<ProjectException>, ProjectsExceptionHandler>();
         _ = serviceCollection.AddControllers(options =>
-        {
-            options.Filters.Add<ExceptionFilter>();
-        });
+            {
+                options.Filters.Add(new ProducesResponseTypeAttribute(typeof(ErrorResponse), 401));
+                options.Filters.Add(new ProducesResponseTypeAttribute(typeof(ErrorResponse), 500));
+                options.Filters.Add<ExceptionFilter>();
+                options.Filters.Add<ErrorResponseMiddleware>();
+            }).AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            })
+            .ConfigureApiBehaviorOptions(options => options.SuppressMapClientErrors = true);
+
         return serviceCollection;
     }
 }
