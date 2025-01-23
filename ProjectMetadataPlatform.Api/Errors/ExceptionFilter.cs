@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using ProjectMetadataPlatform.Api.Interfaces;
 using ProjectMetadataPlatform.Domain.Errors;
+using ProjectMetadataPlatform.Domain.Errors.AuthExceptions;
 using ProjectMetadataPlatform.Domain.Errors.ProjectExceptions;
 using ProjectMetadataPlatform.Domain.Errors.PluginExceptions;
 using ProjectMetadataPlatform.Domain.Errors.LogExceptions;
@@ -22,6 +23,7 @@ public class ExceptionFilter: IExceptionFilter
     private readonly IExceptionHandler<LogException> _logExceptionHandler;
     private readonly IExceptionHandler<ProjectException> _projectExceptionHandler;
     private readonly IExceptionHandler<PluginException> _pluginExceptionHandler;
+    private readonly IExceptionHandler<AuthException> _authExceptionHandler;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ExceptionFilter"/> class.
@@ -35,11 +37,13 @@ public class ExceptionFilter: IExceptionFilter
         IExceptionHandler<ProjectException> projectExceptionHandler,
         IExceptionHandler<LogException> logExceptionHandler
         ,IExceptionHandler<PluginException> pluginExceptionHandler)
+        IExceptionHandler<AuthException> authExceptionHandler)
     {
         _basicExceptionHandler = basicExceptionHandler;
         _projectExceptionHandler = projectExceptionHandler;
         _pluginExceptionHandler = pluginExceptionHandler;
         _logExceptionHandler = logExceptionHandler;
+        _authExceptionHandler = authExceptionHandler;
     }
 
     /// <summary>
@@ -56,6 +60,7 @@ public class ExceptionFilter: IExceptionFilter
             ProjectException projectEx => _projectExceptionHandler.Handle(projectEx),
             PluginException pluginEx => _pluginExceptionHandler.Handle(pluginEx),
             LogException logEx => _logExceptionHandler.Handle(logEx),
+            AuthException authEx => _authExceptionHandler.Handle(authEx),
             PmpException basicEx => _basicExceptionHandler.Handle(basicEx),
             _ => HandleUnknownError(exception)
         };

@@ -6,7 +6,8 @@ namespace ProjectMetadataPlatform.Api.Errors.ExceptionHandlers;
 /// <summary>
 /// Handles authentication exceptions and returns appropriate HTTP responses.
 /// </summary>
-public class AuthExceptionHandler: ControllerBase, IExceptionHandler<AuthException>
+public class
+    AuthExceptionHandler: ControllerBase, IExceptionHandler<AuthException>
 {
     /// <summary>
     /// Handles the specified authentication exception and returns an appropriate HTTP response.
