@@ -11,6 +11,7 @@ using ProjectMetadataPlatform.Api.Auth;
 using ProjectMetadataPlatform.Api.Auth.Models;
 using ProjectMetadataPlatform.Application.Auth;
 using ProjectMetadataPlatform.Domain.Auth;
+using ProjectMetadataPlatform.Domain.Errors.AuthExceptions;
 
 namespace ProjectMetadataPlatform.Api.Tests.Auth;
 
@@ -46,14 +47,11 @@ public class Tests
     public async Task WrongCredentialsLoginTest()
     {
         _mediator.Setup(m => m.Send(It.IsAny<LoginQuery>(), It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new InvalidOperationException("Invalid login credentials."));
+            .ThrowsAsync(new AuthInvalidLoginCredentialsException());
 
         var request = new LoginRequest("wrong_username", "password");
 
-        var result = await _controller.Post(request);
-        Assert.That(result.Result, Is.InstanceOf<BadRequestObjectResult>());
-        var badRequestObjectResult = result.Result as BadRequestObjectResult;
-        Assert.That(badRequestObjectResult!.Value, Is.EqualTo("Invalid login credentials."));
+        Assert.ThrowsAsync<AuthInvalidLoginCredentialsException>(() => _controller.Post(request));
     }
 
     [Test]
@@ -82,10 +80,7 @@ public class Tests
 
         var request = "Refresh invalidRefreshToken";
 
-        var result = await _controller.Get(request);
-        Assert.That(result.Result, Is.InstanceOf<BadRequestObjectResult>());
-        var badRequestObjectResult = result.Result as BadRequestObjectResult;
-        Assert.That(badRequestObjectResult!.Value, Is.EqualTo("Invalid refresh token."));
+        Assert.ThrowsAsync<AuthenticationException>(() => _controller.Get(request));
     }
 
     [Test]
