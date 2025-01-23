@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using ProjectMetadataPlatform.Application.Interfaces;
+using ProjectMetadataPlatform.Domain.Errors.PluginExceptions;
 using ProjectMetadataPlatform.Domain.Errors.ProjectExceptions;
 using ProjectMetadataPlatform.Domain.Logs;
 using ProjectMetadataPlatform.Domain.Plugins;
@@ -54,7 +55,7 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
         {
             if (!await _pluginRepository.CheckPluginExists(plugin.PluginId))
             {
-                throw new InvalidOperationException("The Plugin with this id does not exist: " + plugin.PluginId);
+                throw new PluginNotFoundException(plugin.PluginId);
             }
         }
 

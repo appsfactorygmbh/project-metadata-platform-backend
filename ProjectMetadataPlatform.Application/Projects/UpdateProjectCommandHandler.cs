@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using ProjectMetadataPlatform.Application.Interfaces;
+using ProjectMetadataPlatform.Domain.Errors.PluginExceptions;
 using ProjectMetadataPlatform.Domain.Errors.ProjectExceptions;
 using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.Projects;
@@ -61,8 +62,7 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
 
         if (invalidPluginIds.Count > 0)
         {
-            throw new InvalidOperationException(
-                "The Plugins with these ids do not exist: " + string.Join(", ", invalidPluginIds));
+            throw new MultiplePluginsNotFoundException(invalidPluginIds);
         }
 
         var currentPlugins = new List<ProjectPlugins>(project.ProjectPlugins ?? []);

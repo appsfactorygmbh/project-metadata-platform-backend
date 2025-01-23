@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Domain.Errors.PluginExceptions;
+using ProjectMetadataPlatform.Domain.Errors.ProjectExceptions;
 using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.Projects;
 using ProjectMetadataPlatform.Infrastructure.DataAccess;
@@ -374,12 +375,12 @@ public class PluginsRepositoryTest : TestsWithDatabase
     {
         int nonExistentProjectId = 999;
 
-        ArgumentException ex = Assert.ThrowsAsync<ArgumentException>(async () =>
+        var ex = Assert.ThrowsAsync<ProjectNotFoundException>(async () =>
         {
             await _repository.GetAllUnarchivedPluginsForProjectIdAsync(nonExistentProjectId);
         });
 
-        Assert.That(ex.Message, Is.EqualTo("Project with Id 999 does not exist."));
+        Assert.That(ex.Message, Is.EqualTo("The project with id 999 was not found."));
     }
 
     [Test]

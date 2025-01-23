@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Domain.Errors.PluginExceptions;
+using ProjectMetadataPlatform.Domain.Errors.ProjectExceptions;
 using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Infrastructure.DataAccess;
 
@@ -45,8 +46,8 @@ public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
     public async Task<List<ProjectPlugins>> GetAllUnarchivedPluginsForProjectIdAsync(int id)
     {
         var project = await _context.Projects
-            .FirstOrDefaultAsync(p => p.Id == id)
-                      ?? throw new ArgumentException($"Project with Id {id} does not exist.");
+                          .FirstOrDefaultAsync(p => p.Id == id)
+                      ?? throw new ProjectNotFoundException(id);
 
         return await _context.ProjectPluginsRelation
             .Where(rel => rel.ProjectId == id && rel.Plugin != null && !rel.Plugin.IsArchived)

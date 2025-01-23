@@ -144,7 +144,7 @@ public class Tests
     }
 
     [Test]
-    public async Task Patch_PluginNotFound_ThrowsNotFound()
+    public void Patch_PluginNotFound_ThrowsNotFound()
     {
         // Arrange
         var pluginId = 1;
@@ -225,7 +225,7 @@ public class Tests
     }
 
     [Test]
-    public async Task DeleteGlobalPlugin_PluginNotFound_Test()
+    public void DeleteGlobalPlugin_PluginNotFound_Test()
     {
 
         _mediator.Setup(m => m.Send(It.IsAny<DeleteGlobalPluginCommand>(), It.IsAny<CancellationToken>()))

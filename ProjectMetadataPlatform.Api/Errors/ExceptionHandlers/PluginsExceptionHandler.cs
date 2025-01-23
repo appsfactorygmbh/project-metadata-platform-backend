@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using ProjectMetadataPlatform.Api.Interfaces;
 using ProjectMetadataPlatform.Domain.Errors.PluginExceptions;
 
@@ -16,20 +15,13 @@ public class PluginsExceptionHandler : ControllerBase, IExceptionHandler<PluginE
     /// </summary>
     /// <param name="exception">The plugin exception to handle.</param>
     /// <returns>An IActionResult representing the result of handling the plugin exception.</returns>
-    public IActionResult Handle(PluginException exception)
+    public IActionResult? Handle(PluginException exception)
     {
         return exception switch
         {
             PluginNotArchivedException pluginNotArchivedException => BadRequest(pluginNotArchivedException.Message),
-            _ => HandleUnknownException(exception)
+            _ => null
         };
-    }
-
-    private StatusCodeResult HandleUnknownException(PluginException exception)
-    {
-        Console.WriteLine(exception.Message);
-        Console.WriteLine(exception.StackTrace);
-        return StatusCode(500);
     }
 
 }
