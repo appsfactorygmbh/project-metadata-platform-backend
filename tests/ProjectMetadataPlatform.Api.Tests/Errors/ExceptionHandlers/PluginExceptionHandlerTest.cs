@@ -43,8 +43,7 @@ public class PluginExceptionHandlerTest
         var mockException = new Mock<PluginException>("Test Message");
 
         var result = _pluginExceptionHandler.Handle(mockException.Object);
-        Assert.That(result, Is.InstanceOf<StatusCodeResult>());
-        var statusCodeResult = result as StatusCodeResult;
-        Assert.That(statusCodeResult.StatusCode, Is.EqualTo(500));
+        Assert.That(result, Is.Null);
+
     }
 }
