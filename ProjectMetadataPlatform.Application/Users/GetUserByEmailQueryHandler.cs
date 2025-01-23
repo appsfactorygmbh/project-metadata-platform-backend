@@ -9,7 +9,7 @@ namespace ProjectMetadataPlatform.Application.Users;
 /// <summary>
 /// Handles the query to get a user by their email.
 /// </summary>
-public class GetUserByEmailQueryHandler: IRequestHandler<GetUserByEmailQuery, IdentityUser?>
+public class GetUserByEmailQueryHandler: IRequestHandler<GetUserByEmailQuery, IdentityUser>
 {
     private readonly IUsersRepository _usersRepository;
 
@@ -28,7 +28,7 @@ public class GetUserByEmailQueryHandler: IRequestHandler<GetUserByEmailQuery, Id
     /// <param name="request">The query request containing the email.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>The user with the specified email, or null if not found.</returns>
-    public Task<IdentityUser?> Handle(GetUserByEmailQuery request, CancellationToken cancellationToken)
+    public Task<IdentityUser> Handle(GetUserByEmailQuery request, CancellationToken cancellationToken)
     {
         return _usersRepository.GetUserByEmailAsync(request.Email);
     }

@@ -8,6 +8,7 @@ using ProjectMetadataPlatform.Infrastructure.DataAccess;
 using Microsoft.AspNetCore.Identity;
 using System.Globalization;
 using ProjectMetadataPlatform.Domain.Auth;
+using ProjectMetadataPlatform.Domain.Errors.UserException;
 
 namespace ProjectMetadataPlatform.Infrastructure.Users;
 
@@ -43,9 +44,9 @@ public class UsersRepository : RepositoryBase<IdentityUser>, IUsersRepository
     /// </summary>
     /// <param name="email">The email of the user to be searched for.</param>
     /// <returns>The user with the specified email, or null if not found.</returns>
-    public Task<IdentityUser?> GetUserByEmailAsync(string email)
+    public async Task<IdentityUser> GetUserByEmailAsync(string email)
     {
-        return _userManager.FindByEmailAsync(email);
+        return await _userManager.FindByEmailAsync(email) ?? throw new UserUnauthorizedException();
     }
 
     /// <summary>
@@ -69,7 +70,7 @@ public class UsersRepository : RepositoryBase<IdentityUser>, IUsersRepository
 
         var identityResult = await _userManager.CreateAsync(user, password);
         return identityResult.Errors.Any(e => e.Code == "DuplicateUserName")
-            ? throw new ArgumentException("User creation Failed : DuplicateEmail")
+            ? throw new UserAlreadyExistsException()
             : !identityResult.Succeeded ? throw new ArgumentException("User creation " + identityResult) : user.Id;
     }
 
@@ -78,9 +79,9 @@ public class UsersRepository : RepositoryBase<IdentityUser>, IUsersRepository
     /// </summary>
     /// <param name="id">The unique identifier of the user.</param>
     /// <returns>The user with the specified identifier, or null if not found.</returns>
-    public Task<IdentityUser?> GetUserByIdAsync(string id)
+    public async Task<IdentityUser> GetUserByIdAsync(string id)
     {
-        return _userManager.FindByIdAsync(id);
+        return await _userManager.FindByIdAsync(id) ?? throw new UserNotFoundException(id);
     }
 
     /// <summary>

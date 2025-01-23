@@ -1,4 +1,5 @@
-﻿using ProjectMetadataPlatform.Domain.Errors.BasicExceptions;
+﻿using Microsoft.AspNetCore.Identity;
+using ProjectMetadataPlatform.Domain.Errors.BasicExceptions;
 
 namespace ProjectMetadataPlatform.Domain.Errors.UserException;
 
@@ -10,8 +11,8 @@ public class UserNotFoundException: EntityNotFoundException
     /// <summary>
     /// Initializes a new instance of the <see cref="UserNotFoundException"/> class.
     /// </summary>
-    /// <param name="userId">The ID of the user that was not found.</param>
-    public UserNotFoundException(string userId) : base("The user with email " + userId + " was not found.")
+    /// <param name="userIdentifier">The ID of the user that was not found.</param>
+    public UserNotFoundException(string userIdentifier) : base($"The user {userIdentifier} was not found.")
     {
     }
 }

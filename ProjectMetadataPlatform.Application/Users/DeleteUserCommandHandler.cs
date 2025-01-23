@@ -52,10 +52,6 @@ public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand,Identi
         var user = await _usersRepository.GetUserByIdAsync(request.Id);
         var email = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.Email) ?? "Unknown user";
         var activeUser = await _usersRepository.GetUserByEmailAsync(email);
-        if (user == null)
-        {
-            return null;
-        }
 
         if (user == activeUser)
         {

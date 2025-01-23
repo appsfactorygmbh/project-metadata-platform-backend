@@ -28,14 +28,14 @@ public interface IUsersRepository
     /// </summary>
     /// <param name="id">The ID of the user to retrieve.</param>
     /// <returns>The User object if found; otherwise, null.</returns>
-    Task<IdentityUser?> GetUserByIdAsync(string id);
+    Task<IdentityUser> GetUserByIdAsync(string id);
 
     /// <summary>
     /// Returns the user with the given email.
     /// </summary>
     /// <param name="email">The email of the searched for user.</param>
     /// <returns>The user that is searched for or null.</returns>
-    Task<IdentityUser?> GetUserByEmailAsync(string email);
+    Task<IdentityUser> GetUserByEmailAsync(string email);
 
     /// <summary>
     /// Stores a user.

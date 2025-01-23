@@ -9,7 +9,7 @@ namespace ProjectMetadataPlatform.Application.Users;
 /// <summary>
 /// Handles the <see cref="GetUserQuery"/>.
 /// </summary>
-public class GetUserQueryHandler : IRequestHandler<GetUserQuery, IdentityUser?>
+public class GetUserQueryHandler : IRequestHandler<GetUserQuery, IdentityUser>
 {
     /// <summary>
     /// The repository of users.
@@ -31,7 +31,7 @@ public class GetUserQueryHandler : IRequestHandler<GetUserQuery, IdentityUser?>
     /// <param name="request">The GetUserQuery.</param>
     /// <param name="cancellationToken">A cancellation token that can be used to cancel the work.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains the user with the specified ID, or null if no user is found.</returns>
-    public Task<IdentityUser?> Handle(GetUserQuery request, CancellationToken cancellationToken)
+    public Task<IdentityUser> Handle(GetUserQuery request, CancellationToken cancellationToken)
     {
         return _usersRepository.GetUserByIdAsync(request.UserId);
     }

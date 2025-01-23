@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using ProjectMetadataPlatform.Application.Interfaces;
+using ProjectMetadataPlatform.Domain.Errors.UserException;
 using ProjectMetadataPlatform.Domain.Logs;
 
 namespace ProjectMetadataPlatform.Application.Users;
@@ -40,14 +41,9 @@ public class PatchUserCommandHandler : IRequestHandler<PatchUserCommand, Identit
     /// <param name="request">The command containing the user information to be patched.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>The updated user information, or null if the user was not found.</returns>
-    public async Task<IdentityUser?> Handle(PatchUserCommand request, CancellationToken cancellationToken)
+    public async Task<IdentityUser> Handle(PatchUserCommand request, CancellationToken cancellationToken)
     {
         var user = await _usersRepository.GetUserByIdAsync(request.Id);
-
-        if (user == null)
-        {
-            return null;
-        }
 
         var oldEmail = string.Empty;
         if(request.Email != null)

@@ -10,9 +10,8 @@ public class UserAlreadyExistsException : UserException
     /// <summary>
     /// Initializes a new instance of the <see cref="UserAlreadyExistsException"/> class.
     /// </summary>
-    /// <param name="userId">The ID of the user that already exists.</param>
-    public UserAlreadyExistsException(string userId)
-        : base("The user with email " + userId + " already exists.")
+    public UserAlreadyExistsException()
+        : base("User creation Failed : DuplicateEmail")
     {
     }
 }

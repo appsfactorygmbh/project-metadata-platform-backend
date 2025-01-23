@@ -9,8 +9,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ProjectMetadataPlatform.Api.Users.Models;
 using ProjectMetadataPlatform.Application.Users;
-using Microsoft.AspNetCore.Identity;
-
 namespace ProjectMetadataPlatform.Api.Users;
 
 /// <summary>
@@ -104,11 +102,6 @@ public class UsersController : ControllerBase
         var query = new GetUserQuery(userId);
         var user = await _mediator.Send(query);
 
-        if (user == null)
-        {
-            return NotFound("No User with id " + userId + " was found.");
-        }
-
         var response = new GetUserResponse(
             user.Id,
             user.Email ?? ""
@@ -134,20 +127,7 @@ public class UsersController : ControllerBase
     {
         var command = new PatchUserCommand(userId, request.Email, request.Password);
 
-        IdentityUser? user;
-        try
-        {
-            user = await _mediator.Send(command);
-        }
-        catch (ArgumentException e)
-        {
-            return BadRequest(e.Message);
-        }
-
-        if (user == null)
-        {
-            return NotFound("No user with id " + userId + " was found.");
-        }
+        var user = await _mediator.Send(command);
 
         var response = new GetUserResponse(user.Id,  user.Email ?? "");
         return Ok(response);
@@ -169,19 +149,9 @@ public class UsersController : ControllerBase
     {
         var email = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.Email);
 
-        if (email == null)
-        {
-            return Unauthorized("User not authenticated.");
-        }
-
         var query = new GetUserByEmailQuery(email);
 
         var user = await _mediator.Send(query);
-
-        if (user == null)
-        {
-            return NotFound("User not found.");
-        }
 
         var response = new GetUserResponse(user.Id,  user.Email ?? "");
         return Ok(response);
@@ -203,17 +173,10 @@ public class UsersController : ControllerBase
     public async Task<ActionResult> Delete(string userId)
     {
         var command = new DeleteUserCommand(userId);
-        IdentityUser? user;
-        try
-        {
-            user = await _mediator.Send(command);
-        }
-        catch (InvalidOperationException e) when(e.Message == "A User can't delete themself.")
-        {
-            return BadRequest(e.Message);
-        }
 
-        return user == null ? NotFound("No user with id " + userId + " was found.") : NoContent();
+        await _mediator.Send(command);
+
+        return  NoContent();
     }
 
 }
