@@ -16,27 +16,30 @@ public class LogsExceptionHandlerTest
         _logsExceptionHandler = new LogsExceptionHandler();
     }
 
-    [TestCase (Action.ADDED_PROJECT)]
-    [TestCase (Action.ADDED_PROJECT_PLUGIN)]
-    [TestCase (Action.UPDATED_PROJECT)]
-    [TestCase (Action.UPDATED_PROJECT_PLUGIN)]
-    [TestCase (Action.REMOVED_PROJECT_PLUGIN)]
-    [TestCase (Action.ARCHIVED_PROJECT)]
-    [TestCase (Action.UNARCHIVED_PROJECT)]
-    [TestCase (Action.REMOVED_PROJECT)]
-    [TestCase (Action.ADDED_GLOBAL_PLUGIN)]
-    [TestCase (Action.UPDATED_GLOBAL_PLUGIN)]
-    [TestCase (Action.ARCHIVED_GLOBAL_PLUGIN)]
-    [TestCase (Action.UNARCHIVED_GLOBAL_PLUGIN)]
-    [TestCase (Action.REMOVED_GLOBAL_PLUGIN)]
-    public void Handle_LogsNotSupportedAction_ReturnsInternalServerError(Action action)
+    [TestCase(Action.ADDED_PROJECT, "Project")]
+    [TestCase(Action.ADDED_PROJECT_PLUGIN, "Project")]
+    [TestCase(Action.UPDATED_PROJECT, "Project")]
+    [TestCase(Action.UPDATED_PROJECT_PLUGIN, "Project")]
+    [TestCase(Action.REMOVED_PROJECT_PLUGIN, "Project")]
+    [TestCase(Action.ARCHIVED_PROJECT, "Project")]
+    [TestCase(Action.UNARCHIVED_PROJECT, "Project")]
+    [TestCase(Action.REMOVED_PROJECT, "Project")]
+    [TestCase(Action.ADDED_GLOBAL_PLUGIN, "Plugin")]
+    [TestCase(Action.UPDATED_GLOBAL_PLUGIN, "Plugin")]
+    [TestCase(Action.ARCHIVED_GLOBAL_PLUGIN, "Plugin")]
+    [TestCase(Action.UNARCHIVED_GLOBAL_PLUGIN, "Plugin")]
+    [TestCase(Action.REMOVED_GLOBAL_PLUGIN, "Plugin")]
+    [TestCase(Action.ADDED_USER, "IdentityUser")]
+    [TestCase(Action.UPDATED_USER, "IdentityUser")]
+    [TestCase(Action.REMOVED_USER, "IdentityUser")]
+    public void Handle_LogsNotSupportedAction_ReturnsInternalServerError(Action action, string logType)
     {
-        var exception = new LogActionNotSupportedException(action);
+        var exception = new LogActionNotSupportedException(action, logType);
 
         var result = _logsExceptionHandler.Handle(exception);
 
         Assert.That(result, Is.InstanceOf<StatusCodeResult>());
-        var statusCodeResult = (StatusCodeResult) result;
+        var statusCodeResult = (StatusCodeResult)result;
         Assert.That(statusCodeResult.StatusCode, Is.EqualTo(500));
     }
 }

@@ -76,7 +76,7 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
 
         if (!actionWhiteList.Contains(action))
         {
-            throw new LogActionNotSupportedException(action);;
+            throw new LogActionNotSupportedException(action, nameof(project));;
         }
 
         var log = await PrepareGenericLogForCurrentUser(action, changes);
@@ -100,7 +100,7 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
 
         if (!actionWhiteList.Contains(action))
         {
-            throw new LogActionNotSupportedException(action);
+            throw new LogActionNotSupportedException(action, nameof(affectedUser));
         }
 
         var log = await PrepareGenericLogForCurrentUser(action, changes);
@@ -126,7 +126,7 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
 
         if (!actionWhiteList.Contains(action))
         {
-            throw new LogActionNotSupportedException(action);
+            throw new LogActionNotSupportedException(action, nameof(globalPlugin));
         }
 
         var log = await PrepareGenericLogForCurrentUser(action, changes);
