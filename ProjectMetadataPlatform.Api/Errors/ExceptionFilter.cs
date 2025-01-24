@@ -36,8 +36,8 @@ public class ExceptionFilter: IExceptionFilter
     public ExceptionFilter(
         IExceptionHandler<PmpException> basicExceptionHandler,
         IExceptionHandler<ProjectException> projectExceptionHandler,
-        IExceptionHandler<LogException> logExceptionHandler
-        ,IExceptionHandler<PluginException> pluginExceptionHandler)
+        IExceptionHandler<LogException> logExceptionHandler,
+        IExceptionHandler<PluginException> pluginExceptionHandler,
         IExceptionHandler<AuthException> authExceptionHandler)
 {
     _basicExceptionHandler = basicExceptionHandler;
