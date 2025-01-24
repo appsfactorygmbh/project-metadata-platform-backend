@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Moq;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Application.Interfaces;
+using ProjectMetadataPlatform.Domain.Errors.LogExceptions;
 using ProjectMetadataPlatform.Domain.Logs;
 using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.Projects;
@@ -269,7 +270,7 @@ public class LogRepositoryTest : TestsWithDatabase
             new() { OldValue = "", NewValue = "Example Project", Property = "ProjectName" },
         };
 
-        Assert.ThrowsAsync<ArgumentException>(() => _loggingRepository.AddProjectLogForCurrentUser(exampleProject, action, logChanges));
+        Assert.ThrowsAsync<LogActionNotSupportedException>(() => _loggingRepository.AddProjectLogForCurrentUser(exampleProject, action, logChanges));
     }
 
     [TestCase (Action.ADDED_PROJECT)]
@@ -314,7 +315,7 @@ public class LogRepositoryTest : TestsWithDatabase
             },
         };
 
-        Assert.ThrowsAsync<ArgumentException>(() => _loggingRepository.AddUserLogForCurrentUser(affectedUser, action, logChanges));
+        Assert.ThrowsAsync<LogActionNotSupportedException>(() => _loggingRepository.AddUserLogForCurrentUser(affectedUser, action, logChanges));
     }
 
     [TestCase (Action.ADDED_USER)]
@@ -356,7 +357,7 @@ public class LogRepositoryTest : TestsWithDatabase
             },
         };
 
-        Assert.ThrowsAsync<ArgumentException>(() => _loggingRepository.AddGlobalPluginLogForCurrentUser(globalPlugin, action, logChanges));
+        Assert.ThrowsAsync<LogActionNotSupportedException>(() => _loggingRepository.AddGlobalPluginLogForCurrentUser(globalPlugin, action, logChanges));
     }
 
     [Test]

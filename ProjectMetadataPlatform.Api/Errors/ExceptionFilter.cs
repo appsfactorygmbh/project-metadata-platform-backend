@@ -6,6 +6,7 @@ using ProjectMetadataPlatform.Api.Interfaces;
 using ProjectMetadataPlatform.Domain.Errors;
 using ProjectMetadataPlatform.Domain.Errors.ProjectExceptions;
 using ProjectMetadataPlatform.Domain.Errors.PluginExceptions;
+using ProjectMetadataPlatform.Domain.Errors.LogExceptions;
 
 namespace ProjectMetadataPlatform.Api.Errors;
 
@@ -18,6 +19,7 @@ public class ExceptionFilter: IExceptionFilter
     /// Handler for basic exceptions.
     /// </summary>
     private readonly IExceptionHandler<PmpException> _basicExceptionHandler;
+    private readonly IExceptionHandler<LogException> _logExceptionHandler;
     private readonly IExceptionHandler<ProjectException> _projectExceptionHandler;
     private readonly IExceptionHandler<PluginException> _pluginExceptionHandler;
 
@@ -25,13 +27,19 @@ public class ExceptionFilter: IExceptionFilter
     /// Initializes a new instance of the <see cref="ExceptionFilter"/> class.
     /// </summary>
     /// <param name="basicExceptionHandler">The handler for basic exceptions.</param>
+    /// <param name="logExceptionHandler">The handler for log exceptions.></param>
     /// <param name="projectExceptionHandler">The handler for project exceptions.</param>
     /// <param name="pluginExceptionHandler">The handler for global plugin exceptions.</param>
-    public ExceptionFilter(IExceptionHandler<PmpException> basicExceptionHandler, IExceptionHandler<ProjectException> projectExceptionHandler, IExceptionHandler<PluginException> pluginExceptionHandler)
+    public ExceptionFilter(
+        IExceptionHandler<PmpException> basicExceptionHandler,
+        IExceptionHandler<ProjectException> projectExceptionHandler,
+        IExceptionHandler<LogException> logExceptionHandler
+        ,IExceptionHandler<PluginException> pluginExceptionHandler)
     {
         _basicExceptionHandler = basicExceptionHandler;
         _projectExceptionHandler = projectExceptionHandler;
         _pluginExceptionHandler = pluginExceptionHandler;
+        _logExceptionHandler = logExceptionHandler;
     }
 
     /// <summary>
@@ -47,6 +55,7 @@ public class ExceptionFilter: IExceptionFilter
         {
             ProjectException projectEx => _projectExceptionHandler.Handle(projectEx),
             PluginException pluginEx => _pluginExceptionHandler.Handle(pluginEx),
+            LogException logEx => _logExceptionHandler.Handle(logEx),
             PmpException basicEx => _basicExceptionHandler.Handle(basicEx),
             _ => HandleUnknownError(exception)
         };
