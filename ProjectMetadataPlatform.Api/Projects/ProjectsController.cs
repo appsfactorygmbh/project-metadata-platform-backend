@@ -49,21 +49,17 @@ public class ProjectsController : ControllerBase
         var query = new GetAllProjectsQuery(request, search);
         var projects = await _mediator.Send(query);
 
-        var response = projects
-            .OrderBy(project => project.ClientName)
-            .ThenBy(project => project.ProjectName)
-            .Select(project => new GetProjectsResponse(
-                project.Id,
-                project.Slug,
-                project.ProjectName,
-                project.ClientName,
-                project.BusinessUnit,
-                project.TeamNumber,
-                project.IsArchived,
-                project.Company,
-                project.IsmsLevel)
-            );
-
+        var response = projects.Select(project => new GetProjectsResponse(
+            project.Id,
+            project.Slug,
+            project.ProjectName,
+            project.ClientName,
+            project.BusinessUnit,
+            project.TeamNumber,
+            project.IsArchived,
+            project.Company,
+            project.IsmsLevel)
+        );
          return Ok(response);
     }
 

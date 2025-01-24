@@ -335,4 +335,85 @@ public class GetAllProjectsQueryHandlerTest
         Project[] resultArray = result.ToArray();
         Assert.That(resultArray, Has.Length.EqualTo(3));
     }
+     [Test]
+    public async Task HandleGetProjectsAlphabetical_Test()
+    {
+        var projects = new List<Project>
+        {
+            new Project
+            {
+                Id = 5,
+                ProjectName = "Aapfel",
+                Slug = "marika",
+                BusinessUnit = "999",
+                ClientName = "Zatan",
+                Department = "Earth",
+                TeamNumber = 44,
+                Company = "Ark",
+                IsmsLevel = SecurityLevel.HIGH
+            },
+            new Project
+            {
+                Id = 1,
+                ProjectName = "Beta",
+                Slug = "heather",
+                BusinessUnit = "666",
+                ClientName = "Metatron",
+                Department = "Mars",
+                TeamNumber = 42,
+                Company = "Ag der Ags",
+                IsmsLevel = SecurityLevel.HIGH
+            },
+            new Project
+            {
+                Id = 2,
+                ProjectName = "Apfel",
+                Slug = "james",
+                BusinessUnit = "777",
+                ClientName = "Metatron",
+                Department = "Venus",
+                TeamNumber = 43,
+                Company = "Ag der Ags",
+                IsmsLevel = SecurityLevel.HIGH
+            },
+            new Project
+            {
+                Id = 3,
+                ProjectName = "Marika",
+                Slug = "marika",
+                BusinessUnit = "999",
+                ClientName = "Satan",
+                Department = "Earth",
+                TeamNumber = 44,
+                Company = "Ark",
+                IsmsLevel = SecurityLevel.HIGH
+            },
+            new Project
+            {
+                Id = 4,
+                ProjectName = "Aarika",
+                Slug = "marika",
+                BusinessUnit = "999",
+                ClientName = "Satan",
+                Department = "Earth",
+                TeamNumber = 44,
+                Company = "Ark",
+                IsmsLevel = SecurityLevel.HIGH
+            },
+        };
+
+        _mockProjectRepo.Setup(m => m.GetProjectsAsync(It.IsAny<GetAllProjectsQuery>())).ReturnsAsync(projects);
+        var request = new GetAllProjectsQuery(null, null);
+        var result = await _handler.Handle(request, It.IsAny<CancellationToken>());
+
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result, Is.InstanceOf<IEnumerable<Project>>());
+
+        Project[] resultArray = result.ToArray();
+        Assert.That(resultArray[0].Id, Is.EqualTo(2) );
+        Assert.That(resultArray[1].Id, Is.EqualTo(1) );
+        Assert.That(resultArray[2].Id, Is.EqualTo(4) );
+        Assert.That(resultArray[3].Id, Is.EqualTo(3) );
+        Assert.That(resultArray[4].Id, Is.EqualTo(5) );
+    }
 }
