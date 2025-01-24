@@ -30,11 +30,11 @@ public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
     /// </summary>
     /// <param name="id">selects the project</param>
     /// <returns>The data received by the database.</returns>
-    public async Task<List<ProjectPlugins>> GetAllPluginsForProjectIdAsync(int id)
+    public Task<List<ProjectPlugins>> GetAllPluginsForProjectIdAsync(int id)
     {
-        return [.. _context.ProjectPluginsRelation
+        return Task.FromResult<List<ProjectPlugins>>([.. _context.ProjectPluginsRelation
             .Where(rel => rel.ProjectId == id)
-            .Include(rel => rel.Plugin)];
+            .Include(rel => rel.Plugin)]);
     }
 
     /// <summary>
@@ -59,7 +59,7 @@ public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
     /// </summary>
     /// <param name="plugin">The Plugin to save</param>
     /// <returns>The saved Plugin</returns>
-    public async Task<Plugin> StorePlugin(Plugin plugin)
+    public Task<Plugin> StorePlugin(Plugin plugin)
     {
         if (plugin.Id == 0)
         {
@@ -70,7 +70,7 @@ public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
             Update(plugin);
         }
 
-        return plugin;
+        return Task.FromResult(plugin);
     }
 
 
@@ -97,19 +97,19 @@ public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
     /// Checks if a plugin exists.
     /// </summary>
     /// <returns>True, if the plugin with the given id exists</returns>
-    public async Task<bool> CheckPluginExists(int id)
+    public Task<bool> CheckPluginExists(int id)
     {
-        return _context.Plugins.Any(plugin => plugin.Id == id);
+        return Task.FromResult(_context.Plugins.Any(plugin => plugin.Id == id));
     }
     /// <summary>
     /// Deletes Global Plugin
     /// </summary>
     /// <param name="plugin"></param>
     /// <returns></returns>
-    public async Task<bool> DeleteGlobalPlugin(Plugin plugin)
+    public Task<bool> DeleteGlobalPlugin(Plugin plugin)
     {
         _context.Plugins.Remove(plugin);
 
-        return true;
+        return Task.FromResult(true);
     }
 }
