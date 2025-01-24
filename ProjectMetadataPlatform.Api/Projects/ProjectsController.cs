@@ -35,7 +35,7 @@ public class ProjectsController : ControllerBase
 
 
     /// <summary>
-    /// Gets all projects or all projects that match the given search string.
+    /// Gets all projects or all projects that match the given search string. Also orders response alphabetical by ClientName and then by ProjectName
     /// </summary>
     /// <param name="request">The collection of filters to search by.</param>
     /// <param name="search">Search string to filter the projects by.</param>
@@ -49,16 +49,20 @@ public class ProjectsController : ControllerBase
         var query = new GetAllProjectsQuery(request, search);
         var projects = await _mediator.Send(query);
 
-        var response = projects.Select(project => new GetProjectsResponse(
-            project.Id,
-            project.Slug,
-            project.ProjectName,
-            project.ClientName,
-            project.BusinessUnit,
-            project.TeamNumber,
-            project.IsArchived,
-            project.Company,
-            project.IsmsLevel));
+        var response = projects
+            .OrderBy(project => project.ClientName)
+            .ThenBy(project => project.ProjectName)
+            .Select(project => new GetProjectsResponse(
+                project.Id,
+                project.Slug,
+                project.ProjectName,
+                project.ClientName,
+                project.BusinessUnit,
+                project.TeamNumber,
+                project.IsArchived,
+                project.Company,
+                project.IsmsLevel)
+            );
 
          return Ok(response);
     }
