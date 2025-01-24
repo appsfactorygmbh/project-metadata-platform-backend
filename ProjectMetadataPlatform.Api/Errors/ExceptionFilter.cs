@@ -25,27 +25,27 @@ public class ExceptionFilter: IExceptionFilter
     private readonly IExceptionHandler<PluginException> _pluginExceptionHandler;
     private readonly IExceptionHandler<AuthException> _authExceptionHandler;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ExceptionFilter"/> class.
-    /// </summary>
-    /// <param name="basicExceptionHandler">The handler for basic exceptions.</param>
-    /// <param name="logExceptionHandler">The handler for log exceptions.></param>
-    /// <param name="projectExceptionHandler">The handler for project exceptions.</param>
-    /// <param name="pluginExceptionHandler">The handler for global plugin exceptions.</param>
+/// <summary>
+/// Initializes a new instance of the <see cref="ExceptionFilter"/> class.
+/// </summary>
+/// <param name="basicExceptionHandler">The handler for basic exceptions.</param>
+/// <param name="logExceptionHandler">The handler for log exceptions.></param>
+/// <param name="projectExceptionHandler">The handler for project exceptions.</param>
+/// <param name="pluginExceptionHandler">The handler for global plugin exceptions.</param>
+/// <param name="authExceptionHandler">The handler for authentication exceptions.</param>
     public ExceptionFilter(
         IExceptionHandler<PmpException> basicExceptionHandler,
         IExceptionHandler<ProjectException> projectExceptionHandler,
         IExceptionHandler<LogException> logExceptionHandler
         ,IExceptionHandler<PluginException> pluginExceptionHandler)
         IExceptionHandler<AuthException> authExceptionHandler)
-    {
-        _basicExceptionHandler = basicExceptionHandler;
-        _projectExceptionHandler = projectExceptionHandler;
+{
+    _basicExceptionHandler = basicExceptionHandler;
+    _projectExceptionHandler = projectExceptionHandler;
         _pluginExceptionHandler = pluginExceptionHandler;
         _logExceptionHandler = logExceptionHandler;
-        _authExceptionHandler = authExceptionHandler;
-    }
-
+    _authExceptionHandler = authExceptionHandler;
+}
     /// <summary>
     /// Called when an exception occurs during the execution of an action.
     /// Builds an appropriate http response based on the exception.
