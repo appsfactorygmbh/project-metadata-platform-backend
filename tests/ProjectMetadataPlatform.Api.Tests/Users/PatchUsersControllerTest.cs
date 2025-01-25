@@ -10,6 +10,7 @@ using NUnit.Framework;
 using ProjectMetadataPlatform.Api.Users;
 using ProjectMetadataPlatform.Api.Users.Models;
 using ProjectMetadataPlatform.Application.Users;
+using ProjectMetadataPlatform.Domain.Errors.UserException;
 
 namespace ProjectMetadataPlatform.Api.Tests.Users;
 
@@ -38,7 +39,7 @@ public class PatchUsersControllerTest
 
         var request = new PatchUserRequest(null, "Dr. Peacock");
 
-        ActionResult<GetUserResponse> result = await _controller.Patch("42", request);
+        var result = await _controller.Patch("42", request);
         var okResult = result.Result as OkObjectResult;
         var resultValue = okResult?.Value as GetUserResponse;
 
@@ -51,52 +52,20 @@ public class PatchUsersControllerTest
     }
 
     [Test]
-    public async Task PatchUser_NotFound_Test()
+    public void PatchUser_NotFound_Test()
     {
-        _mediator.Setup(m => m.Send(It.IsAny<PatchUserCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync((IdentityUser)null!);
-
-        var request = new PatchUserRequest(null, "Black Midi");
-
-        var result = await _controller.Patch("404", request);
-
-        Assert.That(result.Result, Is.InstanceOf<NotFoundObjectResult>());
-
-        var notFoundResult = result.Result as NotFoundObjectResult;
-        Assert.That(notFoundResult, Is.Not.Null);
-        Assert.That(notFoundResult.Value, Is.EqualTo("No user with id 404 was found."));
+        _mediator.Setup(m => m.Send(It.IsAny<PatchUserCommand>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new UserNotFoundException("Dr. Dre"));
+        var request = new PatchUserRequest(null, "Dr. Dre");
+        Assert.ThrowsAsync<UserNotFoundException>(() => _controller.Patch("Dr. Dre", request));
     }
 
     [Test]
-    public async Task PatchUser_InvalidPassword_Test()
+    public void PatchUser_InvalidPassword_Test()
     {
-        //prepare
-        _mediator.Setup(m => m.Send(It.IsAny<PatchUserCommand>(), It.IsAny<CancellationToken>())).ThrowsAsync(new ArgumentException("Invalid password"));
-        var request = new PatchUserRequest( "Example Email", "Example Password");
-        var result = await _controller.Patch("1",request);
-        Assert.That(result.Result, Is.InstanceOf<BadRequestObjectResult>());
-        var badRequestResult = result.Result as BadRequestObjectResult;
-        Assert.That(badRequestResult, Is.Not.Null);
-        Assert.That(badRequestResult.Value, Is.EqualTo("Invalid password"));
-    }
-
-    [Test]
-    public async Task PatchUser_InvalidRequest_Test()
-    {
-        var request = new PatchUserRequest( "", "");
+        var request = new PatchUserRequest(null, "The Smiths");
         _mediator.Setup(mediator => mediator.Send(It.IsAny<PatchUserCommand>(), It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new ArgumentException());
-        ActionResult<GetUserResponse> result = await _controller.Patch("1",request);
-        Assert.That(result.Result, Is.InstanceOf<BadRequestObjectResult>());
-        var badRequestResult = result.Result as BadRequestObjectResult;
-        Assert.That(badRequestResult, Is.Not.Null);
-
-    }
-
-    [Test]
-    public void PatchUser_InternalError_Test()
-    {
-        _mediator.Setup(mediator => mediator.Send(It.IsAny<PatchUserCommand>(), It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new InvalidDataException("An error message"));
-        Assert.ThrowsAsync<InvalidDataException>(() => _controller.Patch("13", new PatchUserRequest(null, "The Smiths")));
+            .ThrowsAsync(new UserInvalidPasswordFormatException());
+        Assert.ThrowsAsync<UserInvalidPasswordFormatException>(()=> _controller.Patch("13", request));
     }
 }

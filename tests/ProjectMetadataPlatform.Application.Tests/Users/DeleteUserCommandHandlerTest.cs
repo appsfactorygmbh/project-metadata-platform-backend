@@ -9,6 +9,7 @@ using Moq;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Application.Users;
+using ProjectMetadataPlatform.Domain.Errors.UserException;
 using ProjectMetadataPlatform.Domain.Logs;
 using UserAction = ProjectMetadataPlatform.Domain.Logs.Action;
 
@@ -64,13 +65,11 @@ public class DeleteUserCommandHandlerTest
     }
 
     [Test]
-    public async Task DeleteUser_InvalidUser_Test()
+    public void DeleteUser_InvalidUser_Test()
     {
-        _mockUsersRepo.Setup(m => m.GetUserByIdAsync("1")).ReturnsAsync((IdentityUser?)null);
+        _mockUsersRepo.Setup(m => m.GetUserByIdAsync("1")).ThrowsAsync(new UserNotFoundException("1"));
 
-        var result = await _handler.Handle(new DeleteUserCommand("1"), CancellationToken.None);
-
-        Assert.That(result, Is.EqualTo(null));
+        Assert.ThrowsAsync<UserNotFoundException>(()=> _handler.Handle(new DeleteUserCommand("1"), CancellationToken.None));
     }
 
     [Test]

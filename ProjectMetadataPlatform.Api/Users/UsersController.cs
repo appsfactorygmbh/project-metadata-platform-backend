@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ProjectMetadataPlatform.Api.Users.Models;
 using ProjectMetadataPlatform.Application.Users;
+using ProjectMetadataPlatform.Domain.Errors.UserException;
+
 namespace ProjectMetadataPlatform.Api.Users;
 
 /// <summary>
@@ -147,7 +149,8 @@ public class UsersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<GetUserResponse>> GetMe()
     {
-        var email = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.Email);
+        var email = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.Email) ??
+                    throw new UserUnauthorizedException();
 
         var query = new GetUserByEmailQuery(email);
 
@@ -174,7 +177,14 @@ public class UsersController : ControllerBase
     {
         var command = new DeleteUserCommand(userId);
 
-        await _mediator.Send(command);
+        try
+        {
+            await _mediator.Send(command);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
 
         return  NoContent();
     }

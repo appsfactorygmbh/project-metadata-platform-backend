@@ -10,6 +10,7 @@ using NUnit.Framework;
 using ProjectMetadataPlatform.Api.Users;
 using ProjectMetadataPlatform.Api.Users.Models;
 using ProjectMetadataPlatform.Application.Users;
+using ProjectMetadataPlatform.Domain.Errors.UserException;
 
 namespace ProjectMetadataPlatform.Api.Tests.Users;
 
@@ -46,16 +47,12 @@ public class GetMeControllerTest
     }
 
     [Test]
-    public async Task getMe_Test_NotFound()
+    public void getMe_Test_NotFound()
     {
         _mediator.Setup(m => m.Send(It.IsAny<GetUserByEmailQuery>(), It.IsAny<System.Threading.CancellationToken>()))
-            .ReturnsAsync((IdentityUser)null!);
-        var controller = new UsersController(_mediator.Object, MockHttpContextAccessor("moonstealer"));
-
-        var result = await controller.GetMe();
-        var notFoundResult = result.Result as NotFoundObjectResult;
-        Assert.That(notFoundResult, Is.Not.Null);
-        Assert.That(notFoundResult.StatusCode, Is.EqualTo(404));
+            .ThrowsAsync(new UserNotFoundException("Dr. Dre"));
+        var controller = new UsersController(_mediator.Object, MockHttpContextAccessor("Dr. Dre"));
+        Assert.ThrowsAsync<UserNotFoundException>(() => controller.GetMe());
     }
 
     [Test]
@@ -69,14 +66,13 @@ public class GetMeControllerTest
     }
 
     [Test]
-    public async Task getMe_Test_Unauthorized()
+    public void getMe_Test_Unauthorized()
     {
+        _mediator.Setup(m => m.Send(It.IsAny<GetUserByEmailQuery>(), It.IsAny<System.Threading.CancellationToken>()))
+            .ThrowsAsync(new UserUnauthorizedException());
         var controller = new UsersController(_mediator.Object, MockHttpContextAccessor(null));
 
-        var result = await controller.GetMe();
-        var unauthorizedResult = result.Result as UnauthorizedObjectResult;
-        Assert.That(unauthorizedResult, Is.Not.Null);
-        Assert.That(unauthorizedResult.StatusCode, Is.EqualTo(401));
+        Assert.ThrowsAsync<UserUnauthorizedException>(() => controller.GetMe());
     }
 
     private static HttpContextAccessor MockHttpContextAccessor(string? email)

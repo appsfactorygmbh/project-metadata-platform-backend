@@ -9,6 +9,7 @@ using Moq;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Api.Users;
 using ProjectMetadataPlatform.Application.Users;
+using ProjectMetadataPlatform.Domain.Errors.UserException;
 
 namespace ProjectMetadataPlatform.Api.Tests.Users;
 
@@ -35,21 +36,11 @@ public class DeleteUserControllerTest
     }
 
     [Test]
-    public async Task DeleteUser_NotFound_Test()
-    {
-        _mediator.Setup(m => m.Send(It.IsAny<DeleteUserCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync((IdentityUser?)null);
-        ActionResult result = await _controller.Delete("1");
-        Assert.That(result, Is.InstanceOf<NotFoundObjectResult>());
-        _mediator.Verify(mediator => mediator.Send(It.Is<DeleteUserCommand>(command => command.Id == "1"), It.IsAny<CancellationToken>()));
-    }
-
-    [Test]
-    public void DeleteUser_InternalError_Test()
+    public void DeleteUser_NotFound_Test()
     {
         _mediator.Setup(m => m.Send(It.IsAny<DeleteUserCommand>(), It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new InvalidOperationException("Test exception"));
-
-        Assert.ThrowsAsync<InvalidOperationException>(() => _controller.Delete(""));
+            .ThrowsAsync(new UserNotFoundException("Mike"));
+        Assert.ThrowsAsync<UserNotFoundException>(() => _controller.Delete("Mike"));
     }
 
     [Test]

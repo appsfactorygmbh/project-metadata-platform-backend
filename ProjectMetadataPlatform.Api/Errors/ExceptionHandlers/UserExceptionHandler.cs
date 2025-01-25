@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using ProjectMetadataPlatform.Api.Interfaces;
 using ProjectMetadataPlatform.Domain.Errors.UserException;
 
@@ -18,8 +19,10 @@ public class UserExceptionHandler : ControllerBase, IExceptionHandler<UserExcept
     {
         return exception switch
         {
-            UserAlreadyExistsException userAlreadyExistsException => Conflict(userAlreadyExistsException.Message),
-            _ => StatusCode(500, exception.Message)
+            UserInvalidPasswordFormatException _ => BadRequest(exception.Message),
+            UserUnauthorizedException _ => Unauthorized(exception.Message),
+            UserCantDeleteThemselfException => BadRequest(exception.Message),
+            _ => null
         };
     }
 }

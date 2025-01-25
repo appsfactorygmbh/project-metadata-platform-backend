@@ -46,7 +46,7 @@ public class UsersRepository : RepositoryBase<IdentityUser>, IUsersRepository
     /// <returns>The user with the specified email, or null if not found.</returns>
     public async Task<IdentityUser> GetUserByEmailAsync(string email)
     {
-        return await _userManager.FindByEmailAsync(email) ?? throw new UserUnauthorizedException();
+        return await _userManager.FindByEmailAsync(email) ?? throw new UserNotFoundException(email);
     }
 
     /// <summary>
@@ -71,7 +71,7 @@ public class UsersRepository : RepositoryBase<IdentityUser>, IUsersRepository
         var identityResult = await _userManager.CreateAsync(user, password);
         return identityResult.Errors.Any(e => e.Code == "DuplicateUserName")
             ? throw new UserAlreadyExistsException()
-            : !identityResult.Succeeded ? throw new ArgumentException("User creation " + identityResult) : user.Id;
+            : !identityResult.Succeeded ? throw new UserCouldNotBeCreatedException(identityResult) : user.Id;
     }
 
     /// <summary>
@@ -95,7 +95,7 @@ public class UsersRepository : RepositoryBase<IdentityUser>, IUsersRepository
 
         return identityResult.Errors.Any(e => e.Code == "DuplicateUserName")
             ? throw new ArgumentException("User creation Failed : DuplicateEmail")
-            : !identityResult.Succeeded ? throw new ArgumentException("User creation " + identityResult) : user;
+            : !identityResult.Succeeded ? throw new UserCouldNotBeCreatedException(identityResult) : user;
     }
 
     /// <summary>
@@ -123,7 +123,7 @@ public class UsersRepository : RepositoryBase<IdentityUser>, IUsersRepository
     {
         var passwordValidator = new PasswordValidator<IdentityUser>();
         var identityResult = await passwordValidator.ValidateAsync(_userManager, new IdentityUser(), password);
-        return !identityResult.Succeeded ? throw new ArgumentException("User creation " + identityResult) : true;
+        return !identityResult.Succeeded ? throw new UserInvalidPasswordFormatException() : true;
 
     }
 }

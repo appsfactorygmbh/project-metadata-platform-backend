@@ -7,6 +7,7 @@ using Moq;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Application.Users;
+using ProjectMetadataPlatform.Domain.Errors.UserException;
 using ProjectMetadataPlatform.Domain.Logs;
 
 namespace ProjectMetadataPlatform.Application.Tests.Users;
@@ -74,12 +75,9 @@ public class PatchUserCommandHandlerTest
     [Test]
     public async Task PatchUser_NotFound_Test()
     {
-        _mockUsersRepo.Setup(repo => repo.GetUserByIdAsync("42")).ReturnsAsync((IdentityUser)null!);
+        _mockUsersRepo.Setup(repo => repo.GetUserByIdAsync("42")).ThrowsAsync(new UserNotFoundException("42"));
 
-        var result =
-            await _handler.Handle(new PatchUserCommand("42"), It.IsAny<CancellationToken>());
-
-        Assert.That(result, Is.Null);
+        Assert.ThrowsAsync<UserNotFoundException>(()=> _handler.Handle(new PatchUserCommand("42"), It.IsAny<CancellationToken>()));
     }
 
     [Test]
