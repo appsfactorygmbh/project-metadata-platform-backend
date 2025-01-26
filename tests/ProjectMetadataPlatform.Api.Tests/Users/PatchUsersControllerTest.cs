@@ -65,7 +65,7 @@ public class PatchUsersControllerTest
     {
         var request = new PatchUserRequest(null, "The Smiths");
         _mediator.Setup(mediator => mediator.Send(It.IsAny<PatchUserCommand>(), It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new UserInvalidPasswordFormatException());
+            .ThrowsAsync(new UserInvalidPasswordFormatException(IdentityResult.Failed()));
         Assert.ThrowsAsync<UserInvalidPasswordFormatException>(()=> _controller.Patch("13", request));
     }
 }

@@ -123,7 +123,7 @@ public class UsersRepository : RepositoryBase<IdentityUser>, IUsersRepository
     {
         var passwordValidator = new PasswordValidator<IdentityUser>();
         var identityResult = await passwordValidator.ValidateAsync(_userManager, new IdentityUser(), password);
-        return !identityResult.Succeeded ? throw new UserInvalidPasswordFormatException() : true;
+        return !identityResult.Succeeded ? throw new UserInvalidPasswordFormatException(identityResult) : true;
 
     }
 }

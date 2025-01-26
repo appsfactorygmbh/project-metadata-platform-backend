@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Infrastructure;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace ProjectMetadataPlatform.Domain.Errors.UserException
 {
@@ -10,7 +11,7 @@ namespace ProjectMetadataPlatform.Domain.Errors.UserException
         /// <summary>
         /// Initializes a new instance of the <see cref="UserInvalidPasswordFormatException"/> class with a default error message.
         /// </summary>
-        public UserInvalidPasswordFormatException() : base("Invalid password format.")
+        public UserInvalidPasswordFormatException(IdentityResult identityResult) : base("Invalid password format." + identityResult)
         {
         }
     }
