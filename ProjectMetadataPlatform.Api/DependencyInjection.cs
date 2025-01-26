@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -44,7 +45,16 @@ public static class DependencyInjection
             {
                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             })
-            .ConfigureApiBehaviorOptions(options => options.SuppressMapClientErrors = true);
+            .ConfigureApiBehaviorOptions(options =>
+            {
+                options.SuppressMapClientErrors = true;
+                options.InvalidModelStateResponseFactory = context =>
+                {
+                    var errors = context.ModelState.Values.SelectMany(x => x.Errors.Select(e => e.ErrorMessage));
+
+                    return new BadRequestObjectResult(new ErrorResponse("The request is invalid. Errors: " + string.Join(" ", errors)));
+                };
+            });
 
         return serviceCollection;
     }
