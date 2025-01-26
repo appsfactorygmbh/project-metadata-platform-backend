@@ -110,7 +110,7 @@ public class UsersRepository : RepositoryBase<IdentityUser>, IUsersRepository
         refreshTokens.RemoveRange(refreshTokens.Where(rt => rt.UserId == user.Id));
 
         var task = await _userManager.DeleteAsync(user);
-        return !task.Succeeded ? throw new ArgumentException("User deletion failed. With id " + user.Id + task) : user;
+        return !task.Succeeded ? throw new UserCouldNotBeDeletedException(user.Id, task) : user;
     }
 
     /// <summary>

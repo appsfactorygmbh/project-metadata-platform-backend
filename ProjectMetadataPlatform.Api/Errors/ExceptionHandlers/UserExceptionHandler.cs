@@ -22,6 +22,7 @@ public class UserExceptionHandler : ControllerBase, IExceptionHandler<UserExcept
             UserInvalidPasswordFormatException _ => BadRequest(exception.Message),
             UserUnauthorizedException _ => Unauthorized(exception.Message),
             UserCantDeleteThemselfException => BadRequest(exception.Message),
+            UserCouldNotBeDeletedException _ => BadRequest(exception.Message),
             _ => null
         };
     }
