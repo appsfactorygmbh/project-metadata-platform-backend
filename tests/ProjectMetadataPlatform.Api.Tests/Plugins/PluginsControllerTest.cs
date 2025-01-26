@@ -66,6 +66,17 @@ public class Tests
     }
 
     [Test]
+    public void CreatePlugin_WithNameConflict_Test()
+    {
+        _mediator.Setup(m => m.Send(It.IsAny<CreatePluginCommand>(), It.IsAny<CancellationToken>()))
+            .Throws(new PluginNameAlreadyExistsException("Drogue chute"));
+
+        var request = new CreatePluginRequest("Drogue chute", false, [], "https://chute.de");
+
+        Assert.ThrowsAsync<PluginNameAlreadyExistsException>(() => _controller.Put(request));
+    }
+
+    [Test]
     public async Task CreatePlugin_EmptyName_Test()
     {
         var request = new CreatePluginRequest("", false, new List<string>(), "https://empty.de");
@@ -95,6 +106,15 @@ public class Tests
             .ThrowsAsync(new InvalidDataException("An error message"));
         var exception = Assert.ThrowsAsync<InvalidDataException>(() => _controller.Patch(1, new PatchGlobalPluginRequest()));
         Assert.That(exception.Message, Is.EqualTo("An error message"));
+    }
+
+    [Test]
+    public void PatchPlugin_WithNameConflictThrowsException_Test()
+    {
+        _mediator.Setup(mediator => mediator.Send(It.IsAny<PatchGlobalPluginCommand>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new PluginNameAlreadyExistsException("Ariane 4"));
+        var exception = Assert.ThrowsAsync<PluginNameAlreadyExistsException>(() => _controller.Patch(1, new PatchGlobalPluginRequest("Ariane 4")));
+        Assert.That(exception.Message, Is.EqualTo("A global Plugin with the name Ariane 4 already exists."));
     }
 
     [Test]

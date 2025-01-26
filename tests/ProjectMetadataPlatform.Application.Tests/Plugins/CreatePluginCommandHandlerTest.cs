@@ -6,6 +6,7 @@ using Moq;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Application.Plugins;
+using ProjectMetadataPlatform.Domain.Errors.PluginExceptions;
 using ProjectMetadataPlatform.Domain.Logs;
 using ProjectMetadataPlatform.Domain.Plugins;
 
@@ -32,8 +33,9 @@ public class CreatePluginCommandHandlerTest
     public async Task CreatePlugin_Test()
     {
         _mockPluginRepo.Setup(m => m.StorePlugin(It.IsAny<Plugin>())).Callback<Plugin>(p => p.Id = 13);
+        _mockPluginRepo.Setup(m => m.CheckGlobalPluginNameExists("Airlock")).ReturnsAsync(false);
 
-        int result = await _handler.Handle(new CreatePluginCommand("Airlock", true, [],"https://airlock.com"), It.IsAny<CancellationToken>());
+        var result = await _handler.Handle(new CreatePluginCommand("Airlock", true, [],"https://airlock.com"), It.IsAny<CancellationToken>());
         Assert.Multiple(() =>
         {
             Assert.That(result, Is.EqualTo(13));
@@ -48,5 +50,15 @@ public class CreatePluginCommandHandlerTest
                 changes.Any(change => change.Property == "BaseUrl" && change.OldValue == "" && change.NewValue == "https://airlock.com")
             )
         ), Times.Once);
+        _mockPluginRepo.Verify(r => r.CheckGlobalPluginNameExists("Airlock"), Times.Once);
+    }
+
+    [Test]
+    public void CreatePlugin_NameConflict_Test()
+    {
+        _mockPluginRepo.Setup(m => m.CheckGlobalPluginNameExists("Airlock")).ReturnsAsync(true);
+
+        Assert.ThrowsAsync<PluginNameAlreadyExistsException>(() => _handler.Handle(new CreatePluginCommand("Airlock", true, [], "https://airlock.com"), It.IsAny<CancellationToken>()));
+        _mockPluginRepo.Verify(r => r.CheckGlobalPluginNameExists("Airlock"), Times.Once);
     }
 }
