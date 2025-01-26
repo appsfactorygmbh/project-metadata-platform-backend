@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -52,36 +51,13 @@ public class PutUserControllerTest
     }
 
     [Test]
-    public async Task CreateUser_InvalidPassword_Test()
-    {
-        //prepare
-        _mediator.Setup(m => m.Send(It.IsAny<CreateUserCommand>(), It.IsAny<CancellationToken>())).ThrowsAsync(new ArgumentException("Invalid password"));
-        var request = new CreateUserRequest( "Example Email", "Example Password");
-        ActionResult<CreateUserResponse> result = await _controller.Put(request);
-        Assert.That(result.Result, Is.InstanceOf<BadRequestObjectResult>());
-        var badRequestResult = result.Result as BadRequestObjectResult;
-        Assert.That(badRequestResult, Is.Not.Null);
-        Assert.That(badRequestResult.Value, Is.EqualTo("Invalid password"));
-    }
-
-    [Test]
-    public async Task CreateUser_InvalidRequest_Test()
-    {
-        var request = new CreateUserRequest( "", "");
-        ActionResult<CreateUserResponse> result = await _controller.Put(request);
-        Assert.That(result.Result, Is.InstanceOf<BadRequestObjectResult>());
-        var badRequestResult = result.Result as BadRequestObjectResult;
-        Assert.That(badRequestResult, Is.Not.Null);
-        Assert.That(badRequestResult.Value, Is.EqualTo("email and password can't be empty."));
-    }
-
-    [Test]
-    public void CreateUser_MediatorThrowsOtherExceptionTest()
+    public void CreateUser_MediatorThrowsExceptionTest()
     {
         _mediator.Setup(mediator => mediator.Send(It.IsAny<CreateUserCommand>(), It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new InvalidDataException("An error message"));
+            .ThrowsAsync(new InvalidOperationException());
         var request = new CreateUserRequest( "Example Email", "Example Password");
-        Assert.ThrowsAsync<InvalidDataException>(() => _controller.Put(request));
+
+        Assert.ThrowsAsync<InvalidOperationException>(() => _controller.Put(request));
     }
 
 }

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -9,7 +8,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ProjectMetadataPlatform.Api.Users.Models;
 using ProjectMetadataPlatform.Application.Users;
-using Microsoft.AspNetCore.Identity;
 using ProjectMetadataPlatform.Api.Errors;
 using ProjectMetadataPlatform.Domain.Errors.UserException;
 
@@ -51,19 +49,11 @@ public class UsersController : ControllerBase
     {
         if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
         {
-            return BadRequest("email and password can't be empty.");
+            return BadRequest(new ErrorResponse("email and password can't be empty."));
         }
 
         var command = new CreateUserCommand( request.Email, request.Password);
-        string id;
-        try
-        {
-            id = await _mediator.Send(command);
-        }
-        catch (ArgumentException e)
-        {
-            return BadRequest(e.Message);
-        }
+        var id = await _mediator.Send(command);
 
         var response = new CreateUserResponse(id);
         var uri = "/Users/" + id;
@@ -179,14 +169,7 @@ public class UsersController : ControllerBase
     {
         var command = new DeleteUserCommand(userId);
 
-        try
-        {
-            await _mediator.Send(command);
-        }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(ex.Message);
-        }
+        await _mediator.Send(command);
 
         return  NoContent();
     }
