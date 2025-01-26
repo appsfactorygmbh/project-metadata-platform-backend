@@ -80,6 +80,6 @@ public class DeleteUserCommandHandlerTest
         _mockUsersRepo.Setup(m => m.GetUserByIdAsync("1")).ReturnsAsync(user);
         _mockUsersRepo.Setup(m => m.GetUserByEmailAsync("camo")).ReturnsAsync(user);
 
-        Assert.ThrowsAsync<InvalidOperationException>(() => _handler.Handle(new DeleteUserCommand("1"), CancellationToken.None));
+        Assert.ThrowsAsync<UserCantDeleteThemselfException>(() => _handler.Handle(new DeleteUserCommand("1"), CancellationToken.None));
     }
 }
