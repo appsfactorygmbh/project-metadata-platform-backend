@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using ProjectMetadataPlatform.Domain.Errors.BasicExceptions;
+﻿using ProjectMetadataPlatform.Domain.Errors.BasicExceptions;
 
 namespace ProjectMetadataPlatform.Domain.Errors.UserException;
 

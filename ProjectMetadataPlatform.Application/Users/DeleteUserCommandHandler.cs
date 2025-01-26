@@ -14,7 +14,7 @@ namespace ProjectMetadataPlatform.Application.Users;
 /// <summary>
 /// Handles the command to delete a user by their unique identifier.
 /// </summary>
-public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand,IdentityUser?>
+public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand,IdentityUser>
 {
     private readonly IUsersRepository _usersRepository;
     private readonly IHttpContextAccessor _httpContextAccessor;
@@ -47,7 +47,7 @@ public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand,Identi
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns> The deleted user, if present, otherwise null.</returns>
     /// <exception cref="InvalidOperationException">If the active user tries to delete themselves.</exception>
-    public async Task<IdentityUser?> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
+    public async Task<IdentityUser> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
     {
         var user = await _usersRepository.GetUserByIdAsync(request.Id);
         var email = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.Email) ?? "Unknown user";

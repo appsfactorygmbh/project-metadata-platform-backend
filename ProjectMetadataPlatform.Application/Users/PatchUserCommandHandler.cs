@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using ProjectMetadataPlatform.Application.Interfaces;
-using ProjectMetadataPlatform.Domain.Errors.UserException;
 using ProjectMetadataPlatform.Domain.Logs;
 
 namespace ProjectMetadataPlatform.Application.Users;
@@ -12,7 +11,7 @@ namespace ProjectMetadataPlatform.Application.Users;
 /// <summary>
 /// Handles the command to patch user information.
 /// </summary>
-public class PatchUserCommandHandler : IRequestHandler<PatchUserCommand, IdentityUser?>
+public class PatchUserCommandHandler : IRequestHandler<PatchUserCommand, IdentityUser>
 {
     private readonly IUsersRepository _usersRepository;
     private readonly IPasswordHasher<IdentityUser> _passwordHasher;
