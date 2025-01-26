@@ -8,6 +8,7 @@ using ProjectMetadataPlatform.Infrastructure.DataAccess;
 using Microsoft.AspNetCore.Identity;
 using System.Globalization;
 using ProjectMetadataPlatform.Domain.Auth;
+using ProjectMetadataPlatform.Domain.Errors.UserException;
 
 namespace ProjectMetadataPlatform.Infrastructure.Users;
 
@@ -43,9 +44,9 @@ public class UsersRepository : RepositoryBase<IdentityUser>, IUsersRepository
     /// </summary>
     /// <param name="email">The email of the user to be searched for.</param>
     /// <returns>The user with the specified email, or null if not found.</returns>
-    public Task<IdentityUser?> GetUserByEmailAsync(string email)
+    public async Task<IdentityUser> GetUserByEmailAsync(string email)
     {
-        return _userManager.FindByEmailAsync(email);
+        return await _userManager.FindByEmailAsync(email) ?? throw new UserNotFoundException(email);
     }
 
     /// <summary>
@@ -69,8 +70,8 @@ public class UsersRepository : RepositoryBase<IdentityUser>, IUsersRepository
 
         var identityResult = await _userManager.CreateAsync(user, password);
         return identityResult.Errors.Any(e => e.Code == "DuplicateUserName")
-            ? throw new ArgumentException("User creation Failed : DuplicateEmail")
-            : !identityResult.Succeeded ? throw new ArgumentException("User creation " + identityResult) : user.Id;
+            ? throw new UserAlreadyExistsException()
+            : !identityResult.Succeeded ? throw new UserCouldNotBeCreatedException(identityResult) : user.Id;
     }
 
     /// <summary>
@@ -78,9 +79,9 @@ public class UsersRepository : RepositoryBase<IdentityUser>, IUsersRepository
     /// </summary>
     /// <param name="id">The unique identifier of the user.</param>
     /// <returns>The user with the specified identifier, or null if not found.</returns>
-    public Task<IdentityUser?> GetUserByIdAsync(string id)
+    public async Task<IdentityUser> GetUserByIdAsync(string id)
     {
-        return _userManager.FindByIdAsync(id);
+        return await _userManager.FindByIdAsync(id) ?? throw new UserNotFoundException(id);
     }
 
     /// <summary>
@@ -93,8 +94,8 @@ public class UsersRepository : RepositoryBase<IdentityUser>, IUsersRepository
         var identityResult = user.Id == "" ? await _userManager.CreateAsync(user) : await _userManager.UpdateAsync(user);
 
         return identityResult.Errors.Any(e => e.Code == "DuplicateUserName")
-            ? throw new ArgumentException("User creation Failed : DuplicateEmail")
-            : !identityResult.Succeeded ? throw new ArgumentException("User creation " + identityResult) : user;
+            ? throw new UserAlreadyExistsException()
+            : !identityResult.Succeeded ? throw new UserCouldNotBeCreatedException(identityResult) : user;
     }
 
     /// <summary>
@@ -109,7 +110,7 @@ public class UsersRepository : RepositoryBase<IdentityUser>, IUsersRepository
         refreshTokens.RemoveRange(refreshTokens.Where(rt => rt.UserId == user.Id));
 
         var task = await _userManager.DeleteAsync(user);
-        return !task.Succeeded ? throw new ArgumentException("User deletion failed. With id " + user.Id + task) : user;
+        return !task.Succeeded ? throw new UserCouldNotBeDeletedException(user.Id, task) : user;
     }
 
     /// <summary>
@@ -122,7 +123,7 @@ public class UsersRepository : RepositoryBase<IdentityUser>, IUsersRepository
     {
         var passwordValidator = new PasswordValidator<IdentityUser>();
         var identityResult = await passwordValidator.ValidateAsync(_userManager, new IdentityUser(), password);
-        return !identityResult.Succeeded ? throw new ArgumentException("User creation " + identityResult) : true;
+        return !identityResult.Succeeded ? throw new UserInvalidPasswordFormatException(identityResult) : true;
 
     }
 }

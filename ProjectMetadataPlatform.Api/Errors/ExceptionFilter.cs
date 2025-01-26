@@ -6,6 +6,7 @@ using ProjectMetadataPlatform.Api.Interfaces;
 using ProjectMetadataPlatform.Domain.Errors;
 using ProjectMetadataPlatform.Domain.Errors.AuthExceptions;
 using ProjectMetadataPlatform.Domain.Errors.ProjectExceptions;
+using ProjectMetadataPlatform.Domain.Errors.UserException;
 using ProjectMetadataPlatform.Domain.Errors.PluginExceptions;
 using ProjectMetadataPlatform.Domain.Errors.LogExceptions;
 
@@ -22,6 +23,7 @@ public class ExceptionFilter: IExceptionFilter
     private readonly IExceptionHandler<PmpException> _basicExceptionHandler;
     private readonly IExceptionHandler<LogException> _logExceptionHandler;
     private readonly IExceptionHandler<ProjectException> _projectExceptionHandler;
+    private readonly IExceptionHandler<UserException> _userExceptionHandler;
     private readonly IExceptionHandler<PluginException> _pluginExceptionHandler;
     private readonly IExceptionHandler<AuthException> _authExceptionHandler;
 
@@ -33,18 +35,21 @@ public class ExceptionFilter: IExceptionFilter
 /// <param name="projectExceptionHandler">The handler for project exceptions.</param>
 /// <param name="pluginExceptionHandler">The handler for global plugin exceptions.</param>
 /// <param name="authExceptionHandler">The handler for authentication exceptions.</param>
+/// <param name="userExceptionHandler">The handler</param>
     public ExceptionFilter(
         IExceptionHandler<PmpException> basicExceptionHandler,
         IExceptionHandler<ProjectException> projectExceptionHandler,
         IExceptionHandler<LogException> logExceptionHandler,
         IExceptionHandler<PluginException> pluginExceptionHandler,
-        IExceptionHandler<AuthException> authExceptionHandler)
+        IExceptionHandler<AuthException> authExceptionHandler,
+        IExceptionHandler<UserException> userExceptionHandler)
 {
     _basicExceptionHandler = basicExceptionHandler;
     _projectExceptionHandler = projectExceptionHandler;
-        _pluginExceptionHandler = pluginExceptionHandler;
-        _logExceptionHandler = logExceptionHandler;
+    _pluginExceptionHandler = pluginExceptionHandler;
+    _logExceptionHandler = logExceptionHandler;
     _authExceptionHandler = authExceptionHandler;
+    _userExceptionHandler = userExceptionHandler;
 }
     /// <summary>
     /// Called when an exception occurs during the execution of an action.
@@ -61,6 +66,7 @@ public class ExceptionFilter: IExceptionFilter
             PluginException pluginEx => _pluginExceptionHandler.Handle(pluginEx),
             LogException logEx => _logExceptionHandler.Handle(logEx),
             AuthException authEx => _authExceptionHandler.Handle(authEx),
+            UserException userEx => _userExceptionHandler.Handle(userEx),
             PmpException basicEx => _basicExceptionHandler.Handle(basicEx),
             _ => HandleUnknownError(exception)
         };

@@ -9,6 +9,7 @@ using ProjectMetadataPlatform.Application.Users;
 using ProjectMetadataPlatform.Api.Users.Models;
 using System.IO;
 using Microsoft.AspNetCore.Identity;
+using ProjectMetadataPlatform.Domain.Errors.UserException;
 
 namespace ProjectMetadataPlatform.Api.Tests.Users;
 
@@ -51,17 +52,11 @@ public class GetUserControllerTest
     }
 
     [Test]
-    public async Task GetUserById_NonexistentUser_Test()
+    public void GetUserById_NonexistentUser_Test()
     {
-        _mediator.Setup(m => m.Send(It.Is<GetUserQuery>(q => q.UserId == "1"), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((IdentityUser?)null);
-        ActionResult<GetUserResponse> result = await _controller.GetUserById("1");
-        Assert.That(result, Is.Not.Null);
-
-        Assert.That(result.Result, Is.InstanceOf<NotFoundObjectResult>());
-
-        var notFoundResult = result.Result as NotFoundObjectResult;
-        Assert.That(notFoundResult.Value, Is.EqualTo("No User with id 1 was found."));
+        _mediator.Setup(mediator => mediator.Send(It.IsAny<GetUserQuery>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new UserNotFoundException("1"));
+        Assert.ThrowsAsync<UserNotFoundException>(() => _controller.GetUserById("1"));
     }
 
     [Test]

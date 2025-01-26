@@ -11,6 +11,7 @@ using ProjectMetadataPlatform.Api.Users.Models;
 using ProjectMetadataPlatform.Application.Users;
 using Microsoft.AspNetCore.Identity;
 using ProjectMetadataPlatform.Api.Errors;
+using ProjectMetadataPlatform.Domain.Errors.UserException;
 
 namespace ProjectMetadataPlatform.Api.Users;
 
@@ -105,11 +106,6 @@ public class UsersController : ControllerBase
         var query = new GetUserQuery(userId);
         var user = await _mediator.Send(query);
 
-        if (user == null)
-        {
-            return NotFound("No User with id " + userId + " was found.");
-        }
-
         var response = new GetUserResponse(
             user.Id,
             user.Email ?? ""
@@ -135,20 +131,7 @@ public class UsersController : ControllerBase
     {
         var command = new PatchUserCommand(userId, request.Email, request.Password);
 
-        IdentityUser? user;
-        try
-        {
-            user = await _mediator.Send(command);
-        }
-        catch (ArgumentException e)
-        {
-            return BadRequest(e.Message);
-        }
-
-        if (user == null)
-        {
-            return NotFound("No user with id " + userId + " was found.");
-        }
+        var user = await _mediator.Send(command);
 
         var response = new GetUserResponse(user.Id,  user.Email ?? "");
         return Ok(response);
@@ -168,21 +151,12 @@ public class UsersController : ControllerBase
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<GetUserResponse>> GetMe()
     {
-        var email = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.Email);
-
-        if (email == null)
-        {
-            return Unauthorized("User not authenticated.");
-        }
+        var email = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.Email) ??
+                    throw new UserUnauthorizedException();
 
         var query = new GetUserByEmailQuery(email);
 
         var user = await _mediator.Send(query);
-
-        if (user == null)
-        {
-            return NotFound("User not found.");
-        }
 
         var response = new GetUserResponse(user.Id,  user.Email ?? "");
         return Ok(response);
@@ -204,17 +178,17 @@ public class UsersController : ControllerBase
     public async Task<ActionResult> Delete(string userId)
     {
         var command = new DeleteUserCommand(userId);
-        IdentityUser? user;
+
         try
         {
-            user = await _mediator.Send(command);
+            await _mediator.Send(command);
         }
-        catch (InvalidOperationException e) when(e.Message == "A User can't delete themself.")
+        catch (InvalidOperationException ex)
         {
-            return BadRequest(e.Message);
+            return BadRequest(ex.Message);
         }
 
-        return user == null ? NotFound("No user with id " + userId + " was found.") : NoContent();
+        return  NoContent();
     }
 
 }

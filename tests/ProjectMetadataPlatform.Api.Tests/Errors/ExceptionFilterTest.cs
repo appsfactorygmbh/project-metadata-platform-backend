@@ -14,6 +14,8 @@ using ProjectMetadataPlatform.Domain.Errors.BasicExceptions;
 using ProjectMetadataPlatform.Domain.Errors.LogExceptions;
 using ProjectMetadataPlatform.Domain.Errors.ProjectExceptions;
 using ProjectMetadataPlatform.Domain.Errors.PluginExceptions;
+using ProjectMetadataPlatform.Domain.Errors.LogExceptions;
+using ProjectMetadataPlatform.Domain.Errors.UserException;
 using RouteData = Microsoft.AspNetCore.Routing.RouteData;
 
 namespace ProjectMetadataPlatform.Api.Tests.Errors;
@@ -24,6 +26,7 @@ public class ExceptionFilterTest
     private Mock<IExceptionHandler<PmpException>> _basicExceptionHandler;
     private Mock<IExceptionHandler<LogException>> _logExceptionHandler;
     private Mock<IExceptionHandler<ProjectException>> _projectExceptionHandler;
+    private Mock<IExceptionHandler<UserException>> _userExceptionHandler;
     private Mock<IExceptionHandler<PluginException>> _pluginsExceptionHandler;
     private Mock<IExceptionHandler<AuthException>> _authExceptionHandler;
     private Mock<ExceptionContext> _context;
@@ -36,8 +39,9 @@ public class ExceptionFilterTest
         _pluginsExceptionHandler = new Mock<IExceptionHandler<PluginException>>();
         _logExceptionHandler = new Mock<IExceptionHandler<LogException>>();
         _authExceptionHandler = new Mock<IExceptionHandler<AuthException>>();
+        _userExceptionHandler = new Mock<IExceptionHandler<UserException>>();
         _context = SetupExceptionContext();
-        _filter = new ExceptionFilter(_basicExceptionHandler.Object, _projectExceptionHandler.Object, _logExceptionHandler.Object, _pluginsExceptionHandler.Object, _authExceptionHandler.Object);
+        _filter = new ExceptionFilter(_basicExceptionHandler.Object, _projectExceptionHandler.Object, _logExceptionHandler.Object, _pluginsExceptionHandler.Object, _authExceptionHandler.Object, _userExceptionHandler.Object);
     }
 
     private static Mock<ExceptionContext> SetupExceptionContext()
