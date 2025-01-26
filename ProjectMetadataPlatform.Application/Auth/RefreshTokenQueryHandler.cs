@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using MediatR;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Domain.Auth;
+using ProjectMetadataPlatform.Domain.Errors.AuthExceptions;
 
 namespace ProjectMetadataPlatform.Application.Auth;
 
@@ -34,7 +35,7 @@ public class RefreshTokenQueryHandler : IRequestHandler<RefreshTokenQuery, JwtTo
     {
         if (!await _authRepository.CheckRefreshTokenRequest(request.RefreshToken))
         {
-            throw new AuthenticationException("Invalid refresh token.");
+            throw new AuthInvalidRefreshTokenException();
         }
         var email = await _authRepository.GetEmailByRefreshToken(request.RefreshToken);
         var stringToken = AccessTokenService.CreateAccessToken(email);

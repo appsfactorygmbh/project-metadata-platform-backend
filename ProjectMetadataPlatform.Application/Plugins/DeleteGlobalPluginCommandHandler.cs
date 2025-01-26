@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using ProjectMetadataPlatform.Application.Interfaces;
+using ProjectMetadataPlatform.Domain.Errors.PluginExceptions;
 using ProjectMetadataPlatform.Domain.Logs;
 
 namespace ProjectMetadataPlatform.Application.Plugins;
@@ -10,7 +11,7 @@ namespace ProjectMetadataPlatform.Application.Plugins;
 /// <summary>
 /// Handler for the <see cref="DeleteGlobalPluginCommand"/>
 /// </summary>
-public class DeleteGlobalPluginCommandHandler : IRequestHandler<DeleteGlobalPluginCommand, bool?>
+public class DeleteGlobalPluginCommandHandler : IRequestHandler<DeleteGlobalPluginCommand, bool>
 {
     private readonly IPluginRepository _pluginRepository;
     private readonly ILogRepository _logRepository;
@@ -37,14 +38,9 @@ public class DeleteGlobalPluginCommandHandler : IRequestHandler<DeleteGlobalPlug
     /// <param name="request">The request that needs to be handled.</param>
     /// <param name="cancellationToken"></param>
     /// <returns>The response of the request.</returns>
-    public async Task<bool?> Handle(DeleteGlobalPluginCommand request, CancellationToken cancellationToken)
+    public async Task<bool> Handle(DeleteGlobalPluginCommand request, CancellationToken cancellationToken)
     {
-        var plugin = await _pluginRepository.GetPluginByIdAsync(request.Id);
-        if (plugin == null)
-        {
-            return null;
-        }
-
+        var plugin = await _pluginRepository.GetPluginByIdAsync(request.Id) ?? throw new PluginNotFoundException(request.Id);
         if (plugin.IsArchived)
         {
             await _pluginRepository.DeleteGlobalPlugin(plugin);
@@ -55,7 +51,8 @@ public class DeleteGlobalPluginCommandHandler : IRequestHandler<DeleteGlobalPlug
             await _unitOfWork.CompleteAsync();
             return true;
         }
-        return false;
+
+        throw new PluginNotArchivedException(plugin);
     }
 }
 

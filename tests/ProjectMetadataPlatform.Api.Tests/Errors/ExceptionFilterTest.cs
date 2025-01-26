@@ -1,16 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Moq;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Api.Errors;
+using ProjectMetadataPlatform.Api.Errors.ExceptionHandlers;
 using ProjectMetadataPlatform.Api.Interfaces;
 using ProjectMetadataPlatform.Domain.Errors;
+using ProjectMetadataPlatform.Domain.Errors.AuthExceptions;
 using ProjectMetadataPlatform.Domain.Errors.BasicExceptions;
+using ProjectMetadataPlatform.Domain.Errors.LogExceptions;
 using ProjectMetadataPlatform.Domain.Errors.ProjectExceptions;
+using ProjectMetadataPlatform.Domain.Errors.PluginExceptions;
+using ProjectMetadataPlatform.Domain.Errors.LogExceptions;
 using RouteData = Microsoft.AspNetCore.Routing.RouteData;
 
 namespace ProjectMetadataPlatform.Api.Tests.Errors;
@@ -19,7 +25,10 @@ public class ExceptionFilterTest
 {
     private ExceptionFilter _filter;
     private Mock<IExceptionHandler<PmpException>> _basicExceptionHandler;
+    private Mock<IExceptionHandler<LogException>> _logExceptionHandler;
     private Mock<IExceptionHandler<ProjectException>> _projectExceptionHandler;
+    private Mock<IExceptionHandler<PluginException>> _pluginsExceptionHandler;
+    private Mock<IExceptionHandler<AuthException>> _authExceptionHandler;
     private Mock<ExceptionContext> _context;
 
     [SetUp]
@@ -27,8 +36,11 @@ public class ExceptionFilterTest
     {
         _basicExceptionHandler = new Mock<IExceptionHandler<PmpException>>();
         _projectExceptionHandler = new Mock<IExceptionHandler<ProjectException>>();
+        _pluginsExceptionHandler = new Mock<IExceptionHandler<PluginException>>();
+        _logExceptionHandler = new Mock<IExceptionHandler<LogException>>();
+        _authExceptionHandler = new Mock<IExceptionHandler<AuthException>>();
         _context = SetupExceptionContext();
-        _filter = new ExceptionFilter(_basicExceptionHandler.Object, _projectExceptionHandler.Object);
+        _filter = new ExceptionFilter(_basicExceptionHandler.Object, _projectExceptionHandler.Object, _logExceptionHandler.Object, _pluginsExceptionHandler.Object, _authExceptionHandler.Object);
     }
 
     private static Mock<ExceptionContext> SetupExceptionContext()
@@ -61,6 +73,26 @@ public class ExceptionFilterTest
     }
 
     [Test]
+    public void CallsPluginExceptionHandlerForPluginException_Test()
+    {
+        var mockException = new Mock<PluginException>("some error message");
+        _context.SetupGet(c => c.Exception).Returns(mockException.Object);
+
+        var result = new StatusCodeResult(500);
+        _pluginsExceptionHandler.Setup(h => h.Handle(It.IsAny<PluginException>())).Returns(result);
+
+        _context.SetupSet(c => c.Result = It.IsAny<IActionResult>()).Callback((IActionResult r) =>
+        {
+            Assert.That(r, Is.EqualTo(result));
+        });
+
+        _filter.OnException(_context.Object);
+
+        _pluginsExceptionHandler.Verify(h => h.Handle(It.IsAny<PluginException>()), Times.Once);
+        _context.VerifySet(c => c.Result = It.IsAny<IActionResult>(), Times.Once);
+    }
+
+    [Test]
     public void CallsProjectsExceptionHandlerForProjectException_Test()
     {
         var mockException = new Mock<ProjectException>("some error message");
@@ -77,6 +109,26 @@ public class ExceptionFilterTest
         _filter.OnException(_context.Object);
 
         _projectExceptionHandler.Verify(h => h.Handle(It.IsAny<ProjectException>()), Times.Once);
+        _context.VerifySet(c => c.Result = It.IsAny<IActionResult>(), Times.Once);
+    }
+
+    [Test]
+    public void CallsAuthExceptionHandlerForProjectException_Test()
+    {
+        var mockException = new Mock<AuthException>("some error message");
+        _context.SetupGet(c => c.Exception).Returns(mockException.Object);
+
+        var result = new StatusCodeResult(500);
+        _authExceptionHandler.Setup(h => h.Handle(It.IsAny<AuthException>())).Returns(result);
+
+        _context.SetupSet(c => c.Result = It.IsAny<IActionResult>()).Callback((IActionResult r) =>
+        {
+            Assert.That(r, Is.EqualTo(result));
+        });
+
+        _filter.OnException(_context.Object);
+
+        _authExceptionHandler.Verify(h => h.Handle(It.IsAny<AuthException>()), Times.Once);
         _context.VerifySet(c => c.Result = It.IsAny<IActionResult>(), Times.Once);
     }
 
@@ -100,6 +152,26 @@ public class ExceptionFilterTest
     }
 
     [Test]
+    public void CallLogsExceptionHandlerForLogException_Test()
+    {
+        var mockException = new Mock<LogException>("some error message");
+        _context.SetupGet(c => c.Exception).Returns(mockException.Object);
+
+        var result = new StatusCodeResult(500);
+        _logExceptionHandler.Setup(h => h.Handle(It.IsAny<LogException>())).Returns(result);
+
+        _context.SetupSet(c => c.Result = It.IsAny<IActionResult>()).Callback((IActionResult r) =>
+        {
+            Assert.That(r, Is.EqualTo(result));
+        });
+
+        _filter.OnException(_context.Object);
+
+        _logExceptionHandler.Verify(h => h.Handle(It.IsAny<LogException>()), Times.Once);
+        _context.VerifySet(c => c.Result = It.IsAny<IActionResult>(), Times.Once);
+    }
+
+    [Test]
     public void HandlesNullReturnOfExceptionHandler_Test()
     {
         var mockException = new Mock<ProjectException>("some error message");
@@ -116,6 +188,26 @@ public class ExceptionFilterTest
         _filter.OnException(_context.Object);
 
         _projectExceptionHandler.Verify(h => h.Handle(It.IsAny<ProjectException>()), Times.Once);
+        _context.VerifySet(c => c.Result = It.IsAny<IActionResult>(), Times.Once);
+    }
+
+    [Test]
+    public void CallLogsExceptionHandlerForProjectException_Test()
+    {
+        var mockException = new Mock<LogException>("some error message");
+        _context.SetupGet(c => c.Exception).Returns(mockException.Object);
+
+        var result = new StatusCodeResult(500);
+        _logExceptionHandler.Setup(h => h.Handle(It.IsAny<LogException>())).Returns(result);
+
+        _context.SetupSet(c => c.Result = It.IsAny<IActionResult>()).Callback((IActionResult r) =>
+        {
+            Assert.That(r, Is.EqualTo(result));
+        });
+
+        _filter.OnException(_context.Object);
+
+        _logExceptionHandler.Verify(h => h.Handle(It.IsAny<LogException>()), Times.Once);
         _context.VerifySet(c => c.Result = It.IsAny<IActionResult>(), Times.Once);
     }
 }

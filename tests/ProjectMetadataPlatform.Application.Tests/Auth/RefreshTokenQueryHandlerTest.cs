@@ -7,6 +7,7 @@ using NUnit.Framework;
 using ProjectMetadataPlatform.Application.Auth;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Domain.Auth;
+using ProjectMetadataPlatform.Domain.Errors.AuthExceptions;
 
 
 namespace ProjectMetadataPlatform.Application.Tests.Auth;
@@ -45,7 +46,7 @@ public class RefreshTokenQueryHandlerTest
         _mockAuthRepo.Setup(m => m.CheckRefreshTokenRequest(It.IsAny<string>())).ReturnsAsync(false);
         var request = new RefreshTokenQuery("invalidRefreshToken");
 
-        Assert.ThrowsAsync<AuthenticationException>(() => _handler.Handle(request, It.IsAny<CancellationToken>()));
+        Assert.ThrowsAsync<AuthInvalidRefreshTokenException>(() => _handler.Handle(request, It.IsAny<CancellationToken>()));
     }
 
 }

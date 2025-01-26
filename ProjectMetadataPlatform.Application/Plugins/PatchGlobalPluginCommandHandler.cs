@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using ProjectMetadataPlatform.Application.Interfaces;
+using ProjectMetadataPlatform.Domain.Errors.PluginExceptions;
 using ProjectMetadataPlatform.Domain.Logs;
 using ProjectMetadataPlatform.Domain.Plugins;
 using Action = ProjectMetadataPlatform.Domain.Logs.Action;
@@ -13,7 +14,7 @@ namespace ProjectMetadataPlatform.Application.Plugins;
 /// <summary>
 /// Handles the PatchGlobalPluginCommand request.
 /// </summary>
-public class PatchGlobalPluginCommandHandler : IRequestHandler<PatchGlobalPluginCommand, Plugin?>
+public class PatchGlobalPluginCommandHandler : IRequestHandler<PatchGlobalPluginCommand, Plugin>
 {
     private readonly IPluginRepository _pluginRepository;
     private readonly ILogRepository _logRepository;
@@ -40,16 +41,10 @@ public class PatchGlobalPluginCommandHandler : IRequestHandler<PatchGlobalPlugin
     /// <param name="request">The PatchGlobalPluginCommand request to handle.</param>
     /// <param name="cancellationToken">A cancellation token that can be used to cancel the work.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains the Plugin that was updated.</returns>
-    public async Task<Plugin?> Handle(PatchGlobalPluginCommand request, CancellationToken cancellationToken)
+    public async Task<Plugin> Handle(PatchGlobalPluginCommand request, CancellationToken cancellationToken)
     {
-        var plugin = await _pluginRepository.GetPluginByIdAsync(request.Id);
-        if (plugin == null)
-        {
-            return null;
-        }
-
+        var plugin = await _pluginRepository.GetPluginByIdAsync(request.Id) ?? throw new PluginNotFoundException(request.Id);
         await AddUpdatedPluginLog(plugin, request);
-
         if (request.PluginName != null && !string.Equals(plugin.PluginName, request.PluginName, StringComparison.Ordinal))
         {
             plugin.PluginName = request.PluginName;

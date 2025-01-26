@@ -7,6 +7,7 @@ using ProjectMetadataPlatform.Application.Auth;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Application.Projects;
 using ProjectMetadataPlatform.Domain.Auth;
+using ProjectMetadataPlatform.Domain.Errors.AuthExceptions;
 
 namespace ProjectMetadataPlatform.Application.Tests.Auth;
 
@@ -61,6 +62,6 @@ public class LoginQueryHandlerTest
         _mockAuthRepo.Setup(m => m.CheckLogin(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(false);
         var request = new LoginQuery("wrong_username", "password");
 
-        Assert.ThrowsAsync<InvalidOperationException>(() => _handler.Handle(request, It.IsAny<CancellationToken>()));
+        Assert.ThrowsAsync<AuthInvalidLoginCredentialsException>(() => _handler.Handle(request, It.IsAny<CancellationToken>()));
     }
 }

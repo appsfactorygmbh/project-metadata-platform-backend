@@ -58,7 +58,6 @@ public class GetProjectsBySearchingHandlerTest
         IEnumerable<Project> result = await _handler.Handle(query, It.IsAny<CancellationToken>());
 
         Assert.That(result, Is.Not.Null);
-        Assert.That(result, Is.InstanceOf<List<Project>>());
         Assert.That(result, Is.EqualTo(projectsResponseContent));
     }
     [Test]
@@ -92,7 +91,6 @@ public class GetProjectsBySearchingHandlerTest
         IEnumerable<Project> result = await _handler.Handle(query, It.IsAny<CancellationToken>());
 
         Assert.That(result, Is.Not.Null);
-        Assert.That(result, Is.InstanceOf<List<Project>>());
         Assert.That(result, Is.EqualTo(projectsResponseContent));
     }
 }

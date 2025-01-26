@@ -156,7 +156,7 @@ public class GlobalPluginManagement : IntegrationTestsBase
 
         var deleteResponse = await client.DeleteAsync($"/Plugins/{pluginId}");
         deleteResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        (await deleteResponse.Content.ReadAsStringAsync()).Should().Be("the plugin was not archived");
+        (await deleteResponse.Content.ReadAsStringAsync()).Should().Be("The plugin 1 is not archived.");
 
         var updatedPlugin = await ToJsonElement(client.PatchAsync($"/Plugins/{pluginId}", StringContent("""{ "isArchived": true }""")));
 

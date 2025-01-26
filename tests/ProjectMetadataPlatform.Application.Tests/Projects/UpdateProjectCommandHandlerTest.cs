@@ -8,6 +8,7 @@ using NUnit.Framework;
 using ProjectMetadataPlatform.Application.Helper;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Application.Projects;
+using ProjectMetadataPlatform.Domain.Errors.PluginExceptions;
 using ProjectMetadataPlatform.Domain.Errors.ProjectExceptions;
 using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.Projects;
@@ -184,7 +185,7 @@ public class UpdateProjectCommandHandlerTest
 
         _mockPluginRepo.Setup(repo => repo.GetGlobalPluginsAsync()).ReturnsAsync([]);
 
-        var exception = Assert.ThrowsAsync<InvalidOperationException>(async () =>
+        var exception = Assert.ThrowsAsync<MultiplePluginsNotFoundException>(async () =>
             await _handler.Handle(new UpdateProjectCommand(
                     exampleProject.ProjectName,
                     exampleProject.BusinessUnit,

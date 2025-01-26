@@ -18,6 +18,7 @@ namespace ProjectMetadataPlatform.Api.Projects;
 /// <summary>
 /// Endpoints for managing projects.
 /// </summary>
+
 [ApiController]
 [Authorize]
 [Route("[controller]")]
@@ -35,7 +36,7 @@ public class ProjectsController : ControllerBase
 
 
     /// <summary>
-    /// Gets all projects or all projects that match the given search string.
+    /// Gets all projects or all projects that match the given search string. Also orders response alphabetical by ClientName and then by ProjectName
     /// </summary>
     /// <param name="request">The collection of filters to search by.</param>
     /// <param name="search">Search string to filter the projects by.</param>
@@ -58,8 +59,8 @@ public class ProjectsController : ControllerBase
             project.TeamNumber,
             project.IsArchived,
             project.Company,
-            project.IsmsLevel));
-
+            project.IsmsLevel)
+        );
          return Ok(response);
     }
 

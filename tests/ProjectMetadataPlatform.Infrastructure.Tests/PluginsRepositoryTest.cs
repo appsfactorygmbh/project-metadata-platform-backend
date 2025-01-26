@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
+using ProjectMetadataPlatform.Domain.Errors.PluginExceptions;
+using ProjectMetadataPlatform.Domain.Errors.ProjectExceptions;
 using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.Projects;
 using ProjectMetadataPlatform.Infrastructure.DataAccess;
@@ -146,9 +148,7 @@ public class PluginsRepositoryTest : TestsWithDatabase
     [Test]
     public async Task GetGlobalPluginById_NotFound_Test()
     {
-        var plugin = await _repository.GetPluginByIdAsync(42);
-
-        Assert.That(plugin, Is.Null);
+        Assert.ThrowsAsync<PluginNotFoundException>(()=> _repository.GetPluginByIdAsync(42));
     }
 
     [Test]
@@ -371,27 +371,16 @@ public class PluginsRepositoryTest : TestsWithDatabase
     }
 
     [Test]
-    public void GetAllUnarchivedPluginsForProjectIdAsync_ShouldThrowExceptionWhenDbContextIsNull()
-    {
-        var exception = Assert.Throws<ArgumentNullException>(() =>
-        {
-            var repository = new PluginRepository(null);
-        });
-
-        Assert.That(exception.ParamName, Is.EqualTo("context"));
-    }
-
-    [Test]
     public async Task TestGetPluginsForNonExistentProjectThrowsException()
     {
         int nonExistentProjectId = 999;
 
-        ArgumentException ex = Assert.ThrowsAsync<ArgumentException>(async () =>
+        var ex = Assert.ThrowsAsync<ProjectNotFoundException>(async () =>
         {
             await _repository.GetAllUnarchivedPluginsForProjectIdAsync(nonExistentProjectId);
         });
 
-        Assert.That(ex.Message, Is.EqualTo("Project with Id 999 does not exist."));
+        Assert.That(ex.Message, Is.EqualTo("The project with id 999 was not found."));
     }
 
     [Test]

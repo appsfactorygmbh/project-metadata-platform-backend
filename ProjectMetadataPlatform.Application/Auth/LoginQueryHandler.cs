@@ -3,8 +3,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using ProjectMetadataPlatform.Application.Interfaces;
-
 using ProjectMetadataPlatform.Domain.Auth;
+using ProjectMetadataPlatform.Domain.Errors.AuthExceptions;
 
 namespace ProjectMetadataPlatform.Application.Auth;
 
@@ -34,7 +34,7 @@ public class LoginQueryHandler : IRequestHandler<LoginQuery, JwtTokens>
     {
         if (!_authRepository.CheckLogin(request.Email, request.Password).Result)
         {
-            throw new InvalidOperationException("Invalid login credentials.");
+            throw new AuthInvalidLoginCredentialsException();
         }
         var stringToken = AccessTokenService.CreateAccessToken(request.Email);
         var refreshToken = Guid.NewGuid().ToString();

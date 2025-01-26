@@ -1,5 +1,3 @@
-using System;
-using System.Security.Authentication;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -43,15 +41,8 @@ public class AuthController : ControllerBase
     public async Task<ActionResult<LoginResponse>> Post([FromBody] LoginRequest request)
     {
         var query = new LoginQuery(request.Email, request.Password);
-        try
-        {
-            var tokens = await _mediator.Send(query);
-            return new LoginResponse(tokens.AccessToken!, tokens.RefreshToken!);
-        }
-        catch (InvalidOperationException e)
-        {
-            return BadRequest(e.Message);
-        }
+        var tokens = await _mediator.Send(query);
+        return new LoginResponse(tokens.AccessToken!, tokens.RefreshToken!);
     }
 
     /// <summary>
@@ -67,22 +58,14 @@ public class AuthController : ControllerBase
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<LoginResponse>> Get([FromHeader(Name = "Authorization")] string refreshToken)
     {
-
         if (!refreshToken.StartsWith("Refresh "))
         {
             return BadRequest("Invalid Header format");
         }
 
         var query = new RefreshTokenQuery(refreshToken.Replace("Refresh ", ""));
-        try
-        {
-            var tokens = await _mediator.Send(query);
-            return new LoginResponse(tokens.AccessToken!, tokens.RefreshToken!);
-        }
-        catch (AuthenticationException e)
-        {
-            return BadRequest(e.Message);
-        }
+        var tokens = await _mediator.Send(query);
+        return new LoginResponse(tokens.AccessToken!, tokens.RefreshToken!);
     }
 
 }

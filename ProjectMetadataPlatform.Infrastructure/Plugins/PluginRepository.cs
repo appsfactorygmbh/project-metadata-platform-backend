@@ -1,9 +1,10 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using ProjectMetadataPlatform.Application.Interfaces;
+using ProjectMetadataPlatform.Domain.Errors.PluginExceptions;
+using ProjectMetadataPlatform.Domain.Errors.ProjectExceptions;
 using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Infrastructure.DataAccess;
 
@@ -20,7 +21,7 @@ public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
     /// <param name="context"></param>
     public PluginRepository(ProjectMetadataPlatformDbContext context): base(context)
     {
-        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _context = context;
     }
     private readonly ProjectMetadataPlatformDbContext _context;
 
@@ -29,11 +30,11 @@ public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
     /// </summary>
     /// <param name="id">selects the project</param>
     /// <returns>The data received by the database.</returns>
-    public async Task<List<ProjectPlugins>> GetAllPluginsForProjectIdAsync(int id)
+    public Task<List<ProjectPlugins>> GetAllPluginsForProjectIdAsync(int id)
     {
-        return [.. _context.ProjectPluginsRelation
+        return Task.FromResult<List<ProjectPlugins>>([.. _context.ProjectPluginsRelation
             .Where(rel => rel.ProjectId == id)
-            .Include(rel => rel.Plugin)];
+            .Include(rel => rel.Plugin)]);
     }
 
     /// <summary>
@@ -44,8 +45,8 @@ public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
     public async Task<List<ProjectPlugins>> GetAllUnarchivedPluginsForProjectIdAsync(int id)
     {
         var project = await _context.Projects
-            .FirstOrDefaultAsync(p => p.Id == id)
-                      ?? throw new ArgumentException($"Project with Id {id} does not exist.");
+                          .FirstOrDefaultAsync(p => p.Id == id)
+                      ?? throw new ProjectNotFoundException(id);
 
         return await _context.ProjectPluginsRelation
             .Where(rel => rel.ProjectId == id && rel.Plugin != null && !rel.Plugin.IsArchived)
@@ -58,7 +59,7 @@ public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
     /// </summary>
     /// <param name="plugin">The Plugin to save</param>
     /// <returns>The saved Plugin</returns>
-    public async Task<Plugin> StorePlugin(Plugin plugin)
+    public Task<Plugin> StorePlugin(Plugin plugin)
     {
         if (plugin.Id == 0)
         {
@@ -69,7 +70,7 @@ public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
             Update(plugin);
         }
 
-        return plugin;
+        return Task.FromResult(plugin);
     }
 
 
@@ -80,8 +81,7 @@ public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
     /// <returns>A task that represents the asynchronous operation. The task result contains the Plugin that matches the provided id.</returns>
     public async Task<Plugin?> GetPluginByIdAsync(int id)
     {
-        var queryResult = GetIf(plugin => plugin.Id == id);
-        return await queryResult.FirstOrDefaultAsync();
+        return await GetIf(p => p.Id == id).FirstOrDefaultAsync() ?? throw new PluginNotFoundException(id);
     }
 
     /// <summary>
@@ -97,19 +97,19 @@ public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
     /// Checks if a plugin exists.
     /// </summary>
     /// <returns>True, if the plugin with the given id exists</returns>
-    public async Task<bool> CheckPluginExists(int id)
+    public Task<bool> CheckPluginExists(int id)
     {
-        return _context.Plugins.Any(plugin => plugin.Id == id);
+        return Task.FromResult(_context.Plugins.Any(plugin => plugin.Id == id));
     }
     /// <summary>
     /// Deletes Global Plugin
     /// </summary>
     /// <param name="plugin"></param>
     /// <returns></returns>
-    public async Task<bool> DeleteGlobalPlugin(Plugin plugin)
+    public Task<bool> DeleteGlobalPlugin(Plugin plugin)
     {
         _context.Plugins.Remove(plugin);
 
-        return true;
+        return Task.FromResult(true);
     }
 }

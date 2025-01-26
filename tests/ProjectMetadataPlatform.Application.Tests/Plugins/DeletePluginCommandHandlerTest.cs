@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Application.Plugins;
+using ProjectMetadataPlatform.Domain.Errors.PluginExceptions;
 using ProjectMetadataPlatform.Domain.Logs;
 using ProjectMetadataPlatform.Domain.Plugins;
 namespace ProjectMetadataPlatform.Application.Tests.Plugins;
@@ -48,18 +49,16 @@ public class DeletePluginCommandHandlerTest
         var plugin = new Plugin { Id = 42, PluginName = "Flat-Earth", IsArchived = false };
         _mockPluginRepo.Setup(m => m.StorePlugin(It.IsAny<Plugin>())).ReturnsAsync(plugin);
         _mockPluginRepo.Setup(m => m.GetPluginByIdAsync(42)).ReturnsAsync(plugin);
-        _mockPluginRepo.Setup(m => m.DeleteGlobalPlugin(plugin)).ReturnsAsync(true);
 
-        var result = await _handler.Handle(new DeleteGlobalPluginCommand(42), It.IsAny<CancellationToken>());
-        Assert.That(result, Is.EqualTo(false));
+
+       Assert.ThrowsAsync<PluginNotArchivedException>(() => _handler.Handle(new DeleteGlobalPluginCommand(42), It.IsAny<CancellationToken>()));
     }
 
     [Test]
     public async Task DeleteGlobalPluginNullPointerException_Test()
     {
         _mockPluginRepo.Setup(m => m.GetPluginByIdAsync(42)).ReturnsAsync((Plugin)null!);
-        var result = await _handler.Handle(new DeleteGlobalPluginCommand(42), CancellationToken.None);
-        Assert.That(result, Is.EqualTo(null));
+        Assert.ThrowsAsync<PluginNotFoundException>(() => _handler.Handle(new DeleteGlobalPluginCommand(42), It.IsAny<CancellationToken>()));
     }
 
     [Test]
@@ -94,10 +93,7 @@ public class DeletePluginCommandHandlerTest
         _mockPluginRepo.Setup(m => m.GetPluginByIdAsync(42)).ReturnsAsync(plugin);
 
         // Act
-        var result = await _handler.Handle(new DeleteGlobalPluginCommand(42), CancellationToken.None);
-
-        // Assert
-        Assert.That(result, Is.EqualTo(false));
+        Assert.ThrowsAsync<PluginNotArchivedException>(() => _handler.Handle(new DeleteGlobalPluginCommand(42), CancellationToken.None));
         var addLogCall = _mockLogRepo.Invocations.FirstOrDefault(i =>
             i.Method.Name == nameof(ILogRepository.AddGlobalPluginLogForCurrentUser));
         Assert.That(addLogCall, Is.Null);
@@ -110,10 +106,7 @@ public class DeletePluginCommandHandlerTest
         _mockPluginRepo.Setup(m => m.GetPluginByIdAsync(42)).ReturnsAsync((Plugin)null!);
 
         // Act
-        var result = await _handler.Handle(new DeleteGlobalPluginCommand(42), CancellationToken.None);
-
-        // Assert
-        Assert.That(result, Is.EqualTo(null));
+        Assert.ThrowsAsync<PluginNotFoundException>(() => _handler.Handle(new DeleteGlobalPluginCommand(42), CancellationToken.None));
         var addLogCall = _mockLogRepo.Invocations.FirstOrDefault(i =>
             i.Method.Name == nameof(ILogRepository.AddGlobalPluginLogForCurrentUser));
         Assert.That(addLogCall, Is.Null);

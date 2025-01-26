@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -24,6 +25,8 @@ public class GetAllProjectsQueryHandler : IRequestHandler<GetAllProjectsQuery, I
     /// <inheritdoc />
     public async Task<IEnumerable<Project>> Handle(GetAllProjectsQuery request, CancellationToken cancellationToken)
     {
-        return await _projectRepository.GetProjectsAsync(request);
+        var projects = await _projectRepository.GetProjectsAsync(request);
+        return projects.OrderBy(project => project.ClientName)
+                        .ThenBy(project => project.ProjectName);
     }
 }
