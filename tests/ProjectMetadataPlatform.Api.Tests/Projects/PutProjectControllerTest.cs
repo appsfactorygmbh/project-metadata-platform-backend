@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -6,10 +6,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Moq;
 using NUnit.Framework;
-using ProjectMetadataPlatform.Api.Plugins.Models;
 using ProjectMetadataPlatform.Api.Projects;
 using ProjectMetadataPlatform.Api.Projects.Models;
 using ProjectMetadataPlatform.Application.Projects;
@@ -37,7 +35,7 @@ public class PutProjectControllerTest
         _mediator.Setup(m => m.Send(It.IsAny<CreateProjectCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(1);
         var request = new CreateProjectRequest("Example Project", "Example Business Unit", 1, "Example Department",
             "Example Client", "Example OfferId", "Example Company", CompanyState.EXTERNAL, SecurityLevel.NORMAL, [new UpdateProjectPluginRequest("Url", "PluginName", 3)]);
-        ActionResult<CreateProjectResponse> result = await _controller.Put(request);
+        var result = await _controller.Put(request);
         Assert.That(result.Result, Is.InstanceOf<CreatedResult>());
         var createdResult = result.Result as CreatedResult;
 
@@ -94,7 +92,7 @@ public class PutProjectControllerTest
     public async Task CreateProject_BadRequestTest()
     {
         var request = new CreateProjectRequest("", " ", 1, "", "", " ", " ", CompanyState.EXTERNAL, SecurityLevel.NORMAL);
-        ActionResult<CreateProjectResponse> result = await _controller.Put(request);
+        var result = await _controller.Put(request);
         Assert.That(result.Result, Is.InstanceOf<BadRequestObjectResult>());
     }
 

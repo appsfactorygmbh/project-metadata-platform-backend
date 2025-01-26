@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,13 +25,13 @@ public class GetProjectsBySearchingHandlerTest
     [Test]
     public async Task HandleGetProjectBySearchRequest_NonexistentProject_Test()
     {
-        Project[] emptyProjectList = Array.Empty<Project>();
+        var emptyProjectList = Array.Empty<Project>();
 
         var query = new GetAllProjectsQuery(null, "M");
         _mockProjectRepo.Setup(m => m.GetProjectsAsync(query)).ReturnsAsync(emptyProjectList);
 
-        IEnumerable<Project> result = await _handler.Handle(query, It.IsAny<CancellationToken>());
-        Assert.IsEmpty(result);
+        var result = await _handler.Handle(query, It.IsAny<CancellationToken>());
+        Assert.That(result, Is.Empty);
     }
 
     [Test]
@@ -55,9 +55,8 @@ public class GetProjectsBySearchingHandlerTest
 
         _mockProjectRepo.Setup(m => m.GetProjectsAsync(query)).ReturnsAsync(projectsResponseContent);
 
-        IEnumerable<Project> result = await _handler.Handle(query, It.IsAny<CancellationToken>());
+        var result = await _handler.Handle(query, It.IsAny<CancellationToken>());
 
-        Assert.That(result, Is.Not.Null);
         Assert.That(result, Is.EqualTo(projectsResponseContent));
     }
     [Test]
@@ -88,9 +87,8 @@ public class GetProjectsBySearchingHandlerTest
         };
         _mockProjectRepo.Setup(m => m.GetProjectsAsync(It.IsAny<GetAllProjectsQuery>())).ReturnsAsync(projectsResponseContent);
         var query = new GetAllProjectsQuery(null, "");
-        IEnumerable<Project> result = await _handler.Handle(query, It.IsAny<CancellationToken>());
+        var result = await _handler.Handle(query, It.IsAny<CancellationToken>());
 
-        Assert.That(result, Is.Not.Null);
         Assert.That(result, Is.EqualTo(projectsResponseContent));
     }
 }

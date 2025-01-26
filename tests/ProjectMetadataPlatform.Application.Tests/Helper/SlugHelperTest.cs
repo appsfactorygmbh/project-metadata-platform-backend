@@ -1,11 +1,9 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Application.Helper;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Domain.Errors.ProjectExceptions;
-using ProjectMetadataPlatform.Domain.Projects;
 
 namespace ProjectMetadataPlatform.Application.Tests.Helper;
 
@@ -88,7 +86,7 @@ public class SlugHelperTest
     }
 
     [Test]
-    public async Task GetProjectIdBySlug_Test_ThrowsException()
+    public void GetProjectIdBySlug_Test_ThrowsException()
     {
         const string slug = "example_project";
 

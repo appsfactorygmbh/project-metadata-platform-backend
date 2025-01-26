@@ -1,4 +1,4 @@
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -44,11 +44,11 @@ public class GetUserControllerTest
         Assert.That(okResult.StatusCode, Is.EqualTo(200));
         var response = okResult.Value as GetUserResponse;
         Assert.That(response, Is.Not.Null);
-        Assert.Multiple((() =>
+        Assert.Multiple(() =>
         {
             Assert.That(response.Id, Is.EqualTo("1"));
             Assert.That(response.Email, Is.EqualTo("Hinz"));
-        }));
+        });
     }
 
     [Test]

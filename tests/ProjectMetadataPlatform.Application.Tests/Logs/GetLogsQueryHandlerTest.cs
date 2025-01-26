@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -183,7 +183,7 @@ public class GetLogsQueryHandlerTest
     }
 
     [Test]
-    public async Task GetLogs_ThrowsExceptionWhenProjectNotFound_Test()
+    public void GetLogs_ThrowsExceptionWhenProjectNotFound_Test()
     {
         _mockLogsRepo.Setup(m => m.GetLogsForProject(It.IsAny<int>())).ThrowsAsync(new InvalidOperationException());
 

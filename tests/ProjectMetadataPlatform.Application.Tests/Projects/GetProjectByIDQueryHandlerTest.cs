@@ -1,4 +1,4 @@
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
@@ -9,7 +9,7 @@ using ProjectMetadataPlatform.Domain.Projects;
 namespace ProjectMetadataPlatform.Application.Tests.Projects;
 
 [TestFixture]
-public class GetProjectByIDQueryHandlerTest
+public class GetProjectByIdQueryHandlerTest
 {
     [SetUp]
     public void Setup()
@@ -23,9 +23,9 @@ public class GetProjectByIDQueryHandlerTest
     [Test]
     public async Task HandleGetProjectRequest_NonexistentProject_Test()
     {
-        _mockProjectRepo.Setup(m => m.GetProjectAsync(2)).ReturnsAsync((Project)null);
+        _mockProjectRepo.Setup(m => m.GetProjectAsync(2))!.ReturnsAsync((Project?)null);
         var query = new GetProjectQuery(2);
-        Project? result = await _handler.Handle(query, It.IsAny<CancellationToken>());
+        var result = await _handler.Handle(query, It.IsAny<CancellationToken>());
         Assert.That(result, Is.Null);
     }
 
@@ -44,7 +44,7 @@ public class GetProjectByIDQueryHandlerTest
         };
         _mockProjectRepo.Setup(m => m.GetProjectAsync(2)).ReturnsAsync(projectsResponseContent);
         var query = new GetProjectQuery(2);
-        Project? result = await _handler.Handle(query, It.IsAny<CancellationToken>());
+        var result = await _handler.Handle(query, It.IsAny<CancellationToken>());
 
         Assert.That(result, Is.Not.Null);
         Assert.That(result, Is.InstanceOf<Project>());

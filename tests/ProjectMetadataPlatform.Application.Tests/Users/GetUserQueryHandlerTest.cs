@@ -1,4 +1,4 @@
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Moq;
@@ -31,24 +31,14 @@ public class GetUserQueryHandlerTest
 
         _mockUserRepo.Setup(m => m.GetUserByIdAsync("1")).ReturnsAsync(userResponseContent);
         var request = new GetUserQuery("1");
-        IdentityUser? result = await _handler.Handle(request, It.IsAny<CancellationToken>());
+        var result = await _handler.Handle(request, It.IsAny<CancellationToken>());
 
         Assert.That(result, Is.Not.Null);
         Assert.That(result, Is.InstanceOf<IdentityUser>());
-        Assert.Multiple((() =>
+        Assert.Multiple(() =>
         {
             Assert.That(result.Id, Is.EqualTo("1"));
             Assert.That(result.Email, Is.EqualTo("Hinz"));
-        }));
-    }
-
-    [Test]
-    public async Task HandleGetUserRequest_NonexistentUser_Test()
-    {
-        _mockUserRepo.Setup(m => m.GetUserByIdAsync("1")).ReturnsAsync((IdentityUser?)null);
-        var request = new GetUserQuery("1");
-        IdentityUser? result = await _handler.Handle(request, It.IsAny<CancellationToken>());
-
-        Assert.That(result, Is.Null);
+        });
     }
 }

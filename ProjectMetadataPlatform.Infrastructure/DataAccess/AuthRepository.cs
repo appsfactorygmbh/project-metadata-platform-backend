@@ -1,5 +1,5 @@
 using System;
-using System.Linq;
+using System.Globalization;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -49,7 +49,7 @@ public class AuthRepository : RepositoryBase<RefreshToken>, IAuthRepository
     public async Task StoreRefreshToken(string email, string refreshToken)
     {
         var user = await _userManager.FindByEmailAsync(email);
-        var expirationTime = int.Parse(EnvironmentUtils.GetEnvVarOrLoadFromFile("REFRESH_TOKEN_EXPIRATION_HOURS"));
+        var expirationTime = int.Parse(EnvironmentUtils.GetEnvVarOrLoadFromFile("REFRESH_TOKEN_EXPIRATION_HOURS"), CultureInfo.InvariantCulture);
         var token = new RefreshToken
         {
 
@@ -73,7 +73,7 @@ public class AuthRepository : RepositoryBase<RefreshToken>, IAuthRepository
     {
         var user = await _userManager.FindByEmailAsync(email);
         var token = GetIf(rt => user != null && rt.UserId == user.Id).FirstOrDefaultAsync().Result;
-        var expirationTime = int.Parse(EnvironmentUtils.GetEnvVarOrLoadFromFile("REFRESH_TOKEN_EXPIRATION_HOURS"));
+        var expirationTime = int.Parse(EnvironmentUtils.GetEnvVarOrLoadFromFile("REFRESH_TOKEN_EXPIRATION_HOURS"), CultureInfo.InvariantCulture);
         if (token != null)
         {
             token.Token = refreshToken;

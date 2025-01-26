@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -44,16 +44,20 @@ public class ProjectsRepositoryTests : TestsWithDatabase
         await _context.SaveChangesAsync();
 
         // Act
-        IEnumerable<Project> result = await _repository.GetProjectsAsync();
+        var result = (await _repository.GetProjectsAsync()).ToList();
 
         // Assert
-        Assert.AreEqual(1, result.Count());
-        Assert.That(project.Id, Is.EqualTo(1));
-        Assert.That(project.ProjectName, Is.EqualTo("Regen"));
-        Assert.That(project.ClientName, Is.EqualTo("Nasa"));
-        Assert.That(project.BusinessUnit, Is.EqualTo("BuWeather"));
-        Assert.That(project.TeamNumber, Is.EqualTo(42));
-        Assert.That(project.Department, Is.EqualTo("Homelandsecurity"));
+        Assert.That(result, Has.Count.EqualTo(1));
+        project = result.First();
+        Assert.Multiple(() =>
+        {
+            Assert.That(project.Id, Is.EqualTo(1));
+            Assert.That(project.ProjectName, Is.EqualTo("Regen"));
+            Assert.That(project.ClientName, Is.EqualTo("Nasa"));
+            Assert.That(project.BusinessUnit, Is.EqualTo("BuWeather"));
+            Assert.That(project.TeamNumber, Is.EqualTo(42));
+            Assert.That(project.Department, Is.EqualTo("Homelandsecurity"));
+        });
     }
 
     [Test]
@@ -66,12 +70,12 @@ public class ProjectsRepositoryTests : TestsWithDatabase
             new List<string> { "666", "777" },
             new List<int> { 42, 43 },
             true,
-            new List<string> {"AppsFact"},
+            new List<string> { "AppsFact" },
             SecurityLevel.VERY_HIGH
         );
         var projects = new List<Project>
         {
-            new Project
+            new()
             {
                 Id = 1,
                 ProjectName = "Heather",
@@ -84,7 +88,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
                 Company = "AppsFact",
                 IsmsLevel = SecurityLevel.VERY_HIGH
             },
-            new Project
+            new()
             {
                 Id = 2,
                 ProjectName = "James",
@@ -97,7 +101,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
                 Company = "AppsFact",
                 IsmsLevel = SecurityLevel.VERY_HIGH
             },
-            new Project
+            new()
             {
                 Id = 3,
                 ProjectName = "Marika",
@@ -118,20 +122,19 @@ public class ProjectsRepositoryTests : TestsWithDatabase
         _context.Projects.AddRange(projects);
         await _context.SaveChangesAsync();
 
-        var result = await _repository.GetProjectsAsync(query);
+        var result = (await _repository.GetProjectsAsync(query)).ToList();
 
-        Assert.Multiple((() =>
+        Assert.That(result, Has.Count.EqualTo(1));
+        Assert.Multiple(() =>
         {
-            Assert.That(result, Is.Not.Null);
-            Assert.That(result.Count(), Is.EqualTo(1));
             Assert.That(result.Any(p => p.ProjectName == "Heather"), Is.True);
             Assert.That(result.Any(p => p.ClientName == "Metatron"), Is.True);
             Assert.That(result.Any(p => p.BusinessUnit == "666"), Is.True);
             Assert.That(result.Any(p => p.TeamNumber == 42), Is.True);
             Assert.That(result.Any(p => p.IsArchived), Is.True);
-            Assert.That(result.Any(p => p.Company == "AppsFact" ),Is.True);
-            Assert.That(result.Any(p => p.IsmsLevel == SecurityLevel.VERY_HIGH ), Is.True);
-        }));
+            Assert.That(result.Any(p => p.Company == "AppsFact"), Is.True);
+            Assert.That(result.Any(p => p.IsmsLevel == SecurityLevel.VERY_HIGH), Is.True);
+        });
     }
 
     [Test]
@@ -144,12 +147,12 @@ public class ProjectsRepositoryTests : TestsWithDatabase
             new List<string> { "666", "777" },
             new List<int> { 42, 43 },
             null,
-            new List <string> {"Nothing else"},
+            new List<string> { "Nothing else" },
             null
         );
         var projects = new List<Project>
         {
-            new Project
+            new()
             {
                 Id = 1,
                 ProjectName = "Heather",
@@ -161,7 +164,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
                 Company = "AddOn",
                 IsmsLevel = SecurityLevel.HIGH
             },
-            new Project
+            new()
             {
                 Id = 2,
                 ProjectName = "James",
@@ -183,7 +186,6 @@ public class ProjectsRepositoryTests : TestsWithDatabase
 
         var result = await _repository.GetProjectsAsync(query);
 
-        Assert.That(result, Is.Not.Null);
         Assert.That(result, Is.Empty);
     }
 
@@ -192,7 +194,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
     {
         var projects = new List<Project>
         {
-            new Project
+            new()
             {
                 Id = 1,
                 ProjectName = "Heather",
@@ -202,7 +204,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
                 Department = "Mars",
                 TeamNumber = 42
             },
-            new Project
+            new()
             {
                 Id = 2,
                 ProjectName = "James",
@@ -212,7 +214,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
                 Department = "Venus",
                 TeamNumber = 43
             },
-            new Project
+            new()
             {
                 Id = 3,
                 ProjectName = "Marika",
@@ -232,18 +234,14 @@ public class ProjectsRepositoryTests : TestsWithDatabase
 
         var result = await _repository.GetProjectsAsync(query);
 
-        Assert.Multiple((() =>
-        {
-            Assert.That(result, Is.Not.Null);
-            Assert.That(result.Count(), Is.EqualTo(3));
-        }));
+        Assert.That(result.Count(), Is.EqualTo(3));
     }
     [Test]
     public async Task GetAllTeamNumbersAsync_ReturnAllTeamNumbers()
     {
         var projects = new List<Project>
         {
-            new Project
+            new()
             {
                 Id = 1,
                 ProjectName = "Regen",
@@ -253,7 +251,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
                 TeamNumber = 42,
                 Department = "Homelandsecurity"
             },
-            new Project
+            new()
             {
                 Id = 2,
                 ProjectName = "Nieselegen",
@@ -269,10 +267,10 @@ public class ProjectsRepositoryTests : TestsWithDatabase
         _context.Projects.AddRange(projects);
         await _context.SaveChangesAsync();
 
-        IEnumerable<int> result = await _repository.GetTeamNumbersAsync();
+        var result = await _repository.GetTeamNumbersAsync();
 
-        Assert.AreEqual(2, result.Count());
-        Assert.That(result, Is.EquivalentTo(new[] { 42, 43 }));
+        var expectedTeamNumbers = new[] { 42, 43 };
+        Assert.That(result, Is.EquivalentTo(expectedTeamNumbers));
     }
 
     [Test]
@@ -280,7 +278,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
     {
         var projects = new List<Project>
         {
-            new Project
+            new()
             {
                 Id = 1,
                 ProjectName = "Project1",
@@ -290,7 +288,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
                 TeamNumber = 42,
                 Department = "Dept1"
             },
-            new Project
+            new()
             {
                 Id = 2,
                 ProjectName = "Project2",
@@ -306,13 +304,10 @@ public class ProjectsRepositoryTests : TestsWithDatabase
         _context.Projects.AddRange(projects);
         await _context.SaveChangesAsync();
 
-        IEnumerable<string> result = await _repository.GetBusinessUnitsAsync();
-        Assert.Multiple(() =>
-        {
-            IEnumerable<string> enumerable = result as string[] ?? result.ToArray();
-            Assert.That(enumerable.Count(), Is.EqualTo(2));
-            Assert.That(enumerable, Is.EquivalentTo(new[] { "Unit1", "Unit2" }));
-        });
+        var result = await _repository.GetBusinessUnitsAsync();
+
+        var expectedBusinessUnits = new[] { "Unit1", "Unit2" };
+        Assert.That(result, Is.EquivalentTo(expectedBusinessUnits));
     }
 
     [Test]
@@ -320,7 +315,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
     {
         var projects = new List<Project>
         {
-            new Project
+            new()
             {
                 Id = 1,
                 ProjectName = "Project1",
@@ -330,7 +325,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
                 TeamNumber = 42,
                 Department = "Dept1"
             },
-            new Project
+            new()
             {
                 Id = 2,
                 ProjectName = "Project2",
@@ -340,7 +335,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
                 TeamNumber = 43,
                 Department = "Dept2"
             },
-            new Project
+            new()
             {
                 Id = 3,
                 ProjectName = "Project3",
@@ -356,13 +351,10 @@ public class ProjectsRepositoryTests : TestsWithDatabase
         _context.Projects.AddRange(projects);
         await _context.SaveChangesAsync();
 
-        IEnumerable<string> result = await _repository.GetBusinessUnitsAsync();
-        Assert.Multiple(() =>
-        {
-            IEnumerable<string> enumerable = result as string[] ?? result.ToArray();
-            Assert.That(enumerable.Count(), Is.EqualTo(2));
-            Assert.That(enumerable, Is.EquivalentTo(new[] { "Unit1", "Unit2" }));
-        });
+        var result = await _repository.GetBusinessUnitsAsync();
+
+        var expectedBusinessUnits = new[] { "Unit1", "Unit2" };
+        Assert.That(result, Is.EquivalentTo(expectedBusinessUnits));
     }
 
     [Test]
@@ -371,7 +363,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
         _context.Projects.RemoveRange(_context.Projects);
         await _context.SaveChangesAsync();
 
-        IEnumerable<string> result = await _repository.GetBusinessUnitsAsync();
+        var result = await _repository.GetBusinessUnitsAsync();
 
         Assert.That(result, Is.Empty);
     }
@@ -437,10 +429,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
 
         var result = await _repository.GetProjectIdBySlugAsync("regen");
 
-        Assert.Multiple(() =>
-        {
-            Assert.That(result, Is.EqualTo(1));
-        });
+        Assert.That(result, Is.EqualTo(1));
     }
 
     [Test]

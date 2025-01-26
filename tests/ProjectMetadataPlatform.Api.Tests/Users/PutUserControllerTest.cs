@@ -29,8 +29,8 @@ public class PutUserControllerTest
     {
         //prepare
         _mediator.Setup(m => m.Send(It.IsAny<CreateUserCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync("1");
-        var request = new CreateUserRequest( "Example Email", "Example Password");
-        ActionResult<CreateUserResponse> result = await _controller.Put(request);
+        var request = new CreateUserRequest("Example Email", "Example Password");
+        var result = await _controller.Put(request);
         Assert.That(result.Result, Is.InstanceOf<CreatedResult>());
         var createdResult = result.Result as CreatedResult;
 

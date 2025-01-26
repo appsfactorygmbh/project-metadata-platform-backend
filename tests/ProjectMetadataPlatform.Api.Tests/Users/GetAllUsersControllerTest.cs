@@ -10,7 +10,6 @@ using ProjectMetadataPlatform.Api.Users;
 using ProjectMetadataPlatform.Application.Users;
 using ProjectMetadataPlatform.Api.Users.Models;
 using System;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 
 namespace ProjectMetadataPlatform.Api.Tests.Users;
@@ -53,17 +52,17 @@ public class GetAllUsersControllerTest
         var okResult = result.Result as OkObjectResult;
         Assert.That(okResult, Is.Not.Null);
         Assert.That(okResult.StatusCode, Is.EqualTo(200));
-        var response = okResult.Value as IEnumerable<GetUserResponse>;
+        var response = (okResult.Value as IEnumerable<GetUserResponse>)?.ToList();
+
         Assert.That(response, Is.Not.Null);
-        Assert.Multiple((() =>
+        Assert.Multiple(() =>
         {
-            Assert.That(response.Count(), Is.EqualTo(2));
+            Assert.That(response, Has.Count.EqualTo(2));
             Assert.That(response.ElementAt(0).Id, Is.EqualTo("1"));
             Assert.That(response.ElementAt(0).Email, Is.EqualTo("Hinz"));
             Assert.That(response.ElementAt(1).Id, Is.EqualTo("2"));
             Assert.That(response.ElementAt(1).Email, Is.EqualTo("Kunz"));
-
-        }));
+        });
     }
 
     [Test]
@@ -78,8 +77,7 @@ public class GetAllUsersControllerTest
         Assert.That(okResult, Is.Not.Null);
         Assert.That(okResult.StatusCode, Is.EqualTo(200));
         var response = okResult.Value as IEnumerable<GetUserResponse>;
-        Assert.That(response, Is.Not.Null);
-        Assert.That(response.Count(), Is.EqualTo(0));
+        Assert.That(response, Is.Not.Null.And.Empty);
     }
 
     [Test]

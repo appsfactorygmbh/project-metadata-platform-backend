@@ -30,11 +30,12 @@ public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
     /// </summary>
     /// <param name="id">selects the project</param>
     /// <returns>The data received by the database.</returns>
-    public Task<List<ProjectPlugins>> GetAllPluginsForProjectIdAsync(int id)
+    public async Task<List<ProjectPlugins>> GetAllPluginsForProjectIdAsync(int id)
     {
-        return Task.FromResult<List<ProjectPlugins>>([.. _context.ProjectPluginsRelation
+        return await _context.ProjectPluginsRelation
             .Where(rel => rel.ProjectId == id)
-            .Include(rel => rel.Plugin)]);
+            .Include(rel => rel.Plugin)
+            .ToListAsync();
     }
 
     /// <summary>
@@ -44,9 +45,10 @@ public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
     /// </summary>
     public async Task<List<ProjectPlugins>> GetAllUnarchivedPluginsForProjectIdAsync(int id)
     {
-        var project = await _context.Projects
-                          .FirstOrDefaultAsync(p => p.Id == id)
-                      ?? throw new ProjectNotFoundException(id);
+        if (!await _context.Projects.AnyAsync(p => p.Id == id))
+        {
+            throw new ProjectNotFoundException(id);
+        }
 
         return await _context.ProjectPluginsRelation
             .Where(rel => rel.ProjectId == id && rel.Plugin != null && !rel.Plugin.IsArchived)
@@ -97,9 +99,9 @@ public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
     /// Checks if a plugin exists.
     /// </summary>
     /// <returns>True, if the plugin with the given id exists</returns>
-    public Task<bool> CheckPluginExists(int id)
+    public async Task<bool> CheckPluginExists(int id)
     {
-        return Task.FromResult(_context.Plugins.Any(plugin => plugin.Id == id));
+        return await _context.Plugins.AnyAsync(plugin => plugin.Id == id);
     }
     /// <summary>
     /// Deletes Global Plugin

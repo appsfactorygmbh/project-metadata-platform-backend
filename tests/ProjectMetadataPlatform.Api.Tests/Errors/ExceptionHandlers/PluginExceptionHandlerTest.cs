@@ -34,7 +34,7 @@ public class PluginExceptionHandlerTest
         var result = _pluginExceptionHandler.Handle(mockException.Object);
         Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
         var statusCodeResult = result as BadRequestObjectResult;
-        Assert.That(statusCodeResult.StatusCode, Is.EqualTo(400));
+        Assert.That(statusCodeResult?.StatusCode, Is.EqualTo(400));
     }
 
     [Test]

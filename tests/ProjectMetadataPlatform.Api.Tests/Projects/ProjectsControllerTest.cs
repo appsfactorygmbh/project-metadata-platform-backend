@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -41,7 +41,7 @@ public class ProjectsControllerTest
         _mediator.Setup(m => m.Send(It.IsAny<GetAllProjectsQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync([]);
 
         // act
-        ActionResult<IEnumerable<GetProjectsResponse>> result = await _controller.Get(null, null);
+        var result = await _controller.Get(null, null);
 
         // assert
         Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
@@ -79,7 +79,7 @@ public class ProjectsControllerTest
             .ReturnsAsync(projectsResponseContent);
 
         // act
-        ActionResult<IEnumerable<GetProjectsResponse>> result = await _controller.Get(null, null);
+        var result = await _controller.Get(null, null);
 
         // assert
         Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
@@ -93,7 +93,7 @@ public class ProjectsControllerTest
 
         Assert.That(getProjectsResponseArray, Has.Length.EqualTo(1));
 
-        GetProjectsResponse project = getProjectsResponseArray.First();
+        var project = getProjectsResponseArray.First();
         Assert.Multiple(() =>
         {
             Assert.That(project.Id, Is.EqualTo(1));
@@ -103,7 +103,7 @@ public class ProjectsControllerTest
             Assert.That(project.BusinessUnit, Is.EqualTo("BuWeather"));
             Assert.That(project.TeamNumber, Is.EqualTo(42));
             Assert.That(project.Company, Is.EqualTo("Geostorm"));
-            Assert.That(project.IsmsLevel == SecurityLevel.VERY_HIGH);
+            Assert.That(project.IsmsLevel, Is.EqualTo(SecurityLevel.VERY_HIGH));
         });
     }
 
@@ -131,7 +131,7 @@ public class ProjectsControllerTest
             .ReturnsAsync(projectsResponseContent);
 
         // act
-        ActionResult<IEnumerable<GetProjectsResponse>> result = await _controller.Get(null, "R");
+        var result = await _controller.Get(null, "R");
 
         // assert
         Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
@@ -145,7 +145,7 @@ public class ProjectsControllerTest
 
         Assert.That(getProjectsResponseArray, Has.Length.EqualTo(1));
 
-        GetProjectsResponse project = getProjectsResponseArray.First();
+        var project = getProjectsResponseArray.First();
         Assert.Multiple(() =>
         {
             Assert.That(project.ProjectName, Is.EqualTo("Regen"));
@@ -154,7 +154,7 @@ public class ProjectsControllerTest
             Assert.That(project.BusinessUnit, Is.EqualTo("BuWeather"));
             Assert.That(project.TeamNumber, Is.EqualTo(42));
             Assert.That(project.Company, Is.EqualTo("NothingButTheBest GmbH"));
-            Assert.That(project.IsmsLevel == SecurityLevel.HIGH);
+            Assert.That(project.IsmsLevel, Is.EqualTo(SecurityLevel.HIGH));
         });
     }
 
@@ -375,7 +375,7 @@ public class ProjectsControllerTest
     [Test]
     public async Task GetProjectByFiltersAndSearchTest()
     {
-        var search = "Hea";
+        const string search = "Hea";
         var filters = new ProjectFilterRequest
         (
             "Heather",
@@ -383,7 +383,7 @@ public class ProjectsControllerTest
             new List<string> { "666", "777" },
             new List<int> { 42, 43 },
             true,
-            new List<string> {"Optimus Prime"},
+            new List<string> { "Optimus Prime" },
             SecurityLevel.HIGH
         );
 
@@ -416,7 +416,7 @@ public class ProjectsControllerTest
         var response = (okResult.Value as IEnumerable<GetProjectsResponse>)?.ToList();
         Assert.That(response, Is.Not.Null);
 
-        Assert.Multiple((() =>
+        Assert.Multiple(() =>
         {
             Assert.That(response, Is.Not.Null);
             Assert.That(response, Has.Count.EqualTo(1));
@@ -428,8 +428,8 @@ public class ProjectsControllerTest
             Assert.That(response.ToArray()[0].TeamNumber, Is.EqualTo(42));
             Assert.That(response.ToArray()[0].IsArchived, Is.EqualTo(true));
             Assert.That(response.ToArray()[0].Company, Is.EqualTo("Optimus Prime"));
-            Assert.That(response.ToArray()[0].IsmsLevel == SecurityLevel.HIGH);
-        }));
+            Assert.That(response.ToArray()[0].IsmsLevel, Is.EqualTo(SecurityLevel.HIGH));
+        });
     }
 
     [Test]
@@ -443,7 +443,7 @@ public class ProjectsControllerTest
             new List<string> { "666", "777" },
             new List<int> { 42, 43 },
             false,
-            new List<string> {"Minas Tirith"},
+            new List<string> { "Minas Tirith" },
             SecurityLevel.NORMAL
         );
 
@@ -459,11 +459,11 @@ public class ProjectsControllerTest
         Assert.That(okResult.StatusCode, Is.EqualTo(StatusCodes.Status200OK));
 
         var response = (okResult.Value as IEnumerable<GetProjectsResponse>)?.ToArray();
-        Assert.Multiple((() =>
+        Assert.Multiple(() =>
         {
             Assert.That(response, Is.Not.Null);
             Assert.That(response, Is.Empty);
-        }));
+        });
     }
 
     [Test]
@@ -675,7 +675,7 @@ public class ProjectsControllerTest
 
         Assert.ThrowsAsync<ProjectNotFoundException>(() => _controller.GetUnarchivedPluginsBySlug("non_existent_project"));
 
-        _mediator.Verify(m => m.Send(It.Is<GetProjectIdBySlugQuery>(x => x.Slug == "non_existent_project"), It.IsAny<CancellationToken>()), Times.Once);;
+        _mediator.Verify(m => m.Send(It.Is<GetProjectIdBySlugQuery>(x => x.Slug == "non_existent_project"), It.IsAny<CancellationToken>()), Times.Once);
         _mediator.Verify(m => m.Send(It.Is<GetAllUnarchivedPluginsForProjectIdQuery>(x => x.Id == nonExistentProjectId), It.IsAny<CancellationToken>()), Times.Never);
     }
 

@@ -1,4 +1,4 @@
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Domain.Errors.ProjectExceptions;
 using ProjectMetadataPlatform.Domain.Projects;
@@ -6,7 +6,7 @@ using ProjectMetadataPlatform.Infrastructure.DataAccess;
 
 namespace ProjectMetadataPlatform.Infrastructure.Tests;
 
-public class ProjectByIDRepositoryTest : TestsWithDatabase
+public class ProjectByIdRepositoryTest : TestsWithDatabase
 {
     private ProjectMetadataPlatformDbContext _context;
     private ProjectsRepository _repository;
@@ -44,15 +44,18 @@ public class ProjectByIDRepositoryTest : TestsWithDatabase
         await _context.SaveChangesAsync();
 
         // Act
-        Project? result = await _repository.GetProjectAsync(1);
+        var result = await _repository.GetProjectAsync(1);
 
         // Assert
-        Assert.That(result.Id, Is.EqualTo(1));
-        Assert.That(result.ProjectName, Is.EqualTo("Regen"));
-        Assert.That(result.ClientName, Is.EqualTo("Nasa"));
-        Assert.That(result.BusinessUnit, Is.EqualTo("BuWeather"));
-        Assert.That(result.TeamNumber, Is.EqualTo(42));
-        Assert.That(result.Department, Is.EqualTo("Homelandsecurity"));
-
+        Assert.That(result, Is.Not.Null);
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Id, Is.EqualTo(1));
+            Assert.That(result.ProjectName, Is.EqualTo("Regen"));
+            Assert.That(result.ClientName, Is.EqualTo("Nasa"));
+            Assert.That(result.BusinessUnit, Is.EqualTo("BuWeather"));
+            Assert.That(result.TeamNumber, Is.EqualTo(42));
+            Assert.That(result.Department, Is.EqualTo("Homelandsecurity"));
+        });
     }
 }

@@ -1,4 +1,4 @@
-using System.IO;
+﻿using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -55,7 +55,7 @@ public class GetProjectByIdControllerTest
             .ReturnsAsync(projectsResponseContent);
 
         // act
-        ActionResult<GetProjectResponse> result = await _controller.Get(50);
+        var result = await _controller.Get(50);
 
         // assert
         Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
@@ -64,10 +64,9 @@ public class GetProjectByIdControllerTest
         Assert.That(okResult, Is.Not.Null);
         Assert.That(okResult.Value, Is.InstanceOf<GetProjectResponse>());
 
-        var getProjectResponse = okResult.Value as GetProjectResponse;
-        Assert.That(getProjectResponse, Is.Not.Null);
+        var project = okResult.Value as GetProjectResponse;
+        Assert.That(project, Is.Not.Null);
 
-        GetProjectResponse? project = getProjectResponse;
         Assert.Multiple(() =>
         {
             Assert.That(project.Id, Is.EqualTo(50));

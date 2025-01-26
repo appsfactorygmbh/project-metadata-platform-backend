@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -27,7 +27,7 @@ public class GetAllUsersQueryHandlerTest
     {
         _mockUserRepo.Setup(m => m.GetAllUsersAsync()).ReturnsAsync([]);
         var request = new GetAllUsersQuery();
-        IEnumerable<IdentityUser> result = await _handler.Handle(request, It.IsAny<CancellationToken>());
+        var result = await _handler.Handle(request, It.IsAny<CancellationToken>());
 
         IdentityUser[] resultArray = result as IdentityUser[] ?? result.ToArray();
         Assert.That(resultArray, Is.Not.Null);
@@ -55,12 +55,12 @@ public class GetAllUsersQueryHandlerTest
         Assert.That(result, Is.Not.Null);
         Assert.That(result, Is.InstanceOf<IEnumerable<IdentityUser>>());
 
-        IdentityUser[] resultArray = result.ToArray();
+        var resultArray = result.ToArray();
         Assert.That(resultArray, Has.Length.EqualTo(1));
-        Assert.Multiple((() =>
+        Assert.Multiple(() =>
         {
             Assert.That(resultArray[0].Id, Is.EqualTo("1"));
             Assert.That(resultArray[0].Email, Is.EqualTo("Hinz"));
-        }));
+        });
     }
 }

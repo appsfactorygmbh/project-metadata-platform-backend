@@ -32,9 +32,6 @@ public class GetAllTeamNumberQueryHandlerTest
         var query = new GetAllTeamNumbersQuery();
         var result = await _handler.Handle(query, It.IsAny<CancellationToken>());
 
-        Assert.That(result, Is.InstanceOf<IEnumerable<int>>());
-
         Assert.That(result, Is.EquivalentTo(projectsResponseContent));
-
     }
 }

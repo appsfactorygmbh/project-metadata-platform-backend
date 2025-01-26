@@ -1,5 +1,4 @@
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -37,7 +36,7 @@ public class Tests
 
         var request = new CreatePluginRequest("Solid Rocket Booster", true, new List<string>(), "https://booster.de");
 
-        ActionResult<CreatePluginResponse> result = await _controller.Put(request);
+        var result = await _controller.Put(request);
 
         Assert.That(result.Result, Is.InstanceOf<CreatedResult>());
         var createdResult = result.Result as CreatedResult;
@@ -81,7 +80,7 @@ public class Tests
     {
         var request = new CreatePluginRequest("", false, new List<string>(), "https://empty.de");
 
-        ActionResult<CreatePluginResponse> result = await _controller.Put(request);
+        var result = await _controller.Put(request);
 
         Assert.That(result.Result, Is.InstanceOf<ObjectResult>());
         var statusResult = result.Result as ObjectResult;
@@ -128,10 +127,9 @@ public class Tests
     [Test]
     public async Task CreatePlugin_WhiteSpacesName_Test()
     {
-
         var request = new CreatePluginRequest("         ", false, new List<string>(), "https://whitespace.de");
 
-        ActionResult<CreatePluginResponse> result = await _controller.Put(request);
+        var result = await _controller.Put(request);
 
         Assert.That(result.Result, Is.InstanceOf<ObjectResult>());
         var statusResult = result.Result as ObjectResult;
@@ -168,7 +166,7 @@ public class Tests
     public void Patch_PluginNotFound_ThrowsNotFound()
     {
         // Arrange
-        var pluginId = 1;
+        const int pluginId = 1;
         var request = new PatchGlobalPluginRequest(null, true);
 
         _mediator
@@ -186,11 +184,12 @@ public class Tests
         var result = await _controller.GetGlobal();
 
 
-        Assert.IsNotNull(result);
+        Assert.That(result, Is.Not.Null);
+
         var value = result.Result as OkObjectResult;
+        var responses = value?.Value as IEnumerable<GetGlobalPluginResponse>;
 
-        Assert.That((IEnumerable)value.Value, Is.Empty);
-
+        Assert.That(responses, Is.Not.Null.And.Empty);
     }
 
     [Test]
@@ -232,7 +231,7 @@ public class Tests
         _mediator.Setup(m => m.Send(It.IsAny<DeleteGlobalPluginCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
 
-        ActionResult<DeleteGlobalPluginResponse> result = await _controller.Delete(37);
+        var result = await _controller.Delete(37);
 
 
         var okResult = result.Result as OkObjectResult;
@@ -252,7 +251,6 @@ public class Tests
         _mediator.Setup(m => m.Send(It.IsAny<DeleteGlobalPluginCommand>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new PluginNotFoundException(1));
 
-
         Assert.ThrowsAsync<PluginNotFoundException>(() => _controller.Delete(1));
     }
 
@@ -260,7 +258,7 @@ public class Tests
     public async Task DeleteGlobalPlugin_InvalidId_Test()
     {
 
-        ActionResult<DeleteGlobalPluginResponse> result = await _controller.Delete(0);
+        var result = await _controller.Delete(0);
 
         Assert.That(result.Result, Is.InstanceOf<ObjectResult>());
 

@@ -8,7 +8,6 @@ using Moq;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Api.Projects;
 using ProjectMetadataPlatform.Application.Projects;
-using ProjectMetadataPlatform.Domain.Projects;
 
 namespace ProjectMetadataPlatform.Api.Tests.Projects;
 

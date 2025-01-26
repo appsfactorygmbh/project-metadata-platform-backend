@@ -34,7 +34,7 @@ public class UpdateProjectCommandHandlerTest
         _mockUnitOfWork = new Mock<IUnitOfWork>();
         _mockLogRepository = new Mock<ILogRepository>();
         _mockSlugHelper = new Mock<ISlugHelper>();
-        _handler = new UpdateProjectCommandHandler(_mockProjectRepo.Object, _mockPluginRepo.Object,_mockLogRepository.Object, _mockUnitOfWork.Object, _mockSlugHelper.Object);
+        _handler = new UpdateProjectCommandHandler(_mockProjectRepo.Object, _mockPluginRepo.Object, _mockLogRepository.Object, _mockUnitOfWork.Object, _mockSlugHelper.Object);
     }
 
     [Test]
@@ -277,9 +277,9 @@ public class UpdateProjectCommandHandlerTest
             IsmsLevel = SecurityLevel.HIGH,
             ProjectPlugins =
             [
-                new ProjectPlugins { PluginId = 1, Url = "http://example.com", DisplayName = "Example Plugin" },
-                new ProjectPlugins { PluginId = 1, Url = "http://another-example.com", DisplayName = "Another Plugin" },
-                new ProjectPlugins { PluginId = 2, Url = "http://different-example.com", DisplayName = "Different Plugin" }
+                new ProjectPlugins { PluginId = 1, Url = "https://example.com", DisplayName = "Example Plugin" },
+                new ProjectPlugins { PluginId = 1, Url = "https://another-example.com", DisplayName = "Another Plugin" },
+                new ProjectPlugins { PluginId = 2, Url = "https://different-example.com", DisplayName = "Different Plugin" }
             ]
         };
 
@@ -294,9 +294,9 @@ public class UpdateProjectCommandHandlerTest
             SecurityLevel.NORMAL,
             1,
             [
-                new ProjectPlugins { PluginId = 1, Url = "http://example.com", DisplayName = "Example Plugin" },
-                new ProjectPlugins { PluginId = 1, Url = "http://another-example.com", DisplayName = "Another example Plugin" },
-                new ProjectPlugins { PluginId = 3, Url = "http://example2.com", DisplayName = "Example 2 Plugin" }
+                new ProjectPlugins { PluginId = 1, Url = "https://example.com", DisplayName = "Example Plugin" },
+                new ProjectPlugins { PluginId = 1, Url = "https://another-example.com", DisplayName = "Another example Plugin" },
+                new ProjectPlugins { PluginId = 3, Url = "https://example2.com", DisplayName = "Example 2 Plugin" }
             ]
             , false);
 
@@ -317,21 +317,21 @@ public class UpdateProjectCommandHandlerTest
         Assert.Multiple(() =>
         {
             Assert.That(project.ProjectPlugins.ElementAt(0).PluginId, Is.EqualTo(1));
-            Assert.That(project.ProjectPlugins.ElementAt(0).Url, Is.EqualTo("http://example.com"));
+            Assert.That(project.ProjectPlugins.ElementAt(0).Url, Is.EqualTo("https://example.com"));
             Assert.That(project.ProjectPlugins.ElementAt(0).DisplayName, Is.EqualTo("Example Plugin"));
         });
 
         Assert.Multiple(() =>
         {
             Assert.That(project.ProjectPlugins.ElementAt(1).PluginId, Is.EqualTo(1));
-            Assert.That(project.ProjectPlugins.ElementAt(1).Url, Is.EqualTo("http://another-example.com"));
+            Assert.That(project.ProjectPlugins.ElementAt(1).Url, Is.EqualTo("https://another-example.com"));
             Assert.That(project.ProjectPlugins.ElementAt(1).DisplayName, Is.EqualTo("Another example Plugin"));
         });
 
         Assert.Multiple(() =>
         {
             Assert.That(project.ProjectPlugins.ElementAt(2).PluginId, Is.EqualTo(3));
-            Assert.That(project.ProjectPlugins.ElementAt(2).Url, Is.EqualTo("http://example2.com"));
+            Assert.That(project.ProjectPlugins.ElementAt(2).Url, Is.EqualTo("https://example2.com"));
             Assert.That(project.ProjectPlugins.ElementAt(2).DisplayName, Is.EqualTo("Example 2 Plugin"));
         });
     }
@@ -411,8 +411,8 @@ public class UpdateProjectCommandHandlerTest
             false
         );
 
-        var _slugHelper = new SlugHelper(_mockProjectRepo.Object);
-        var slug = _slugHelper.GenerateSlug("New Project Name");
+        var slugHelper = new SlugHelper(_mockProjectRepo.Object);
+        var slug = slugHelper.GenerateSlug("New Project Name");
 
         _mockProjectRepo.Setup(repo => repo.GetProjectWithPluginsAsync(1)).ReturnsAsync(project);
         _mockSlugHelper.Setup(s => s.GenerateSlug("New Project Name")).Returns(slug);
@@ -426,7 +426,7 @@ public class UpdateProjectCommandHandlerTest
             It.Is<List<LogChange>>(changes =>
                 changes.Count == 10 &&
                 changes.Any(change => change.Property == "ProjectName" && change.OldValue == "Old Project Name" && change.NewValue == "New Project Name") &&
-                changes.Any(change => change.Property == "Slug" && change.OldValue == "old project name" && change.NewValue == "new_project_name" ) &&
+                changes.Any(change => change.Property == "Slug" && change.OldValue == "old project name" && change.NewValue == "new_project_name") &&
                 changes.Any(change => change.Property == "BusinessUnit" && change.OldValue == "Old Unit" && change.NewValue == "New Unit") &&
                 changes.Any(change => change.Property == "TeamNumber" && change.OldValue == "1" && change.NewValue == "2") &&
                 changes.Any(change => change.Property == "Department" && change.OldValue == "Old Department" && change.NewValue == "New Department") &&
@@ -766,7 +766,7 @@ public class UpdateProjectCommandHandlerTest
                 new()
                 {
                     PluginId = 1,
-                    Url = "http://example.com",
+                    Url = "https://example.com",
                     DisplayName = "Example Plugin"
                 }
             },
@@ -798,7 +798,7 @@ public class UpdateProjectCommandHandlerTest
             Action.REMOVED_PROJECT_PLUGIN,
             It.Is<List<LogChange>>(changes =>
                 changes.Any(change => change.Property == "Plugin" && change.OldValue == "ExamplePlugin" && change.NewValue == String.Empty) &&
-                changes.Any(change => change.Property == "Url" && change.OldValue == "http://example.com" && change.NewValue == String.Empty) &&
+                changes.Any(change => change.Property == "Url" && change.OldValue == "https://example.com" && change.NewValue == String.Empty) &&
                 changes.Any(change => change.Property == "DisplayName" && change.OldValue == "Example Plugin" && change.NewValue == String.Empty)
             )
         ), Times.Once);
@@ -840,7 +840,7 @@ public class UpdateProjectCommandHandlerTest
                 new()
                 {
                     PluginId = 1,
-                    Url = "http://example.com",
+                    Url = "https://example.com",
                     DisplayName = "Example Plugin"
                 }
             },
@@ -857,7 +857,7 @@ public class UpdateProjectCommandHandlerTest
             Action.ADDED_PROJECT_PLUGIN,
             It.Is<List<LogChange>>(changes =>
                 changes.Any(change => change.Property == "Plugin" && change.OldValue == String.Empty && change.NewValue == "ExamplePlugin") &&
-                changes.Any(change => change.Property == "Url" && change.OldValue == String.Empty && change.NewValue == "http://example.com") &&
+                changes.Any(change => change.Property == "Url" && change.OldValue == String.Empty && change.NewValue == "https://example.com") &&
                 changes.Any(change => change.Property == "DisplayName" && change.OldValue == String.Empty && change.NewValue == "Example Plugin")
             )
         ), Times.Once);
@@ -884,7 +884,7 @@ public class UpdateProjectCommandHandlerTest
                 new()
                 {
                     PluginId = 1,
-                    Url = "http://example.com",
+                    Url = "https://example.com",
                     DisplayName = "Example Plugin"
                 }
             },
@@ -904,10 +904,10 @@ public class UpdateProjectCommandHandlerTest
             project.Id,
             new List<ProjectPlugins>
             {
-                new ProjectPlugins
+                new()
                 {
                     PluginId = 1,
-                    Url = "http://example.com",
+                    Url = "https://example.com",
                     DisplayName = "Updated Plugin"
                 }
             },
@@ -949,7 +949,7 @@ public class UpdateProjectCommandHandlerTest
                 new()
                 {
                     PluginId = 1,
-                    Url = "http://example.com",
+                    Url = "https://example.com",
                     DisplayName = "Example Plugin"
                 }
             },
@@ -972,7 +972,7 @@ public class UpdateProjectCommandHandlerTest
                 new()
                 {
                     PluginId = 1,
-                    Url = "http://example.com",
+                    Url = "https://example.com",
                     DisplayName = "Example Plugin"
                 }
             },
@@ -992,7 +992,7 @@ public class UpdateProjectCommandHandlerTest
     }
 
     [Test]
-    public async Task AlreadyExitingSlug_Test()
+    public void AlreadyExitingSlug_Test()
     {
         var project = new Project
         {
@@ -1009,10 +1009,10 @@ public class UpdateProjectCommandHandlerTest
             IsmsLevel = SecurityLevel.VERY_HIGH,
             ProjectPlugins = new List<ProjectPlugins>
             {
-                new ProjectPlugins
+                new()
                 {
                     PluginId = 1,
-                    Url = "http://example.com",
+                    Url = "https://example.com",
                     DisplayName = "Example Plugin"
                 }
             }
@@ -1031,10 +1031,10 @@ public class UpdateProjectCommandHandlerTest
             project.Id,
             new List<ProjectPlugins>
             {
-                new ProjectPlugins
+                new()
                 {
                     PluginId = 1,
-                    Url = "http://example.com",
+                    Url = "https://example.com",
                     DisplayName = "Example Plugin"
                 }
             },

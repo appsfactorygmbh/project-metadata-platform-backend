@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -35,7 +35,7 @@ public class CreatePluginCommandHandlerTest
         _mockPluginRepo.Setup(m => m.StorePlugin(It.IsAny<Plugin>())).Callback<Plugin>(p => p.Id = 13);
         _mockPluginRepo.Setup(m => m.CheckGlobalPluginNameExists("Airlock")).ReturnsAsync(false);
 
-        var result = await _handler.Handle(new CreatePluginCommand("Airlock", true, [],"https://airlock.com"), It.IsAny<CancellationToken>());
+        var result = await _handler.Handle(new CreatePluginCommand("Airlock", true, [], "https://airlock.com"), It.IsAny<CancellationToken>());
         Assert.Multiple(() =>
         {
             Assert.That(result, Is.EqualTo(13));

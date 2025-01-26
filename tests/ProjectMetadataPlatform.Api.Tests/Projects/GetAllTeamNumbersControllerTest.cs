@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -48,16 +48,15 @@ public class GetAllTeamNumbersControllerTest
     [Test]
     public async Task GetAllTeamNumbers_EmptyList_Test()
     {
-        var projectsResponseContent = new List<int>();
         _mediator.Setup(m => m.Send(It.IsAny<GetAllTeamNumbersQuery>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(projectsResponseContent);
+            .ReturnsAsync(new List<int>());
 
         var result = await _controller.GetAllTeamNumbers();
 
         Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
         var okResult = result.Result as OkObjectResult;
 
-        Assert.That(okResult.StatusCode, Is.EqualTo(StatusCodes.Status200OK));
+        Assert.That(okResult?.StatusCode, Is.EqualTo(StatusCodes.Status200OK));
         var response = (okResult.Value, Is.InstanceOf<IEnumerable<int>>());
         Assert.That(response.Value, Is.Empty);
     }

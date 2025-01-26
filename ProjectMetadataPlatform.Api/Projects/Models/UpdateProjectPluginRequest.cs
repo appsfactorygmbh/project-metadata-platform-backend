@@ -1,4 +1,4 @@
-namespace ProjectMetadataPlatform.Api.Plugins.Models;
+namespace ProjectMetadataPlatform.Api.Projects.Models;
 
 /// <summary>
 /// Response model representing a Plugin of a project.

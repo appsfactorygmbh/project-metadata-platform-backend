@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using MediatR;
 
 namespace ProjectMetadataPlatform.Application.Projects;
@@ -10,4 +10,4 @@ namespace ProjectMetadataPlatform.Application.Projects;
 /// This query does not require any parameters, making it straightforward to use for fetching a list of unique team numbers.
 /// It leverages the MediatR library for CQRS pattern implementation, ensuring a clean separation of concerns and scalability.
 /// </remarks>
-public record GetAllTeamNumbersQuery() : IRequest<IEnumerable<int>>;
+public record GetAllTeamNumbersQuery : IRequest<IEnumerable<int>>;

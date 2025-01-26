@@ -76,7 +76,7 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
 
         if (!actionWhiteList.Contains(action))
         {
-            throw new LogActionNotSupportedException(action, nameof(project));;
+            throw new LogActionNotSupportedException(action, nameof(project));
         }
 
         var log = await PrepareGenericLogForCurrentUser(action, changes);
@@ -151,8 +151,8 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
 
         var log = new Log
         {
-            AuthorEmail = author?.Email,
-            AuthorId = author?.Id,
+            AuthorEmail = author.Email,
+            AuthorId = author.Id,
             Action = action,
             TimeStamp = UtcNow,
             Changes = changes

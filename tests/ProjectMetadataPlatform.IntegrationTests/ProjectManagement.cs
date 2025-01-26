@@ -1,4 +1,3 @@
-using System;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -160,7 +159,7 @@ public class ProjectManagement : IntegrationTestsBase
         // Act
         // Assert
         var projectId = (await ToJsonElement(client.PutAsync("/Projects", CreateRequest), HttpStatusCode.Created))
-            .GetProperty("id").GetInt32()!;
+            .GetProperty("id").GetInt32();
 
         var updateResponse = await client.PutAsync($"/Projects?projectId="+projectId, UpdateRequest);
         updateResponse.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -203,7 +202,7 @@ public class ProjectManagement : IntegrationTestsBase
         // Act
         // Assert
         var projectId = (await ToJsonElement(client.PutAsync("/Projects", CreateRequest), HttpStatusCode.Created))
-            .GetProperty("id").GetInt32()!;
+            .GetProperty("id").GetInt32();
         var projects = await ToJsonElement(client.GetAsync($"/Projects/"));
         var count = projects.GetArrayLength();
         await client.PutAsync($"/Projects?projectId="+projectId, UpdateisArchivedRequest);

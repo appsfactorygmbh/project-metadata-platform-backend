@@ -96,7 +96,7 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
             new() { OldValue = "", NewValue = project.CompanyState.ToString(), Property = nameof(Project.CompanyState) },
             new() { OldValue = "", NewValue = project.IsmsLevel.ToString(), Property = nameof(Project.IsmsLevel) }
         };
-        await _logRepository.AddProjectLogForCurrentUser(project, Domain.Logs.Action.ADDED_PROJECT, changes);
+        await _logRepository.AddProjectLogForCurrentUser(project, Action.ADDED_PROJECT, changes);
         if (project.ProjectPlugins != null)
         {
             foreach (var plugin in project.ProjectPlugins)
@@ -113,7 +113,7 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
                     });
                 }
 
-                await _logRepository.AddProjectLogForCurrentUser(project, Domain.Logs.Action.ADDED_PROJECT_PLUGIN,
+                await _logRepository.AddProjectLogForCurrentUser(project, Action.ADDED_PROJECT_PLUGIN,
                     pluginChanges);
             }
         }

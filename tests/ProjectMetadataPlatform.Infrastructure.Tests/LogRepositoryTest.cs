@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -37,7 +37,7 @@ public class LogRepositoryTest : TestsWithDatabase
         {
             User = contextUser
         };
-        httpContextAccessorMock.Setup(_ => _.HttpContext).Returns(httpContext);
+        httpContextAccessorMock.Setup(accessor => accessor.HttpContext).Returns(httpContext);
 
         _mockUserRepository = new Mock<IUsersRepository>();
 
@@ -107,12 +107,18 @@ public class LogRepositoryTest : TestsWithDatabase
             }
         };
 
-        _mockUserRepository.Setup(_ => _.GetUserByEmailAsync("camo")).ReturnsAsync(user);
+        _mockUserRepository.Setup(repository => repository.GetUserByEmailAsync("camo")).ReturnsAsync(user);
 
         await _loggingRepository.AddProjectLogForCurrentUser(exampleProject, Action.ADDED_PROJECT, logChanges);
         await _context.SaveChangesAsync();
-        var dbLog = await _context.Logs.Include(log => log.Author).Include(log => log.Project).Include(log => log.Changes)
-            .FirstOrDefaultAsync()!;
+        var dbLog = await _context.Logs
+            .Include(log => log.Project)
+            .Include(log => log.Changes)
+            .Include(log => log.Author)
+            .Include(log => log.Project)
+            .Include(log => log.Changes)
+            .FirstOrDefaultAsync();
+
         Assert.That(dbLog, Is.Not.Null);
         Assert.Multiple(() =>
         {
@@ -157,15 +163,16 @@ public class LogRepositoryTest : TestsWithDatabase
             },
         };
 
-        _mockUserRepository.Setup(_ => _.GetUserByEmailAsync("camo")).ReturnsAsync(author);
+        _mockUserRepository.Setup(repository => repository.GetUserByEmailAsync("camo")).ReturnsAsync(author);
 
         await _loggingRepository.AddUserLogForCurrentUser(affectedUser, Action.UPDATED_USER, logChanges);
         await _context.SaveChangesAsync();
         var dbLog = await _context.Logs
+            .Include(log => log.Changes)
             .Include(log => log.Author)
             .Include(log => log.Changes)
             .Include(log => log.AffectedUser)
-            .FirstOrDefaultAsync()!;
+            .FirstOrDefaultAsync();
         Assert.That(dbLog, Is.Not.Null);
         Assert.Multiple(() =>
         {
@@ -211,15 +218,17 @@ public class LogRepositoryTest : TestsWithDatabase
             },
         };
 
-        _mockUserRepository.Setup(_ => _.GetUserByEmailAsync("camo")).ReturnsAsync(author);
+        _mockUserRepository.Setup(repository => repository.GetUserByEmailAsync("camo")).ReturnsAsync(author);
 
         await _loggingRepository.AddGlobalPluginLogForCurrentUser(globalPlugin, Action.UPDATED_GLOBAL_PLUGIN, logChanges);
         await _context.SaveChangesAsync();
         var dbLog = await _context.Logs
+            .Include(log => log.GlobalPlugin)
+            .Include(log => log.Changes)
             .Include(log => log.Author)
             .Include(log => log.Changes)
             .Include(log => log.GlobalPlugin)
-            .FirstOrDefaultAsync()!;
+            .FirstOrDefaultAsync();
         Assert.That(dbLog, Is.Not.Null);
         Assert.Multiple(() =>
         {
@@ -235,14 +244,14 @@ public class LogRepositoryTest : TestsWithDatabase
         });
     }
 
-    [TestCase (Action.ADDED_USER)]
-    [TestCase (Action.UPDATED_USER)]
-    [TestCase (Action.REMOVED_USER)]
-    [TestCase (Action.ADDED_GLOBAL_PLUGIN)]
-    [TestCase (Action.UPDATED_GLOBAL_PLUGIN)]
-    [TestCase (Action.ARCHIVED_GLOBAL_PLUGIN)]
-    [TestCase (Action.UNARCHIVED_GLOBAL_PLUGIN)]
-    [TestCase (Action.REMOVED_GLOBAL_PLUGIN)]
+    [TestCase(Action.ADDED_USER)]
+    [TestCase(Action.UPDATED_USER)]
+    [TestCase(Action.REMOVED_USER)]
+    [TestCase(Action.ADDED_GLOBAL_PLUGIN)]
+    [TestCase(Action.UPDATED_GLOBAL_PLUGIN)]
+    [TestCase(Action.ARCHIVED_GLOBAL_PLUGIN)]
+    [TestCase(Action.UNARCHIVED_GLOBAL_PLUGIN)]
+    [TestCase(Action.REMOVED_GLOBAL_PLUGIN)]
     public async Task ProjectLogTest_RejectsActionNotInWhitelist(Action action)
     {
         var exampleProject = new Project
@@ -273,19 +282,19 @@ public class LogRepositoryTest : TestsWithDatabase
         Assert.ThrowsAsync<LogActionNotSupportedException>(() => _loggingRepository.AddProjectLogForCurrentUser(exampleProject, action, logChanges));
     }
 
-    [TestCase (Action.ADDED_PROJECT)]
-    [TestCase (Action.ADDED_PROJECT_PLUGIN)]
-    [TestCase (Action.UPDATED_PROJECT)]
-    [TestCase (Action.UPDATED_PROJECT_PLUGIN)]
-    [TestCase (Action.REMOVED_PROJECT_PLUGIN)]
-    [TestCase (Action.ARCHIVED_PROJECT)]
-    [TestCase (Action.UNARCHIVED_PROJECT)]
-    [TestCase (Action.REMOVED_PROJECT)]
-    [TestCase (Action.ADDED_GLOBAL_PLUGIN)]
-    [TestCase (Action.UPDATED_GLOBAL_PLUGIN)]
-    [TestCase (Action.ARCHIVED_GLOBAL_PLUGIN)]
-    [TestCase (Action.UNARCHIVED_GLOBAL_PLUGIN)]
-    [TestCase (Action.REMOVED_GLOBAL_PLUGIN)]
+    [TestCase(Action.ADDED_PROJECT)]
+    [TestCase(Action.ADDED_PROJECT_PLUGIN)]
+    [TestCase(Action.UPDATED_PROJECT)]
+    [TestCase(Action.UPDATED_PROJECT_PLUGIN)]
+    [TestCase(Action.REMOVED_PROJECT_PLUGIN)]
+    [TestCase(Action.ARCHIVED_PROJECT)]
+    [TestCase(Action.UNARCHIVED_PROJECT)]
+    [TestCase(Action.REMOVED_PROJECT)]
+    [TestCase(Action.ADDED_GLOBAL_PLUGIN)]
+    [TestCase(Action.UPDATED_GLOBAL_PLUGIN)]
+    [TestCase(Action.ARCHIVED_GLOBAL_PLUGIN)]
+    [TestCase(Action.UNARCHIVED_GLOBAL_PLUGIN)]
+    [TestCase(Action.REMOVED_GLOBAL_PLUGIN)]
     public async Task UserLogTest_RejectsActionNotInWhitelist(Action action)
     {
 
@@ -318,17 +327,17 @@ public class LogRepositoryTest : TestsWithDatabase
         Assert.ThrowsAsync<LogActionNotSupportedException>(() => _loggingRepository.AddUserLogForCurrentUser(affectedUser, action, logChanges));
     }
 
-    [TestCase (Action.ADDED_USER)]
-    [TestCase (Action.UPDATED_USER)]
-    [TestCase (Action.REMOVED_USER)]
-    [TestCase (Action.ADDED_PROJECT)]
-    [TestCase (Action.ADDED_PROJECT_PLUGIN)]
-    [TestCase (Action.UPDATED_PROJECT)]
-    [TestCase (Action.UPDATED_PROJECT_PLUGIN)]
-    [TestCase (Action.REMOVED_PROJECT_PLUGIN)]
-    [TestCase (Action.ARCHIVED_PROJECT)]
-    [TestCase (Action.UNARCHIVED_PROJECT)]
-    [TestCase (Action.REMOVED_PROJECT)]
+    [TestCase(Action.ADDED_USER)]
+    [TestCase(Action.UPDATED_USER)]
+    [TestCase(Action.REMOVED_USER)]
+    [TestCase(Action.ADDED_PROJECT)]
+    [TestCase(Action.ADDED_PROJECT_PLUGIN)]
+    [TestCase(Action.UPDATED_PROJECT)]
+    [TestCase(Action.UPDATED_PROJECT_PLUGIN)]
+    [TestCase(Action.REMOVED_PROJECT_PLUGIN)]
+    [TestCase(Action.ARCHIVED_PROJECT)]
+    [TestCase(Action.UNARCHIVED_PROJECT)]
+    [TestCase(Action.REMOVED_PROJECT)]
     public async Task GlobalPluginLogTest_RejectsActionNotInWhitelist(Action action)
     {
         var author = new IdentityUser

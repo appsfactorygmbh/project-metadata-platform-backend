@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using ProjectMetadataPlatform.Api.Plugins.Models;
 using ProjectMetadataPlatform.Domain.Projects;
 
 namespace ProjectMetadataPlatform.Api.Projects.Models;

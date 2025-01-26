@@ -64,6 +64,7 @@ public class IntegrationTestsBase : IDisposable
     public void Dispose()
     {
         _factory.Dispose();
+        GC.SuppressFinalize(this);
     }
 
     protected static async Task GetAuthTokenAndAddItToDefaultRequestHeadersOfClient(

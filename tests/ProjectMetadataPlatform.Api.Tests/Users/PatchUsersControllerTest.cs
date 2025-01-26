@@ -1,6 +1,4 @@
-using System;
-using System.IO;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -43,9 +41,9 @@ public class PatchUsersControllerTest
         var okResult = result.Result as OkObjectResult;
         var resultValue = okResult?.Value as GetUserResponse;
 
+        Assert.That(resultValue, Is.Not.Null);
         Assert.Multiple(() =>
         {
-            Assert.That(resultValue, Is.Not.Null);
             Assert.That(resultValue.Email, Is.EqualTo("dr@core.fr"));
             Assert.That(resultValue.Id, Is.EqualTo("42"));
         });

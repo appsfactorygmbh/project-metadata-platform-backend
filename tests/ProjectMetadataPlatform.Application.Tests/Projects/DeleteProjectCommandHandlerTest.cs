@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -102,8 +101,8 @@ public class DeleteProjectCommandHandlerTest
         _ = _handler.Handle(new DeleteProjectCommand(1), It.IsAny<CancellationToken>());
 
         _mockLogRepo.Verify(m => m.AddProjectLogForCurrentUser(It.Is<Project>(
-                project => project.ProjectName == "Heather" && project.ClientName == "Metatron" &&
-                           project.BusinessUnit == "666" && project.Department == "Silent Hill" && project.TeamNumber == 3),
+                p => p.ProjectName == "Heather" && p.ClientName == "Metatron" &&
+                           p.BusinessUnit == "666" && p.Department == "Silent Hill" && p.TeamNumber == 3),
             Action.REMOVED_PROJECT, It.Is<List<LogChange>>(
                 changes => changes.Any(change => change.Property == "ProjectName" && change.OldValue == "Heather" && change.NewValue == "")
                            && changes.Any(change => change.Property == "ClientName" && change.OldValue == "Metatron" && change.NewValue == "")

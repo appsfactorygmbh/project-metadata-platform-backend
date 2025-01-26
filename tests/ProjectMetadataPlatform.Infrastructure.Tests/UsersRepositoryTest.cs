@@ -1,5 +1,4 @@
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
@@ -18,7 +17,7 @@ public class UsersRepositoryTest : TestsWithDatabase
     public void Setup()
     {
         _mockUserManager = new Mock<UserManager<IdentityUser>>(new Mock<IUserStore<IdentityUser>>().Object,
-            null, null, null, null, null, null, null, null);
+            null!, null!, null!, null!, null!, null!, null!, null!);
         _context = DbContext();
         _repository = new UsersRepository(_context, _mockUserManager.Object);
 
@@ -32,7 +31,7 @@ public class UsersRepositoryTest : TestsWithDatabase
     [TearDown]
     public void TearDown()
     {
-        using ProjectMetadataPlatformDbContext context = DbContext();
+        using var context = DbContext();
 
         context.Database.EnsureDeleted();
     }
@@ -40,22 +39,33 @@ public class UsersRepositoryTest : TestsWithDatabase
     [Test]
     public async Task CreateUserAsync_Test()
     {
-        var user = new IdentityUser {  Email = "Example Email", };
-        var password = "test";
+        var user = new IdentityUser { Email = "Example Email", };
+        const string password = "test";
         _mockUserManager.Setup(m => m.CreateAsync(It.IsAny<IdentityUser>(), It.IsAny<string>())).ReturnsAsync(IdentityResult.Success);
         var id = await _repository.CreateUserAsync(user, password);
         Assert.That(id, Is.EqualTo("1"));
     }
 
     [Test]
+    public void CreateUserAsync_InvalidPassword_Test()
+    {
+        _context.Users.Add(new IdentityUser { Email = "Example Email", Id = "1" });
+        var user = new IdentityUser { Email = "Example Email" };
+        const string password = "test";
+        _mockUserManager.Setup(m => m.CreateAsync(It.IsAny<IdentityUser>(), It.IsAny<string>())).ReturnsAsync(IdentityResult.Failed());
+
+        Assert.ThrowsAsync<UserCouldNotBeCreatedException>(() => _repository.CreateUserAsync(user, password));
+    }
+
+    [Test]
     public void CreateUserAsync_DuplicateEmail_Test()
     {
-        _context.Users.Add(new IdentityUser {  Email = "Example Email", Id = "1" });
+        _context.Users.Add(new IdentityUser { Email = "Example Email", Id = "1" });
         var user = new IdentityUser { Email = "Example Email" };
-        var password = "test";
-        _mockUserManager.Setup(m => m.CreateAsync(It.IsAny<IdentityUser>(), It.IsAny<string>())).ReturnsAsync(IdentityResult.Failed(new IdentityError{ Code = "DuplicateUserName"}));
+        const string password = "test";
+        _mockUserManager.Setup(m => m.CreateAsync(It.IsAny<IdentityUser>(), It.IsAny<string>())).ReturnsAsync(IdentityResult.Failed(new IdentityError { Code = "DuplicateUserName" }));
 
-        var exception =Assert.ThrowsAsync<UserAlreadyExistsException>(() => _repository.CreateUserAsync(user, password));
+        var exception = Assert.ThrowsAsync<UserAlreadyExistsException>(() => _repository.CreateUserAsync(user, password));
         Assert.That(exception.Message, Is.EqualTo("User creation Failed : DuplicateEmail"));
     }
 
@@ -64,9 +74,7 @@ public class UsersRepositoryTest : TestsWithDatabase
     {
         var result = await _repository.GetAllUsersAsync();
 
-        Assert.That(result, Is.Not.Null);
-        Assert.That(result, Is.InstanceOf<IEnumerable<IdentityUser>>());
-        Assert.That(result.Count(), Is.EqualTo(0));
+        Assert.That(result, Is.Empty);
     }
 
     [Test]
@@ -82,18 +90,16 @@ public class UsersRepositoryTest : TestsWithDatabase
         };
 
         _context.Users.AddRange(usersResponseContent);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
 
-        var result = await _repository.GetAllUsersAsync();
+        var result = (await _repository.GetAllUsersAsync()).ToList();
 
-        Assert.That(result, Is.Not.Null);
-        Assert.That(result, Is.InstanceOf<IEnumerable<IdentityUser>>());
-        Assert.Multiple((() =>
+        Assert.Multiple(() =>
         {
-            Assert.That(result.Count(), Is.EqualTo(1));
+            Assert.That(result, Has.Count.EqualTo(1));
             Assert.That(result.ElementAt(0).Id, Is.EqualTo("1"));
             Assert.That(result.ElementAt(0).Email, Is.EqualTo("Hinz"));
-        }));
+        });
     }
 
     [Test]
@@ -110,11 +116,11 @@ public class UsersRepositoryTest : TestsWithDatabase
 
         Assert.That(result, Is.Not.Null);
         Assert.That(result, Is.InstanceOf<IdentityUser>());
-        Assert.Multiple((() =>
+        Assert.Multiple(() =>
         {
             Assert.That(result.Id, Is.EqualTo("1"));
             Assert.That(result.Email, Is.EqualTo("Hinz"));
-        }));
+        });
     }
 
     [Test]
@@ -127,14 +133,14 @@ public class UsersRepositoryTest : TestsWithDatabase
     [Test]
     public async Task GetUserByEmailAsync_Test()
     {
-        var user = new IdentityUser {  Email = "bigboss@bankofevil.com", Id = "1"};
-        _mockUserManager.Setup(m => m.FindByEmailAsync(It.IsAny<string>()) ).ReturnsAsync(user);
+        var user = new IdentityUser { Email = "bigboss@bankofevil.com", Id = "1" };
+        _mockUserManager.Setup(m => m.FindByEmailAsync(It.IsAny<string>())).ReturnsAsync(user);
         var result = await _repository.GetUserByEmailAsync("bigboss@bankofevil.com");
         Assert.That(result, Is.EqualTo(user));
     }
 
     [Test]
-    public async Task GetUserByEmailAsync_NotFound_Test()
+    public void GetUserByEmailAsync_NotFound_Test()
     {
         _mockUserManager.Setup(m => m.FindByEmailAsync(It.IsAny<string>())).ThrowsAsync(new UserNotFoundException("1"));
 
@@ -168,23 +174,21 @@ public class UsersRepositoryTest : TestsWithDatabase
     [Test]
     public void StoreUserAsync_Create_DuplicateEmail_Test()
     {
-        _context.Users.Add(new IdentityUser {  Email = "Example Email", Id = "1" });
+        _context.Users.Add(new IdentityUser { Email = "Example Email", Id = "1" });
         var user = new IdentityUser { Email = "Example Email", Id = "" };
-        var password = "test";
-        _mockUserManager.Setup(m => m.CreateAsync(It.IsAny<IdentityUser>())).ReturnsAsync(IdentityResult.Failed(new IdentityError{ Code = "DuplicateUserName"}));
+        _mockUserManager.Setup(m => m.CreateAsync(It.IsAny<IdentityUser>())).ReturnsAsync(IdentityResult.Failed(new IdentityError { Code = "DuplicateUserName" }));
 
-        Assert.ThrowsAsync<UserAlreadyExistsException>(()=> _repository.StoreUser(user));
+         Assert.ThrowsAsync<UserAlreadyExistsException>(()=> _repository.StoreUser(user));
     }
 
     [Test]
     public void StoreUserAsync_Update_DuplicateEmail_Test()
     {
-        _context.Users.Add(new IdentityUser {  Email = "Example Email", Id = "1" });
+        _context.Users.Add(new IdentityUser { Email = "Example Email", Id = "1" });
         var user = new IdentityUser { Email = "Example Email", Id = "5" };
-        var password = "test";
-        _mockUserManager.Setup(m => m.UpdateAsync(It.IsAny<IdentityUser>())).ReturnsAsync(IdentityResult.Failed(new IdentityError{ Code = "DuplicateUserName"}));
+        _mockUserManager.Setup(m => m.UpdateAsync(It.IsAny<IdentityUser>())).ReturnsAsync(IdentityResult.Failed(new IdentityError { Code = "DuplicateUserName" }));
 
-        Assert.ThrowsAsync<UserAlreadyExistsException>(()=> _repository.StoreUser(user));
+         Assert.ThrowsAsync<UserAlreadyExistsException>(()=> _repository.StoreUser(user));
     }
 
     [Test]
@@ -215,7 +219,7 @@ public class UsersRepositoryTest : TestsWithDatabase
     [Test]
     public async Task CheckPasswordFormat_Correct_Test()
     {
-        var password = "test11A!!!";
+        const string password = "test11A!!!";
         var result = await _repository.CheckPasswordFormat(password);
         Assert.That(result, Is.True);
     }
@@ -223,8 +227,7 @@ public class UsersRepositoryTest : TestsWithDatabase
     [Test]
     public void CheckPasswordFormat_Incorrect_Test()
     {
-        var password = "test";
+        const string password = "test";
         Assert.ThrowsAsync<UserInvalidPasswordFormatException>(() => _repository.CheckPasswordFormat(password));
     }
-
 }

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -67,18 +67,22 @@ public class CreateProjectRepositoryTest : TestsWithDatabase
         };
         await _repository.Add(exampleProject);
         await _context.SaveChangesAsync();
-        IEnumerable<Project> firstresult = await _repository.GetProjectsAsync();
+        var firstResult = await _repository.GetProjectsAsync();
         await _repository.Add(exampleProject);
         await _context.SaveChangesAsync();
+
         Assert.That(exampleProject, Is.Not.Null);
-        Assert.That(exampleProject.ProjectName, Is.EqualTo("Example Project"));
-        Assert.That(exampleProject.BusinessUnit, Is.EqualTo("Example Business Unit"));
-        Assert.That(exampleProject.TeamNumber, Is.EqualTo(1));
-        Assert.That(exampleProject.ClientName, Is.EqualTo("Example Client"));
-        Assert.That(exampleProject.Department, Is.EqualTo("Example Department"));
-        Assert.That(exampleProject.Id, Is.GreaterThan(0));
-        IEnumerable<Project> result = await _repository.GetProjectsAsync();
-        Assert.AreEqual(result.Count(), firstresult.Count());
+        Assert.Multiple(() =>
+        {
+            Assert.That(exampleProject.ProjectName, Is.EqualTo("Example Project"));
+            Assert.That(exampleProject.BusinessUnit, Is.EqualTo("Example Business Unit"));
+            Assert.That(exampleProject.TeamNumber, Is.EqualTo(1));
+            Assert.That(exampleProject.ClientName, Is.EqualTo("Example Client"));
+            Assert.That(exampleProject.Department, Is.EqualTo("Example Department"));
+            Assert.That(exampleProject.Id, Is.GreaterThan(0));
+        });
+        var result = await _repository.GetProjectsAsync();
+        Assert.That(firstResult.Count(), Is.EqualTo(result.Count()));
     }
 
     [Test]
@@ -91,7 +95,7 @@ public class CreateProjectRepositoryTest : TestsWithDatabase
             Url = "dummy",
             DisplayName = "Dummy"
         };
-        var projectPlugins = new List<ProjectPlugins>{projectPlugin};
+        var projectPlugins = new List<ProjectPlugins> { projectPlugin };
         var exampleProject = new Project
         {
             ProjectName = "Example Project",

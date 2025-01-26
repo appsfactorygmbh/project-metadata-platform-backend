@@ -2,7 +2,6 @@ using System;
 using Microsoft.AspNetCore.Identity;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Api.Logs;
-using ProjectMetadataPlatform.Api.Logs.Models;
 using ProjectMetadataPlatform.Domain.Logs;
 using ProjectMetadataPlatform.Domain.Projects;
 using Action = ProjectMetadataPlatform.Domain.Logs.Action;

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -72,9 +72,6 @@ public class GetAllPluginsForProjectIdQueryHandlerTest
         var query = new GetAllPluginsForProjectIdQuery(1);
         var result = (await _handler.Handle(query, It.IsAny<CancellationToken>())).ToList();
 
-        string res1 = result[0].Plugin.PluginName;
-        string res2 = result[1].Plugin.PluginName;
-
         Assert.That(result, Is.Not.Null);
         Assert.That(result, Is.TypeOf<List<ProjectPlugins>>());
         Assert.That(result, Has.Count.EqualTo(2));
@@ -82,19 +79,14 @@ public class GetAllPluginsForProjectIdQueryHandlerTest
         Assert.Multiple(() =>
         {
             Assert.That(result[0].Url, Is.EqualTo("Plugin1.com"));
+            Assert.That(result[0].Plugin?.PluginName, Is.EqualTo("Plugin 1"));
             Assert.That(result[1].Url, Is.EqualTo("Plugin2.com"));
-        });
-
-        Assert.Multiple(() =>
-        {
-
-            Assert.That(res1, Is.EqualTo("Plugin 1"));
-            Assert.That(res2, Is.EqualTo("Plugin 2"));
+            Assert.That(result[1].Plugin?.PluginName, Is.EqualTo("Plugin 2"));
         });
 
         //test for no plugins
         var queryFail = new GetAllPluginsForProjectIdQuery(0);
-        List<ProjectPlugins> resultFail = await _handler.Handle(queryFail, It.IsAny<CancellationToken>());
+        var resultFail = await _handler.Handle(queryFail, It.IsAny<CancellationToken>());
         Assert.That(resultFail, Is.Null);
     }
 
@@ -102,7 +94,7 @@ public class GetAllPluginsForProjectIdQueryHandlerTest
     public async Task HandleGetAllProjectsForProjectIdQueryHandler_WhenZeroPlugins_Test()
     {
         var queryFail = new GetAllPluginsForProjectIdQuery(0);
-        List<ProjectPlugins> resultFail = await _handler.Handle(queryFail, It.IsAny<CancellationToken>());
+        var resultFail = await _handler.Handle(queryFail, It.IsAny<CancellationToken>());
         Assert.That(resultFail, Is.Null);
     }
 }

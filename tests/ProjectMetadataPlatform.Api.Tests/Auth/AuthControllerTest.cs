@@ -1,4 +1,3 @@
-using System;
 using System.Security.Authentication;
 using System.Threading;
 using System.Threading.Tasks;
@@ -45,7 +44,7 @@ public class Tests
     }
 
     [Test]
-    public async Task WrongCredentialsLoginTest()
+    public void WrongCredentialsLoginTest()
     {
         _mediator.Setup(m => m.Send(It.IsAny<LoginQuery>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new AuthInvalidLoginCredentialsException());
@@ -74,20 +73,20 @@ public class Tests
     }
 
     [Test]
-    public async Task InvalidRefreshTokenTest()
+    public void InvalidRefreshTokenTest()
     {
         _mediator.Setup(m => m.Send(It.IsAny<RefreshTokenQuery>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new AuthenticationException("Invalid refresh token."));
 
-        var request = "Refresh invalidRefreshToken";
+        const string refreshToken = "Refresh invalidRefreshToken";
 
-        Assert.ThrowsAsync<AuthenticationException>(() => _controller.Get(request));
+        Assert.ThrowsAsync<AuthenticationException>(() => _controller.Get(refreshToken));
     }
 
     [Test]
     public async Task InvalidHeaderTest()
     {
-        var request = "invalidHeader";
+        const string request = "invalidHeader";
         var result = await _controller.Get(request);
         Assert.That(result.Result, Is.InstanceOf<BadRequestObjectResult>());
         var badRequestObjectResult = result.Result as BadRequestObjectResult;

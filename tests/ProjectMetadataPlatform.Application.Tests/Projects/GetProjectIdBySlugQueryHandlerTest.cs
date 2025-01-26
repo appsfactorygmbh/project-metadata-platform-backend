@@ -1,10 +1,9 @@
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Application.Projects;
-using ProjectMetadataPlatform.Domain.Projects;
 
 namespace ProjectMetadataPlatform.Application.Tests.Projects;
 
@@ -21,15 +20,6 @@ public class GetProjectIdBySlugQueryHandlerTest
     private Mock<IProjectsRepository> _mockProjectRepo;
 
     [Test]
-    public async Task HandleGetProjectRequest_NonexistentProject_Test()
-    {
-        // _mockProjectRepo.Setup(m => m.GetProjectIdBySlugAsync("test")).ReturnsAsync((int?)null);
-        var query = new GetProjectIdBySlugQuery("test");
-        var result = await _handler.Handle(query, It.IsAny<CancellationToken>());
-        // Assert.That(result, Is.Null);
-    }
-
-    [Test]
     public async Task HandleGetProjectRequest_Test()
     {
         _mockProjectRepo.Setup(m => m.GetProjectIdBySlugAsync("test")).ReturnsAsync(2);
@@ -37,7 +27,6 @@ public class GetProjectIdBySlugQueryHandlerTest
         var query = new GetProjectIdBySlugQuery("test");
         var result = await _handler.Handle(query, It.IsAny<CancellationToken>());
 
-        // Assert.That(result, Is.Not.Null);
         Assert.That(result, Is.InstanceOf<int?>());
         Assert.That(result, Is.EqualTo(2));
     }

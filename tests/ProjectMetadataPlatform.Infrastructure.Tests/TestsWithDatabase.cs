@@ -1,4 +1,4 @@
-using System.Linq;
+﻿using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Infrastructure.DataAccess;
@@ -9,32 +9,34 @@ namespace ProjectMetadataPlatform.Infrastructure.Tests;
 public class TestsWithDatabase
 {
     [SetUp]
-    public void SetUp()
+    public void BaseSetUp()
     {
-        using ProjectMetadataPlatformDbContext context = DbContext();
+        using var context = DbContext();
         context.Database.EnsureDeleted();
         context.Database.EnsureCreated();
     }
 
     [TearDown]
-    public void TearDown()
+    public void BaseTearDown()
     {
-        using ProjectMetadataPlatformDbContext context = DbContext();
+        using var context = DbContext();
 
         context.Database.EnsureDeleted();
     }
-    protected ProjectMetadataPlatformDbContext DbContext()
+
+    protected static ProjectMetadataPlatformDbContext DbContext()
     {
         return new ProjectMetadataPlatformDbContext(
             new DbContextOptionsBuilder<ProjectMetadataPlatformDbContext>()
                 .UseSqlite("Datasource=unittest-db.db").Options);
     }
+
     /// <summary>
     ///     This method deletes the initially loaded Data from SeedData.
     /// </summary>
     /// <param name="context"></param>
     /// <returns>Database context</returns>
-    protected void ClearData(ProjectMetadataPlatformDbContext context)
+    protected static void ClearData(ProjectMetadataPlatformDbContext context)
     {
         var allEntitiesPlugins = context.Plugins.ToList();
         var allEntitiesProjects = context.Projects.ToList();
