@@ -94,7 +94,7 @@ public class UsersRepository : RepositoryBase<IdentityUser>, IUsersRepository
         var identityResult = user.Id == "" ? await _userManager.CreateAsync(user) : await _userManager.UpdateAsync(user);
 
         return identityResult.Errors.Any(e => e.Code == "DuplicateUserName")
-            ? throw new ArgumentException("User creation Failed : DuplicateEmail")
+            ? throw new UserAlreadyExistsException()
             : !identityResult.Succeeded ? throw new UserCouldNotBeCreatedException(identityResult) : user;
     }
 
