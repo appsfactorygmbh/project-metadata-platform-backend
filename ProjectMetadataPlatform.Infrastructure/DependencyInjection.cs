@@ -27,13 +27,15 @@ public static class DependencyInjection
     /// Adds the necessary dependencies for the infrastructure layer.
     /// </summary>
     /// <param name="serviceCollection">The service collection.</param>
+    /// <param name="jwtBearerEvents">The events for the JWT bearer.</param>
     /// <returns>The service collection with the add dependencies.</returns>
-    public static IServiceCollection AddInfrastructureDependencies(this IServiceCollection serviceCollection)
+    public static IServiceCollection AddInfrastructureDependencies(this IServiceCollection serviceCollection,
+        JwtBearerEvents jwtBearerEvents)
     {
         serviceCollection.AddDbContextWithPostgresConnection();
         _ = serviceCollection.AddScoped<IUnitOfWork>(provider =>
             provider.GetRequiredService<ProjectMetadataPlatformDbContext>());
-        serviceCollection.ConfigureAuth();
+        serviceCollection.ConfigureAuth(jwtBearerEvents);
         _ = serviceCollection.AddScoped<IPluginRepository, PluginRepository>();
         _ = serviceCollection.AddScoped<IProjectsRepository, ProjectsRepository>();
         _ = serviceCollection.AddScoped<IAuthRepository, AuthRepository>();
@@ -61,8 +63,7 @@ public static class DependencyInjection
     /// <summary>
     /// Configures the authentication for the project.
     /// </summary>
-    /// <param name="serviceCollection"></param>
-    private static void ConfigureAuth(this IServiceCollection serviceCollection)
+    private static void ConfigureAuth(this IServiceCollection serviceCollection, JwtBearerEvents jwtBearerEvents)
     {
         _ = serviceCollection.AddScoped<IUserStore<IdentityUser>>(provider =>
         {
@@ -85,18 +86,24 @@ public static class DependencyInjection
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })
-            .AddJwtBearer(options => options.TokenValidationParameters = new TokenValidationParameters
+            .AddJwtBearer(options =>
             {
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidateLifetime = true,
-                ValidateIssuerSigningKey = true,
-                ValidIssuer = tokenDescriptorInformation.ValidIssuer,
-                ValidAudience = tokenDescriptorInformation.ValidAudience,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenDescriptorInformation.IssuerSigningKey)),
-                ClockSkew = Environment.GetEnvironmentVariable("PMP_JWT_CLOCK_SKEW_SECONDS") is { } clockSkew
-                    ? TimeSpan.FromSeconds(double.Parse(clockSkew, CultureInfo.InvariantCulture))
-                    : TimeSpan.FromMinutes(5)
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = tokenDescriptorInformation.ValidIssuer,
+                    ValidAudience = tokenDescriptorInformation.ValidAudience,
+                    IssuerSigningKey =
+                        new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenDescriptorInformation.IssuerSigningKey)),
+                    ClockSkew = Environment.GetEnvironmentVariable("PMP_JWT_CLOCK_SKEW_SECONDS") is { } clockSkew
+                        ? TimeSpan.FromSeconds(double.Parse(clockSkew, CultureInfo.InvariantCulture))
+                        : TimeSpan.FromMinutes(5)
+                };
+
+                options.Events = jwtBearerEvents;
             });
     }
 

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,7 +10,6 @@ using ProjectMetadataPlatform.Api.Interfaces;
 using ProjectMetadataPlatform.Api.Logs.Models;
 using ProjectMetadataPlatform.Application.Logs;
 using ProjectMetadataPlatform.Application.Projects;
-using ProjectMetadataPlatform.Domain.Logs;
 
 namespace ProjectMetadataPlatform.Api.Logs;
 
@@ -67,16 +65,7 @@ public class LogsController: ControllerBase
 
         var query = new GetLogsQuery(projectId ?? projectFromSlugId, search, userId, globalPluginId);
 
-        IEnumerable<Log> logs;
-
-        try
-        {
-            logs = await _mediator.Send(query);
-        }
-        catch (InvalidOperationException)
-        {
-            return NotFound("No project with id " + projectId + " found");
-        }
+        var logs = await _mediator.Send(query);
 
         return Ok(logs.Select(_converter.BuildLogMessage));
     }

@@ -230,23 +230,6 @@ public class LogsControllerTest
     }
 
     [Test]
-    public async Task GetLogs_ProjectNotFound_Test()
-    {
-        _mediator.Setup(m => m.Send(It.IsAny<GetLogsQuery>(), default)).ThrowsAsync(new InvalidOperationException("Something went wrong"));
-
-        var result = await _controller.Get(404, null, null, null, null);
-
-        Assert.That(result.Result, Is.InstanceOf<NotFoundObjectResult>());
-        var statusCodeResult = result.Result as NotFoundObjectResult;
-        Assert.Multiple(() =>
-        {
-            Assert.That(statusCodeResult?.StatusCode, Is.EqualTo(404));
-            Assert.That(statusCodeResult?.Value, Is.Not.Null);
-        });
-        Assert.That(statusCodeResult.Value, Is.EqualTo("No project with id 404 found"));
-    }
-
-    [Test]
     public async Task GetLogsForProjectBySlug_Test()
     {
         var log = new Log

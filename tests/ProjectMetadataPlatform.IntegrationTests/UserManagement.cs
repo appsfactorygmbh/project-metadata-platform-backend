@@ -1,8 +1,10 @@
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NUnit.Framework;
+using ProjectMetadataPlatform.Api.Errors;
 using ProjectMetadataPlatform.IntegrationTests.Utilities;
 
 namespace ProjectMetadataPlatform.IntegrationTests;
@@ -26,7 +28,7 @@ public class UserManagement : IntegrationTestsBase
 
         var deleteResponse = await client.DeleteAsync($"/Users/{adminId}");
         deleteResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        deleteResponse.Content.ReadAsStringAsync().Result.Should().Be("A User can't delete themself.");
+        (await deleteResponse.Content.ReadFromJsonAsync<ErrorResponse>())!.Message.Should().Be("A User can't delete themself.");
 
         var newUserId = (await ToJsonElement(client.PutAsync("/Users", CreateRequest), HttpStatusCode.Created))
             .GetProperty("userId").GetString()!;
@@ -35,7 +37,7 @@ public class UserManagement : IntegrationTestsBase
         deleteResponse = await client.DeleteAsync($"/Users/{newUserId}");
 
         deleteResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        deleteResponse.Content.ReadAsStringAsync().Result.Should().Be("A User can't delete themself.");
+        (await deleteResponse.Content.ReadFromJsonAsync<ErrorResponse>())!.Message.Should().Be("A User can't delete themself.");
     }
 
     [Test]

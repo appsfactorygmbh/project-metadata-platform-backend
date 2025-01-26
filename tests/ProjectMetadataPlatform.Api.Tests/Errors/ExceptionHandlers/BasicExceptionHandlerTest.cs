@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
+using ProjectMetadataPlatform.Api.Errors;
 using ProjectMetadataPlatform.Api.Errors.ExceptionHandlers;
 using ProjectMetadataPlatform.Domain.Errors;
 using ProjectMetadataPlatform.Domain.Errors.BasicExceptions;
@@ -27,7 +28,7 @@ public class BasicExceptionHandlerTest
 
         Assert.That(result, Is.InstanceOf<NotFoundObjectResult>());
         var notFoundResult = (NotFoundObjectResult) result;
-        Assert.That(notFoundResult.Value, Is.EqualTo(exception.Message));
+        Assert.That((notFoundResult.Value as ErrorResponse)?.Message, Is.EqualTo(exception.Message));
     }
 
     [Test]
@@ -39,7 +40,7 @@ public class BasicExceptionHandlerTest
 
         Assert.That(result, Is.InstanceOf<ConflictObjectResult>());
         var conflictResult = (ConflictObjectResult) result;
-        Assert.That(conflictResult.Value, Is.EqualTo(exception.Message));
+        Assert.That((conflictResult.Value as ErrorResponse)?.Message, Is.EqualTo(exception.Message));
     }
 
     [Test]
@@ -49,8 +50,8 @@ public class BasicExceptionHandlerTest
 
         var result = _basicExceptionHandler.Handle(exception);
 
-        Assert.That(result, Is.InstanceOf<StatusCodeResult>());
-        var statusCodeResult = (StatusCodeResult) result;
+        Assert.That(result, Is.InstanceOf<ObjectResult>());
+        var statusCodeResult = (ObjectResult) result;
         Assert.That(statusCodeResult.StatusCode, Is.EqualTo(502));
     }
 

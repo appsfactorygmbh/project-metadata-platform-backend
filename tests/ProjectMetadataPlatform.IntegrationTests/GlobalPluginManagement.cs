@@ -1,8 +1,10 @@
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NUnit.Framework;
+using ProjectMetadataPlatform.Api.Errors;
 using ProjectMetadataPlatform.IntegrationTests.Utilities;
 
 namespace ProjectMetadataPlatform.IntegrationTests;
@@ -156,7 +158,7 @@ public class GlobalPluginManagement : IntegrationTestsBase
 
         var deleteResponse = await client.DeleteAsync($"/Plugins/{pluginId}");
         deleteResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        (await deleteResponse.Content.ReadAsStringAsync()).Should().Be("The plugin 1 is not archived.");
+        (await deleteResponse.Content.ReadFromJsonAsync<ErrorResponse>())!.Message.Should().Be("The plugin 1 is not archived.");
 
         var updatedPlugin = await ToJsonElement(client.PatchAsync($"/Plugins/{pluginId}", StringContent("""{ "isArchived": true }""")));
 

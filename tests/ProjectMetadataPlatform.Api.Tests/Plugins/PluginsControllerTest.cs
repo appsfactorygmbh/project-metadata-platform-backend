@@ -9,6 +9,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
+using ProjectMetadataPlatform.Api.Errors;
 using ProjectMetadataPlatform.Api.Plugins;
 using ProjectMetadataPlatform.Api.Plugins.Models;
 using ProjectMetadataPlatform.Application.Plugins;
@@ -245,7 +246,7 @@ public class Tests
 
         var badRequestResult = result.Result as ObjectResult;
         Assert.That(badRequestResult, Is.Not.Null);
-        Assert.That(badRequestResult.Value, Is.EqualTo("PluginId can't be 0"));
+        Assert.That((badRequestResult.Value as ErrorResponse)!.Message, Is.EqualTo("PluginId can't be smaller than or equal to 0"));
     }
 
 }

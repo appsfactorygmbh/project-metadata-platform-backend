@@ -20,6 +20,6 @@ public class LogsExceptionHandler : ControllerBase, IExceptionHandler<LogExcepti
     {
         Console.WriteLine(exception.Message);
         Console.WriteLine(exception.StackTrace);
-        return StatusCode(StatusCodes.Status500InternalServerError);
+        return new ObjectResult(new ErrorResponse(exception.Message)) { StatusCode = StatusCodes.Status500InternalServerError };
     }
 }

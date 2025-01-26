@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -33,7 +32,6 @@ public class ProjectsController : ControllerBase
     {
         _mediator = mediator;
     }
-
 
     /// <summary>
     /// Gets all projects or all projects that match the given search string. Also orders response alphabetical by ClientName and then by ProjectName
@@ -96,11 +94,6 @@ public class ProjectsController : ControllerBase
     {
         var query = new GetProjectQuery(id);
         var project = await _mediator.Send(query);
-
-        if (project == null)
-        {
-            return NotFound(id);
-        }
 
         var response = new GetProjectResponse(
             project.Id,
@@ -241,41 +234,36 @@ public class ProjectsController : ControllerBase
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status409Conflict)]
     public async Task<ActionResult<CreateProjectResponse>> Put([FromBody] CreateProjectRequest project, int? projectId = null)
     {
-        try
-        {
-            if (string.IsNullOrWhiteSpace(project.ProjectName) || string.IsNullOrWhiteSpace(project.BusinessUnit)
+        if (string.IsNullOrWhiteSpace(project.ProjectName) || string.IsNullOrWhiteSpace(project.BusinessUnit)
                                                                || string.IsNullOrWhiteSpace(project.Department)
                                                                || string.IsNullOrWhiteSpace(project.ClientName))
-            {
-                return BadRequest("ProjectName, BusinessUnit, Department and ClientName must not be empty.");
-            }
-
-            IRequest<int> command = projectId == null
-                ? new CreateProjectCommand(project.ProjectName, project.BusinessUnit, project.TeamNumber,
-                    project.Department, project.ClientName, project.OfferId, project.Company, project.CompanyState, project.IsmsLevel, (project.PluginList ?? []).Select(p => new ProjectPlugins
-                    {
-                        PluginId = p.Id,
-                        DisplayName = p.DisplayName,
-                        Url = p.Url
-                    }).ToList())
-                : new UpdateProjectCommand(project.ProjectName, project.BusinessUnit, project.TeamNumber,
-                    project.Department, project.ClientName, project.OfferId, project.Company, project.CompanyState, project.IsmsLevel, projectId.Value, (project.PluginList ?? []).Select(p => new ProjectPlugins
-                    {
-                        ProjectId = projectId.Value,
-                        PluginId = p.Id,
-                        DisplayName = p.DisplayName,
-                        Url = p.Url
-                    }).ToList(), project.IsArchived);
-
-            var id = await _mediator.Send(command);
-
-            var response = new CreateProjectResponse(id);
-            return Created("/Projects/" + id, response);
-        }
-        catch (InvalidOperationException e)
         {
-            return BadRequest(e.Message);
+            return BadRequest(new ErrorResponse("ProjectName, BusinessUnit, Department and ClientName must not be empty."));
         }
+
+        IRequest<int> command = projectId == null
+            ? new CreateProjectCommand(project.ProjectName, project.BusinessUnit, project.TeamNumber,
+                project.Department, project.ClientName, project.OfferId, project.Company, project.CompanyState,
+                project.IsmsLevel, (project.PluginList ?? []).Select(p => new ProjectPlugins
+                {
+                    PluginId = p.Id,
+                    DisplayName = p.DisplayName,
+                    Url = p.Url
+                }).ToList())
+            : new UpdateProjectCommand(project.ProjectName, project.BusinessUnit, project.TeamNumber,
+                project.Department, project.ClientName, project.OfferId, project.Company, project.CompanyState,
+                project.IsmsLevel, projectId.Value, (project.PluginList ?? []).Select(p => new ProjectPlugins
+                {
+                    ProjectId = projectId.Value,
+                    PluginId = p.Id,
+                    DisplayName = p.DisplayName,
+                    Url = p.Url
+                }).ToList(), project.IsArchived);
+
+        var id = await _mediator.Send(command);
+
+        var response = new CreateProjectResponse(id);
+        return Created("/Projects/" + id, response);
     }
 
     /// <summary>
@@ -330,7 +318,7 @@ public class ProjectsController : ControllerBase
     /// <response code="404">The project with the specified slug was not found.</response>
     /// <response code="500">An internal error occurred.</response>
     [HttpDelete("{slug}")]
-    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<ActionResult> Delete(string slug)
@@ -350,7 +338,7 @@ public class ProjectsController : ControllerBase
     /// <response code="404">The project with the specified id was not found.</response>
     /// <response code="500">An internal error occurred.</response>
     [HttpDelete("{id:int}")]
-    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<ActionResult> Delete(int id)

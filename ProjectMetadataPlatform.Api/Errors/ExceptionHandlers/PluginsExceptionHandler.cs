@@ -19,7 +19,7 @@ public class PluginsExceptionHandler : ControllerBase, IExceptionHandler<PluginE
     {
         return exception switch
         {
-            PluginNotArchivedException pluginNotArchivedException => BadRequest(pluginNotArchivedException.Message),
+            PluginNotArchivedException pluginNotArchivedException => BadRequest(new ErrorResponse(pluginNotArchivedException.Message)),
             _ => null
         };
     }

@@ -198,7 +198,7 @@ public class UsersController : ControllerBase
     /// <response code="404">The user was not found.</response>
     /// <response code="500">An internal error occurred.</response>
     [HttpDelete("{userId}")]
-    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<ActionResult> Delete(string userId)

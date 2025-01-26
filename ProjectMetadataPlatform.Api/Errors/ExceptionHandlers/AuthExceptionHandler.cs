@@ -18,8 +18,8 @@ public class
     {
         return exception switch
         {
-            AuthInvalidLoginCredentialsException authInvalidLoginCredentialsException => BadRequest(authInvalidLoginCredentialsException.Message),
-            AuthInvalidRefreshTokenException authInvalidRefreshTokenException => BadRequest(authInvalidRefreshTokenException.Message),
+            AuthInvalidLoginCredentialsException authInvalidLoginCredentialsException => BadRequest(new ErrorResponse(authInvalidLoginCredentialsException.Message)),
+            AuthInvalidRefreshTokenException authInvalidRefreshTokenException => BadRequest(new ErrorResponse(authInvalidRefreshTokenException.Message)),
             _ => null
         };
     }

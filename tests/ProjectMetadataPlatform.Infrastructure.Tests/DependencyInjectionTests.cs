@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
@@ -27,7 +28,7 @@ public class DependencyInjectionTests : TestsWithDatabase
         var services = new ServiceCollection();
 
         services.AddLogging();
-        services.AddInfrastructureDependencies();
+        services.AddInfrastructureDependencies(new JwtBearerEvents());
 
         // Cant check this with the service provider because the context will try to connect to the database
         Assert.That(services.Any(descriptor => descriptor.ServiceType == typeof(ProjectMetadataPlatformDbContext)));

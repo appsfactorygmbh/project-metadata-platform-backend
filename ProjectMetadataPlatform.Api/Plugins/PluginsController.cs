@@ -45,7 +45,7 @@ public class PluginsController : ControllerBase
     {
         if (string.IsNullOrWhiteSpace(request.PluginName))
         {
-            return StatusCode(StatusCodes.Status400BadRequest, "PluginName can't be empty or whitespaces");
+            return BadRequest(new ErrorResponse("PluginName can't be empty or whitespaces"));
         }
 
         var command = new CreatePluginCommand(request.PluginName, request.IsArchived, request.Keys, request.BaseUrl);
@@ -126,7 +126,7 @@ public class PluginsController : ControllerBase
     {
         if (pluginId <= 0)
         {
-            return StatusCode(StatusCodes.Status400BadRequest, "PluginId can't be 0");
+            return BadRequest(new ErrorResponse("PluginId can't be smaller than or equal to 0"));
         }
         var command = new DeleteGlobalPluginCommand(pluginId);
 

@@ -26,17 +26,6 @@ public class GetProjectBySlugControllerTest
     }
 
     [Test]
-    public async Task GetProjectBySlug_NonexistentProject_Test()
-    {
-        // _mediator.Setup(m => m.Send(It.Is<GetProjectIdBySlugQuery>(q => q.Slug == "test"), It.IsAny<CancellationToken>()))
-        //     .ReturnsAsync((int?)null);
-        var result = await _controller.Get("test");
-        Assert.That(result, Is.Not.Null);
-
-        Assert.That(result.Result, Is.InstanceOf<NotFoundObjectResult>());
-    }
-
-    [Test]
     public void MediatorThrowsExceptionTest()
     {
         _mediator.Setup(mediator => mediator.Send(It.IsAny<GetProjectIdBySlugQuery>(), It.IsAny<CancellationToken>()))

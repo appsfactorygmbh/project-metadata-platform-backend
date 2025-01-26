@@ -99,33 +99,25 @@ public class PutProjectControllerTest
     }
 
     [Test]
-    public async Task CreateProject_BadRequestTest_SlugAlreadyExists()
+    public void CreateProject_BadRequestTest_SlugAlreadyExists()
     {
         _mediator.Setup(mediator => mediator.Send(It.IsAny<CreateProjectCommand>(), It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new InvalidOperationException("A Project with this slug already exists: example_project"));
+            .ThrowsAsync(new ProjectSlugAlreadyExistsException("example_project"));
         var request = new CreateProjectRequest("Tour Eiffel", "BusinessUnit 9001", 42, "Côte-d'Or", "France",
             "OfferId", "Company", CompanyState.EXTERNAL, SecurityLevel.NORMAL);
-        var result = await _controller.Put(request);
 
-        Assert.That(result.Result, Is.InstanceOf<BadRequestObjectResult>());
-        var badRequestResult = result.Result as BadRequestObjectResult;
-        Assert.That(badRequestResult, Is.Not.Null);
-        Assert.That(badRequestResult.Value, Is.EqualTo("A Project with this slug already exists: example_project"));
+        Assert.ThrowsAsync<ProjectSlugAlreadyExistsException>(() => _controller.Put(request));
     }
 
     [Test]
-    public async Task CreateProject_MediatorThrowsInvalidOperationExceptionTest()
+    public void CreateProject_MediatorThrowsInvalidOperationExceptionTest()
     {
         _mediator.Setup(mediator => mediator.Send(It.IsAny<CreateProjectCommand>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidOperationException("An error message"));
         var request = new CreateProjectRequest("p", "b", 1, "d", "c",
             "o", "c", CompanyState.EXTERNAL, SecurityLevel.NORMAL);
-        ActionResult<CreateProjectResponse> result = await _controller.Put(request);
-        Assert.That(result.Result, Is.InstanceOf<BadRequestObjectResult>());
 
-        var badRequestResult = result.Result as BadRequestObjectResult;
-        Assert.That(badRequestResult, Is.Not.Null);
-        Assert.That(badRequestResult.Value, Is.EqualTo("An error message"));
+        Assert.ThrowsAsync<InvalidOperationException>(() => _controller.Put(request));
     }
 
     [Test]

@@ -26,17 +26,6 @@ public class GetProjectByIdControllerTest
     private Mock<IMediator> _mediator;
 
     [Test]
-    public async Task GetProjectById_NonexistentProject_Test()
-    {
-        _mediator.Setup(m => m.Send(It.Is<GetProjectQuery>(q => q.Id == 1), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Project?)null);
-        ActionResult<GetProjectResponse> result = await _controller.Get(1);
-        Assert.That(result, Is.Not.Null);
-
-        Assert.That(result.Result, Is.InstanceOf<NotFoundObjectResult>());
-    }
-
-    [Test]
     public void MediatorThrowsExceptionTest()
     {
         _mediator.Setup(mediator => mediator.Send(It.IsAny<GetProjectQuery>(), It.IsAny<CancellationToken>()))

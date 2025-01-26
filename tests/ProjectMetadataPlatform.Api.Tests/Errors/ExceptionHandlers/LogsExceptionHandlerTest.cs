@@ -38,8 +38,8 @@ public class LogsExceptionHandlerTest
 
         var result = _logsExceptionHandler.Handle(exception);
 
-        Assert.That(result, Is.InstanceOf<StatusCodeResult>());
-        var statusCodeResult = (StatusCodeResult)result;
+        Assert.That(result, Is.InstanceOf<ObjectResult>());
+        var statusCodeResult = (ObjectResult)result;
         Assert.That(statusCodeResult.StatusCode, Is.EqualTo(500));
     }
 }

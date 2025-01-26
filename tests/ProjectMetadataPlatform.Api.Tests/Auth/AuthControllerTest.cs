@@ -9,6 +9,7 @@ using Moq;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Api.Auth;
 using ProjectMetadataPlatform.Api.Auth.Models;
+using ProjectMetadataPlatform.Api.Errors;
 using ProjectMetadataPlatform.Application.Auth;
 using ProjectMetadataPlatform.Domain.Auth;
 using ProjectMetadataPlatform.Domain.Errors.AuthExceptions;
@@ -90,6 +91,6 @@ public class Tests
         var result = await _controller.Get(request);
         Assert.That(result.Result, Is.InstanceOf<BadRequestObjectResult>());
         var badRequestObjectResult = result.Result as BadRequestObjectResult;
-        Assert.That(badRequestObjectResult!.Value, Is.EqualTo("Invalid Header format"));
+        Assert.That((badRequestObjectResult!.Value as ErrorResponse)!.Message, Is.EqualTo("Invalid Header format"));
     }
 }

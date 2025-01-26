@@ -60,7 +60,7 @@ public class AuthController : ControllerBase
     {
         if (!refreshToken.StartsWith("Refresh "))
         {
-            return BadRequest("Invalid Header format");
+            return BadRequest(new ErrorResponse("Invalid Header format"));
         }
 
         var query = new RefreshTokenQuery(refreshToken.Replace("Refresh ", ""));

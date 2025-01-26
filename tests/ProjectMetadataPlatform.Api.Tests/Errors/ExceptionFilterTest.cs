@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Moq;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Api.Errors;
-using ProjectMetadataPlatform.Api.Errors.ExceptionHandlers;
 using ProjectMetadataPlatform.Api.Interfaces;
 using ProjectMetadataPlatform.Domain.Errors;
 using ProjectMetadataPlatform.Domain.Errors.AuthExceptions;
@@ -16,7 +14,6 @@ using ProjectMetadataPlatform.Domain.Errors.BasicExceptions;
 using ProjectMetadataPlatform.Domain.Errors.LogExceptions;
 using ProjectMetadataPlatform.Domain.Errors.ProjectExceptions;
 using ProjectMetadataPlatform.Domain.Errors.PluginExceptions;
-using ProjectMetadataPlatform.Domain.Errors.LogExceptions;
 using RouteData = Microsoft.AspNetCore.Routing.RouteData;
 
 namespace ProjectMetadataPlatform.Api.Tests.Errors;
@@ -140,9 +137,13 @@ public class ExceptionFilterTest
 
         _context.SetupSet(c => c.Result = It.IsAny<IActionResult>()).Callback((IActionResult r) =>
         {
-            Assert.That(r, Is.InstanceOf<StatusCodeResult>());
-            var statusCodeResult = (StatusCodeResult) r;
-            Assert.That(statusCodeResult.StatusCode, Is.EqualTo(StatusCodes.Status500InternalServerError));
+            Assert.That(r, Is.InstanceOf<ObjectResult>());
+            var objectResult = (ObjectResult) r;
+            Assert.Multiple(() =>
+            {
+                Assert.That(objectResult.StatusCode, Is.EqualTo(StatusCodes.Status500InternalServerError));
+                Assert.That((objectResult.Value as ErrorResponse)?.Message, Is.EqualTo("An unknown error occurred."));
+            });
         });
 
         _filter.OnException(_context.Object);
@@ -177,11 +178,14 @@ public class ExceptionFilterTest
         var mockException = new Mock<ProjectException>("some error message");
         _context.SetupGet(c => c.Exception).Returns(mockException.Object);
 
-        _context.SetupSet(c => c.Result = It.IsAny<IActionResult>()).Callback((IActionResult r) =>
-        {
-            Assert.That(r, Is.InstanceOf<StatusCodeResult>());
-            var statusCodeResult = (StatusCodeResult) r;
-            Assert.That(statusCodeResult.StatusCode, Is.EqualTo(StatusCodes.Status500InternalServerError));
+        _context.SetupSet(c => c.Result = It.IsAny<IActionResult>()).Callback((IActionResult r) => {
+            Assert.That(r, Is.InstanceOf<ObjectResult>());
+            var objectResult = (ObjectResult) r;
+            Assert.Multiple(() =>
+            {
+                Assert.That(objectResult.StatusCode, Is.EqualTo(StatusCodes.Status500InternalServerError));
+                Assert.That((objectResult.Value as ErrorResponse)?.Message, Is.EqualTo("An unknown error occurred."));
+            });
         });
         _projectExceptionHandler.Setup(h => h.Handle(It.IsAny<ProjectException>())).Returns((IActionResult?)null);
 
