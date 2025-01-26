@@ -54,10 +54,11 @@ public class ExceptionFilter: IExceptionFilter
     /// </summary>
     /// <param name="exception">The exception to handle.</param>
     /// <returns>An IActionResult representing the result of handling the unknown error.</returns>
-    private static StatusCodeResult HandleUnknownError(Exception exception)
+    private static ObjectResult HandleUnknownError(Exception exception)
     {
         Console.WriteLine(exception.Message);
         Console.WriteLine(exception.StackTrace);
-        return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+        return new ObjectResult(new ErrorResponse("An unknown error occurred."))
+            { StatusCode = StatusCodes.Status500InternalServerError };
     }
 }

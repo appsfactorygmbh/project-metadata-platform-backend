@@ -5,6 +5,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ProjectMetadataPlatform.Api.Errors;
 using ProjectMetadataPlatform.Api.Plugins.Models;
 using ProjectMetadataPlatform.Application.Plugins;
 
@@ -39,7 +40,7 @@ public class PluginsController : ControllerBase
     /// <response code="500">An internal error occurred.</response>
     [HttpPut]
     [ProducesResponseType(typeof(CreatePluginResponse), StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<CreatePluginResponse>> Put([FromBody] CreatePluginRequest request)
     {
         if (string.IsNullOrWhiteSpace(request.PluginName))
@@ -67,7 +68,7 @@ public class PluginsController : ControllerBase
     /// <response code="500">An internal error occurred.</response>
     [HttpPatch("{pluginId:int}")]
     [ProducesResponseType(typeof(GetGlobalPluginResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<GetGlobalPluginResponse>> Patch(
         int pluginId,
         [FromBody] PatchGlobalPluginRequest request)
@@ -124,8 +125,8 @@ public class PluginsController : ControllerBase
     /// <response code="500">Internal Server Error if an unexpected exception occurs.</response>
     [HttpDelete("{pluginId:int}")]
     [ProducesResponseType(typeof(DeleteGlobalPluginResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<DeleteGlobalPluginResponse>> Delete(int pluginId)
     {
         if (pluginId <= 0)

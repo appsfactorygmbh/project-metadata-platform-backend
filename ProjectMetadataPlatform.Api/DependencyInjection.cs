@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using ProjectMetadataPlatform.Api.Errors;
@@ -27,8 +28,8 @@ public static class DependencyInjection
         _ = serviceCollection.AddScoped<IExceptionHandler<ProjectException>, ProjectsExceptionHandler>();
         _ = serviceCollection.AddControllers(options =>
             {
-                options.Filters.Add(new ProducesResponseTypeAttribute(typeof(ErrorResponse), 401));
-                options.Filters.Add(new ProducesResponseTypeAttribute(typeof(ErrorResponse), 500));
+                options.Filters.Add(new ProducesResponseTypeAttribute(typeof(ErrorResponse), StatusCodes.Status401Unauthorized));
+                options.Filters.Add(new ProducesResponseTypeAttribute(typeof(ErrorResponse), StatusCodes.Status500InternalServerError));
                 options.Filters.Add<ExceptionFilter>();
                 options.Filters.Add<ErrorResponseMiddleware>();
             }).AddJsonOptions(options =>

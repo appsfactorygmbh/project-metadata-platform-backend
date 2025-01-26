@@ -5,6 +5,7 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ProjectMetadataPlatform.Api.Auth.Models;
+using ProjectMetadataPlatform.Api.Errors;
 using ProjectMetadataPlatform.Application.Auth;
 
 
@@ -38,7 +39,7 @@ public class AuthController : ControllerBase
     /// <response code="500">If an unexpected error occurs.</response>
     [HttpPost("basic")]
     [ProducesResponseType(typeof(LoginResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<LoginResponse>> Post([FromBody] LoginRequest request)
     {
         var query = new LoginQuery(request.Email, request.Password);
@@ -63,7 +64,7 @@ public class AuthController : ControllerBase
     /// <response code="500">If an unexpected error occurs.</response>
     [HttpGet("refresh")]
     [ProducesResponseType(typeof(LoginResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<LoginResponse>> Get([FromHeader(Name = "Authorization")] string refreshToken)
     {
 

@@ -6,6 +6,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ProjectMetadataPlatform.Api.Errors;
 using ProjectMetadataPlatform.Api.Interfaces;
 using ProjectMetadataPlatform.Api.Logs.Models;
 using ProjectMetadataPlatform.Application.Logs;
@@ -53,7 +54,7 @@ public class LogsController: ControllerBase
     /// <response code="500">If an error occurs while processing the request.</response>
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<LogResponse>), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<IEnumerable<LogResponse>>> Get(int? projectId, string? search, string? userId, int? globalPluginId, string? projectSlug)
     {
         var projectFromSlugId = (int?)null;

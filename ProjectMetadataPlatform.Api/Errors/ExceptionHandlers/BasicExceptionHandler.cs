@@ -21,8 +21,8 @@ public class BasicExceptionHandler: ControllerBase, IExceptionHandler<PmpExcepti
     {
         return exception switch
         {
-            EntityNotFoundException entityNotFoundException => NotFound(entityNotFoundException.Message),
-            EntityAlreadyExistsException entityAlreadyExistsException => Conflict(entityAlreadyExistsException.Message),
+            EntityNotFoundException entityNotFoundException => NotFound(new ErrorResponse(entityNotFoundException.Message)),
+            EntityAlreadyExistsException entityAlreadyExistsException => Conflict(new ErrorResponse(entityAlreadyExistsException.Message)),
             DatabaseException databaseException => HandleDatabaseException(databaseException),
             _ => null
         };
@@ -33,10 +33,10 @@ public class BasicExceptionHandler: ControllerBase, IExceptionHandler<PmpExcepti
     /// </summary>
     /// <param name="databaseException">The database exception to handle.</param>
     /// <returns>A StatusCodeResult representing the result of handling the database exception.</returns>
-    private StatusCodeResult HandleDatabaseException(DatabaseException databaseException)
+    private ObjectResult HandleDatabaseException(DatabaseException databaseException)
     {
         Console.WriteLine(databaseException.Message);
         Console.WriteLine(databaseException.StackTrace);
-        return StatusCode(StatusCodes.Status502BadGateway);
+        return StatusCode(StatusCodes.Status502BadGateway, new ErrorResponse("An error occurred while accessing the database."));
     }
 }

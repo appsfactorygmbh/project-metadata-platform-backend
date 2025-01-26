@@ -1,6 +1,4 @@
-﻿using System;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using ProjectMetadataPlatform.Api.Interfaces;
 using ProjectMetadataPlatform.Domain.Errors.ProjectExceptions;
 
@@ -20,7 +18,7 @@ public class ProjectsExceptionHandler: ControllerBase, IExceptionHandler<Project
     {
         return exception switch
         {
-            ProjectNotArchivedException projectNotArchivedException => BadRequest(projectNotArchivedException.Message),
+            ProjectNotArchivedException projectNotArchivedException => BadRequest(new ErrorResponse(projectNotArchivedException.Message)),
             _ => null
         };
     }
