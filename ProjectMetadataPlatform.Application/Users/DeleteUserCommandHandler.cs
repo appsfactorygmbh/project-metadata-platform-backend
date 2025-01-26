@@ -1,4 +1,3 @@
-using System;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
@@ -6,6 +5,7 @@ using MediatR;
 using ProjectMetadataPlatform.Application.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Http;
+using ProjectMetadataPlatform.Domain.Errors.UserException;
 using ProjectMetadataPlatform.Domain.Logs;
 using Action = ProjectMetadataPlatform.Domain.Logs.Action;
 
@@ -39,14 +39,14 @@ public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand,Identi
     /// <summary>
     /// Handles the <see cref="DeleteUserCommand"/> request.
     /// Deletes the user with the specified ID, if present. Returns the deleted user, if present, otherwise null.
-    /// Throws an <see cref="InvalidOperationException"/> if the active user tries to delete themselves.
+    /// Throws an <see cref="UserCantDeleteThemselfException"/> if the active user tries to delete themselves.
     /// On successful deletion, a corresponding log entry is added.
     /// Also, all logs associated with the deleted user are updated, setting the email to the deleted user's current email.
     /// </summary>
     /// <param name="request">The command request containing the user ID.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
-    /// <returns> The deleted user, if present, otherwise null.</returns>
-    /// <exception cref="InvalidOperationException">If the active user tries to delete themselves.</exception>
+    /// <returns>The deleted user, if present, otherwise null.</returns>
+    /// <exception cref="UserCantDeleteThemselfException">If the active user tries to delete themselves.</exception>
     public async Task<IdentityUser> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
     {
         var user = await _usersRepository.GetUserByIdAsync(request.Id);
@@ -55,7 +55,7 @@ public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand,Identi
 
         if (user == activeUser)
         {
-            throw new InvalidOperationException("A User can't delete themself.");
+            throw new UserCantDeleteThemselfException();
         }
 
         var change = new LogChange { OldValue = user.Email!, NewValue = "", Property = nameof(IdentityUser.Email) };
