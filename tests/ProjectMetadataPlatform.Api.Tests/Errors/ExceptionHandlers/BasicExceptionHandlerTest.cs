@@ -63,7 +63,7 @@ public class BasicExceptionHandlerTest
         Assert.Multiple(() =>
         {
             Assert.That(statusCodeResult, Is.Not.Null);
-            Assert.That(statusCodeResult.StatusCode, Is.EqualTo(500));
+            Assert.That(statusCodeResult.StatusCode, Is.EqualTo(502));
         });
     }
 
