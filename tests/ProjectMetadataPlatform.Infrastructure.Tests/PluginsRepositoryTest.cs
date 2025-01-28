@@ -438,11 +438,8 @@ public class PluginsRepositoryTest : TestsWithDatabase
         {
             Assert.That(reloadedProject1, Is.Not.Null);
             Assert.That(reloadedProject2, Is.Not.Null);
-        });
-        Assert.Multiple(() =>
-        {
-            Assert.That(reloadedProject1.ProjectPlugins, Is.Empty);
-            Assert.That(reloadedProject2.ProjectPlugins, Is.Empty);
+            Assert.That(reloadedProject1?.ProjectPlugins, Is.Empty);
+            Assert.That(reloadedProject2?.ProjectPlugins, Is.Empty);
         });
     }
 

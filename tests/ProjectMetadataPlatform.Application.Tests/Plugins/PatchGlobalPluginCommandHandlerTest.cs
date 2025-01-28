@@ -72,6 +72,7 @@ public class PatchGlobalPluginCommandHandlerTest
                 It.IsAny<List<LogChange>>()), Times.Once);
 
             Assert.That(capturedLogChanges, Has.Count.EqualTo(1));
+            Assert.That(capturedLogChanges.First(), Is.Not.Null);
             Assert.That(capturedLogChanges.First().Property, Is.EqualTo(nameof(plugin.PluginName)));
             Assert.That(capturedLogChanges.First().OldValue, Is.EqualTo("Mercury Redstone"));
             Assert.That(capturedLogChanges.First().NewValue, Is.EqualTo("Mercury Atlas"));
@@ -252,7 +253,8 @@ public class PatchGlobalPluginCommandHandlerTest
                 Action.UPDATED_GLOBAL_PLUGIN,
                 It.IsAny<List<LogChange>>()), Times.Once);
 
-            Assert.That(capturedLogChanges.Count, Is.EqualTo(1));
+            Assert.That(capturedLogChanges, Has.Count.EqualTo(1));
+            Assert.That(capturedLogChanges.First(), Is.Not.Null);
             Assert.That(capturedLogChanges.First().Property, Is.EqualTo(nameof(plugin.BaseUrl)));
             Assert.That(capturedLogChanges.First().OldValue, Is.EqualTo("https://mercuryredstone.com"));
             Assert.That(capturedLogChanges.First().NewValue, Is.EqualTo("https://mercuryatlas.com"));

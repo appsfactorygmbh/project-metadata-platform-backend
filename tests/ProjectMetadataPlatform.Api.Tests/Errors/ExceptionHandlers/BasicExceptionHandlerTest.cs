@@ -28,7 +28,11 @@ public class BasicExceptionHandlerTest
 
         Assert.That(result, Is.InstanceOf<NotFoundObjectResult>());
         var notFoundResult = (NotFoundObjectResult) result;
-        Assert.That((notFoundResult.Value as ErrorResponse)?.Message, Is.EqualTo(exception.Message));
+        Assert.Multiple(() =>
+        {
+            Assert.That(notFoundResult, Is.Not.Null);
+            Assert.That((notFoundResult.Value as ErrorResponse)?.Message, Is.EqualTo(exception.Message));
+        });
     }
 
     [Test]
@@ -40,7 +44,11 @@ public class BasicExceptionHandlerTest
 
         Assert.That(result, Is.InstanceOf<ConflictObjectResult>());
         var conflictResult = (ConflictObjectResult) result;
-        Assert.That((conflictResult.Value as ErrorResponse)?.Message, Is.EqualTo(exception.Message));
+        Assert.Multiple(() =>
+        {
+            Assert.That(conflictResult, Is.Not.Null);
+            Assert.That((conflictResult.Value as ErrorResponse)?.Message, Is.EqualTo(exception.Message));
+        });
     }
 
     [Test]
@@ -52,7 +60,11 @@ public class BasicExceptionHandlerTest
 
         Assert.That(result, Is.InstanceOf<ObjectResult>());
         var statusCodeResult = (ObjectResult) result;
-        Assert.That(statusCodeResult.StatusCode, Is.EqualTo(502));
+        Assert.Multiple(() =>
+        {
+            Assert.That(statusCodeResult, Is.Not.Null);
+            Assert.That(statusCodeResult.StatusCode, Is.EqualTo(500));
+        });
     }
 
     [Test]

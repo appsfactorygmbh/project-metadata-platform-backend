@@ -37,6 +37,7 @@ public class ProjectsExceptionHandlerTest
 
         Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
         var statusCodeResult = (BadRequestObjectResult) result;
+        Assert.That(statusCodeResult, Is.Not.Null);
         Assert.That(statusCodeResult.StatusCode, Is.EqualTo(400));
     }
 

@@ -257,14 +257,15 @@ public class Tests
     [Test]
     public async Task DeleteGlobalPlugin_InvalidId_Test()
     {
-
         var result = await _controller.Delete(0);
 
         Assert.That(result.Result, Is.InstanceOf<ObjectResult>());
 
         var badRequestResult = result.Result as ObjectResult;
-        Assert.That(badRequestResult, Is.Not.Null);
-        Assert.That((badRequestResult.Value as ErrorResponse)!.Message, Is.EqualTo("PluginId can't be smaller than or equal to 0"));
+        Assert.Multiple(() =>
+        {
+            Assert.That(badRequestResult, Is.Not.Null);
+            Assert.That((badRequestResult?.Value as ErrorResponse)!.Message, Is.EqualTo("PluginId can't be smaller than or equal to 0"));
+        });
     }
-
 }
