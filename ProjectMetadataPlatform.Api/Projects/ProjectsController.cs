@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
@@ -42,7 +42,7 @@ public class ProjectsController : ControllerBase
     /// <response code="200">The projects are returned successfully.</response>
     /// <response code="500">An internal error occurred.</response>
     [HttpGet]
-    [ProducesResponseType(typeof(GetProjectsResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IEnumerable<GetProjectsResponse>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<GetProjectsResponse>>> Get([FromQuery] ProjectFilterRequest? request, string? search = " ")
     {
         var query = new GetAllProjectsQuery(request, search);
@@ -59,7 +59,7 @@ public class ProjectsController : ControllerBase
             project.Company,
             project.IsmsLevel)
         );
-         return Ok(response);
+        return Ok(response);
     }
 
     /// <summary>
