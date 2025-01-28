@@ -1,4 +1,4 @@
-using System.Net;
+﻿using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
@@ -32,12 +32,12 @@ public class GlobalPluginManagement : IntegrationTestsBase
 
         plugins.GetArrayLength().Should().Be(2);
         plugins[0].GetProperty("id").GetInt32().Should().Be(pluginId1);
-        plugins[0].GetProperty("name").GetString().Should().Be("GitLab");
+        plugins[0].GetProperty("pluginName").GetString().Should().Be("GitLab");
         plugins[0].GetProperty("isArchived").GetBoolean().Should().BeFalse();
         plugins[0].GetProperty("keys").EnumerateArray().Should().BeEmpty();
         plugins[0].GetProperty("baseUrl").GetString().Should().Be("https://gitlab.com");
         plugins[1].GetProperty("id").GetInt32().Should().Be(pluginId2);
-        plugins[1].GetProperty("name").GetString().Should().Be("Jira");
+        plugins[1].GetProperty("pluginName").GetString().Should().Be("Jira");
         plugins[1].GetProperty("isArchived").GetBoolean().Should().BeFalse();
         plugins[1].GetProperty("keys").EnumerateArray().Should().BeEmpty();
         plugins[1].GetProperty("baseUrl").GetString().Should().Be("https://jira.com");
@@ -67,7 +67,7 @@ public class GlobalPluginManagement : IntegrationTestsBase
         var updatedPlugin = await ToJsonElement(client.PatchAsync($"/Plugins/{pluginId}", CreateRequest2));
 
         updatedPlugin.GetProperty("id").GetInt32().Should().Be(pluginId);
-        updatedPlugin.GetProperty("name").GetString().Should().Be("Jira");
+        updatedPlugin.GetProperty("pluginName").GetString().Should().Be("Jira");
         updatedPlugin.GetProperty("isArchived").GetBoolean().Should().BeFalse();
         updatedPlugin.GetProperty("keys").EnumerateArray().Should().BeEmpty();
 
@@ -75,7 +75,7 @@ public class GlobalPluginManagement : IntegrationTestsBase
 
         plugins.GetArrayLength().Should().Be(1);
         plugins[0].GetProperty("id").GetInt32().Should().Be(pluginId);
-        plugins[0].GetProperty("name").GetString().Should().Be("Jira");
+        plugins[0].GetProperty("pluginName").GetString().Should().Be("Jira");
         plugins[0].GetProperty("isArchived").GetBoolean().Should().BeFalse();
         plugins[0].GetProperty("keys").EnumerateArray().Should().BeEmpty();
 
@@ -104,7 +104,7 @@ public class GlobalPluginManagement : IntegrationTestsBase
         var updatedPlugin = await ToJsonElement(client.PatchAsync($"/Plugins/{pluginId}", StringContent("""{ "isArchived": true }""")));
 
         updatedPlugin.GetProperty("id").GetInt32().Should().Be(pluginId);
-        updatedPlugin.GetProperty("name").GetString().Should().Be("GitLab");
+        updatedPlugin.GetProperty("pluginName").GetString().Should().Be("GitLab");
         updatedPlugin.GetProperty("isArchived").GetBoolean().Should().BeTrue();
         updatedPlugin.GetProperty("keys").EnumerateArray().Should().BeEmpty();
 
@@ -112,14 +112,14 @@ public class GlobalPluginManagement : IntegrationTestsBase
 
         plugins.GetArrayLength().Should().Be(1);
         plugins[0].GetProperty("id").GetInt32().Should().Be(pluginId);
-        plugins[0].GetProperty("name").GetString().Should().Be("GitLab");
+        plugins[0].GetProperty("pluginName").GetString().Should().Be("GitLab");
         plugins[0].GetProperty("isArchived").GetBoolean().Should().BeTrue();
         plugins[0].GetProperty("keys").EnumerateArray().Should().BeEmpty();
 
         updatedPlugin = await ToJsonElement(client.PatchAsync($"/Plugins/{pluginId}", StringContent("""{ "isArchived": false }""")));
 
         updatedPlugin.GetProperty("id").GetInt32().Should().Be(pluginId);
-        updatedPlugin.GetProperty("name").GetString().Should().Be("GitLab");
+        updatedPlugin.GetProperty("pluginName").GetString().Should().Be("GitLab");
         updatedPlugin.GetProperty("isArchived").GetBoolean().Should().BeFalse();
         updatedPlugin.GetProperty("keys").EnumerateArray().Should().BeEmpty();
 
@@ -127,7 +127,7 @@ public class GlobalPluginManagement : IntegrationTestsBase
 
         plugins.GetArrayLength().Should().Be(1);
         plugins[0].GetProperty("id").GetInt32().Should().Be(pluginId);
-        plugins[0].GetProperty("name").GetString().Should().Be("GitLab");
+        plugins[0].GetProperty("pluginName").GetString().Should().Be("GitLab");
         plugins[0].GetProperty("isArchived").GetBoolean().Should().BeFalse();
         plugins[0].GetProperty("keys").EnumerateArray().Should().BeEmpty();
 

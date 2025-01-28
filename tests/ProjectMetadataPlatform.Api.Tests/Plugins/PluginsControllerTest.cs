@@ -155,7 +155,7 @@ public class Tests
         Assert.Multiple(() =>
         {
             Assert.That(resultValue, Is.Not.Null);
-            Assert.That(resultValue!.Name, Is.EqualTo("horn ox"));
+            Assert.That(resultValue!.PluginName, Is.EqualTo("horn ox"));
             Assert.That(resultValue.IsArchived, Is.EqualTo(true));
             Assert.That(resultValue.Id, Is.EqualTo(1));
             Assert.That(resultValue.BaseUrl, Is.EqualTo("https://hornox.com"));
@@ -217,7 +217,7 @@ public class Tests
         var resultObj = resultValue[0];
         Assert.Multiple(() =>
         {
-            Assert.That(resultObj.Name, Is.EqualTo("plugin 1"));
+            Assert.That(resultObj.PluginName, Is.EqualTo("plugin 1"));
             Assert.That(resultObj.Id, Is.EqualTo(1));
             Assert.That(resultObj.IsArchived, Is.False);
             Assert.That(resultObj.Keys, Is.EqualTo(Array.Empty<string>()));

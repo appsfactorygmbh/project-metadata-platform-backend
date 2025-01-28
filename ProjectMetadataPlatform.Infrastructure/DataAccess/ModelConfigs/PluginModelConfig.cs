@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ProjectMetadataPlatform.Domain.Plugins;
 
@@ -20,5 +20,7 @@ public class PluginModelConfig : IEntityTypeConfiguration<Plugin>
         _ = builder.HasMany(p => p.ProjectPlugins)
             .WithOne(pp => pp.Plugin)
             .HasForeignKey(pp => pp.PluginId);
+
+        builder.HasIndex(plugin => plugin.PluginName).IsUnique();
     }
 }
