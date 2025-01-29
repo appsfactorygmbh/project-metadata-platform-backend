@@ -44,14 +44,18 @@ public class PatchGlobalPluginCommandHandler : IRequestHandler<PatchGlobalPlugin
     /// <exception cref="PluginNameAlreadyExistsException">The Plugin name already exists.</exception>
     public async Task<Plugin> Handle(PatchGlobalPluginCommand request, CancellationToken cancellationToken)
     {
-        if (request.PluginName != null && await _pluginRepository.CheckGlobalPluginNameExists(request.PluginName))
+        var plugin = await _pluginRepository.GetPluginByIdAsync(request.Id) ?? throw new PluginNotFoundException(request.Id);
+        if (
+            request.PluginName != null
+            && !string.Equals(plugin.PluginName, request.PluginName, StringComparison.Ordinal)
+            && await _pluginRepository.CheckGlobalPluginNameExists(request.PluginName))
         {
             throw new PluginNameAlreadyExistsException(request.PluginName);
         }
 
-        var plugin = await _pluginRepository.GetPluginByIdAsync(request.Id) ?? throw new PluginNotFoundException(request.Id);
         await AddUpdatedPluginLog(plugin, request);
-        if (request.PluginName != null && !string.Equals(plugin.PluginName, request.PluginName, StringComparison.Ordinal))
+
+        if (request.PluginName != null)
         {
             plugin.PluginName = request.PluginName;
         }
@@ -77,10 +81,10 @@ public class PatchGlobalPluginCommandHandler : IRequestHandler<PatchGlobalPlugin
     {
         var changes = new List<LogChange>();
 
-        if (request.PluginName != null)
+        if (request.PluginName != null && !string.Equals(plugin.PluginName, request.PluginName, StringComparison.Ordinal))
         {
             changes.Add(
-                new()
+                new LogChange
                 {
                     Property = nameof(plugin.PluginName),
                     OldValue = plugin.PluginName,
@@ -91,7 +95,7 @@ public class PatchGlobalPluginCommandHandler : IRequestHandler<PatchGlobalPlugin
         if (request.BaseUrl != null)
         {
             changes.Add(
-                new()
+                new LogChange
                 {
                     Property = nameof(plugin.BaseUrl),
                     OldValue = plugin.BaseUrl ?? "",

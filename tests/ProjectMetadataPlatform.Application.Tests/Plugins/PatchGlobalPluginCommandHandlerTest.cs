@@ -264,11 +264,58 @@ public class PatchGlobalPluginCommandHandlerTest
     }
 
     [Test]
-    public void PatchGlobalPlugin_NameUpdatedButAlreadyExists_Test()
+    public void PatchGlobalPlugin_NameUpdatedButAlreadyUsedInAnotherPlugin_Test()
     {
+        var plugin = new Plugin { Id = 42, PluginName = "Mercury Redstone", IsArchived = false, BaseUrl = "https://mercuryredstone.com" };
+        _mockPluginRepo.Setup(repo => repo.GetPluginByIdAsync(42)).ReturnsAsync(plugin);
+
         _mockPluginRepo.Setup(repo => repo.CheckGlobalPluginNameExists("Atlas Agena")).ReturnsAsync(true);
         Assert.ThrowsAsync<PluginNameAlreadyExistsException>(() =>
             _handler.Handle(new PatchGlobalPluginCommand(42, "Atlas Agena"), It.IsAny<CancellationToken>()));
         _mockPluginRepo.Verify(repo => repo.CheckGlobalPluginNameExists("Atlas Agena"), Times.Once);
+    }
+
+    [Test]
+    public async Task PatchGlobalPlugin_UpdatePlugin_NameNotChangedButProvided_Test()
+    {
+        // Arrange
+        var plugin = new Plugin { Id = 42, PluginName = "Mercury Redstone", IsArchived = false };
+
+        _mockPluginRepo.Setup(repo => repo.GetPluginByIdAsync(42)).ReturnsAsync(plugin);
+        _mockPluginRepo.Setup(repo => repo.StorePlugin(It.IsAny<Plugin>())).ReturnsAsync((Plugin p) => p);
+
+        List<LogChange>? capturedLogChanges = null;
+
+        _mockLogRepo.Setup(m => m.AddGlobalPluginLogForCurrentUser(
+                It.IsAny<Plugin>(),
+                Action.UPDATED_GLOBAL_PLUGIN,
+                It.IsAny<List<LogChange>>()))
+            .Callback<Plugin, Action, List<LogChange>>((_, _, logChanges) =>
+                capturedLogChanges = logChanges);
+
+        // Act
+        var result = await _handler.Handle(new PatchGlobalPluginCommand(42, "Mercury Redstone"), It.IsAny<CancellationToken>());
+
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.Not.Null);
+            Assert.That(capturedLogChanges, Is.Null);
+        });
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.PluginName, Is.EqualTo("Mercury Redstone"));
+            Assert.That(result.IsArchived, Is.EqualTo(plugin.IsArchived));
+            Assert.That(result.Id, Is.EqualTo(plugin.Id));
+
+            _mockLogRepo.Verify(m => m.AddGlobalPluginLogForCurrentUser(
+                It.IsAny<Plugin>(),
+                Action.UPDATED_GLOBAL_PLUGIN,
+                It.IsAny<List<LogChange>>()), Times.Never);
+
+            _mockUnitOfWork.Verify(uow => uow.CompleteAsync(), Times.Once);
+        });
+
+        _mockPluginRepo.Verify(r => r.CheckGlobalPluginNameExists("Mercury Redstone"), Times.Never);
     }
 }
