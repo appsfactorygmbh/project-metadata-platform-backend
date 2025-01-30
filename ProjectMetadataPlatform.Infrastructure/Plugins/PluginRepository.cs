@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -123,7 +124,7 @@ public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
     /// <inheritdoc />
     public async Task<bool> CheckGlobalPluginNameExists(string name)
     {
-        var queryResult = GetIf(plugin => plugin.PluginName == name);
+        var queryResult = GetIf(plugin => plugin.PluginName.ToLower() == name.ToLower());
         return await queryResult.AnyAsync();
     }
 }
