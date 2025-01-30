@@ -4,9 +4,9 @@ using Microsoft.AspNetCore.Mvc.Filters;
 namespace ProjectMetadataPlatform.Api.Errors;
 
 /// <summary>
-/// Middleware to handle error responses.
+/// Filter to handle error responses.
 /// </summary>
-public sealed class ErrorResponseMiddleware : IAlwaysRunResultFilter
+public sealed class ErrorResponseFilter : IAlwaysRunResultFilter
 {
     /// <inheritdoc />
     public void OnResultExecuting(ResultExecutingContext context)

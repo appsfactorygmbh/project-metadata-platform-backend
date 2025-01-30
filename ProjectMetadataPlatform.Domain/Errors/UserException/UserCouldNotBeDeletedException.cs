@@ -13,7 +13,7 @@ public class UserCouldNotBeDeletedException : UserException
     /// <param name="userId">The ID of the user that could not be deleted.</param>
     /// <param name="identityResult">The result of the identity operation that caused the exception.</param>
     public UserCouldNotBeDeletedException(string userId, IdentityResult identityResult)
-        : base($"User with id {userId} could not be deleted. {identityResult}")
+        : base($"User with id {userId} could not be deleted: {TransformIdentityResult(identityResult)}")
     {
     }
 }

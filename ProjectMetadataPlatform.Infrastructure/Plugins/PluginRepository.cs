@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -19,7 +19,7 @@ public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
     /// Constructor for the PluginRepository.
     /// </summary>
     /// <param name="context"></param>
-    public PluginRepository(ProjectMetadataPlatformDbContext context): base(context)
+    public PluginRepository(ProjectMetadataPlatformDbContext context) : base(context)
     {
         _context = context;
     }
@@ -32,6 +32,11 @@ public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
     /// <returns>The data received by the database.</returns>
     public async Task<List<ProjectPlugins>> GetAllPluginsForProjectIdAsync(int id)
     {
+        if (!await _context.Projects.AnyAsync(p => p.Id == id))
+        {
+            throw new ProjectNotFoundException(id);
+        }
+
         return await _context.ProjectPluginsRelation
             .Where(rel => rel.ProjectId == id)
             .Include(rel => rel.Plugin)
@@ -65,7 +70,7 @@ public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
     {
         if (plugin.Id == 0)
         {
-            _ =  _context.Plugins.Add(plugin);
+            _ = _context.Plugins.Add(plugin);
         }
         else
         {

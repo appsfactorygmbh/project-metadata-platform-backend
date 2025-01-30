@@ -8,7 +8,7 @@ using ProjectMetadataPlatform.IntegrationTests.Utilities;
 
 namespace ProjectMetadataPlatform.IntegrationTests;
 
-public class Auth : IntegrationTestsBase
+public class AuthManagement : IntegrationTestsBase
 {
     [Test]
     public async Task ObtainNewAuthTokenFromRefreshToken()
@@ -81,5 +81,37 @@ public class Auth : IntegrationTestsBase
 
         //Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
+
+    [Test]
+    public async Task InvalidCredentialsAreNotAccepted()
+    {
+        //Arrange
+        var client = CreateClient();
+
+        //Act
+        var response = await ToErrorResponse(
+                client.PostAsJsonAsync("/auth/basic", new { Email = "wrong@email.de", Password = "invalid" }),
+                HttpStatusCode.BadRequest);
+
+        //Assert
+        response.Message.Should().Be("Invalid login credentials.");
+    }
+
+    [Test]
+    public async Task InvalidRefreshTokenIsNotAccepted()
+    {
+        //Arrange
+        var client = CreateClient();
+        client.DefaultRequestHeaders.Clear();
+        client.DefaultRequestHeaders.Add("Authorization", "Refresh invalid");
+
+        //Act
+        var response = await ToErrorResponse(
+                client.GetAsync("/auth/refresh"),
+                HttpStatusCode.BadRequest);
+
+        //Assert
+        response.Message.Should().Be("Invalid refresh token.");
     }
 }

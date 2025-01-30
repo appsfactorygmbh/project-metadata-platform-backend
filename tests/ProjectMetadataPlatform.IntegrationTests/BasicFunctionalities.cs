@@ -1,4 +1,4 @@
-using System.Net;
+﻿using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -39,9 +39,9 @@ public class BasicFunctionalities : IntegrationTestsBase
         var client = CreateClient();
 
         // Act
-        var response = await client.SendAsync(new HttpRequestMessage(new HttpMethod(method), endpoint));
+        var response = await ToErrorResponse(client.SendAsync(new HttpRequestMessage(new HttpMethod(method), endpoint)), HttpStatusCode.Unauthorized);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.Message.Should().Be("You are either not logged in or do not have the necessary permissions to perform this action.");
     }
 }

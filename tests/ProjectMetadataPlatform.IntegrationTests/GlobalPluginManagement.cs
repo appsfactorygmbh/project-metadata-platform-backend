@@ -156,16 +156,12 @@ public class GlobalPluginManagement : IntegrationTestsBase
         var pluginId = (await ToJsonElement(client.PutAsync("/Plugins", CreateRequest), HttpStatusCode.Created))
             .GetProperty("id").GetInt32();
 
-        var deleteResponse = await client.DeleteAsync($"/Plugins/{pluginId}");
-        deleteResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        (await deleteResponse.Content.ReadFromJsonAsync<ErrorResponse>())!.Message.Should().Be("The plugin 1 is not archived.");
-
         var updatedPlugin = await ToJsonElement(client.PatchAsync($"/Plugins/{pluginId}", StringContent("""{ "isArchived": true }""")));
 
         updatedPlugin.GetProperty("isArchived").GetBoolean().Should().BeTrue();
 
-        var secondDeleteResponse = await ToJsonElement(client.DeleteAsync($"/Plugins/{pluginId}"));
-        secondDeleteResponse.GetProperty("pluginId").GetInt32().Should().Be(pluginId);
+        var deleteResponse = await ToJsonElement(client.DeleteAsync($"/Plugins/{pluginId}"));
+        deleteResponse.GetProperty("pluginId").GetInt32().Should().Be(pluginId);
 
         var plugins = await ToJsonElement(client.GetAsync("/Plugins"));
 
@@ -182,5 +178,54 @@ public class GlobalPluginManagement : IntegrationTestsBase
 
         logs[2].GetProperty("logMessage").GetString().Should().Be(
             "admin removed global plugin GitLab");
+    }
+
+    [Test]
+    public async Task PluginNameMustBeUnique()
+    {
+        // Arrange
+        var client = CreateClient();
+        await GetAuthTokenAndAddItToDefaultRequestHeadersOfClient(client);
+
+        // Act
+        (await client.PutAsync("/Plugins", CreateRequest)).StatusCode.Should().Be(HttpStatusCode.Created);
+        var errorResponse = await ToErrorResponse(client.PutAsync("/Plugins", CreateRequest), HttpStatusCode.Conflict);
+
+        // Assert
+        errorResponse.Message.Should().Be("A global Plugin with the name GitLab already exists.");
+    }
+
+    [Test]
+    public async Task NotFoundIsReturnedForInvalidPluginId([Values] bool patch)
+    {
+        // Arrange
+        var client = CreateClient();
+        await GetAuthTokenAndAddItToDefaultRequestHeadersOfClient(client);
+
+        var responseTask = patch
+            ? client.PatchAsync("/Plugins/1", CreateRequest)
+            : client.DeleteAsync("/Plugins/1");
+
+        // Act
+        var errorResponse = await ToErrorResponse(responseTask, HttpStatusCode.NotFound);
+
+        // Assert
+        errorResponse.Message.Should().Be("The plugin with id 1 was not found.");
+    }
+
+    [Test]
+    public async Task PluginMustBeArchivedToBeDeleted()
+    {
+        // Arrange
+        var client = CreateClient();
+        await GetAuthTokenAndAddItToDefaultRequestHeadersOfClient(client);
+
+        // Act
+        var pluginId = (await ToJsonElement(client.PutAsync("/Plugins", CreateRequest), HttpStatusCode.Created))
+            .GetProperty("id").GetInt32();
+        var errorResponse = await ToErrorResponse(client.DeleteAsync($"/Plugins/{pluginId}"), HttpStatusCode.BadRequest);
+
+        // Assert
+        errorResponse.Message.Should().Be("The plugin 1 is not archived.");
     }
 }

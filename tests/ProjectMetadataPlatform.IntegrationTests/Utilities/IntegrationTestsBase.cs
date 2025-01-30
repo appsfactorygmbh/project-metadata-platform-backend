@@ -11,6 +11,7 @@ using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Api.Auth.Models;
+using ProjectMetadataPlatform.Api.Errors;
 using ProjectMetadataPlatform.Domain.Auth;
 using ProjectMetadataPlatform.Infrastructure.DataAccess;
 
@@ -87,6 +88,13 @@ public class IntegrationTestsBase : IDisposable
         var responseMessage = await response;
         responseMessage.StatusCode.Should().Be(expectedStatusCode);
         return (await responseMessage.Content.ReadFromJsonAsync<JsonDocument>())!.RootElement;
+    }
+
+    protected static async Task<ErrorResponse> ToErrorResponse(Task<HttpResponseMessage> response, HttpStatusCode expectedStatusCode)
+    {
+        var responseMessage = await response;
+        responseMessage.StatusCode.Should().Be(expectedStatusCode);
+        return (await responseMessage.Content.ReadFromJsonAsync<ErrorResponse>())!;
     }
 
     protected static StringContent StringContent(string content) =>

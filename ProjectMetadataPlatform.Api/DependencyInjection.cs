@@ -1,4 +1,4 @@
-using System.Linq;
+﻿using System.Linq;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -40,7 +40,7 @@ public static class DependencyInjection
                 options.Filters.Add(new ProducesResponseTypeAttribute(typeof(ErrorResponse), StatusCodes.Status401Unauthorized));
                 options.Filters.Add(new ProducesResponseTypeAttribute(typeof(ErrorResponse), StatusCodes.Status500InternalServerError));
                 options.Filters.Add<ExceptionFilter>();
-                options.Filters.Add<ErrorResponseMiddleware>();
+                options.Filters.Add<ErrorResponseFilter>();
             }).AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());

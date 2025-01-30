@@ -1,3 +1,4 @@
+﻿using System;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -181,5 +182,59 @@ public class UserManagement : IntegrationTestsBase
             "admin added a new user with properties: Email = test@mail.de");
         logs[1].GetProperty("logMessage").GetString().Should().Be(
             "test (deleted user) added a new user with properties: Email = mail@m.de");
+    }
+
+    [Test]
+    public async Task EmailMustBeUnique()
+    {
+        // Arrange
+        var client = CreateClient();
+        await GetAuthTokenAndAddItToDefaultRequestHeadersOfClient(client);
+
+        // Act
+        (await client.PutAsync("/Users", CreateRequest)).StatusCode.Should().Be(HttpStatusCode.Created);
+        var errorResponse = await ToErrorResponse(client.PutAsync("/Users", CreateRequest), HttpStatusCode.Conflict);
+
+        // Assert
+        errorResponse.Message.Should().Be("User creation Failed : DuplicateEmail");
+    }
+
+    [Test]
+    public async Task PasswordMustBeValid()
+    {
+        // Arrange
+        var client = CreateClient();
+        await GetAuthTokenAndAddItToDefaultRequestHeadersOfClient(client);
+
+        // Act
+        var errorResponse = await ToErrorResponse(
+                client.PutAsync("/Users", StringContent("""{ "email": "foo@bar.de", "password": "password" }""")),
+                HttpStatusCode.BadRequest);
+
+        // Assert
+        errorResponse.Message.Should().Be(
+                "Invalid password format: Passwords must have at least one non alphanumeric character. Passwords must have at least one digit ('0'-'9'). Passwords must have at least one uppercase ('A'-'Z').");
+    }
+
+    [Test]
+    public async Task NotFoundIsReturnedForInvalidUserId([Values("GET", "PATCH", "DELETE")] string endpoint)
+    {
+        // Arrange
+        var client = CreateClient();
+        await GetAuthTokenAndAddItToDefaultRequestHeadersOfClient(client);
+
+        var responseTask = endpoint switch
+        {
+            "GET" => client.GetAsync("/Users/10"),
+            "PATCH" => client.PatchAsync("/Users/10", CreateRequest),
+            "DELETE" => client.DeleteAsync("/Users/10"),
+            _ => throw new ArgumentOutOfRangeException(nameof(endpoint), endpoint, null)
+        };
+
+        // Act
+        var errorResponse = await ToErrorResponse(responseTask, HttpStatusCode.NotFound);
+
+        // Assert
+        errorResponse.Message.Should().Be("The user 10 was not found.");
     }
 }

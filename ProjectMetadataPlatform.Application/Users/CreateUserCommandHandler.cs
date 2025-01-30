@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -24,7 +24,7 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, strin
     /// <param name="usersRepository">Repository for accessing user data.</param>
     /// <param name="logRepository">Repository for logging data.</param>
     /// <param name="unitOfWork">Unit of work for managing transactions.</param>
-    public CreateUserCommandHandler(IUsersRepository usersRepository,ILogRepository logRepository, IUnitOfWork unitOfWork)
+    public CreateUserCommandHandler(IUsersRepository usersRepository, ILogRepository logRepository, IUnitOfWork unitOfWork)
     {
         _usersRepository = usersRepository;
         _logRepository = logRepository;
@@ -40,8 +40,10 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, strin
     /// <returns>The ID of the created user.</returns>
     public async Task<string> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
+        await _usersRepository.CheckPasswordFormat(request.Password);
+
         // Uses Email as Username because: Username cant be empty + Username cant be duplicate.
-        var user = new IdentityUser { Email = request.Email, UserName = request.Email};
+        var user = new IdentityUser { Email = request.Email, UserName = request.Email };
         var result = await _usersRepository.CreateUserAsync(user, request.Password);
 
         var changes = new List<LogChange>
