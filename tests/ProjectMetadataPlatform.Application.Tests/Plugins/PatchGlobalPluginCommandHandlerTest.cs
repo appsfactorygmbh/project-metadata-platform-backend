@@ -318,4 +318,98 @@ public class PatchGlobalPluginCommandHandlerTest
 
         _mockPluginRepo.Verify(r => r.CheckGlobalPluginNameExists("Mercury Redstone"), Times.Never);
     }
+
+    [Test]
+    public async Task PatchGlobalPlugin_UpdatePlugin_NameChangeInCasing_Test()
+    {
+        // Arrange
+        var plugin = new Plugin { Id = 42, PluginName = "Vega c", IsArchived = false };
+
+        _mockPluginRepo.Setup(repo => repo.GetPluginByIdAsync(42)).ReturnsAsync(plugin);
+        _mockPluginRepo.Setup(repo => repo.StorePlugin(It.IsAny<Plugin>())).ReturnsAsync((Plugin p) => p);
+
+        List<LogChange>? capturedLogChanges = null;
+
+        _mockLogRepo.Setup(m => m.AddGlobalPluginLogForCurrentUser(
+                It.IsAny<Plugin>(),
+                Action.UPDATED_GLOBAL_PLUGIN,
+                It.IsAny<List<LogChange>>()))
+            .Callback<Plugin, Action, List<LogChange>>((_, _, logChanges) =>
+                capturedLogChanges = logChanges);
+
+        // Act
+        var result = await _handler.Handle(new PatchGlobalPluginCommand(42, "VEGA C"), It.IsAny<CancellationToken>());
+
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.Not.Null);
+            Assert.That(capturedLogChanges, Is.Not.Null);
+        });
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.PluginName, Is.EqualTo("VEGA C"));
+            Assert.That(result.IsArchived, Is.EqualTo(plugin.IsArchived));
+            Assert.That(result.Id, Is.EqualTo(plugin.Id));
+
+            _mockLogRepo.Verify(m => m.AddGlobalPluginLogForCurrentUser(
+                It.IsAny<Plugin>(),
+                Action.UPDATED_GLOBAL_PLUGIN,
+                It.IsAny<List<LogChange>>()), Times.Once);
+
+            Assert.That(capturedLogChanges, Has.Count.EqualTo(1));
+            Assert.That(capturedLogChanges.First(), Is.Not.Null);
+            Assert.That(capturedLogChanges.First().Property, Is.EqualTo(nameof(plugin.PluginName)));
+            Assert.That(capturedLogChanges.First().OldValue, Is.EqualTo("Vega c"));
+            Assert.That(capturedLogChanges.First().NewValue, Is.EqualTo("VEGA C"));
+
+
+            _mockUnitOfWork.Verify(uow => uow.CompleteAsync(), Times.Once);
+        });
+
+        _mockPluginRepo.Verify(r => r.CheckGlobalPluginNameExists("VEGA C"), Times.Never);
+    }
+
+    [Test]
+    public async Task PatchGlobalPlugin_UpdatePlugin_UrlNotChangedButProvided_Test()
+    {
+        // Arrange
+        var plugin = new Plugin { Id = 42, PluginName = "Mercury Redstone", BaseUrl = "https://mercury.redstone", IsArchived = false };
+
+        _mockPluginRepo.Setup(repo => repo.GetPluginByIdAsync(42)).ReturnsAsync(plugin);
+        _mockPluginRepo.Setup(repo => repo.StorePlugin(It.IsAny<Plugin>())).ReturnsAsync((Plugin p) => p);
+
+        List<LogChange>? capturedLogChanges = null;
+
+        _mockLogRepo.Setup(m => m.AddGlobalPluginLogForCurrentUser(
+                It.IsAny<Plugin>(),
+                Action.UPDATED_GLOBAL_PLUGIN,
+                It.IsAny<List<LogChange>>()))
+            .Callback<Plugin, Action, List<LogChange>>((_, _, logChanges) =>
+                capturedLogChanges = logChanges);
+
+        // Act
+        var result = await _handler.Handle(new PatchGlobalPluginCommand(42, null, false, "https://mercury.redstone"), It.IsAny<CancellationToken>());
+
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.Not.Null);
+            Assert.That(capturedLogChanges, Is.Null);
+        });
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.PluginName, Is.EqualTo("Mercury Redstone"));
+            Assert.That(result.IsArchived, Is.EqualTo(plugin.IsArchived));
+            Assert.That(result.Id, Is.EqualTo(plugin.Id));
+            Assert.That(result.BaseUrl, Is.EqualTo(plugin.BaseUrl));
+
+            _mockLogRepo.Verify(m => m.AddGlobalPluginLogForCurrentUser(
+                It.IsAny<Plugin>(),
+                Action.UPDATED_GLOBAL_PLUGIN,
+                It.IsAny<List<LogChange>>()), Times.Never);
+
+            _mockUnitOfWork.Verify(uow => uow.CompleteAsync(), Times.Once);
+        });
+    }
 }

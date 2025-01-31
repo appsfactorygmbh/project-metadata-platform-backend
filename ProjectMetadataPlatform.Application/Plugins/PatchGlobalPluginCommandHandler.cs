@@ -47,7 +47,7 @@ public class PatchGlobalPluginCommandHandler : IRequestHandler<PatchGlobalPlugin
         var plugin = await _pluginRepository.GetPluginByIdAsync(request.Id) ?? throw new PluginNotFoundException(request.Id);
         if (
             request.PluginName != null
-            && !string.Equals(plugin.PluginName, request.PluginName, StringComparison.Ordinal)
+            && !string.Equals(plugin.PluginName, request.PluginName, StringComparison.OrdinalIgnoreCase)
             && await _pluginRepository.CheckGlobalPluginNameExists(request.PluginName))
         {
             throw new PluginNameAlreadyExistsException(request.PluginName);
@@ -92,7 +92,7 @@ public class PatchGlobalPluginCommandHandler : IRequestHandler<PatchGlobalPlugin
                 });
         }
 
-        if (request.BaseUrl != null)
+        if (request.BaseUrl != null && !string.Equals(plugin.BaseUrl, request.BaseUrl, StringComparison.Ordinal))
         {
             changes.Add(
                 new LogChange
