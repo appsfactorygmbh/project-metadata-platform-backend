@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -10,7 +10,7 @@ namespace ProjectMetadataPlatform.Application.Logs;
 /// <summary>
 /// Handles the query to retrieve logs based on project ID and search criteria.
 /// </summary>
-public class GetLogsQueryHandler: IRequestHandler<GetLogsQuery, IEnumerable<Log>>
+public class GetLogsQueryHandler : IRequestHandler<GetLogsQuery, IEnumerable<Log>>
 {
     private readonly ILogRepository _logRepository;
 
@@ -34,27 +34,17 @@ public class GetLogsQueryHandler: IRequestHandler<GetLogsQuery, IEnumerable<Log>
     /// <returns>A list of log responses.</returns>
     public async Task<IEnumerable<Log>> Handle(GetLogsQuery request, CancellationToken cancellationToken)
     {
-        List<Log> logs;
-        if (request.ProjectId != null)
+        return request switch
         {
-            logs = await _logRepository.GetLogsForProject((int)request.ProjectId!);
-        }
-        else if (request.Search != null)
-        {
-            logs = await _logRepository.GetLogsWithSearch(request.Search);
-        }
-        else if (request.UserId != null)
-        {
-            logs = await _logRepository.GetLogsForUser(request.UserId!);
-        }
-        else if (request.GlobalPluginId != null)
-        {
-            logs = await _logRepository.GetLogsForGlobalPlugin((int)request.GlobalPluginId!);
-        }
-        else
-        {
-            logs = await _logRepository.GetAllLogs();
-        }
-        return logs;
+            { ProjectId: { } projectId }
+                => await _logRepository.GetLogsForProject(projectId),
+            { Search: { } search }
+                => await _logRepository.GetLogsWithSearch(search),
+            { UserId: { } userId }
+                => await _logRepository.GetLogsForUser(userId),
+            { GlobalPluginId: { } globalPluginId }
+                => await _logRepository.GetLogsForGlobalPlugin(globalPluginId),
+            _ => await _logRepository.GetAllLogs()
+        };
     }
 }
