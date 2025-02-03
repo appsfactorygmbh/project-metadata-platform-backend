@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +14,10 @@ namespace ProjectMetadataPlatform.Infrastructure.Plugins;
 /// <summary>
 /// The repository for plugins that handles the data access.
 /// </summary>
+[SuppressMessage("Performance", "CA1862:\"StringComparison\"-Methodenüberladungen verwenden, um Zeichenfolgenvergleiche ohne Beachtung der Groß-/Kleinschreibung durchzuführen")]
+[SuppressMessage("Globalization", "CA1304:CultureInfo angeben")]
+[SuppressMessage("Globalization", "CA1311:Geben Sie eine Kultur an oder verwenden Sie eine invariante Version")]
+[SuppressMessage("Globalization", "CA1305:IFormatProvider angeben")]
 public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
 {
     /// <summary>

@@ -7,8 +7,9 @@ using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Application.Projects;
 using ProjectMetadataPlatform.Domain.Errors.ProjectExceptions;
 using ProjectMetadataPlatform.Domain.Projects;
+using ProjectMetadataPlatform.Infrastructure.DataAccess;
 
-namespace ProjectMetadataPlatform.Infrastructure.DataAccess;
+namespace ProjectMetadataPlatform.Infrastructure.Projects;
 
 /// <summary>
 /// Repository for accessing and managing project data in the database.

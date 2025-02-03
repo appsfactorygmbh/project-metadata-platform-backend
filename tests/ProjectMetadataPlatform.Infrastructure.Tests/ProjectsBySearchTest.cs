@@ -5,6 +5,7 @@ using NUnit.Framework;
 using ProjectMetadataPlatform.Domain.Projects;
 using ProjectMetadataPlatform.Infrastructure.DataAccess;
 using ProjectMetadataPlatform.Application.Projects;
+using ProjectMetadataPlatform.Infrastructure.Projects;
 
 namespace ProjectMetadataPlatform.Infrastructure.Tests;
 

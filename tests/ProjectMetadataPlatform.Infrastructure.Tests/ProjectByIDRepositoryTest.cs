@@ -3,6 +3,7 @@ using NUnit.Framework;
 using ProjectMetadataPlatform.Domain.Errors.ProjectExceptions;
 using ProjectMetadataPlatform.Domain.Projects;
 using ProjectMetadataPlatform.Infrastructure.DataAccess;
+using ProjectMetadataPlatform.Infrastructure.Projects;
 
 namespace ProjectMetadataPlatform.Infrastructure.Tests;
 

@@ -27,11 +27,11 @@ public class BasicExceptionHandlerTest
         var result = _basicExceptionHandler.Handle(exception);
 
         Assert.That(result, Is.InstanceOf<NotFoundObjectResult>());
-        var notFoundResult = (NotFoundObjectResult) result;
+        var notFoundResult = (NotFoundObjectResult)result;
         Assert.Multiple(() =>
         {
             Assert.That(notFoundResult, Is.Not.Null);
-            Assert.That((notFoundResult.Value as ErrorResponse)?.Message, Is.EqualTo(exception.Message));
+            Assert.That((notFoundResult?.Value as ErrorResponse)?.Message, Is.EqualTo(exception.Message));
         });
     }
 
@@ -43,11 +43,11 @@ public class BasicExceptionHandlerTest
         var result = _basicExceptionHandler.Handle(exception);
 
         Assert.That(result, Is.InstanceOf<ConflictObjectResult>());
-        var conflictResult = (ConflictObjectResult) result;
+        var conflictResult = (ConflictObjectResult)result;
         Assert.Multiple(() =>
         {
             Assert.That(conflictResult, Is.Not.Null);
-            Assert.That((conflictResult.Value as ErrorResponse)?.Message, Is.EqualTo(exception.Message));
+            Assert.That((conflictResult?.Value as ErrorResponse)?.Message, Is.EqualTo(exception.Message));
         });
     }
 
@@ -59,11 +59,11 @@ public class BasicExceptionHandlerTest
         var result = _basicExceptionHandler.Handle(exception);
 
         Assert.That(result, Is.InstanceOf<ObjectResult>());
-        var statusCodeResult = (ObjectResult) result;
+        var statusCodeResult = (ObjectResult)result;
         Assert.Multiple(() =>
         {
             Assert.That(statusCodeResult, Is.Not.Null);
-            Assert.That(statusCodeResult.StatusCode, Is.EqualTo(502));
+            Assert.That(statusCodeResult?.StatusCode, Is.EqualTo(502));
         });
     }
 
