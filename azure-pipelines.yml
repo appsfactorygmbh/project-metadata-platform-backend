@@ -84,7 +84,7 @@ stages:
   - stage: Build
     displayName: Build + Push Stage
     dependsOn: Test
-    condition:  succeeded()
+    condition:  and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/develop'))
     jobs:
     - job: Build
       displayName: Build job
