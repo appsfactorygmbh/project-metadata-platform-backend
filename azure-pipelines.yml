@@ -5,34 +5,66 @@
 
 trigger:
 - develop
-
-
-pr:
-- develop
+- master
 
 pool:
-  vmImage: 'windows-latest'
+  vmImage: 'ubuntu-latest'
 
 variables:
-  solution: '**/*.sln'
-  buildPlatform: 'Any CPU'
-  buildConfiguration: 'Release'
+  - name: dotnetVersion
+    value: 8.x
+  - name: dockerRegistryServiceConnection
+    value: 3d0f8345-5e44-44d3-af44-68f089b5d843 # SC-DockerHub
+  - name: dockerImageRepository
+    value: appsfactorylej/project-metadata-platform
+  - name: dockerfilePath
+    value: Dockerfile 
+  - name: today
+    value: $[ format('{0:yyyy}.{0:MM}.{0:dd}-{0:HH}.{0:mm}', pipeline.startTime) ]
 
-steps:
-- task: NuGetToolInstaller@1
-
-- task: NuGetCommand@2
-  inputs:
-    restoreSolution: '$(solution)'
-
-- task: VSBuild@1
-  inputs:
-    solution: '$(solution)'
-    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)"'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
-
-- task: VSTest@2
-  inputs:
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+stages:
+  - stage: Test
+    displayName: 'Test stage'
+    jobs:
+    - job : Test
+      steps:
+      - task: UseDotNet@2
+        displayName: 'Use .NET SDK $(dotnetVersion)'
+        inputs:
+          packageType: 'sdk'
+          version: '$(dotnetVersion)'
+      - task: NuGetCommand@2
+        displayName: Restore packages
+        inputs:
+          command: restore
+          feedsToUse: select
+      - script: dotnet test $(System.DefaultWorkingDirectory)
+        displayName: 'Unit Tests'
+  
+  - stage: Build
+    displayName: Build + Push Stage
+    dependsOn: Test
+    condition:  succeeded()
+    jobs:
+    - job: Build
+      displayName: Build job
+      steps:
+      - task: Docker@2
+        displayName: Build docker image
+        inputs:
+          command: build
+          containerRegistry: $(dockerRegistryServiceConnection)
+          repository: $(dockerImageRepository)
+          Dockerfile: $(dockerfilePath)
+          arguments: >-
+            --build-arg BUILD_CONFIGURATION=Release
+            --progress=plain
+          tags: $(today),dev
+      - task: Docker@2
+        displayName: Push image to container registry with build number and prod tag
+        inputs:
+          command: push
+          containerRegistry: $(dockerRegistryServiceConnection)
+          repository: $(dockerImageRepository)
+          tags: $(today),dev
+  
