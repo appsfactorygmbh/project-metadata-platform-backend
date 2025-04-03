@@ -16,7 +16,7 @@ variables:
   - name: dockerRegistryServiceConnection
     value: 3d0f8345-5e44-44d3-af44-68f089b5d843 # SC-DockerHub
   - name: dockerImageRepository
-    value: appsfactorylej/project-metadata-platform
+    value: appsfactorylej/project-metadata-platform-backend
   - name: dockerfilePath
     value: Dockerfile 
   - name: sonarCloudProjectKey
