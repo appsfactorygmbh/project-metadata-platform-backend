@@ -235,6 +235,6 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
     /// <returns>A list of logs sorted by timestamp.</returns>
     private static List<Log> SortByTimestamp(List<Log> logs)
     {
-        return [.. logs.OrderBy(log => log.TimeStamp)];
+        return [.. logs.OrderByDescending(log => log.TimeStamp)];
     }
 }
