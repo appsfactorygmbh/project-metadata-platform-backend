@@ -44,9 +44,9 @@ public class GlobalPluginManagement : IntegrationTestsBase
 
         logs.GetArrayLength().Should().Be(2);
 
-        logs[0].GetProperty("logMessage").GetString().Should().Be(
-            "admin added a new global plugin with properties: PluginName = GitLab, IsArchived = False, BaseUrl = https://gitlab.com, Keys[0] = key1");
         logs[1].GetProperty("logMessage").GetString().Should().Be(
+            "admin added a new global plugin with properties: PluginName = GitLab, IsArchived = False, BaseUrl = https://gitlab.com, Keys[0] = key1");
+        logs[0].GetProperty("logMessage").GetString().Should().Be(
             "admin added a new global plugin with properties: PluginName = Jira, IsArchived = False, BaseUrl = https://jira.com, Keys[0] = key2");
     }
 
@@ -80,10 +80,10 @@ public class GlobalPluginManagement : IntegrationTestsBase
         var logs = await ToJsonElement(client.GetAsync("/Logs"));
         logs.GetArrayLength().Should().Be(2);
 
-        logs[0].GetProperty("logMessage").GetString().Should().Be(
+        logs[1].GetProperty("logMessage").GetString().Should().Be(
             "admin added a new global plugin with properties: PluginName = GitLab, IsArchived = False, BaseUrl = https://gitlab.com, Keys[0] = key1");
 
-        logs[1].GetProperty("logMessage").GetString().Should().Be(
+        logs[0].GetProperty("logMessage").GetString().Should().Be(
             "admin updated global plugin GitLab: set PluginName from GitLab to Jira, set BaseUrl from https://gitlab.com to https://jira.com");
     }
 
@@ -132,13 +132,13 @@ public class GlobalPluginManagement : IntegrationTestsBase
         var logs = await ToJsonElement(client.GetAsync("/Logs"));
         logs.GetArrayLength().Should().Be(3);
 
-        logs[0].GetProperty("logMessage").GetString().Should().Be(
+        logs[2].GetProperty("logMessage").GetString().Should().Be(
             "admin added a new global plugin with properties: PluginName = GitLab, IsArchived = False, BaseUrl = https://gitlab.com, Keys[0] = key1");
 
         logs[1].GetProperty("logMessage").GetString().Should().Be(
             "admin archived global plugin GitLab");
 
-        logs[2].GetProperty("logMessage").GetString().Should().Be(
+        logs[0].GetProperty("logMessage").GetString().Should().Be(
             "admin unarchived global plugin GitLab");
     }
 
@@ -168,13 +168,13 @@ public class GlobalPluginManagement : IntegrationTestsBase
         var logs = await ToJsonElement(client.GetAsync("/Logs"));
         logs.GetArrayLength().Should().Be(3);
 
-        logs[0].GetProperty("logMessage").GetString().Should().Be(
+        logs[2].GetProperty("logMessage").GetString().Should().Be(
             "admin added a new global plugin with properties: PluginName = GitLab, IsArchived = False, BaseUrl = https://gitlab.com, Keys[0] = key1");
 
         logs[1].GetProperty("logMessage").GetString().Should().Be(
             "admin archived global plugin GitLab");
 
-        logs[2].GetProperty("logMessage").GetString().Should().Be(
+        logs[0].GetProperty("logMessage").GetString().Should().Be(
             "admin removed global plugin GitLab");
     }
 

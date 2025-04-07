@@ -243,10 +243,10 @@ public class ProjectManagement : IntegrationTestsBase
         var logs = await ToJsonElement(client.GetAsync("/Logs"));
         logs.GetArrayLength().Should().Be(2);
 
-        logs[0].GetProperty("logMessage").GetString().Should().Be(
+        logs[1].GetProperty("logMessage").GetString().Should().Be(
             "admin created a new project with properties: ProjectName = testProject, Slug = testproject, BusinessUnit = BU1, Department = testDepartment, ClientName = testClient, TeamNumber = 3, OfferId = testId, Company = testCompany, CompanyState = EXTERNAL, IsmsLevel = NORMAL");
 
-        logs[1].GetProperty("logMessage").GetString().Should().Be(
+        logs[0].GetProperty("logMessage").GetString().Should().Be(
             "admin updated project testProject:  set BusinessUnit from BU1 to BU2,  set TeamNumber from 3 to 7,  set Department from testDepartment to testDepartment2,  set ClientName from testClient to testClient2,  set OfferId from testId to testId2,  set Company from testCompany to testCompany2,  set CompanyState from EXTERNAL to INTERNAL,  set IsmsLevel from NORMAL to HIGH");
     }
 
@@ -307,22 +307,22 @@ public class ProjectManagement : IntegrationTestsBase
         var logs = await ToJsonElement(client.GetAsync("/Logs"));
         logs.GetArrayLength().Should().Be(9);
 
-        logs[3].GetProperty("logMessage").GetString().Should().Be(
+        logs[5].GetProperty("logMessage").GetString().Should().Be(
             "admin created a new project with properties: ProjectName = testProject, Slug = testproject, BusinessUnit = BU1, Department = testDepartment, ClientName = testClient, TeamNumber = 3, OfferId = testId, Company = testCompany, CompanyState = EXTERNAL, IsmsLevel = NORMAL");
 
         logs[4].GetProperty("logMessage").GetString().Should().Be(
             "admin added a new plugin to project testProject with properties: Url = www.appsfactory.gitlab.com, DisplayName = GitLab");
 
-        logs[5].GetProperty("logMessage").GetString().Should().Be(
+        logs[3].GetProperty("logMessage").GetString().Should().Be(
             "admin added a new plugin to project testProject with properties: Url = www.jira.com, DisplayName = Jira");
 
-        logs[6].GetProperty("logMessage").GetString().Should().Be(
+        logs[2].GetProperty("logMessage").GetString().Should().Be(
             "admin added a new plugin to project testProject with properties: Plugin = Confluence, DisplayName = Confluence, Url = www.appsfactory.confluence.com");
 
-        logs[7].GetProperty("logMessage").GetString().Should().Be(
+        logs[1].GetProperty("logMessage").GetString().Should().Be(
             "admin removed a plugin from project testProject with properties: Plugin = Jira, DisplayName = Jira, Url = www.jira.com");
 
-        logs[8].GetProperty("logMessage").GetString().Should().Be(
+        logs[0].GetProperty("logMessage").GetString().Should().Be(
             "admin updated plugin properties in project testProject:  set DisplayName from GitLab to Appsfactory GitLab");
     }
 
@@ -357,11 +357,11 @@ public class ProjectManagement : IntegrationTestsBase
 
         logs.GetArrayLength().Should().Be(3);
 
-        logs[0].GetProperty("logMessage").GetString().Should().Be(
+        logs[2].GetProperty("logMessage").GetString().Should().Be(
             "admin created a new project with properties: ProjectName = testProject, Slug = testproject, BusinessUnit = BU1, Department = testDepartment, ClientName = testClient, TeamNumber = 3, OfferId = testId, Company = testCompany, CompanyState = EXTERNAL, IsmsLevel = NORMAL");
         logs[1].GetProperty("logMessage").GetString().Should().Be(
             "admin archived project testProject");
-        logs[2].GetProperty("logMessage").GetString().Should().Be(
+        logs[0].GetProperty("logMessage").GetString().Should().Be(
             "admin removed project testProject");
     }
 
