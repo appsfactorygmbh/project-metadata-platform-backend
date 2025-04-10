@@ -8,7 +8,7 @@ trigger:
 - master
 
 pool:
-  vmImage: 'ubuntu-22.04'
+  vmImage: 'ubuntu-latest'
 
 variables:
   - name: dotnetVersion
@@ -40,7 +40,7 @@ stages:
           packageType: 'sdk'
           version: '$(dotnetVersion)'
 
-      - task: NuGetCommand@2
+      - task: DotNetCoreCLI@2
         displayName: Restore packages
         inputs:
           command: restore
@@ -65,7 +65,7 @@ stages:
                 sonar.cs.vscoveragexml.reportsPaths=coverage.xml
                 sonar.exclusions=/ProjectMetadataPlatform.Infrastructure/Migrations/**  
 
-      - script: dotnet tool run dotnet-coverage collect "dotnet test --configuration Release" -f xml -o "coverage.xml"
+      - script: dotnet tool run dotnet-coverage collect "dotnet test --no-restore --configuration Release" -f xml -o "coverage.xml"
         displayName: 'Unit Tests with Coverage'
       
       - task: PublishCodeCoverageResults@2
