@@ -5,4 +5,3 @@ namespace ProjectMetadataPlatform.Api.Plugins.Models;
 /// </summary>
 /// <param name="PluginId">The id of the plugin.</param>
 public record DeleteGlobalPluginResponse(int PluginId);
-

@@ -27,12 +27,9 @@ public class GetAllTeamNumbersControllerTest
     [Test]
     public async Task GetAllTeamNumbersTest()
     {
-        IEnumerable<int> projectsResponseContent = new List<int>()
-        {
-            42,
-            43
-        };
-        _mediator.Setup(m => m.Send(It.IsAny<GetAllTeamNumbersQuery>(), It.IsAny<CancellationToken>()))
+        IEnumerable<int> projectsResponseContent = new List<int>() { 42, 43 };
+        _mediator
+            .Setup(m => m.Send(It.IsAny<GetAllTeamNumbersQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(projectsResponseContent);
 
         var result = await _controller.GetAllTeamNumbers();
@@ -48,7 +45,8 @@ public class GetAllTeamNumbersControllerTest
     [Test]
     public async Task GetAllTeamNumbers_EmptyList_Test()
     {
-        _mediator.Setup(m => m.Send(It.IsAny<GetAllTeamNumbersQuery>(), It.IsAny<CancellationToken>()))
+        _mediator
+            .Setup(m => m.Send(It.IsAny<GetAllTeamNumbersQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<int>());
 
         var result = await _controller.GetAllTeamNumbers();
@@ -60,6 +58,4 @@ public class GetAllTeamNumbersControllerTest
         var response = (okResult.Value, Is.InstanceOf<IEnumerable<int>>());
         Assert.That(response.Value, Is.Empty);
     }
-
-
 }

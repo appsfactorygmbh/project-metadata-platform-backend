@@ -17,20 +17,22 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, strin
     private readonly ILogRepository _logRepository;
     private readonly IUnitOfWork _unitOfWork;
 
-
     /// <summary>
     /// Creates a new instance of <see cref="CreateUserCommandHandler" />.
     /// </summary>
     /// <param name="usersRepository">Repository for accessing user data.</param>
     /// <param name="logRepository">Repository for logging data.</param>
     /// <param name="unitOfWork">Unit of work for managing transactions.</param>
-    public CreateUserCommandHandler(IUsersRepository usersRepository, ILogRepository logRepository, IUnitOfWork unitOfWork)
+    public CreateUserCommandHandler(
+        IUsersRepository usersRepository,
+        ILogRepository logRepository,
+        IUnitOfWork unitOfWork
+    )
     {
         _usersRepository = usersRepository;
         _logRepository = logRepository;
         _unitOfWork = unitOfWork;
     }
-
 
     /// <summary>
     /// Creates a new User with the given data.
@@ -48,7 +50,12 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, strin
 
         var changes = new List<LogChange>
         {
-            new() { OldValue = "", NewValue = user.Email, Property = nameof(IdentityUser.Email) }
+            new()
+            {
+                OldValue = "",
+                NewValue = user.Email,
+                Property = nameof(IdentityUser.Email),
+            },
         };
         await _logRepository.AddUserLogForCurrentUser(user, Action.ADDED_USER, changes);
 

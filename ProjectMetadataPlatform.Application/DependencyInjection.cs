@@ -14,11 +14,14 @@ public static class DependencyInjection
     /// </summary>
     /// <param name="serviceCollection">The service collection.</param>
     /// <returns>The service collection with the add dependencies.</returns>
-    public static IServiceCollection AddApplicationDependencies(this IServiceCollection serviceCollection)
+    public static IServiceCollection AddApplicationDependencies(
+        this IServiceCollection serviceCollection
+    )
     {
         _ = serviceCollection.AddScoped<ISlugHelper, SlugHelper>();
         _ = serviceCollection.AddMediatR(configuration =>
-            configuration.RegisterServicesFromAssemblyContaining(typeof(DependencyInjection)));
+            configuration.RegisterServicesFromAssemblyContaining(typeof(DependencyInjection))
+        );
         return serviceCollection;
     }
 }

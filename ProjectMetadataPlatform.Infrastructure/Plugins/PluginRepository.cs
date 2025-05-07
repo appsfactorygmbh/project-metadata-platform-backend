@@ -14,9 +14,15 @@ namespace ProjectMetadataPlatform.Infrastructure.Plugins;
 /// <summary>
 /// The repository for plugins that handles the data access.
 /// </summary>
-[SuppressMessage("Performance", "CA1862:\"StringComparison\"-Methodenüberladungen verwenden, um Zeichenfolgenvergleiche ohne Beachtung der Groß-/Kleinschreibung durchzuführen")]
+[SuppressMessage(
+    "Performance",
+    "CA1862:\"StringComparison\"-Methodenüberladungen verwenden, um Zeichenfolgenvergleiche ohne Beachtung der Groß-/Kleinschreibung durchzuführen"
+)]
 [SuppressMessage("Globalization", "CA1304:CultureInfo angeben")]
-[SuppressMessage("Globalization", "CA1311:Geben Sie eine Kultur an oder verwenden Sie eine invariante Version")]
+[SuppressMessage(
+    "Globalization",
+    "CA1311:Geben Sie eine Kultur an oder verwenden Sie eine invariante Version"
+)]
 [SuppressMessage("Globalization", "CA1305:IFormatProvider angeben")]
 public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
 {
@@ -24,10 +30,12 @@ public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
     /// Constructor for the PluginRepository.
     /// </summary>
     /// <param name="context"></param>
-    public PluginRepository(ProjectMetadataPlatformDbContext context) : base(context)
+    public PluginRepository(ProjectMetadataPlatformDbContext context)
+        : base(context)
     {
         _context = context;
     }
+
     private readonly ProjectMetadataPlatformDbContext _context;
 
     /// <summary>
@@ -42,8 +50,8 @@ public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
             throw new ProjectNotFoundException(id);
         }
 
-        return await _context.ProjectPluginsRelation
-            .Where(rel => rel.ProjectId == id)
+        return await _context
+            .ProjectPluginsRelation.Where(rel => rel.ProjectId == id)
             .Include(rel => rel.Plugin)
             .ToListAsync();
     }
@@ -60,8 +68,10 @@ public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
             throw new ProjectNotFoundException(id);
         }
 
-        return await _context.ProjectPluginsRelation
-            .Where(rel => rel.ProjectId == id && rel.Plugin != null && !rel.Plugin.IsArchived)
+        return await _context
+            .ProjectPluginsRelation.Where(rel =>
+                rel.ProjectId == id && rel.Plugin != null && !rel.Plugin.IsArchived
+            )
             .Include(rel => rel.Plugin)
             .ToListAsync();
     }
@@ -85,7 +95,6 @@ public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
         return Task.FromResult(plugin);
     }
 
-
     /// <summary>
     /// Asynchronously retrieves a plugin by its unique identifier.
     /// </summary>
@@ -93,7 +102,8 @@ public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
     /// <returns>A task that represents the asynchronous operation. The task result contains the Plugin that matches the provided id.</returns>
     public async Task<Plugin?> GetPluginByIdAsync(int id)
     {
-        return await GetIf(p => p.Id == id).FirstOrDefaultAsync() ?? throw new PluginNotFoundException(id);
+        return await GetIf(p => p.Id == id).FirstOrDefaultAsync()
+            ?? throw new PluginNotFoundException(id);
     }
 
     /// <summary>
@@ -113,6 +123,7 @@ public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
     {
         return await _context.Plugins.AnyAsync(plugin => plugin.Id == id);
     }
+
     /// <summary>
     /// Deletes Global Plugin
     /// </summary>

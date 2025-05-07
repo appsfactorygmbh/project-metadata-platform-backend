@@ -6,9 +6,9 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ProjectMetadataPlatform.Api.Errors;
 using ProjectMetadataPlatform.Api.Users.Models;
 using ProjectMetadataPlatform.Application.Users;
-using ProjectMetadataPlatform.Api.Errors;
 using ProjectMetadataPlatform.Domain.Errors.UserException;
 
 namespace ProjectMetadataPlatform.Api.Users;
@@ -23,6 +23,7 @@ public class UsersController : ControllerBase
 {
     private readonly IMediator _mediator;
     private readonly IHttpContextAccessor _httpContextAccessor;
+
     /// <summary>
     /// Creates a new instance of the <see cref="UsersController" /> class.
     /// </summary>
@@ -52,12 +53,12 @@ public class UsersController : ControllerBase
             return BadRequest(new ErrorResponse("email and password can't be empty."));
         }
 
-        var command = new CreateUserCommand( request.Email, request.Password);
+        var command = new CreateUserCommand(request.Email, request.Password);
         var id = await _mediator.Send(command);
 
         var response = new CreateUserResponse(id);
         var uri = "/Users/" + id;
-        return Created(uri,response);
+        return Created(uri, response);
     }
 
     /// <summary>
@@ -73,10 +74,7 @@ public class UsersController : ControllerBase
         var query = new GetAllUsersQuery();
         var users = await _mediator.Send(query);
 
-        var response = users.Select(user => new GetUserResponse(
-            user.Id,
-            user.Email ?? ""
-            ));
+        var response = users.Select(user => new GetUserResponse(user.Id, user.Email ?? ""));
         return Ok(response);
     }
 
@@ -96,10 +94,7 @@ public class UsersController : ControllerBase
         var query = new GetUserQuery(userId);
         var user = await _mediator.Send(query);
 
-        var response = new GetUserResponse(
-            user.Id,
-            user.Email ?? ""
-            );
+        var response = new GetUserResponse(user.Id, user.Email ?? "");
         return Ok(response);
     }
 
@@ -117,13 +112,16 @@ public class UsersController : ControllerBase
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     [HttpPatch("{userId}")]
-    public async Task<ActionResult<GetUserResponse>> Patch(string userId, [FromBody] PatchUserRequest request)
+    public async Task<ActionResult<GetUserResponse>> Patch(
+        string userId,
+        [FromBody] PatchUserRequest request
+    )
     {
         var command = new PatchUserCommand(userId, request.Email, request.Password);
 
         var user = await _mediator.Send(command);
 
-        var response = new GetUserResponse(user.Id,  user.Email ?? "");
+        var response = new GetUserResponse(user.Id, user.Email ?? "");
         return Ok(response);
     }
 
@@ -141,14 +139,15 @@ public class UsersController : ControllerBase
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<GetUserResponse>> GetMe()
     {
-        var email = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.Email) ??
-                    throw new UserUnauthorizedException();
+        var email =
+            _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.Email)
+            ?? throw new UserUnauthorizedException();
 
         var query = new GetUserByEmailQuery(email);
 
         var user = await _mediator.Send(query);
 
-        var response = new GetUserResponse(user.Id,  user.Email ?? "");
+        var response = new GetUserResponse(user.Id, user.Email ?? "");
         return Ok(response);
     }
 
@@ -171,7 +170,6 @@ public class UsersController : ControllerBase
 
         await _mediator.Send(command);
 
-        return  NoContent();
+        return NoContent();
     }
-
 }

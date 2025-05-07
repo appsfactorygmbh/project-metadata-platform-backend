@@ -20,8 +20,11 @@ public static class EnvironmentUtils
             return value;
         }
 
-        var path = Environment.GetEnvironmentVariable(envVarName + "_FILE")
-                   ?? throw new InvalidOperationException($"Either {envVarName} or {envVarName}_FILE must be configured");
+        var path =
+            Environment.GetEnvironmentVariable(envVarName + "_FILE")
+            ?? throw new InvalidOperationException(
+                $"Either {envVarName} or {envVarName}_FILE must be configured"
+            );
 
         return File.ReadAllText(path);
     }

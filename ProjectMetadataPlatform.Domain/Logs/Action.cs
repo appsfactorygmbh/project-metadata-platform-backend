@@ -87,5 +87,5 @@ public enum Action
     /// <summary>
     /// Represents the action of removing a global plugin.
     /// </summary>
-    REMOVED_GLOBAL_PLUGIN
+    REMOVED_GLOBAL_PLUGIN,
 }

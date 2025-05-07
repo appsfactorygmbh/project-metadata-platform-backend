@@ -11,14 +11,21 @@ public sealed class ErrorResponseFilter : IAlwaysRunResultFilter
     /// <inheritdoc />
     public void OnResultExecuting(ResultExecutingContext context)
     {
-        if (context.Result is ObjectResult { Value: string message, StatusCode: >= 400 and var statusCode })
+        if (
+            context.Result is ObjectResult
+            {
+                Value: string message,
+                StatusCode: >= 400 and var statusCode
+            }
+        )
         {
-            context.Result = new ObjectResult(new ErrorResponse(message)) { StatusCode = statusCode };
+            context.Result = new ObjectResult(new ErrorResponse(message))
+            {
+                StatusCode = statusCode,
+            };
         }
     }
 
     /// <inheritdoc />
-    public void OnResultExecuted(ResultExecutedContext context)
-    {
-    }
+    public void OnResultExecuted(ResultExecutedContext context) { }
 }

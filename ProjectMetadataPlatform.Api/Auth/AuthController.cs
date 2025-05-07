@@ -6,7 +6,6 @@ using ProjectMetadataPlatform.Api.Auth.Models;
 using ProjectMetadataPlatform.Api.Errors;
 using ProjectMetadataPlatform.Application.Auth;
 
-
 namespace ProjectMetadataPlatform.Api.Auth;
 
 /// <summary>
@@ -56,7 +55,9 @@ public class AuthController : ControllerBase
     [HttpGet("refresh")]
     [ProducesResponseType(typeof(LoginResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<LoginResponse>> Get([FromHeader(Name = "Authorization")] string refreshToken)
+    public async Task<ActionResult<LoginResponse>> Get(
+        [FromHeader(Name = "Authorization")] string refreshToken
+    )
     {
         if (!refreshToken.StartsWith("Refresh "))
         {
@@ -67,5 +68,4 @@ public class AuthController : ControllerBase
         var tokens = await _mediator.Send(query);
         return new LoginResponse(tokens.AccessToken!, tokens.RefreshToken!);
     }
-
 }

@@ -19,6 +19,7 @@ public class GetAllUsersQueryHandlerTest
         _mockUserRepo = new Mock<IUsersRepository>();
         _handler = new GetAllUsersQueryHandler(_mockUserRepo.Object);
     }
+
     private GetAllUsersQueryHandler _handler;
     private Mock<IUsersRepository> _mockUserRepo;
 
@@ -41,11 +42,7 @@ public class GetAllUsersQueryHandlerTest
     {
         var usersResponseContent = new List<IdentityUser>
         {
-            new()
-            {
-                Id = "1",
-                Email = "Hinz"
-            }
+            new() { Id = "1", Email = "Hinz" },
         };
 
         _mockUserRepo.Setup(m => m.GetAllUsersAsync()).ReturnsAsync(usersResponseContent);

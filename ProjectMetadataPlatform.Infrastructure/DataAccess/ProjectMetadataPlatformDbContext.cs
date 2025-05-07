@@ -1,13 +1,13 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using ProjectMetadataPlatform.Application.Interfaces;
+using ProjectMetadataPlatform.Domain.Errors.BasicExceptions;
 using ProjectMetadataPlatform.Domain.Logs;
 using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.Projects;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using ProjectMetadataPlatform.Application.Interfaces;
-using ProjectMetadataPlatform.Domain.Errors.BasicExceptions;
 
 namespace ProjectMetadataPlatform.Infrastructure.DataAccess;
 
@@ -37,14 +37,13 @@ public sealed class ProjectMetadataPlatformDbContext : IdentityDbContext<Identit
     public DbSet<Log> Logs { get; set; }
 
     /// <inheritdoc />
-    public ProjectMetadataPlatformDbContext()
-    {
-    }
+    public ProjectMetadataPlatformDbContext() { }
 
     /// <inheritdoc />
-    public ProjectMetadataPlatformDbContext(DbContextOptions<ProjectMetadataPlatformDbContext> options) : base(options)
-    {
-    }
+    public ProjectMetadataPlatformDbContext(
+        DbContextOptions<ProjectMetadataPlatformDbContext> options
+    )
+        : base(options) { }
 
     /// <summary>
     ///     Configures the model that was discovered by convention from the entity types
@@ -59,7 +58,9 @@ public sealed class ProjectMetadataPlatformDbContext : IdentityDbContext<Identit
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
-        _ = builder.ApplyConfigurationsFromAssembly(typeof(ProjectMetadataPlatformDbContext).Assembly);
+        _ = builder.ApplyConfigurationsFromAssembly(
+            typeof(ProjectMetadataPlatformDbContext).Assembly
+        );
 
         SeedData(builder);
     }
@@ -82,7 +83,7 @@ public sealed class ProjectMetadataPlatformDbContext : IdentityDbContext<Identit
             OfferId = "Offer1",
             Company = "AppsFactory",
             CompanyState = CompanyState.INTERNAL,
-            IsmsLevel = SecurityLevel.NORMAL
+            IsmsLevel = SecurityLevel.NORMAL,
         };
 
         var project2 = new Project
@@ -97,7 +98,7 @@ public sealed class ProjectMetadataPlatformDbContext : IdentityDbContext<Identit
             OfferId = "Offer2",
             Company = "AppsCompany",
             CompanyState = CompanyState.EXTERNAL,
-            IsmsLevel = SecurityLevel.HIGH
+            IsmsLevel = SecurityLevel.HIGH,
         };
 
         var project3 = new Project
@@ -112,7 +113,7 @@ public sealed class ProjectMetadataPlatformDbContext : IdentityDbContext<Identit
             OfferId = "Offer3",
             Company = "AppsFactory",
             CompanyState = CompanyState.INTERNAL,
-            IsmsLevel = SecurityLevel.VERY_HIGH
+            IsmsLevel = SecurityLevel.VERY_HIGH,
         };
 
         var plugin1 = new Plugin { Id = 100, PluginName = "Gitlab" };
@@ -124,88 +125,91 @@ public sealed class ProjectMetadataPlatformDbContext : IdentityDbContext<Identit
         _ = modelBuilder.Entity<Project>().HasData(project1, project2, project3);
         _ = modelBuilder.Entity<Plugin>().HasData(plugin1, plugin2, plugin3);
 
-        _ = modelBuilder.Entity<ProjectPlugins>().HasData(
-            new ProjectPlugins
-            {
-                ProjectId = project1.Id,
-                PluginId = plugin1.Id,
-                Url = "https://http.cat/status/100",
-                DisplayName = "Gitlab",
-                Project = null!,
-                Plugin = null!
-            },
-            new ProjectPlugins
-            {
-                ProjectId = project1.Id,
-                PluginId = plugin2.Id,
-                Url = "https://http.cat/status/102",
-                DisplayName = "SonarQube",
-                Project = null!,
-                Plugin = null!
-            },
-            new ProjectPlugins
-            {
-                ProjectId = project1.Id,
-                PluginId = plugin3.Id,
-                Url = "https://http.cat/status/200",
-                DisplayName = "Jira",
-                Project = null!,
-                Plugin = null!
-            },
-            new ProjectPlugins
-            {
-                ProjectId = project2.Id,
-                PluginId = plugin1.Id,
-                Url = "https://http.cat/status/204",
-                DisplayName = "Gitlab",
-                Project = null!,
-                Plugin = null!
-            },
-            new ProjectPlugins
-            {
-                ProjectId = project2.Id,
-                PluginId = plugin2.Id,
-                Url = "https://http.cat/status/401",
-                DisplayName = "SonarQube",
-                Project = null!,
-                Plugin = null!
-            },
-            new ProjectPlugins
-            {
-                ProjectId = project2.Id,
-                PluginId = plugin3.Id,
-                Url = "https://http.cat/status/404",
-                DisplayName = "Jira",
-                Project = null!,
-                Plugin = null!
-            },
-            new ProjectPlugins
-            {
-                ProjectId = project3.Id,
-                PluginId = plugin1.Id,
-                Url = "https://http.cat/status/406",
-                DisplayName = "Gitlab",
-                Project = null!,
-                Plugin = null!
-            },
-            new ProjectPlugins
-            {
-                ProjectId = project3.Id,
-                PluginId = plugin2.Id,
-                Url = "https://http.cat/status/411",
-                DisplayName = "SonarQube",
-                Project = null!,
-                Plugin = null!
-            },
-            new ProjectPlugins
-            {
-                ProjectId = project3.Id,
-                PluginId = plugin3.Id,
-                Url = "https://http.cat/status/414",
-                DisplayName = "Jira",
-                Project = null!,
-                Plugin = null!
-            });
+        _ = modelBuilder
+            .Entity<ProjectPlugins>()
+            .HasData(
+                new ProjectPlugins
+                {
+                    ProjectId = project1.Id,
+                    PluginId = plugin1.Id,
+                    Url = "https://http.cat/status/100",
+                    DisplayName = "Gitlab",
+                    Project = null!,
+                    Plugin = null!,
+                },
+                new ProjectPlugins
+                {
+                    ProjectId = project1.Id,
+                    PluginId = plugin2.Id,
+                    Url = "https://http.cat/status/102",
+                    DisplayName = "SonarQube",
+                    Project = null!,
+                    Plugin = null!,
+                },
+                new ProjectPlugins
+                {
+                    ProjectId = project1.Id,
+                    PluginId = plugin3.Id,
+                    Url = "https://http.cat/status/200",
+                    DisplayName = "Jira",
+                    Project = null!,
+                    Plugin = null!,
+                },
+                new ProjectPlugins
+                {
+                    ProjectId = project2.Id,
+                    PluginId = plugin1.Id,
+                    Url = "https://http.cat/status/204",
+                    DisplayName = "Gitlab",
+                    Project = null!,
+                    Plugin = null!,
+                },
+                new ProjectPlugins
+                {
+                    ProjectId = project2.Id,
+                    PluginId = plugin2.Id,
+                    Url = "https://http.cat/status/401",
+                    DisplayName = "SonarQube",
+                    Project = null!,
+                    Plugin = null!,
+                },
+                new ProjectPlugins
+                {
+                    ProjectId = project2.Id,
+                    PluginId = plugin3.Id,
+                    Url = "https://http.cat/status/404",
+                    DisplayName = "Jira",
+                    Project = null!,
+                    Plugin = null!,
+                },
+                new ProjectPlugins
+                {
+                    ProjectId = project3.Id,
+                    PluginId = plugin1.Id,
+                    Url = "https://http.cat/status/406",
+                    DisplayName = "Gitlab",
+                    Project = null!,
+                    Plugin = null!,
+                },
+                new ProjectPlugins
+                {
+                    ProjectId = project3.Id,
+                    PluginId = plugin2.Id,
+                    Url = "https://http.cat/status/411",
+                    DisplayName = "SonarQube",
+                    Project = null!,
+                    Plugin = null!,
+                },
+                new ProjectPlugins
+                {
+                    ProjectId = project3.Id,
+                    PluginId = plugin3.Id,
+                    Url = "https://http.cat/status/414",
+                    DisplayName = "Jira",
+                    Project = null!,
+                    Plugin = null!,
+                }
+            );
     }
 
     /// <inheritdoc />

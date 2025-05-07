@@ -12,4 +12,9 @@ namespace ProjectMetadataPlatform.Application.Logs;
 /// <param name="UserId">The ID of the user to filter logs by.</param>
 /// <param name="GlobalPluginId">The ID of the global plugin to filter logs by.</param>
 /// <returns>A list of log responses.</returns>
-public record GetLogsQuery(int? ProjectId = null, string? Search = null, string? UserId = null, int? GlobalPluginId = null) : IRequest<IEnumerable<Log>>;
+public record GetLogsQuery(
+    int? ProjectId = null,
+    string? Search = null,
+    string? UserId = null,
+    int? GlobalPluginId = null
+) : IRequest<IEnumerable<Log>>;

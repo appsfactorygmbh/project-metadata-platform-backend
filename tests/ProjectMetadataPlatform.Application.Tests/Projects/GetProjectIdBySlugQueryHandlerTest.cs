@@ -16,6 +16,7 @@ public class GetProjectIdBySlugQueryHandlerTest
         _mockProjectRepo = new Mock<IProjectsRepository>();
         _handler = new GetProjectIdBySlugQueryHandler(_mockProjectRepo.Object);
     }
+
     private GetProjectIdBySlugQueryHandler _handler;
     private Mock<IProjectsRepository> _mockProjectRepo;
 
@@ -30,5 +31,4 @@ public class GetProjectIdBySlugQueryHandlerTest
         Assert.That(result, Is.InstanceOf<int?>());
         Assert.That(result, Is.EqualTo(2));
     }
-
 }

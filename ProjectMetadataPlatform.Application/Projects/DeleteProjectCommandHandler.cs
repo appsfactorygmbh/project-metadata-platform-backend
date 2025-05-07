@@ -26,7 +26,11 @@ public class DeleteProjectCommandHandler : IRequestHandler<DeleteProjectCommand,
     /// <param name="projectsRepository">The repository of projects.</param>
     /// <param name="logRepository">Repository for Logs</param>
     /// <param name="unitOfWork"> Used to save changes to the DbContext</param>
-    public DeleteProjectCommandHandler(IProjectsRepository projectsRepository, ILogRepository logRepository, IUnitOfWork unitOfWork)
+    public DeleteProjectCommandHandler(
+        IProjectsRepository projectsRepository,
+        ILogRepository logRepository,
+        IUnitOfWork unitOfWork
+    )
     {
         _projectsRepository = projectsRepository;
         _logRepository = logRepository;
@@ -41,7 +45,10 @@ public class DeleteProjectCommandHandler : IRequestHandler<DeleteProjectCommand,
     /// <returns>A task that represents the asynchronous operation. The task result contains the deleted project, or null if the project was not archived.</returns>
     /// <exception cref="ProjectNotArchivedException">Thrown when the project is not archived.</exception>
     /// <exception cref="ProjectNotFoundException">Thrown when the project is not found.</exception>
-    public async Task<Project?> Handle(DeleteProjectCommand request, CancellationToken cancellationToken)
+    public async Task<Project?> Handle(
+        DeleteProjectCommand request,
+        CancellationToken cancellationToken
+    )
     {
         var project = await _projectsRepository.GetProjectAsync(request.Id);
 
@@ -65,11 +72,36 @@ public class DeleteProjectCommandHandler : IRequestHandler<DeleteProjectCommand,
     {
         var changes = new List<LogChange>
         {
-            new() { OldValue = project.ProjectName, NewValue = "", Property = nameof(Project.ProjectName) },
-            new() { OldValue = project.BusinessUnit, NewValue = "", Property = nameof(Project.BusinessUnit) },
-            new() { OldValue = project.Department, NewValue = "", Property = nameof(Project.Department) },
-            new() { OldValue = project.ClientName, NewValue = "", Property = nameof(Project.ClientName) },
-            new() { OldValue = project.TeamNumber.ToString(CultureInfo.InvariantCulture), NewValue = "", Property = nameof(Project.TeamNumber) }
+            new()
+            {
+                OldValue = project.ProjectName,
+                NewValue = "",
+                Property = nameof(Project.ProjectName),
+            },
+            new()
+            {
+                OldValue = project.BusinessUnit,
+                NewValue = "",
+                Property = nameof(Project.BusinessUnit),
+            },
+            new()
+            {
+                OldValue = project.Department,
+                NewValue = "",
+                Property = nameof(Project.Department),
+            },
+            new()
+            {
+                OldValue = project.ClientName,
+                NewValue = "",
+                Property = nameof(Project.ClientName),
+            },
+            new()
+            {
+                OldValue = project.TeamNumber.ToString(CultureInfo.InvariantCulture),
+                NewValue = "",
+                Property = nameof(Project.TeamNumber),
+            },
         };
 
         await _logRepository.AddProjectLogForCurrentUser(project, Action.REMOVED_PROJECT, changes);

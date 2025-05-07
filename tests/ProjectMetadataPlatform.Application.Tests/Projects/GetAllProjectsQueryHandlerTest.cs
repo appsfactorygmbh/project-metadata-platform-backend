@@ -26,7 +26,9 @@ public class GetAllProjectsQueryHandlerTest
     [Test]
     public async Task CallsRepositoryWithRequest()
     {
-        _mockProjectRepo.Setup(m => m.GetProjectsAsync(It.IsAny<GetAllProjectsQuery>())).ReturnsAsync([]);
+        _mockProjectRepo
+            .Setup(m => m.GetProjectsAsync(It.IsAny<GetAllProjectsQuery>()))
+            .ReturnsAsync([]);
         var request = new GetAllProjectsQuery(null, "");
         await _handler.Handle(request, CancellationToken.None);
 
@@ -50,7 +52,7 @@ public class GetAllProjectsQueryHandlerTest
                 Department = "Mars",
                 TeamNumber = 42,
                 Company = "Ag der Ags",
-                IsmsLevel = SecurityLevel.HIGH
+                IsmsLevel = SecurityLevel.HIGH,
             },
             new()
             {
@@ -62,7 +64,7 @@ public class GetAllProjectsQueryHandlerTest
                 Department = "Venus",
                 TeamNumber = 43,
                 Company = "Ag der Ags",
-                IsmsLevel = SecurityLevel.HIGH
+                IsmsLevel = SecurityLevel.HIGH,
             },
             new()
             {
@@ -74,11 +76,13 @@ public class GetAllProjectsQueryHandlerTest
                 Department = "Earth",
                 TeamNumber = 44,
                 Company = "Ark",
-                IsmsLevel = SecurityLevel.HIGH
+                IsmsLevel = SecurityLevel.HIGH,
             },
         };
 
-        _mockProjectRepo.Setup(m => m.GetProjectsAsync(It.IsAny<GetAllProjectsQuery>())).ReturnsAsync(projects);
+        _mockProjectRepo
+            .Setup(m => m.GetProjectsAsync(It.IsAny<GetAllProjectsQuery>()))
+            .ReturnsAsync(projects);
         var result = await _handler.Handle(request, It.IsAny<CancellationToken>());
 
         Assert.That(result, Is.EquivalentTo(projects));
@@ -99,7 +103,7 @@ public class GetAllProjectsQueryHandlerTest
                 Department = "Earth",
                 TeamNumber = 44,
                 Company = "Ark",
-                IsmsLevel = SecurityLevel.HIGH
+                IsmsLevel = SecurityLevel.HIGH,
             },
             new Project
             {
@@ -111,7 +115,7 @@ public class GetAllProjectsQueryHandlerTest
                 Department = "Mars",
                 TeamNumber = 42,
                 Company = "Ag der Ags",
-                IsmsLevel = SecurityLevel.HIGH
+                IsmsLevel = SecurityLevel.HIGH,
             },
             new Project
             {
@@ -123,7 +127,7 @@ public class GetAllProjectsQueryHandlerTest
                 Department = "Venus",
                 TeamNumber = 43,
                 Company = "Ag der Ags",
-                IsmsLevel = SecurityLevel.HIGH
+                IsmsLevel = SecurityLevel.HIGH,
             },
             new Project
             {
@@ -135,7 +139,7 @@ public class GetAllProjectsQueryHandlerTest
                 Department = "Earth",
                 TeamNumber = 44,
                 Company = "Ark",
-                IsmsLevel = SecurityLevel.HIGH
+                IsmsLevel = SecurityLevel.HIGH,
             },
             new Project
             {
@@ -147,11 +151,13 @@ public class GetAllProjectsQueryHandlerTest
                 Department = "Earth",
                 TeamNumber = 44,
                 Company = "Ark",
-                IsmsLevel = SecurityLevel.HIGH
+                IsmsLevel = SecurityLevel.HIGH,
             },
         };
 
-        _mockProjectRepo.Setup(m => m.GetProjectsAsync(It.IsAny<GetAllProjectsQuery>())).ReturnsAsync(projects);
+        _mockProjectRepo
+            .Setup(m => m.GetProjectsAsync(It.IsAny<GetAllProjectsQuery>()))
+            .ReturnsAsync(projects);
         var request = new GetAllProjectsQuery(null, null);
         var result = (await _handler.Handle(request, It.IsAny<CancellationToken>())).ToList();
 

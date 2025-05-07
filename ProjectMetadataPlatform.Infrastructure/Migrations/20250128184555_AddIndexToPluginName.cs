@@ -14,15 +14,14 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
                 name: "IX_Plugins_PluginName",
                 table: "Plugins",
                 column: "PluginName",
-                unique: true);
+                unique: true
+            );
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropIndex(
-                name: "IX_Plugins_PluginName",
-                table: "Plugins");
+            migrationBuilder.DropIndex(name: "IX_Plugins_PluginName", table: "Plugins");
         }
     }
 }

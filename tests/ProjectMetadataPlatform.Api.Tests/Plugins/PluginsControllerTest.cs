@@ -21,6 +21,7 @@ public class Tests
 {
     private PluginsController _controller;
     private Mock<IMediator> _mediator;
+
     [SetUp]
     public void Setup()
     {
@@ -31,10 +32,16 @@ public class Tests
     [Test]
     public async Task CreatePlugin_Test()
     {
-        _mediator.Setup(m => m.Send(It.IsAny<CreatePluginCommand>(), It.IsAny<CancellationToken>()))
+        _mediator
+            .Setup(m => m.Send(It.IsAny<CreatePluginCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(42);
 
-        var request = new CreatePluginRequest("Solid Rocket Booster", true, new List<string>(), "https://booster.de");
+        var request = new CreatePluginRequest(
+            "Solid Rocket Booster",
+            true,
+            new List<string>(),
+            "https://booster.de"
+        );
 
         var result = await _controller.Put(request);
 
@@ -56,7 +63,8 @@ public class Tests
     [Test]
     public void CreatePlugin_WithError_Test()
     {
-        _mediator.Setup(m => m.Send(It.IsAny<CreatePluginCommand>(), It.IsAny<CancellationToken>()))
+        _mediator
+            .Setup(m => m.Send(It.IsAny<CreatePluginCommand>(), It.IsAny<CancellationToken>()))
             .Throws(new IOException());
 
         var request = new CreatePluginRequest("Drogue chute", false, [], "https://chute.de");
@@ -67,7 +75,8 @@ public class Tests
     [Test]
     public void CreatePlugin_WithNameConflict_Test()
     {
-        _mediator.Setup(m => m.Send(It.IsAny<CreatePluginCommand>(), It.IsAny<CancellationToken>()))
+        _mediator
+            .Setup(m => m.Send(It.IsAny<CreatePluginCommand>(), It.IsAny<CancellationToken>()))
             .Throws(new PluginNameAlreadyExistsException("Drogue chute"));
 
         var request = new CreatePluginRequest("Drogue chute", false, [], "https://chute.de");
@@ -93,7 +102,10 @@ public class Tests
     [Test]
     public void DeletePlugin_MediatorThrowsExceptionTest()
     {
-        _mediator.Setup(mediator => mediator.Send(It.IsAny<DeleteGlobalPluginCommand>(), It.IsAny<CancellationToken>()))
+        _mediator
+            .Setup(mediator =>
+                mediator.Send(It.IsAny<DeleteGlobalPluginCommand>(), It.IsAny<CancellationToken>())
+            )
             .ThrowsAsync(new InvalidDataException("An error message"));
         Assert.ThrowsAsync<InvalidDataException>(() => _controller.Delete(1));
     }
@@ -101,25 +113,41 @@ public class Tests
     [Test]
     public void PatchPlugin_MediatorThrowsExceptionTest()
     {
-        _mediator.Setup(mediator => mediator.Send(It.IsAny<PatchGlobalPluginCommand>(), It.IsAny<CancellationToken>()))
+        _mediator
+            .Setup(mediator =>
+                mediator.Send(It.IsAny<PatchGlobalPluginCommand>(), It.IsAny<CancellationToken>())
+            )
             .ThrowsAsync(new InvalidDataException("An error message"));
-        var exception = Assert.ThrowsAsync<InvalidDataException>(() => _controller.Patch(1, new PatchGlobalPluginRequest()));
+        var exception = Assert.ThrowsAsync<InvalidDataException>(() =>
+            _controller.Patch(1, new PatchGlobalPluginRequest())
+        );
         Assert.That(exception.Message, Is.EqualTo("An error message"));
     }
 
     [Test]
     public void PatchPlugin_WithNameConflictThrowsException_Test()
     {
-        _mediator.Setup(mediator => mediator.Send(It.IsAny<PatchGlobalPluginCommand>(), It.IsAny<CancellationToken>()))
+        _mediator
+            .Setup(mediator =>
+                mediator.Send(It.IsAny<PatchGlobalPluginCommand>(), It.IsAny<CancellationToken>())
+            )
             .ThrowsAsync(new PluginNameAlreadyExistsException("Ariane 4"));
-        var exception = Assert.ThrowsAsync<PluginNameAlreadyExistsException>(() => _controller.Patch(1, new PatchGlobalPluginRequest("Ariane 4")));
-        Assert.That(exception.Message, Is.EqualTo("A global Plugin with the name Ariane 4 already exists."));
+        var exception = Assert.ThrowsAsync<PluginNameAlreadyExistsException>(() =>
+            _controller.Patch(1, new PatchGlobalPluginRequest("Ariane 4"))
+        );
+        Assert.That(
+            exception.Message,
+            Is.EqualTo("A global Plugin with the name Ariane 4 already exists.")
+        );
     }
 
     [Test]
     public void GetGlobalPlugins_MediatorThrowsExceptionTest()
     {
-        _mediator.Setup(mediator => mediator.Send(It.IsAny<GetGlobalPluginsQuery>(), It.IsAny<CancellationToken>()))
+        _mediator
+            .Setup(mediator =>
+                mediator.Send(It.IsAny<GetGlobalPluginsQuery>(), It.IsAny<CancellationToken>())
+            )
             .ThrowsAsync(new InvalidDataException("An error message"));
         Assert.ThrowsAsync<InvalidDataException>(() => _controller.GetGlobal());
     }
@@ -127,7 +155,12 @@ public class Tests
     [Test]
     public async Task CreatePlugin_WhiteSpacesName_Test()
     {
-        var request = new CreatePluginRequest("         ", false, new List<string>(), "https://whitespace.de");
+        var request = new CreatePluginRequest(
+            "         ",
+            false,
+            new List<string>(),
+            "https://whitespace.de"
+        );
 
         var result = await _controller.Put(request);
 
@@ -142,8 +175,15 @@ public class Tests
     [Test]
     public async Task UpdateGlobalPlugin_Test()
     {
-        var plugin = new Plugin { Id = 1, PluginName = "horn ox", IsArchived = true, BaseUrl = "https://hornox.com" };
-        _mediator.Setup(m => m.Send(It.IsAny<PatchGlobalPluginCommand>(), It.IsAny<CancellationToken>()))
+        var plugin = new Plugin
+        {
+            Id = 1,
+            PluginName = "horn ox",
+            IsArchived = true,
+            BaseUrl = "https://hornox.com",
+        };
+        _mediator
+            .Setup(m => m.Send(It.IsAny<PatchGlobalPluginCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(plugin);
 
         var request = new PatchGlobalPluginRequest(null, true);
@@ -180,9 +220,10 @@ public class Tests
     [Test]
     public async Task GetGlobalPlugins_EmptyResponseList_Test()
     {
-        _mediator.Setup(m => m.Send(It.IsAny<GetGlobalPluginsQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new List<Plugin>());
+        _mediator
+            .Setup(m => m.Send(It.IsAny<GetGlobalPluginsQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<Plugin>());
         var result = await _controller.GetGlobal();
-
 
         Assert.That(result, Is.Not.Null);
 
@@ -195,11 +236,18 @@ public class Tests
     [Test]
     public async Task GetGlobalPlugins_Test()
     {
-
-        var plugin = new Plugin { Id = 1, PluginName = "plugin 1", IsArchived = false, BaseUrl = "https://plugin1.com" };
+        var plugin = new Plugin
+        {
+            Id = 1,
+            PluginName = "plugin 1",
+            IsArchived = false,
+            BaseUrl = "https://plugin1.com",
+        };
         var pluginList = new List<Plugin> { plugin };
 
-        _mediator.Setup(m => m.Send(It.IsAny<GetGlobalPluginsQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(pluginList);
+        _mediator
+            .Setup(m => m.Send(It.IsAny<GetGlobalPluginsQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(pluginList);
         var result = await _controller.GetGlobal();
 
         Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
@@ -228,11 +276,13 @@ public class Tests
     [Test]
     public async Task DeleteGlobalPlugin_Test()
     {
-        _mediator.Setup(m => m.Send(It.IsAny<DeleteGlobalPluginCommand>(), It.IsAny<CancellationToken>()))
+        _mediator
+            .Setup(m =>
+                m.Send(It.IsAny<DeleteGlobalPluginCommand>(), It.IsAny<CancellationToken>())
+            )
             .ReturnsAsync(true);
 
         var result = await _controller.Delete(37);
-
 
         var okResult = result.Result as OkObjectResult;
         var resultValue = okResult?.Value as DeleteGlobalPluginResponse;
@@ -247,8 +297,10 @@ public class Tests
     [Test]
     public void DeleteGlobalPlugin_PluginNotFound_Test()
     {
-
-        _mediator.Setup(m => m.Send(It.IsAny<DeleteGlobalPluginCommand>(), It.IsAny<CancellationToken>()))
+        _mediator
+            .Setup(m =>
+                m.Send(It.IsAny<DeleteGlobalPluginCommand>(), It.IsAny<CancellationToken>())
+            )
             .ThrowsAsync(new PluginNotFoundException(1));
 
         Assert.ThrowsAsync<PluginNotFoundException>(() => _controller.Delete(1));
@@ -265,7 +317,10 @@ public class Tests
         Assert.Multiple(() =>
         {
             Assert.That(badRequestResult, Is.Not.Null);
-            Assert.That((badRequestResult?.Value as ErrorResponse)!.Message, Is.EqualTo("PluginId can't be smaller than or equal to 0"));
+            Assert.That(
+                (badRequestResult?.Value as ErrorResponse)!.Message,
+                Is.EqualTo("PluginId can't be smaller than or equal to 0")
+            );
         });
     }
 }

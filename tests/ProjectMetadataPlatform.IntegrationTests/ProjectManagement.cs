@@ -25,7 +25,8 @@ public class ProjectManagement : IntegrationTestsBase
           "companyState": "EXTERNAL",
           "ismsLevel": "NORMAL"
         }
-        """);
+        """
+    );
 
     private static readonly StringContent CreateRequest2 = StringContent(
         """
@@ -40,7 +41,8 @@ public class ProjectManagement : IntegrationTestsBase
           "companyState": "EXTERNAL",
           "ismsLevel": "VERY_HIGH"
         }
-        """);
+        """
+    );
 
     private static readonly StringContent UpdateisArchivedRequest = StringContent(
         """
@@ -56,7 +58,8 @@ public class ProjectManagement : IntegrationTestsBase
           "companyState": "EXTERNAL",
           "ismsLevel": "NORMAL"
         }
-        """);
+        """
+    );
 
     private static readonly StringContent UpdateRequest = StringContent(
         """
@@ -71,65 +74,78 @@ public class ProjectManagement : IntegrationTestsBase
           "companyState": "INTERNAL",
           "ismsLevel": "HIGH"
         }
-        """);
-
-    private static StringContent RequestWithPlugins(int pluginId1, int pluginId2) => StringContent(
         """
-        {
-          "projectName": "testProject",
-          "businessUnit": "BU1",
-          "teamNumber": 3,
-          "department": "testDepartment",
-          "clientName": "testClient",
-          "offerId": "testId",
-          "company": "testCompany",
-          "companyState": "EXTERNAL",
-          "ismsLevel": "NORMAL",
-          "pluginList": [
-            {
-              "url": "www.appsfactory.gitlab.com",
-              "displayName": "GitLab",
-              "id":
- """ + pluginId1 + """
+    );
+
+    private static StringContent RequestWithPlugins(int pluginId1, int pluginId2) =>
+        StringContent(
+            """
+                   {
+                     "projectName": "testProject",
+                     "businessUnit": "BU1",
+                     "teamNumber": 3,
+                     "department": "testDepartment",
+                     "clientName": "testClient",
+                     "offerId": "testId",
+                     "company": "testCompany",
+                     "companyState": "EXTERNAL",
+                     "ismsLevel": "NORMAL",
+                     "pluginList": [
+                       {
+                         "url": "www.appsfactory.gitlab.com",
+                         "displayName": "GitLab",
+                         "id":
+            """
+                + pluginId1
+                + """
             },
             {
               "url": "www.jira.com",
               "displayName": "Jira",
               "id":
-""" + pluginId2 + """
-            }
-          ]
-        }
-        """);
+"""
+                + pluginId2
+                + """
+                    }
+                  ]
+                }
+                """
+        );
 
-    private static StringContent RequestWithPlugins2(int pluginId1, int pluginId2) => StringContent(
-        """
-        {
-          "projectName": "testProject",
-          "businessUnit": "BU1",
-          "teamNumber": 3,
-          "department": "testDepartment",
-          "clientName": "testClient",
-          "offerId": "testId",
-          "company": "testCompany",
-          "companyState": "EXTERNAL",
-          "ismsLevel": "NORMAL",
-          "pluginList": [
-            {
-              "url": "www.appsfactory.gitlab.com",
-              "displayName": "Appsfactory GitLab",
-              "id":
- """ + pluginId1 + """
+    private static StringContent RequestWithPlugins2(int pluginId1, int pluginId2) =>
+        StringContent(
+            """
+                   {
+                     "projectName": "testProject",
+                     "businessUnit": "BU1",
+                     "teamNumber": 3,
+                     "department": "testDepartment",
+                     "clientName": "testClient",
+                     "offerId": "testId",
+                     "company": "testCompany",
+                     "companyState": "EXTERNAL",
+                     "ismsLevel": "NORMAL",
+                     "pluginList": [
+                       {
+                         "url": "www.appsfactory.gitlab.com",
+                         "displayName": "Appsfactory GitLab",
+                         "id":
+            """
+                + pluginId1
+                + """
             },
             {
               "url": "www.appsfactory.confluence.com",
               "displayName": "Confluence",
               "id":
-""" + pluginId2 + """
-            }
-          ]
-        }
-        """);
+"""
+                + pluginId2
+                + """
+                    }
+                  ]
+                }
+                """
+        );
 
     [Test]
     public async Task CreateProject()
@@ -216,10 +232,16 @@ public class ProjectManagement : IntegrationTestsBase
 
         // Act
         // Assert
-        var projectId = (await ToJsonElement(client.PutAsync("/Projects", CreateRequest), HttpStatusCode.Created))
-            .GetProperty("id").GetInt32();
+        var projectId = (
+            await ToJsonElement(client.PutAsync("/Projects", CreateRequest), HttpStatusCode.Created)
+        )
+            .GetProperty("id")
+            .GetInt32();
 
-        var updateResponse = await client.PutAsync($"/Projects?projectId=" + projectId, UpdateRequest);
+        var updateResponse = await client.PutAsync(
+            $"/Projects?projectId=" + projectId,
+            UpdateRequest
+        );
         updateResponse.StatusCode.Should().Be(HttpStatusCode.Created);
         updateResponse.Headers.Location.Should().NotBeNull();
 
@@ -243,11 +265,21 @@ public class ProjectManagement : IntegrationTestsBase
         var logs = await ToJsonElement(client.GetAsync("/Logs"));
         logs.GetArrayLength().Should().Be(2);
 
-        logs[1].GetProperty("logMessage").GetString().Should().Be(
-            "admin created a new project with properties: ProjectName = testProject, Slug = testproject, BusinessUnit = BU1, Department = testDepartment, ClientName = testClient, TeamNumber = 3, OfferId = testId, Company = testCompany, CompanyState = EXTERNAL, IsmsLevel = NORMAL");
+        logs[1]
+            .GetProperty("logMessage")
+            .GetString()
+            .Should()
+            .Be(
+                "admin created a new project with properties: ProjectName = testProject, Slug = testproject, BusinessUnit = BU1, Department = testDepartment, ClientName = testClient, TeamNumber = 3, OfferId = testId, Company = testCompany, CompanyState = EXTERNAL, IsmsLevel = NORMAL"
+            );
 
-        logs[0].GetProperty("logMessage").GetString().Should().Be(
-            "admin updated project testProject:  set BusinessUnit from BU1 to BU2,  set TeamNumber from 3 to 7,  set Department from testDepartment to testDepartment2,  set ClientName from testClient to testClient2,  set OfferId from testId to testId2,  set Company from testCompany to testCompany2,  set CompanyState from EXTERNAL to INTERNAL,  set IsmsLevel from NORMAL to HIGH");
+        logs[0]
+            .GetProperty("logMessage")
+            .GetString()
+            .Should()
+            .Be(
+                "admin updated project testProject:  set BusinessUnit from BU1 to BU2,  set TeamNumber from 3 to 7,  set Department from testDepartment to testDepartment2,  set ClientName from testClient to testClient2,  set OfferId from testId to testId2,  set Company from testCompany to testCompany2,  set CompanyState from EXTERNAL to INTERNAL,  set IsmsLevel from NORMAL to HIGH"
+            );
     }
 
     [Test]
@@ -263,8 +295,14 @@ public class ProjectManagement : IntegrationTestsBase
 
         // Act
         // Assert
-        var projectId = (await ToJsonElement(client.PutAsync("/Projects", RequestWithPlugins(pluginId1, pluginId2)), HttpStatusCode.Created))
-            .GetProperty("id").GetInt32();
+        var projectId = (
+            await ToJsonElement(
+                client.PutAsync("/Projects", RequestWithPlugins(pluginId1, pluginId2)),
+                HttpStatusCode.Created
+            )
+        )
+            .GetProperty("id")
+            .GetInt32();
 
         var projectPlugins = await ToJsonElement(client.GetAsync($"/Projects/{projectId}/Plugins"));
 
@@ -276,8 +314,10 @@ public class ProjectManagement : IntegrationTestsBase
         projectPlugins[1].GetProperty("displayName").GetString().Should().Be("Jira");
         projectPlugins[1].GetProperty("pluginName").GetString().Should().Be("Jira");
 
-
-        var updateResponse = await client.PutAsync("/Projects?projectId=" + projectId, RequestWithPlugins2(pluginId1, pluginId3));
+        var updateResponse = await client.PutAsync(
+            "/Projects?projectId=" + projectId,
+            RequestWithPlugins2(pluginId1, pluginId3)
+        );
         updateResponse.StatusCode.Should().Be(HttpStatusCode.Created);
         updateResponse.Headers.Location.Should().NotBeNull();
 
@@ -300,37 +340,81 @@ public class ProjectManagement : IntegrationTestsBase
         projectPlugins[0].GetProperty("url").GetString().Should().Be("www.appsfactory.gitlab.com");
         projectPlugins[0].GetProperty("displayName").GetString().Should().Be("Appsfactory GitLab");
         projectPlugins[0].GetProperty("pluginName").GetString().Should().Be("GitLab");
-        projectPlugins[1].GetProperty("url").GetString().Should().Be("www.appsfactory.confluence.com");
+        projectPlugins[1]
+            .GetProperty("url")
+            .GetString()
+            .Should()
+            .Be("www.appsfactory.confluence.com");
         projectPlugins[1].GetProperty("displayName").GetString().Should().Be("Confluence");
         projectPlugins[1].GetProperty("pluginName").GetString().Should().Be("Confluence");
 
         var logs = await ToJsonElement(client.GetAsync("/Logs"));
         logs.GetArrayLength().Should().Be(9);
 
-        logs[5].GetProperty("logMessage").GetString().Should().Be(
-            "admin created a new project with properties: ProjectName = testProject, Slug = testproject, BusinessUnit = BU1, Department = testDepartment, ClientName = testClient, TeamNumber = 3, OfferId = testId, Company = testCompany, CompanyState = EXTERNAL, IsmsLevel = NORMAL");
+        logs[5]
+            .GetProperty("logMessage")
+            .GetString()
+            .Should()
+            .Be(
+                "admin created a new project with properties: ProjectName = testProject, Slug = testproject, BusinessUnit = BU1, Department = testDepartment, ClientName = testClient, TeamNumber = 3, OfferId = testId, Company = testCompany, CompanyState = EXTERNAL, IsmsLevel = NORMAL"
+            );
 
-        logs[4].GetProperty("logMessage").GetString().Should().Be(
-            "admin added a new plugin to project testProject with properties: Url = www.appsfactory.gitlab.com, DisplayName = GitLab");
+        logs[4]
+            .GetProperty("logMessage")
+            .GetString()
+            .Should()
+            .Be(
+                "admin added a new plugin to project testProject with properties: Url = www.appsfactory.gitlab.com, DisplayName = GitLab"
+            );
 
-        logs[3].GetProperty("logMessage").GetString().Should().Be(
-            "admin added a new plugin to project testProject with properties: Url = www.jira.com, DisplayName = Jira");
+        logs[3]
+            .GetProperty("logMessage")
+            .GetString()
+            .Should()
+            .Be(
+                "admin added a new plugin to project testProject with properties: Url = www.jira.com, DisplayName = Jira"
+            );
 
-        logs[2].GetProperty("logMessage").GetString().Should().Be(
-            "admin added a new plugin to project testProject with properties: Plugin = Confluence, DisplayName = Confluence, Url = www.appsfactory.confluence.com");
+        logs[2]
+            .GetProperty("logMessage")
+            .GetString()
+            .Should()
+            .Be(
+                "admin added a new plugin to project testProject with properties: Plugin = Confluence, DisplayName = Confluence, Url = www.appsfactory.confluence.com"
+            );
 
-        logs[1].GetProperty("logMessage").GetString().Should().Be(
-            "admin removed a plugin from project testProject with properties: Plugin = Jira, DisplayName = Jira, Url = www.jira.com");
+        logs[1]
+            .GetProperty("logMessage")
+            .GetString()
+            .Should()
+            .Be(
+                "admin removed a plugin from project testProject with properties: Plugin = Jira, DisplayName = Jira, Url = www.jira.com"
+            );
 
-        logs[0].GetProperty("logMessage").GetString().Should().Be(
-            "admin updated plugin properties in project testProject:  set DisplayName from GitLab to Appsfactory GitLab");
+        logs[0]
+            .GetProperty("logMessage")
+            .GetString()
+            .Should()
+            .Be(
+                "admin updated plugin properties in project testProject:  set DisplayName from GitLab to Appsfactory GitLab"
+            );
     }
 
     private static async Task<int> CreatePlugin(HttpClient client, string name)
     {
-
-        return (await ToJsonElement(client.PutAsync("/Plugins", StringContent($"{{ \"baseUrl\": \"www.{name}.com\", \"isArchived\": false, \"keys\": [], \"pluginName\": \"{name}\"}}")), HttpStatusCode.Created))
-            .GetProperty("id").GetInt32();
+        return (
+            await ToJsonElement(
+                client.PutAsync(
+                    "/Plugins",
+                    StringContent(
+                        $"{{ \"baseUrl\": \"www.{name}.com\", \"isArchived\": false, \"keys\": [], \"pluginName\": \"{name}\"}}"
+                    )
+                ),
+                HttpStatusCode.Created
+            )
+        )
+            .GetProperty("id")
+            .GetInt32();
     }
 
     [Test]
@@ -342,13 +426,18 @@ public class ProjectManagement : IntegrationTestsBase
 
         // Act
         // Assert
-        var projectId = (await ToJsonElement(client.PutAsync("/Projects", CreateRequest), HttpStatusCode.Created))
-            .GetProperty("id").GetInt32();
+        var projectId = (
+            await ToJsonElement(client.PutAsync("/Projects", CreateRequest), HttpStatusCode.Created)
+        )
+            .GetProperty("id")
+            .GetInt32();
         var projects = await ToJsonElement(client.GetAsync($"/Projects/"));
         var count = projects.GetArrayLength();
         await client.PutAsync($"/Projects?projectId=" + projectId, UpdateisArchivedRequest);
 
-        (await client.DeleteAsync($"/Projects/{projectId}")).StatusCode.Should().Be(HttpStatusCode.NoContent);
+        (await client.DeleteAsync($"/Projects/{projectId}"))
+            .StatusCode.Should()
+            .Be(HttpStatusCode.NoContent);
 
         var projects2 = await ToJsonElement(client.GetAsync($"/Projects/"));
         projects2.GetArrayLength().Should().Be(count - 1);
@@ -357,12 +446,23 @@ public class ProjectManagement : IntegrationTestsBase
 
         logs.GetArrayLength().Should().Be(3);
 
-        logs[2].GetProperty("logMessage").GetString().Should().Be(
-            "admin created a new project with properties: ProjectName = testProject, Slug = testproject, BusinessUnit = BU1, Department = testDepartment, ClientName = testClient, TeamNumber = 3, OfferId = testId, Company = testCompany, CompanyState = EXTERNAL, IsmsLevel = NORMAL");
-        logs[1].GetProperty("logMessage").GetString().Should().Be(
-            "admin archived project testProject");
-        logs[0].GetProperty("logMessage").GetString().Should().Be(
-            "admin removed project testProject");
+        logs[2]
+            .GetProperty("logMessage")
+            .GetString()
+            .Should()
+            .Be(
+                "admin created a new project with properties: ProjectName = testProject, Slug = testproject, BusinessUnit = BU1, Department = testDepartment, ClientName = testClient, TeamNumber = 3, OfferId = testId, Company = testCompany, CompanyState = EXTERNAL, IsmsLevel = NORMAL"
+            );
+        logs[1]
+            .GetProperty("logMessage")
+            .GetString()
+            .Should()
+            .Be("admin archived project testProject");
+        logs[0]
+            .GetProperty("logMessage")
+            .GetString()
+            .Should()
+            .Be("admin removed project testProject");
     }
 
     [Test]
@@ -373,10 +473,16 @@ public class ProjectManagement : IntegrationTestsBase
         await GetAuthTokenAndAddItToDefaultRequestHeadersOfClient(client);
 
         // Act
-        var projectId = (await ToJsonElement(client.PutAsync("/Projects", CreateRequest), HttpStatusCode.Created))
-            .GetProperty("id").GetInt32();
+        var projectId = (
+            await ToJsonElement(client.PutAsync("/Projects", CreateRequest), HttpStatusCode.Created)
+        )
+            .GetProperty("id")
+            .GetInt32();
 
-        var errorResponse = await ToErrorResponse(client.PutAsync($"/Projects?projectId=" + projectId, RequestWithPlugins(1, 2)), HttpStatusCode.NotFound);
+        var errorResponse = await ToErrorResponse(
+            client.PutAsync($"/Projects?projectId=" + projectId, RequestWithPlugins(1, 2)),
+            HttpStatusCode.NotFound
+        );
 
         // Assert
         errorResponse.Message.Should().Be("The Plugins with these ids do not exist: 1, 2");
@@ -390,15 +496,22 @@ public class ProjectManagement : IntegrationTestsBase
         await GetAuthTokenAndAddItToDefaultRequestHeadersOfClient(client);
 
         // Act
-        (await client.PutAsync("/Projects", CreateRequest)).StatusCode.Should().Be(HttpStatusCode.Created);
-        var errorResponse = await ToErrorResponse(client.PutAsync("/Projects", CreateRequest), HttpStatusCode.Conflict);
+        (await client.PutAsync("/Projects", CreateRequest))
+            .StatusCode.Should()
+            .Be(HttpStatusCode.Created);
+        var errorResponse = await ToErrorResponse(
+            client.PutAsync("/Projects", CreateRequest),
+            HttpStatusCode.Conflict
+        );
 
         // Assert
         errorResponse.Message.Should().Be("A Project with this slug already exists: testproject");
     }
 
     [Test]
-    public async Task NotFoundIsReturnedForInvalidProjectId([Values("GET", "PUT", "DELETE", "PLUGINS", "UNARCHIVED_PLUGINS")] string endpoint)
+    public async Task NotFoundIsReturnedForInvalidProjectId(
+        [Values("GET", "PUT", "DELETE", "PLUGINS", "UNARCHIVED_PLUGINS")] string endpoint
+    )
     {
         // Arrange
         var client = CreateClient();
@@ -411,7 +524,7 @@ public class ProjectManagement : IntegrationTestsBase
             "DELETE" => client.DeleteAsync("/Projects/1"),
             "PLUGINS" => client.GetAsync("/Projects/1/Plugins"),
             "UNARCHIVED_PLUGINS" => client.GetAsync("/Projects/1/UnarchivedPlugins"),
-            _ => throw new ArgumentOutOfRangeException(nameof(endpoint), endpoint, null)
+            _ => throw new ArgumentOutOfRangeException(nameof(endpoint), endpoint, null),
         };
 
         // Act
@@ -422,7 +535,9 @@ public class ProjectManagement : IntegrationTestsBase
     }
 
     [Test]
-    public async Task NotFoundIsReturnedForInvalidProjectSlug([Values("GET", "PUT", "DELETE", "PLUGINS", "UNARCHIVED_PLUGINS")] string endpoint)
+    public async Task NotFoundIsReturnedForInvalidProjectSlug(
+        [Values("GET", "PUT", "DELETE", "PLUGINS", "UNARCHIVED_PLUGINS")] string endpoint
+    )
     {
         // Arrange
         var client = CreateClient();
@@ -435,7 +550,7 @@ public class ProjectManagement : IntegrationTestsBase
             "DELETE" => client.DeleteAsync("/Projects/testproject"),
             "PLUGINS" => client.GetAsync("/Projects/testproject/Plugins"),
             "UNARCHIVED_PLUGINS" => client.GetAsync("/Projects/testproject/UnarchivedPlugins"),
-            _ => throw new ArgumentOutOfRangeException(nameof(endpoint), endpoint, null)
+            _ => throw new ArgumentOutOfRangeException(nameof(endpoint), endpoint, null),
         };
 
         // Act
@@ -453,9 +568,15 @@ public class ProjectManagement : IntegrationTestsBase
         await GetAuthTokenAndAddItToDefaultRequestHeadersOfClient(client);
 
         // Act
-        var projectId = (await ToJsonElement(client.PutAsync("/Projects", CreateRequest), HttpStatusCode.Created))
-            .GetProperty("id").GetInt32();
-        var errorResponse = await ToErrorResponse(client.DeleteAsync($"/Projects/{projectId}"), HttpStatusCode.BadRequest);
+        var projectId = (
+            await ToJsonElement(client.PutAsync("/Projects", CreateRequest), HttpStatusCode.Created)
+        )
+            .GetProperty("id")
+            .GetInt32();
+        var errorResponse = await ToErrorResponse(
+            client.DeleteAsync($"/Projects/{projectId}"),
+            HttpStatusCode.BadRequest
+        );
 
         // Assert
         errorResponse.Message.Should().Be("The project 1 is not archived.");

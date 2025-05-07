@@ -9,11 +9,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using ProjectMetadataPlatform.Api;
 using ProjectMetadataPlatform.Api.Errors;
+using ProjectMetadataPlatform.Api.Swagger;
 using ProjectMetadataPlatform.Application;
 using ProjectMetadataPlatform.Infrastructure;
-using ProjectMetadataPlatform.Api.Swagger;
-
-
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,38 +35,42 @@ builder.Services.AddSwaggerGen(options =>
         Reference = new OpenApiReference
         {
             Id = JwtBearerDefaults.AuthenticationScheme,
-            Type = ReferenceType.SecurityScheme
-        }
+            Type = ReferenceType.SecurityScheme,
+        },
     };
     options.AddSecurityDefinition(jwtSecurityScheme.Reference.Id, jwtSecurityScheme);
-    options.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        { jwtSecurityScheme, Array.Empty<string>() }
-    });
+    options.AddSecurityRequirement(
+        new OpenApiSecurityRequirement { { jwtSecurityScheme, Array.Empty<string>() } }
+    );
 });
 
-builder.Services
-    .AddApiDependencies()
+builder
+    .Services.AddApiDependencies()
     .AddApplicationDependencies()
-    .AddInfrastructureDependencies(new JwtBearerEvents
-    {
-        OnChallenge = async context =>
+    .AddInfrastructureDependencies(
+        new JwtBearerEvents
         {
-            context.HandleResponse();
-            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-            context.Response.ContentType = "application/json";
+            OnChallenge = async context =>
+            {
+                context.HandleResponse();
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                context.Response.ContentType = "application/json";
 
-            var response = new ErrorResponse(
-                    "You are either not logged in or do not have the necessary permissions to perform this action.");
-            await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+                var response = new ErrorResponse(
+                    "You are either not logged in or do not have the necessary permissions to perform this action."
+                );
+                await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+            },
         }
-    });
+    );
 
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddCors(options
-    => options.AddDefaultPolicy(policyBuilder => policyBuilder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
-
+builder.Services.AddCors(options =>
+    options.AddDefaultPolicy(policyBuilder =>
+        policyBuilder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()
+    )
+);
 
 var app = builder.Build();
 
@@ -90,4 +92,3 @@ app.Run();
 /// </summary>
 // ReSharper disable once ClassNeverInstantiated.Global - This is needed for the integration tests to work.
 public partial class Program;
-

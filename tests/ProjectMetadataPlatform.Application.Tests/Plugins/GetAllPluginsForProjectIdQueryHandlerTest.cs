@@ -14,13 +14,13 @@ namespace ProjectMetadataPlatform.Application.Tests.Plugins;
 [TestFixture]
 public class GetAllPluginsForProjectIdQueryHandlerTest
 {
-
     [SetUp]
     public void SetUp()
     {
         _pluginRepositoryMock = new Mock<IPluginRepository>();
         _handler = new GetAllPluginsForProjectIdQueryHandler(_pluginRepositoryMock.Object);
     }
+
     private GetAllPluginsForProjectIdQueryHandler _handler;
     private Mock<IPluginRepository> _pluginRepositoryMock;
 
@@ -35,18 +35,17 @@ public class GetAllPluginsForProjectIdQueryHandlerTest
                 PluginId = 1,
                 Plugin = new Plugin { Id = 1, PluginName = "Plugin 1" },
                 ProjectId = 1,
-                Project =
-                    new Project
-                    {
-                        Id = 1,
-                        ProjectName = "Project 1",
-                        Slug = "project 1",
-                        ClientName = "Client 1",
-                        BusinessUnit = "Bu 1",
-                        TeamNumber = 1,
-                        Department = "Department 1"
-                    },
-                Url = "Plugin1.com"
+                Project = new Project
+                {
+                    Id = 1,
+                    ProjectName = "Project 1",
+                    Slug = "project 1",
+                    ClientName = "Client 1",
+                    BusinessUnit = "Bu 1",
+                    TeamNumber = 1,
+                    Department = "Department 1",
+                },
+                Url = "Plugin1.com",
             },
             new()
             {
@@ -61,13 +60,12 @@ public class GetAllPluginsForProjectIdQueryHandlerTest
                     ClientName = "Client 1",
                     BusinessUnit = "Bu 1",
                     TeamNumber = 1,
-                    Department = "Department 1"
+                    Department = "Department 1",
                 },
-                Url = "Plugin2.com"
-            }
+                Url = "Plugin2.com",
+            },
         };
-        _pluginRepositoryMock.Setup(r => r.GetAllPluginsForProjectIdAsync(1))
-            .ReturnsAsync(plugins);
+        _pluginRepositoryMock.Setup(r => r.GetAllPluginsForProjectIdAsync(1)).ReturnsAsync(plugins);
 
         var query = new GetAllPluginsForProjectIdQuery(1);
         var result = (await _handler.Handle(query, It.IsAny<CancellationToken>())).ToList();

@@ -17,7 +17,6 @@ namespace ProjectMetadataPlatform.Api.Projects;
 /// <summary>
 /// Endpoints for managing projects.
 /// </summary>
-
 [ApiController]
 [Authorize]
 [Route("[controller]")]
@@ -43,7 +42,10 @@ public class ProjectsController : ControllerBase
     /// <response code="500">An internal error occurred.</response>
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<GetProjectsResponse>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<GetProjectsResponse>>> Get([FromQuery] ProjectFilterRequest? request, string? search = " ")
+    public async Task<ActionResult<IEnumerable<GetProjectsResponse>>> Get(
+        [FromQuery] ProjectFilterRequest? request,
+        string? search = " "
+    )
     {
         var query = new GetAllProjectsQuery(request, search);
         var projects = await _mediator.Send(query);
@@ -57,8 +59,8 @@ public class ProjectsController : ControllerBase
             project.TeamNumber,
             project.IsArchived,
             project.Company,
-            project.IsmsLevel)
-        );
+            project.IsmsLevel
+        ));
         return Ok(response);
     }
 
@@ -107,7 +109,8 @@ public class ProjectsController : ControllerBase
             project.OfferId,
             project.Company,
             project.CompanyState,
-            project.IsmsLevel);
+            project.IsmsLevel
+        );
 
         return Ok(response);
     }
@@ -126,9 +129,12 @@ public class ProjectsController : ControllerBase
         var query = new GetAllPluginsForProjectIdQuery(id);
         var projectPlugins = await _mediator.Send(query);
 
-        var response = projectPlugins.Select(plugin
-            => new GetPluginResponse(plugin.Plugin!.PluginName, plugin.Url,
-                plugin.DisplayName ?? plugin.Plugin.PluginName, plugin.Plugin.Id));
+        var response = projectPlugins.Select(plugin => new GetPluginResponse(
+            plugin.Plugin!.PluginName,
+            plugin.Url,
+            plugin.DisplayName ?? plugin.Plugin.PluginName,
+            plugin.Plugin.Id
+        ));
 
         return Ok(response);
     }
@@ -189,7 +195,9 @@ public class ProjectsController : ControllerBase
     [HttpGet("{slug}/unarchivedPlugins")]
     [ProducesResponseType(typeof(IEnumerable<GetPluginResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<IEnumerable<GetPluginResponse>>> GetUnarchivedPluginsBySlug(string slug)
+    public async Task<ActionResult<IEnumerable<GetPluginResponse>>> GetUnarchivedPluginsBySlug(
+        string slug
+    )
     {
         var projectId = await GetProjectId(slug);
         return await GetUnarchivedPlugins(projectId);
@@ -211,8 +219,10 @@ public class ProjectsController : ControllerBase
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status409Conflict)]
-    public async Task<ActionResult<CreateProjectResponse>> Put([FromBody] CreateProjectRequest project,
-        string slug)
+    public async Task<ActionResult<CreateProjectResponse>> Put(
+        [FromBody] CreateProjectRequest project,
+        string slug
+    )
     {
         var projectId = await GetProjectId(slug);
         return await Put(project, projectId);
@@ -232,33 +242,68 @@ public class ProjectsController : ControllerBase
     [ProducesResponseType(typeof(CreateProjectResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status409Conflict)]
-    public async Task<ActionResult<CreateProjectResponse>> Put([FromBody] CreateProjectRequest project, int? projectId = null)
+    public async Task<ActionResult<CreateProjectResponse>> Put(
+        [FromBody] CreateProjectRequest project,
+        int? projectId = null
+    )
     {
-        if (string.IsNullOrWhiteSpace(project.ProjectName) || string.IsNullOrWhiteSpace(project.BusinessUnit)
-                                                               || string.IsNullOrWhiteSpace(project.Department)
-                                                               || string.IsNullOrWhiteSpace(project.ClientName))
+        if (
+            string.IsNullOrWhiteSpace(project.ProjectName)
+            || string.IsNullOrWhiteSpace(project.BusinessUnit)
+            || string.IsNullOrWhiteSpace(project.Department)
+            || string.IsNullOrWhiteSpace(project.ClientName)
+        )
         {
-            return BadRequest(new ErrorResponse("ProjectName, BusinessUnit, Department and ClientName must not be empty."));
+            return BadRequest(
+                new ErrorResponse(
+                    "ProjectName, BusinessUnit, Department and ClientName must not be empty."
+                )
+            );
         }
 
-        IRequest<int> command = projectId == null
-            ? new CreateProjectCommand(project.ProjectName, project.BusinessUnit, project.TeamNumber,
-                project.Department, project.ClientName, project.OfferId, project.Company, project.CompanyState,
-                project.IsmsLevel, (project.PluginList ?? []).Select(p => new ProjectPlugins
-                {
-                    PluginId = p.Id,
-                    DisplayName = p.DisplayName,
-                    Url = p.Url
-                }).ToList())
-            : new UpdateProjectCommand(project.ProjectName, project.BusinessUnit, project.TeamNumber,
-                project.Department, project.ClientName, project.OfferId, project.Company, project.CompanyState,
-                project.IsmsLevel, projectId.Value, (project.PluginList ?? []).Select(p => new ProjectPlugins
-                {
-                    ProjectId = projectId.Value,
-                    PluginId = p.Id,
-                    DisplayName = p.DisplayName,
-                    Url = p.Url
-                }).ToList(), project.IsArchived);
+        IRequest<int> command =
+            projectId == null
+                ? new CreateProjectCommand(
+                    project.ProjectName,
+                    project.BusinessUnit,
+                    project.TeamNumber,
+                    project.Department,
+                    project.ClientName,
+                    project.OfferId,
+                    project.Company,
+                    project.CompanyState,
+                    project.IsmsLevel,
+                    (project.PluginList ?? [])
+                        .Select(p => new ProjectPlugins
+                        {
+                            PluginId = p.Id,
+                            DisplayName = p.DisplayName,
+                            Url = p.Url,
+                        })
+                        .ToList()
+                )
+                : new UpdateProjectCommand(
+                    project.ProjectName,
+                    project.BusinessUnit,
+                    project.TeamNumber,
+                    project.Department,
+                    project.ClientName,
+                    project.OfferId,
+                    project.Company,
+                    project.CompanyState,
+                    project.IsmsLevel,
+                    projectId.Value,
+                    (project.PluginList ?? [])
+                        .Select(p => new ProjectPlugins
+                        {
+                            ProjectId = projectId.Value,
+                            PluginId = p.Id,
+                            DisplayName = p.DisplayName,
+                            Url = p.Url,
+                        })
+                        .ToList(),
+                    project.IsArchived
+                );
 
         var id = await _mediator.Send(command);
 
@@ -325,7 +370,6 @@ public class ProjectsController : ControllerBase
     {
         var projectId = await GetProjectId(slug);
         return await Delete(projectId);
-
     }
 
     /// <summary>

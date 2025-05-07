@@ -17,12 +17,14 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
                 type: "integer",
                 nullable: true,
                 oldClrType: typeof(int),
-                oldType: "integer");
+                oldType: "integer"
+            );
 
             if (migrationBuilder.IsNpgsql())
             {
                 migrationBuilder.Sql(
-                    "UPDATE \"Logs\" l SET \"ProjectName\" = \"Projects\".\"ProjectName\" FROM \"Projects\" where \"ProjectId\" = \"Projects\".\"Id\" and l.\"ProjectName\" is null and \"ProjectId\" is not null;");
+                    "UPDATE \"Logs\" l SET \"ProjectName\" = \"Projects\".\"ProjectName\" FROM \"Projects\" where \"ProjectId\" = \"Projects\".\"Id\" and l.\"ProjectName\" is null and \"ProjectId\" is not null;"
+                );
             }
         }
 
@@ -37,7 +39,8 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
                 defaultValue: 0,
                 oldClrType: typeof(int),
                 oldType: "integer",
-                oldNullable: true);
+                oldNullable: true
+            );
         }
     }
 }

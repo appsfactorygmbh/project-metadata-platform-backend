@@ -40,18 +40,24 @@ public class IntegrationTestsBase : IDisposable
         Environment.SetEnvironmentVariable("PMP_DB_NAME", " ");
         Environment.SetEnvironmentVariable("JWT_VALID_ISSUER", "validIssue");
         Environment.SetEnvironmentVariable("JWT_VALID_AUDIENCE", "validAudience");
-        Environment.SetEnvironmentVariable("JWT_ISSUER_SIGNING_KEY", "superSecretKeyThatIsAtLeast257BitLong");
+        Environment.SetEnvironmentVariable(
+            "JWT_ISSUER_SIGNING_KEY",
+            "superSecretKeyThatIsAtLeast257BitLong"
+        );
         Environment.SetEnvironmentVariable("REFRESH_TOKEN_EXPIRATION_HOURS", "6");
         Environment.SetEnvironmentVariable("ACCESS_TOKEN_EXPIRATION_MINUTES", "15");
         Environment.SetEnvironmentVariable("PMP_MIGRATE_DB_ON_STARTUP", "true");
 
-        var platformDbContext = _factory.Services.GetRequiredService<ProjectMetadataPlatformDbContext>();
+        var platformDbContext =
+            _factory.Services.GetRequiredService<ProjectMetadataPlatformDbContext>();
         var allEntitiesPlugins = platformDbContext.Plugins.ToList();
         var allEntitiesProjects = platformDbContext.Projects.ToList();
         var allEntitiesProjectsPlugins = platformDbContext.ProjectPluginsRelation.ToList();
         var allEntitiesLogs = platformDbContext.Logs.ToList();
         var allEntitiesRefreshTokens = platformDbContext.Set<RefreshToken>().ToList();
-        var allEntitiesUsers = platformDbContext.Users.Where(user => user.Email != "admin@admin.admin").ToList();
+        var allEntitiesUsers = platformDbContext
+            .Users.Where(user => user.Email != "admin@admin.admin")
+            .ToList();
         platformDbContext.Plugins.RemoveRange(allEntitiesPlugins);
         platformDbContext.Projects.RemoveRange(allEntitiesProjects);
         platformDbContext.ProjectPluginsRelation.RemoveRange(allEntitiesProjectsPlugins);
@@ -71,26 +77,35 @@ public class IntegrationTestsBase : IDisposable
     protected static async Task GetAuthTokenAndAddItToDefaultRequestHeadersOfClient(
         HttpClient client,
         string email = "admin@admin.admin",
-        string password = "admin")
+        string password = "admin"
+    )
     {
-        var response = await client.PostAsJsonAsync("/auth/basic", new { Email = email, Password = password });
+        var response = await client.PostAsJsonAsync(
+            "/auth/basic",
+            new { Email = email, Password = password }
+        );
         response.EnsureSuccessStatusCode();
 
         var content = await response.Content.ReadFromJsonAsync<LoginResponse>();
 
         client.DefaultRequestHeaders.Clear();
         client.DefaultRequestHeaders.Add("Authorization", $"Bearer {content!.AccessToken}");
-
     }
 
-    protected static async Task<JsonElement> ToJsonElement(Task<HttpResponseMessage> response, HttpStatusCode expectedStatusCode = HttpStatusCode.OK)
+    protected static async Task<JsonElement> ToJsonElement(
+        Task<HttpResponseMessage> response,
+        HttpStatusCode expectedStatusCode = HttpStatusCode.OK
+    )
     {
         var responseMessage = await response;
         responseMessage.StatusCode.Should().Be(expectedStatusCode);
         return (await responseMessage.Content.ReadFromJsonAsync<JsonDocument>())!.RootElement;
     }
 
-    protected static async Task<ErrorResponse> ToErrorResponse(Task<HttpResponseMessage> response, HttpStatusCode expectedStatusCode)
+    protected static async Task<ErrorResponse> ToErrorResponse(
+        Task<HttpResponseMessage> response,
+        HttpStatusCode expectedStatusCode
+    )
     {
         var responseMessage = await response;
         responseMessage.StatusCode.Should().Be(expectedStatusCode);

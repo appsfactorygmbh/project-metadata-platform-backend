@@ -38,7 +38,7 @@ public class ProjectByIdRepositoryTest : TestsWithDatabase
             ClientName = "Nasa",
             BusinessUnit = "BuWeather",
             TeamNumber = 42,
-            Department = "Homelandsecurity"
+            Department = "Homelandsecurity",
         };
 
         _context.Projects.Add(project);

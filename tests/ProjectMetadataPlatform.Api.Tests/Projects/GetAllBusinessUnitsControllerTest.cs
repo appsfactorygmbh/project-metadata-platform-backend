@@ -20,6 +20,7 @@ public class GetAllBusinessUnitsControllerTest
         _mediator = new Mock<IMediator>();
         _controller = new ProjectsController(_mediator.Object);
     }
+
     private ProjectsController _controller;
     private Mock<IMediator> _mediator;
 
@@ -29,9 +30,10 @@ public class GetAllBusinessUnitsControllerTest
         IEnumerable<string> projectsResponseContent = new List<string>()
         {
             "BusinessUnit1",
-            "BusinessUnit2"
+            "BusinessUnit2",
         };
-        _mediator.Setup(m => m.Send(It.IsAny<GetAllBusinessUnitsQuery>(), It.IsAny<CancellationToken>()))
+        _mediator
+            .Setup(m => m.Send(It.IsAny<GetAllBusinessUnitsQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(projectsResponseContent);
 
         var result = await _controller.GetAllBusinessUnits();

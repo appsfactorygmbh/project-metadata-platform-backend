@@ -1,5 +1,5 @@
-using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 
 namespace ProjectMetadataPlatform.Application.Interfaces;
@@ -49,8 +49,7 @@ public interface IUsersRepository
     /// </summary>
     /// <param name="user">The user to be deleted.</param>
     /// <returns>The deleted user.</returns>
-    Task<IdentityUser>DeleteUserAsync(IdentityUser user);
-
+    Task<IdentityUser> DeleteUserAsync(IdentityUser user);
 
     /// <summary>
     /// Checks if the given password is in the correct format.
@@ -58,6 +57,4 @@ public interface IUsersRepository
     /// <param name="password">password to be checked</param>
     /// <returns>true if the format is correct. Otherwise throws exception</returns>
     Task<bool> CheckPasswordFormat(string password);
-
-
 }

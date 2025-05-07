@@ -10,72 +10,68 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Logs_AspNetUsers_UserId",
-                table: "Logs");
+            migrationBuilder.DropForeignKey(name: "FK_Logs_AspNetUsers_UserId", table: "Logs");
 
-            migrationBuilder.DropForeignKey(
-                name: "FK_Logs_Projects_ProjectId",
-                table: "Logs");
+            migrationBuilder.DropForeignKey(name: "FK_Logs_Projects_ProjectId", table: "Logs");
 
-            migrationBuilder.DropIndex(
-                name: "IX_Logs_UserId",
-                table: "Logs");
+            migrationBuilder.DropIndex(name: "IX_Logs_UserId", table: "Logs");
 
-            migrationBuilder.RenameColumn(
-                name: "UserId",
-                table: "Logs",
-                newName: "AuthorId");
+            migrationBuilder.RenameColumn(name: "UserId", table: "Logs", newName: "AuthorId");
 
-            migrationBuilder.RenameColumn(
-                name: "Email",
-                table: "Logs",
-                newName: "AuthorEmail");
+            migrationBuilder.RenameColumn(name: "Email", table: "Logs", newName: "AuthorEmail");
 
             migrationBuilder.AddColumn<string>(
                 name: "AffectedUserEmail",
                 table: "Logs",
                 type: "text",
-                nullable: true);
+                nullable: true
+            );
 
             migrationBuilder.AddColumn<string>(
                 name: "AffectedUserId",
                 table: "Logs",
                 type: "text",
-                nullable: true);
+                nullable: true
+            );
 
             migrationBuilder.AddColumn<string>(
                 name: "GlobalPluginName",
                 table: "Logs",
                 type: "text",
-                nullable: true);
+                nullable: true
+            );
 
             migrationBuilder.AddColumn<string>(
                 name: "ProjectName",
                 table: "Logs",
                 type: "text",
-                nullable: true);
+                nullable: true
+            );
 
             migrationBuilder.AddColumn<int>(
                 name: "GlobalPluginId",
                 table: "Logs",
                 type: "integer",
-                nullable: true);
+                nullable: true
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_Logs_AffectedUserId",
                 table: "Logs",
-                column: "AffectedUserId");
+                column: "AffectedUserId"
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_Logs_AuthorId",
                 table: "Logs",
-                column: "AuthorId");
+                column: "AuthorId"
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_Logs_GlobalPluginId",
                 table: "Logs",
-                column: "GlobalPluginId");
+                column: "GlobalPluginId"
+            );
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Logs_AspNetUsers_AffectedUserId",
@@ -83,7 +79,8 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
                 column: "AffectedUserId",
                 principalTable: "AspNetUsers",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.SetNull);
+                onDelete: ReferentialAction.SetNull
+            );
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Logs_AspNetUsers_AuthorId",
@@ -91,7 +88,8 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
                 column: "AuthorId",
                 principalTable: "AspNetUsers",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.SetNull);
+                onDelete: ReferentialAction.SetNull
+            );
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Logs_Plugins_GlobalPluginId",
@@ -99,7 +97,8 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
                 column: "GlobalPluginId",
                 principalTable: "Plugins",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.SetNull);
+                onDelete: ReferentialAction.SetNull
+            );
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Logs_Projects_ProjectId",
@@ -107,7 +106,8 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
                 column: "ProjectId",
                 principalTable: "Projects",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.SetNull);
+                onDelete: ReferentialAction.SetNull
+            );
         }
 
         /// <inheritdoc />
@@ -115,66 +115,36 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
         {
             migrationBuilder.DropForeignKey(
                 name: "FK_Logs_AspNetUsers_AffectedUserId",
-                table: "Logs");
+                table: "Logs"
+            );
 
-            migrationBuilder.DropForeignKey(
-                name: "FK_Logs_AspNetUsers_AuthorId",
-                table: "Logs");
+            migrationBuilder.DropForeignKey(name: "FK_Logs_AspNetUsers_AuthorId", table: "Logs");
 
-            migrationBuilder.DropForeignKey(
-                name: "FK_Logs_Plugins_GlobalPluginId",
-                table: "Logs");
+            migrationBuilder.DropForeignKey(name: "FK_Logs_Plugins_GlobalPluginId", table: "Logs");
 
-            migrationBuilder.DropForeignKey(
-                name: "FK_Logs_Projects_ProjectId",
-                table: "Logs");
+            migrationBuilder.DropForeignKey(name: "FK_Logs_Projects_ProjectId", table: "Logs");
 
-            migrationBuilder.DropIndex(
-                name: "IX_Logs_AffectedUserId",
-                table: "Logs");
+            migrationBuilder.DropIndex(name: "IX_Logs_AffectedUserId", table: "Logs");
 
-            migrationBuilder.DropIndex(
-                name: "IX_Logs_AuthorId",
-                table: "Logs");
+            migrationBuilder.DropIndex(name: "IX_Logs_AuthorId", table: "Logs");
 
-            migrationBuilder.DropIndex(
-                name: "IX_Logs_GlobalPluginId",
-                table: "Logs");
+            migrationBuilder.DropIndex(name: "IX_Logs_GlobalPluginId", table: "Logs");
 
-            migrationBuilder.DropColumn(
-                name: "AffectedUserEmail",
-                table: "Logs");
+            migrationBuilder.DropColumn(name: "AffectedUserEmail", table: "Logs");
 
-            migrationBuilder.DropColumn(
-                name: "AffectedUserId",
-                table: "Logs");
+            migrationBuilder.DropColumn(name: "AffectedUserId", table: "Logs");
 
-            migrationBuilder.DropColumn(
-                name: "GlobalPluginName",
-                table: "Logs");
+            migrationBuilder.DropColumn(name: "GlobalPluginName", table: "Logs");
 
-            migrationBuilder.DropColumn(
-                name: "ProjectName",
-                table: "Logs");
+            migrationBuilder.DropColumn(name: "ProjectName", table: "Logs");
 
-            migrationBuilder.DropColumn(
-                name: "GlobalPluginId",
-                table: "Logs");
+            migrationBuilder.DropColumn(name: "GlobalPluginId", table: "Logs");
 
-            migrationBuilder.RenameColumn(
-                name: "AuthorId",
-                table: "Logs",
-                newName: "UserId");
+            migrationBuilder.RenameColumn(name: "AuthorId", table: "Logs", newName: "UserId");
 
-            migrationBuilder.RenameColumn(
-                name: "AuthorEmail",
-                table: "Logs",
-                newName: "Email");
+            migrationBuilder.RenameColumn(name: "AuthorEmail", table: "Logs", newName: "Email");
 
-            migrationBuilder.CreateIndex(
-                name: "IX_Logs_UserId",
-                table: "Logs",
-                column: "UserId");
+            migrationBuilder.CreateIndex(name: "IX_Logs_UserId", table: "Logs", column: "UserId");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Logs_AspNetUsers_UserId",
@@ -182,7 +152,8 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
                 column: "UserId",
                 principalTable: "AspNetUsers",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.SetNull);
+                onDelete: ReferentialAction.SetNull
+            );
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Logs_Projects_ProjectId",
@@ -190,7 +161,8 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
                 column: "ProjectId",
                 principalTable: "Projects",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.Cascade
+            );
         }
     }
 }

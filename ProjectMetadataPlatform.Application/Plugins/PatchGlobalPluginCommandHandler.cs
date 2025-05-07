@@ -26,14 +26,16 @@ public class PatchGlobalPluginCommandHandler : IRequestHandler<PatchGlobalPlugin
     /// <param name="pluginRepository">The plugin repository to use for plugin operations.</param>
     /// <param name="logRepository">The log repository to use for logging operations.</param>
     /// <param name="unitOfWork">The unit of work to use for transactional operations.</param>
-    public PatchGlobalPluginCommandHandler(IPluginRepository pluginRepository, ILogRepository logRepository,
-        IUnitOfWork unitOfWork)
+    public PatchGlobalPluginCommandHandler(
+        IPluginRepository pluginRepository,
+        ILogRepository logRepository,
+        IUnitOfWork unitOfWork
+    )
     {
         _pluginRepository = pluginRepository;
         _logRepository = logRepository;
         _unitOfWork = unitOfWork;
     }
-
 
     /// <summary>
     /// Handles the PatchGlobalPluginCommand request.
@@ -42,13 +44,23 @@ public class PatchGlobalPluginCommandHandler : IRequestHandler<PatchGlobalPlugin
     /// <param name="cancellationToken">A cancellation token that can be used to cancel the work.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains the Plugin that was updated.</returns>
     /// <exception cref="PluginNameAlreadyExistsException">The Plugin name already exists.</exception>
-    public async Task<Plugin> Handle(PatchGlobalPluginCommand request, CancellationToken cancellationToken)
+    public async Task<Plugin> Handle(
+        PatchGlobalPluginCommand request,
+        CancellationToken cancellationToken
+    )
     {
-        var plugin = await _pluginRepository.GetPluginByIdAsync(request.Id) ?? throw new PluginNotFoundException(request.Id);
+        var plugin =
+            await _pluginRepository.GetPluginByIdAsync(request.Id)
+            ?? throw new PluginNotFoundException(request.Id);
         if (
             request.PluginName != null
-            && !string.Equals(plugin.PluginName, request.PluginName, StringComparison.OrdinalIgnoreCase)
-            && await _pluginRepository.CheckGlobalPluginNameExists(request.PluginName))
+            && !string.Equals(
+                plugin.PluginName,
+                request.PluginName,
+                StringComparison.OrdinalIgnoreCase
+            )
+            && await _pluginRepository.CheckGlobalPluginNameExists(request.PluginName)
+        )
         {
             throw new PluginNameAlreadyExistsException(request.PluginName);
         }
@@ -60,7 +72,10 @@ public class PatchGlobalPluginCommandHandler : IRequestHandler<PatchGlobalPlugin
             plugin.PluginName = request.PluginName;
         }
 
-        if (request.BaseUrl != null && !string.Equals(plugin.BaseUrl, request.BaseUrl, StringComparison.Ordinal))
+        if (
+            request.BaseUrl != null
+            && !string.Equals(plugin.BaseUrl, request.BaseUrl, StringComparison.Ordinal)
+        )
         {
             plugin.BaseUrl = request.BaseUrl;
         }
@@ -68,7 +83,11 @@ public class PatchGlobalPluginCommandHandler : IRequestHandler<PatchGlobalPlugin
         if (request.IsArchived != null && plugin.IsArchived != request.IsArchived.Value)
         {
             plugin.IsArchived = request.IsArchived.Value;
-            await _logRepository.AddGlobalPluginLogForCurrentUser(plugin, plugin.IsArchived ? Action.ARCHIVED_GLOBAL_PLUGIN : Action.UNARCHIVED_GLOBAL_PLUGIN, []);
+            await _logRepository.AddGlobalPluginLogForCurrentUser(
+                plugin,
+                plugin.IsArchived ? Action.ARCHIVED_GLOBAL_PLUGIN : Action.UNARCHIVED_GLOBAL_PLUGIN,
+                []
+            );
         }
 
         var updatedPlugin = await _pluginRepository.StorePlugin(plugin);
@@ -81,31 +100,43 @@ public class PatchGlobalPluginCommandHandler : IRequestHandler<PatchGlobalPlugin
     {
         var changes = new List<LogChange>();
 
-        if (request.PluginName != null && !string.Equals(plugin.PluginName, request.PluginName, StringComparison.Ordinal))
+        if (
+            request.PluginName != null
+            && !string.Equals(plugin.PluginName, request.PluginName, StringComparison.Ordinal)
+        )
         {
             changes.Add(
                 new LogChange
                 {
                     Property = nameof(plugin.PluginName),
                     OldValue = plugin.PluginName,
-                    NewValue = request.PluginName
-                });
+                    NewValue = request.PluginName,
+                }
+            );
         }
 
-        if (request.BaseUrl != null && !string.Equals(plugin.BaseUrl, request.BaseUrl, StringComparison.Ordinal))
+        if (
+            request.BaseUrl != null
+            && !string.Equals(plugin.BaseUrl, request.BaseUrl, StringComparison.Ordinal)
+        )
         {
             changes.Add(
                 new LogChange
                 {
                     Property = nameof(plugin.BaseUrl),
                     OldValue = plugin.BaseUrl ?? "",
-                    NewValue = request.BaseUrl
-                });
+                    NewValue = request.BaseUrl,
+                }
+            );
         }
 
         if (changes.Count > 0)
         {
-            await _logRepository.AddGlobalPluginLogForCurrentUser(plugin, Action.UPDATED_GLOBAL_PLUGIN, changes);
+            await _logRepository.AddGlobalPluginLogForCurrentUser(
+                plugin,
+                Action.UPDATED_GLOBAL_PLUGIN,
+                changes
+            );
         }
     }
 }

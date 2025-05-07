@@ -3,7 +3,6 @@ using ProjectMetadataPlatform.Domain.Projects;
 
 namespace ProjectMetadataPlatform.Application.Projects;
 
-
 /// <summary>
 /// Represents a request to filter projects based on various criteria.
 /// </summary>
@@ -14,4 +13,12 @@ namespace ProjectMetadataPlatform.Application.Projects;
 /// <param name="IsArchived">Optional. The archival status of the projects to filter by.</param>
 /// <param name="Company">Optional. A list of companies to filter the projects by.</param>
 /// <param name="IsmsLevel">Optional. The ISMS level to filter the projects by.</param>
-public record ProjectFilterRequest(string? ProjectName, string? ClientName, List<string>? BusinessUnit, List<int>? TeamNumber, bool? IsArchived, List<string>? Company, SecurityLevel? IsmsLevel );
+public record ProjectFilterRequest(
+    string? ProjectName,
+    string? ClientName,
+    List<string>? BusinessUnit,
+    List<int>? TeamNumber,
+    bool? IsArchived,
+    List<string>? Company,
+    SecurityLevel? IsmsLevel
+);

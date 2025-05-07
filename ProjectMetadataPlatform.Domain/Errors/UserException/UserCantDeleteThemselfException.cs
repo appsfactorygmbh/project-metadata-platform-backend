@@ -8,7 +8,6 @@ public class UserCantDeleteThemselfException : UserException
     /// <summary>
     /// Initializes a new instance of the <see cref="UserCantDeleteThemselfException"/> class with a default error message.
     /// </summary>
-    public UserCantDeleteThemselfException() : base("A User can't delete themself.")
-    {
-    }
+    public UserCantDeleteThemselfException()
+        : base("A User can't delete themself.") { }
 }

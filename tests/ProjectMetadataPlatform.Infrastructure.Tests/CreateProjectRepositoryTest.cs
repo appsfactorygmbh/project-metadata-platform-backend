@@ -37,7 +37,7 @@ public class CreateProjectRepositoryTest : TestsWithDatabase
             BusinessUnit = "Example Business Unit",
             TeamNumber = 1,
             Department = "Example Department",
-            ClientName = "Example Client"
+            ClientName = "Example Client",
         };
         await _repository.Add(exampleProject);
         await _context.SaveChangesAsync();
@@ -64,7 +64,7 @@ public class CreateProjectRepositoryTest : TestsWithDatabase
             BusinessUnit = "Example Business Unit",
             TeamNumber = 1,
             Department = "Example Department",
-            ClientName = "Example Client"
+            ClientName = "Example Client",
         };
         await _repository.Add(exampleProject);
         await _context.SaveChangesAsync();
@@ -94,7 +94,7 @@ public class CreateProjectRepositoryTest : TestsWithDatabase
             PluginId = 301,
             ProjectId = 1,
             Url = "dummy",
-            DisplayName = "Dummy"
+            DisplayName = "Dummy",
         };
         var projectPlugins = new List<ProjectPlugins> { projectPlugin };
         var exampleProject = new Project
@@ -105,12 +105,9 @@ public class CreateProjectRepositoryTest : TestsWithDatabase
             TeamNumber = 1,
             Department = "Example Department",
             ClientName = "Example Client",
-            ProjectPlugins = projectPlugins
+            ProjectPlugins = projectPlugins,
         };
-        var examplePlugin = new Plugin
-        {
-            PluginName = "DummyPlug",
-        };
+        var examplePlugin = new Plugin { PluginName = "DummyPlug" };
         var storedPlugin = await _pluginRepository.StorePlugin(examplePlugin);
         await _repository.Add(exampleProject);
         await _context.SaveChangesAsync();
@@ -124,8 +121,10 @@ public class CreateProjectRepositoryTest : TestsWithDatabase
             Assert.That(projectResult.Department, Is.EqualTo("Example Department"));
             Assert.That(projectResult.ClientName, Is.EqualTo("Example Client"));
         });
-        var pluginResult = _context.ProjectPluginsRelation.Where(p => p.ProjectId == exampleProject.Id)
-            .Include(p => p.Plugin).ToList();
+        var pluginResult = _context
+            .ProjectPluginsRelation.Where(p => p.ProjectId == exampleProject.Id)
+            .Include(p => p.Plugin)
+            .ToList();
         Assert.That(pluginResult, Is.Not.Null);
         Assert.That(pluginResult, Has.Count.EqualTo(1));
         Assert.Multiple(() =>

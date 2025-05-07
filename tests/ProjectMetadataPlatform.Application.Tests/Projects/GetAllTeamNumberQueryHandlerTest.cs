@@ -16,17 +16,14 @@ public class GetAllTeamNumberQueryHandlerTest
         _mockProjectRepo = new Mock<IProjectsRepository>();
         _handler = new GetAllTeamNumbersQueryHandler(_mockProjectRepo.Object);
     }
+
     private GetAllTeamNumbersQueryHandler _handler;
     private Mock<IProjectsRepository> _mockProjectRepo;
 
     [Test]
     public async Task GetAllTeamNumbersTest()
     {
-        IEnumerable<int> projectsResponseContent = new List<int>()
-        {
-            42,
-            43
-        };
+        IEnumerable<int> projectsResponseContent = new List<int>() { 42, 43 };
         _mockProjectRepo.Setup(m => m.GetTeamNumbersAsync()).ReturnsAsync(projectsResponseContent);
 
         var query = new GetAllTeamNumbersQuery();

@@ -14,36 +14,38 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
                 name: "BaseUrl",
                 table: "Plugins",
                 type: "text",
-                nullable: true);
+                nullable: true
+            );
 
             migrationBuilder.UpdateData(
                 table: "Plugins",
                 keyColumn: "Id",
                 keyValue: 100,
                 column: "BaseUrl",
-                value: null);
+                value: null
+            );
 
             migrationBuilder.UpdateData(
                 table: "Plugins",
                 keyColumn: "Id",
                 keyValue: 200,
                 column: "BaseUrl",
-                value: null);
+                value: null
+            );
 
             migrationBuilder.UpdateData(
                 table: "Plugins",
                 keyColumn: "Id",
                 keyValue: 300,
                 column: "BaseUrl",
-                value: null);
+                value: null
+            );
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "BaseUrl",
-                table: "Plugins");
+            migrationBuilder.DropColumn(name: "BaseUrl", table: "Plugins");
         }
     }
 }

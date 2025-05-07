@@ -28,7 +28,10 @@ public class GetProjectBySlugControllerTest
     [Test]
     public void MediatorThrowsExceptionTest()
     {
-        _mediator.Setup(mediator => mediator.Send(It.IsAny<GetProjectIdBySlugQuery>(), It.IsAny<CancellationToken>()))
+        _mediator
+            .Setup(mediator =>
+                mediator.Send(It.IsAny<GetProjectIdBySlugQuery>(), It.IsAny<CancellationToken>())
+            )
             .ThrowsAsync(new InvalidDataException("An error message"));
         Assert.ThrowsAsync<InvalidDataException>(() => _controller.Get("test"));
     }
@@ -49,11 +52,20 @@ public class GetProjectBySlugControllerTest
             OfferId = "1023",
             Company = "Charlies Schokoladenfabrik",
             CompanyState = CompanyState.EXTERNAL,
-            IsmsLevel = SecurityLevel.VERY_HIGH
+            IsmsLevel = SecurityLevel.VERY_HIGH,
         };
-        _mediator.Setup(m => m.Send(It.Is<GetProjectIdBySlugQuery>(q => q.Slug == "metadataplatform"), It.IsAny<CancellationToken>()))
+        _mediator
+            .Setup(m =>
+                m.Send(
+                    It.Is<GetProjectIdBySlugQuery>(q => q.Slug == "metadataplatform"),
+                    It.IsAny<CancellationToken>()
+                )
+            )
             .ReturnsAsync(50);
-        _mediator.Setup(m => m.Send(It.Is<GetProjectQuery>(q => q.Id == 50), It.IsAny<CancellationToken>()))
+        _mediator
+            .Setup(m =>
+                m.Send(It.Is<GetProjectQuery>(q => q.Id == 50), It.IsAny<CancellationToken>())
+            )
             .ReturnsAsync(projectsResponseContent);
 
         // act

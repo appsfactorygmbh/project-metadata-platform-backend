@@ -3,8 +3,8 @@ using MediatR;
 using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.Projects;
 
-
 namespace ProjectMetadataPlatform.Application.Projects;
+
 /// <summary>
 /// Command to update a project with the given attributes.
 /// </summary>
@@ -20,4 +20,17 @@ namespace ProjectMetadataPlatform.Application.Projects;
 /// <param name="Id">Id of the project</param>
 /// <param name="Plugins">List of plugins associated with the project</param>
 /// <param name="IsArchived">Indicates if the project is archived</param>
-public record UpdateProjectCommand(string ProjectName, string BusinessUnit, int TeamNumber, string Department, string ClientName, string OfferId, string Company, CompanyState CompanyState, SecurityLevel IsmsLevel,int Id, List<ProjectPlugins> Plugins, bool IsArchived): IRequest<int>;
+public record UpdateProjectCommand(
+    string ProjectName,
+    string BusinessUnit,
+    int TeamNumber,
+    string Department,
+    string ClientName,
+    string OfferId,
+    string Company,
+    CompanyState CompanyState,
+    SecurityLevel IsmsLevel,
+    int Id,
+    List<ProjectPlugins> Plugins,
+    bool IsArchived
+) : IRequest<int>;

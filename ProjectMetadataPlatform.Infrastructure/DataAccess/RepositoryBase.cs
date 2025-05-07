@@ -9,9 +9,9 @@ namespace ProjectMetadataPlatform.Infrastructure.DataAccess;
 /// Base repository class providing common data access methods for entities.
 /// </summary>
 /// <typeparam name="T">The type of entity being managed.</typeparam>
-public abstract class RepositoryBase<T> where T : class
+public abstract class RepositoryBase<T>
+    where T : class
 {
-
     /// <summary>
     /// Initializes a new instance of the <see cref="RepositoryBase{T}" /> class.
     /// </summary>
@@ -32,8 +32,7 @@ public abstract class RepositoryBase<T> where T : class
     /// <returns>An <see cref="IQueryable{T}" /> of all entities.</returns>
     public IQueryable<T> GetEverything()
     {
-        return ProjectMetadataPlatformDbContext.Set<T>()
-            .AsNoTracking();
+        return ProjectMetadataPlatformDbContext.Set<T>().AsNoTracking();
     }
 
     /// <summary>

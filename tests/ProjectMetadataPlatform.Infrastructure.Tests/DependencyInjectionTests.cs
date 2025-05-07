@@ -23,7 +23,10 @@ public class DependencyInjectionTests : TestsWithDatabase
         Environment.SetEnvironmentVariable("PMP_DB_NAME", "test_db");
         Environment.SetEnvironmentVariable("JWT_VALID_ISSUER", "test_issuer");
         Environment.SetEnvironmentVariable("JWT_VALID_AUDIENCE", "test_audience");
-        Environment.SetEnvironmentVariable("JWT_ISSUER_SIGNING_KEY", "test_key_that_certainly_is_long_enough");
+        Environment.SetEnvironmentVariable(
+            "JWT_ISSUER_SIGNING_KEY",
+            "test_key_that_certainly_is_long_enough"
+        );
         Environment.SetEnvironmentVariable("ACCESS_TOKEN_EXPIRATION_MINUTES", "1");
         var services = new ServiceCollection();
 
@@ -31,7 +34,11 @@ public class DependencyInjectionTests : TestsWithDatabase
         services.AddInfrastructureDependencies(new JwtBearerEvents());
 
         // Cant check this with the service provider because the context will try to connect to the database
-        Assert.That(services.Any(descriptor => descriptor.ServiceType == typeof(ProjectMetadataPlatformDbContext)));
+        Assert.That(
+            services.Any(descriptor =>
+                descriptor.ServiceType == typeof(ProjectMetadataPlatformDbContext)
+            )
+        );
 
         var serviceProvider = services.BuildServiceProvider();
         Assert.Multiple(() =>
@@ -47,24 +54,56 @@ public class DependencyInjectionTests : TestsWithDatabase
     [TestCase(null, "admin")]
     public void AdminUserIsAddedCorrectly(string? envPassword, string expectedPassword)
     {
-                const string hash = "hash";
-                Environment.SetEnvironmentVariable("PMP_ADMIN_PASSWORD", envPassword);
-                var mockPasswordHasher = new Mock<IPasswordHasher<IdentityUser>>();
-                mockPasswordHasher.Setup(m => m.HashPassword(It.IsAny<IdentityUser>(), expectedPassword)).Returns(hash);
+        const string hash = "hash";
+        Environment.SetEnvironmentVariable("PMP_ADMIN_PASSWORD", envPassword);
+        var mockPasswordHasher = new Mock<IPasswordHasher<IdentityUser>>();
+        mockPasswordHasher
+            .Setup(m => m.HashPassword(It.IsAny<IdentityUser>(), expectedPassword))
+            .Returns(hash);
 
-                var mockUserManager = new Mock<UserManager<IdentityUser>>(new Mock<IUserStore<IdentityUser>>().Object, null!, mockPasswordHasher.Object, null!, null!, null!, null!, null!, null!);
-                var services = new ServiceCollection();
-                services.AddScoped<UserManager<IdentityUser>>(_ => mockUserManager.Object);
+        var mockUserManager = new Mock<UserManager<IdentityUser>>(
+            new Mock<IUserStore<IdentityUser>>().Object,
+            null!,
+            mockPasswordHasher.Object,
+            null!,
+            null!,
+            null!,
+            null!,
+            null!,
+            null!
+        );
+        var services = new ServiceCollection();
+        services.AddScoped<UserManager<IdentityUser>>(_ => mockUserManager.Object);
 
-                var mockUnitOfWork = new Mock<IUnitOfWork>();
-                services.AddScoped(_ => mockUnitOfWork.Object);
+        var mockUnitOfWork = new Mock<IUnitOfWork>();
+        services.AddScoped(_ => mockUnitOfWork.Object);
 
-                mockUserManager.Setup(m => m.CreateAsync(It.IsAny<IdentityUser>())).ReturnsAsync(IdentityResult.Success);
+        mockUserManager
+            .Setup(m => m.CreateAsync(It.IsAny<IdentityUser>()))
+            .ReturnsAsync(IdentityResult.Success);
 
-                services.BuildServiceProvider().AddAdminUser();
+        services.BuildServiceProvider().AddAdminUser();
 
-                mockPasswordHasher.Verify(m => m.HashPassword(It.Is<IdentityUser>(u => u.UserName == "admin@admin.admin" && u.Email == "admin@admin.admin"), expectedPassword), Times.Once);
-                mockUserManager.Verify(m => m.CreateAsync(It.Is<IdentityUser>(u => u.UserName == "admin@admin.admin" && u.PasswordHash == hash && u.Email == "admin@admin.admin")), Times.Once);
+        mockPasswordHasher.Verify(
+            m =>
+                m.HashPassword(
+                    It.Is<IdentityUser>(u =>
+                        u.UserName == "admin@admin.admin" && u.Email == "admin@admin.admin"
+                    ),
+                    expectedPassword
+                ),
+            Times.Once
+        );
+        mockUserManager.Verify(
+            m =>
+                m.CreateAsync(
+                    It.Is<IdentityUser>(u =>
+                        u.UserName == "admin@admin.admin"
+                        && u.PasswordHash == hash
+                        && u.Email == "admin@admin.admin"
+                    )
+                ),
+            Times.Once
+        );
     }
-
 }

@@ -29,4 +29,5 @@ public record GetProjectResponse(
     string OfferId,
     string Company,
     CompanyState CompanyState,
-    SecurityLevel IsmsLevel);
+    SecurityLevel IsmsLevel
+);

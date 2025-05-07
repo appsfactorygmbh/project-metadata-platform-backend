@@ -23,10 +23,16 @@ public class DependencyInjectionTests
         {
             Assert.That(serviceProvider.GetService<ILogConverter>(), Is.Not.Null);
             Assert.That(serviceProvider.GetService<IExceptionHandler<PmpException>>(), Is.Not.Null);
-            Assert.That(serviceProvider.GetService<IExceptionHandler<ProjectException>>(), Is.Not.Null);
+            Assert.That(
+                serviceProvider.GetService<IExceptionHandler<ProjectException>>(),
+                Is.Not.Null
+            );
             Assert.That(serviceProvider.GetService<IExceptionHandler<LogException>>(), Is.Not.Null);
             Assert.That(serviceProvider.GetService<IExceptionHandler<LogException>>(), Is.Not.Null);
-            Assert.That(serviceProvider.GetService<IExceptionHandler<AuthException>>(), Is.Not.Null);
+            Assert.That(
+                serviceProvider.GetService<IExceptionHandler<AuthException>>(),
+                Is.Not.Null
+            );
         });
     }
 }

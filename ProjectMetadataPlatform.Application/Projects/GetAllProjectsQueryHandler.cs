@@ -13,7 +13,6 @@ public class GetAllProjectsQueryHandler : IRequestHandler<GetAllProjectsQuery, I
 {
     private readonly IProjectsRepository _projectRepository;
 
-
     /// <summary>
     /// Creates a new instance of <see cref="GetAllProjectsQueryHandler" />.
     /// </summary>
@@ -23,10 +22,14 @@ public class GetAllProjectsQueryHandler : IRequestHandler<GetAllProjectsQuery, I
     }
 
     /// <inheritdoc />
-    public async Task<IEnumerable<Project>> Handle(GetAllProjectsQuery request, CancellationToken cancellationToken)
+    public async Task<IEnumerable<Project>> Handle(
+        GetAllProjectsQuery request,
+        CancellationToken cancellationToken
+    )
     {
         var projects = await _projectRepository.GetProjectsAsync(request);
-        return projects.OrderBy(project => project.ClientName)
-                        .ThenBy(project => project.ProjectName);
+        return projects
+            .OrderBy(project => project.ClientName)
+            .ThenBy(project => project.ProjectName);
     }
 }

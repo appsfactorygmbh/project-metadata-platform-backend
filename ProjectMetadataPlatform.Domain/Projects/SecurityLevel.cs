@@ -18,5 +18,5 @@ public enum SecurityLevel
     /// <summary>
     /// Represents a very high security level.
     /// </summary>
-    VERY_HIGH
+    VERY_HIGH,
 }

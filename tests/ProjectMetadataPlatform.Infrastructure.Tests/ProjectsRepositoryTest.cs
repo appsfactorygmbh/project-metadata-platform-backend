@@ -14,7 +14,6 @@ namespace ProjectMetadataPlatform.Infrastructure.Tests;
 [TestFixture]
 public class ProjectsRepositoryTests : TestsWithDatabase
 {
-
     [SetUp]
     public void Setup()
     {
@@ -22,6 +21,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
         _repository = new ProjectsRepository(_context);
         ClearData(_context);
     }
+
     private ProjectMetadataPlatformDbContext _context;
     private ProjectsRepository _repository;
 
@@ -37,7 +37,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
             ClientName = "Nasa",
             BusinessUnit = "BuWeather",
             TeamNumber = 42,
-            Department = "Homelandsecurity"
+            Department = "Homelandsecurity",
         };
 
         _context.Projects.RemoveRange(_context.Projects);
@@ -64,8 +64,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
     [Test]
     public async Task GetProjectByMultipleFiltersAndSearchAsync_ReturnsCorrectProjects()
     {
-        var filters = new ProjectFilterRequest
-        (
+        var filters = new ProjectFilterRequest(
             "Heather",
             "Metatron",
             new List<string> { "666", "777" },
@@ -87,7 +86,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
                 TeamNumber = 42,
                 IsArchived = true,
                 Company = "AppsFact",
-                IsmsLevel = SecurityLevel.VERY_HIGH
+                IsmsLevel = SecurityLevel.VERY_HIGH,
             },
             new()
             {
@@ -100,7 +99,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
                 TeamNumber = 43,
                 IsArchived = true,
                 Company = "AppsFact",
-                IsmsLevel = SecurityLevel.VERY_HIGH
+                IsmsLevel = SecurityLevel.VERY_HIGH,
             },
             new()
             {
@@ -113,7 +112,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
                 TeamNumber = 44,
                 IsArchived = false,
                 Company = "AppsFact",
-                IsmsLevel = SecurityLevel.VERY_HIGH
+                IsmsLevel = SecurityLevel.VERY_HIGH,
             },
         };
 
@@ -141,8 +140,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
     [Test]
     public async Task GetProjectsByFiltersAsync_NoMatchingProjects_ReturnsEmpty()
     {
-        var filters = new ProjectFilterRequest
-        (
+        var filters = new ProjectFilterRequest(
             "Heather",
             "Gilgamesch",
             new List<string> { "666", "777" },
@@ -163,7 +161,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
                 Department = "Mars",
                 TeamNumber = 42,
                 Company = "AddOn",
-                IsmsLevel = SecurityLevel.HIGH
+                IsmsLevel = SecurityLevel.HIGH,
             },
             new()
             {
@@ -175,7 +173,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
                 Department = "Venus",
                 TeamNumber = 43,
                 Company = "AddOn",
-                IsmsLevel = SecurityLevel.HIGH
+                IsmsLevel = SecurityLevel.HIGH,
             },
         };
 
@@ -203,7 +201,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
                 BusinessUnit = "666",
                 ClientName = "Metatron",
                 Department = "Mars",
-                TeamNumber = 42
+                TeamNumber = 42,
             },
             new()
             {
@@ -213,7 +211,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
                 BusinessUnit = "777",
                 ClientName = "Lucifer",
                 Department = "Venus",
-                TeamNumber = 43
+                TeamNumber = 43,
             },
             new()
             {
@@ -223,7 +221,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
                 BusinessUnit = "999",
                 ClientName = "Satan",
                 Department = "Earth",
-                TeamNumber = 44
+                TeamNumber = 44,
             },
         };
 
@@ -237,6 +235,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
 
         Assert.That(result.Count(), Is.EqualTo(3));
     }
+
     [Test]
     public async Task GetAllTeamNumbersAsync_ReturnAllTeamNumbers()
     {
@@ -250,7 +249,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
                 ClientName = "Nasa",
                 BusinessUnit = "BuWeather",
                 TeamNumber = 42,
-                Department = "Homelandsecurity"
+                Department = "Homelandsecurity",
             },
             new()
             {
@@ -260,8 +259,8 @@ public class ProjectsRepositoryTests : TestsWithDatabase
                 ClientName = "Nasa",
                 BusinessUnit = "BuWeather",
                 TeamNumber = 43,
-                Department = "Homelandsecurity"
-            }
+                Department = "Homelandsecurity",
+            },
         };
 
         _context.Projects.RemoveRange(_context.Projects);
@@ -287,7 +286,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
                 ClientName = "ClientA",
                 BusinessUnit = "Unit1",
                 TeamNumber = 42,
-                Department = "Dept1"
+                Department = "Dept1",
             },
             new()
             {
@@ -297,8 +296,8 @@ public class ProjectsRepositoryTests : TestsWithDatabase
                 ClientName = "ClientB",
                 BusinessUnit = "Unit2",
                 TeamNumber = 43,
-                Department = "Dept2"
-            }
+                Department = "Dept2",
+            },
         };
 
         _context.Projects.RemoveRange(_context.Projects);
@@ -324,7 +323,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
                 ClientName = "ClientA",
                 BusinessUnit = "Unit1",
                 TeamNumber = 42,
-                Department = "Dept1"
+                Department = "Dept1",
             },
             new()
             {
@@ -334,7 +333,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
                 ClientName = "ClientB",
                 BusinessUnit = "Unit1", // Duplicate BusinessUnit
                 TeamNumber = 43,
-                Department = "Dept2"
+                Department = "Dept2",
             },
             new()
             {
@@ -344,8 +343,8 @@ public class ProjectsRepositoryTests : TestsWithDatabase
                 ClientName = "ClientC",
                 BusinessUnit = "Unit2",
                 TeamNumber = 44,
-                Department = "Dept3"
-            }
+                Department = "Dept3",
+            },
         };
 
         _context.Projects.RemoveRange(_context.Projects);
@@ -380,7 +379,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
             ClientName = "Nasa",
             BusinessUnit = "BuWeather",
             TeamNumber = 42,
-            Department = "Homelandsecurity"
+            Department = "Homelandsecurity",
         };
 
         _context.Projects.RemoveRange(_context.Projects);
@@ -409,7 +408,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
             ClientName = "Nasa",
             BusinessUnit = "BuWeather",
             TeamNumber = 42,
-            Department = "Homelandsecurity"
+            Department = "Homelandsecurity",
         };
 
         var project2 = new Project
@@ -420,7 +419,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
             ClientName = "Nasa",
             BusinessUnit = "BuWeather",
             TeamNumber = 42,
-            Department = "Homelandsecurity"
+            Department = "Homelandsecurity",
         };
 
         _context.Projects.RemoveRange(_context.Projects);
@@ -444,13 +443,15 @@ public class ProjectsRepositoryTests : TestsWithDatabase
             ClientName = "Nasa",
             BusinessUnit = "BuWeather",
             TeamNumber = 42,
-            Department = "Homelandsecurity"
+            Department = "Homelandsecurity",
         };
 
         _context.Projects.RemoveRange(_context.Projects);
         _context.Projects.Add(project2);
         await _context.SaveChangesAsync();
 
-        Assert.ThrowsAsync<ProjectNotFoundException>(() => _repository.GetProjectIdBySlugAsync("regen"));
+        Assert.ThrowsAsync<ProjectNotFoundException>(() =>
+            _repository.GetProjectIdBySlugAsync("regen")
+        );
     }
 }

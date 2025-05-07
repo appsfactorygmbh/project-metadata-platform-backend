@@ -19,22 +19,26 @@ public static class AccessTokenService
     public static string CreateAccessToken(string email)
     {
         var tokenDescriptorInformation = TokenDescriptorInformation.ReadFromEnvVariables();
-        var issuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(tokenDescriptorInformation.IssuerSigningKey));
-        var expirationTime = double.Parse(EnvironmentUtils.GetEnvVarOrLoadFromFile("ACCESS_TOKEN_EXPIRATION_MINUTES"), CultureInfo.InvariantCulture);
+        var issuerSigningKey = new SymmetricSecurityKey(
+            System.Text.Encoding.UTF8.GetBytes(tokenDescriptorInformation.IssuerSigningKey)
+        );
+        var expirationTime = double.Parse(
+            EnvironmentUtils.GetEnvVarOrLoadFromFile("ACCESS_TOKEN_EXPIRATION_MINUTES"),
+            CultureInfo.InvariantCulture
+        );
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Subject = new ClaimsIdentity(
-            [
-                new Claim(ClaimTypes.Email, email)
-            ]),
+            Subject = new ClaimsIdentity([new Claim(ClaimTypes.Email, email)]),
             Expires = DateTime.UtcNow.AddMinutes(expirationTime),
             Issuer = tokenDescriptorInformation.ValidIssuer,
             Audience = tokenDescriptorInformation.ValidAudience,
-            SigningCredentials = new SigningCredentials(issuerSigningKey, SecurityAlgorithms.HmacSha256Signature)
+            SigningCredentials = new SigningCredentials(
+                issuerSigningKey,
+                SecurityAlgorithms.HmacSha256Signature
+            ),
         };
         var tokenHandler = new JwtSecurityTokenHandler();
         var token = tokenHandler.CreateToken(tokenDescriptor);
         return tokenHandler.WriteToken(token);
     }
-
 }

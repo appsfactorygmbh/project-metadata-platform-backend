@@ -9,7 +9,8 @@ namespace ProjectMetadataPlatform.Application.Projects;
 /// <summary>
 /// Handles the retrieval of all distinct team numbers from the projects.
 /// </summary>
-public class GetAllTeamNumbersQueryHandler : IRequestHandler<GetAllTeamNumbersQuery, IEnumerable<int>>
+public class GetAllTeamNumbersQueryHandler
+    : IRequestHandler<GetAllTeamNumbersQuery, IEnumerable<int>>
 {
     private readonly IProjectsRepository _projectsRepository;
 
@@ -28,7 +29,10 @@ public class GetAllTeamNumbersQueryHandler : IRequestHandler<GetAllTeamNumbersQu
     /// <param name="request">The request object containing any necessary data.</param>
     /// <param name="cancellationToken">A token to observe while waiting for the task to complete.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains the list of all distinct team numbers.</returns>
-    public Task<IEnumerable<int>> Handle(GetAllTeamNumbersQuery request, CancellationToken cancellationToken)
+    public Task<IEnumerable<int>> Handle(
+        GetAllTeamNumbersQuery request,
+        CancellationToken cancellationToken
+    )
     {
         return _projectsRepository.GetTeamNumbersAsync();
     }

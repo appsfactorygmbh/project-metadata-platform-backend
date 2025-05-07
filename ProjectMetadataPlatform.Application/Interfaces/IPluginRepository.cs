@@ -49,7 +49,6 @@ public interface IPluginRepository
     /// <returns>True, if the plugin with the given id exists</returns>
     Task<bool> CheckPluginExists(int id);
 
-
     /// <summary>
     /// Deletes global Plugin
     /// </summary>

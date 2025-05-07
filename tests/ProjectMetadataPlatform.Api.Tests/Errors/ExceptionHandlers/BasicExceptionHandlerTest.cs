@@ -31,7 +31,10 @@ public class BasicExceptionHandlerTest
         Assert.Multiple(() =>
         {
             Assert.That(notFoundResult, Is.Not.Null);
-            Assert.That((notFoundResult?.Value as ErrorResponse)?.Message, Is.EqualTo(exception.Message));
+            Assert.That(
+                (notFoundResult?.Value as ErrorResponse)?.Message,
+                Is.EqualTo(exception.Message)
+            );
         });
     }
 
@@ -47,7 +50,10 @@ public class BasicExceptionHandlerTest
         Assert.Multiple(() =>
         {
             Assert.That(conflictResult, Is.Not.Null);
-            Assert.That((conflictResult?.Value as ErrorResponse)?.Message, Is.EqualTo(exception.Message));
+            Assert.That(
+                (conflictResult?.Value as ErrorResponse)?.Message,
+                Is.EqualTo(exception.Message)
+            );
         });
     }
 

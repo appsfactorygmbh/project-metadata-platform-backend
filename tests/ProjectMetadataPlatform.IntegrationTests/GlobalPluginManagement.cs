@@ -9,8 +9,12 @@ namespace ProjectMetadataPlatform.IntegrationTests;
 
 public class GlobalPluginManagement : IntegrationTestsBase
 {
-    private static readonly StringContent CreateRequest = StringContent("""{ "pluginName": "GitLab", "isArchived": false, "keys": [ "key1" ], "baseUrl": "https://gitlab.com" }""");
-    private static readonly StringContent CreateRequest2 = StringContent("""{ "pluginName": "Jira", "isArchived": false, "keys": [ "key2" ], "baseUrl": "https://jira.com" }""");
+    private static readonly StringContent CreateRequest = StringContent(
+        """{ "pluginName": "GitLab", "isArchived": false, "keys": [ "key1" ], "baseUrl": "https://gitlab.com" }"""
+    );
+    private static readonly StringContent CreateRequest2 = StringContent(
+        """{ "pluginName": "Jira", "isArchived": false, "keys": [ "key2" ], "baseUrl": "https://jira.com" }"""
+    );
 
     [Test]
     public async Task CreateMultiplePlugins()
@@ -21,10 +25,16 @@ public class GlobalPluginManagement : IntegrationTestsBase
 
         // Act
         // Assert
-        var pluginId1 = (await ToJsonElement(client.PutAsync("/Plugins", CreateRequest), HttpStatusCode.Created))
-            .GetProperty("id").GetInt32();
-        var pluginId2 = (await ToJsonElement(client.PutAsync("/Plugins", CreateRequest2), HttpStatusCode.Created))
-            .GetProperty("id").GetInt32();
+        var pluginId1 = (
+            await ToJsonElement(client.PutAsync("/Plugins", CreateRequest), HttpStatusCode.Created)
+        )
+            .GetProperty("id")
+            .GetInt32();
+        var pluginId2 = (
+            await ToJsonElement(client.PutAsync("/Plugins", CreateRequest2), HttpStatusCode.Created)
+        )
+            .GetProperty("id")
+            .GetInt32();
 
         var plugins = await ToJsonElement(client.GetAsync("/Plugins"));
 
@@ -44,10 +54,20 @@ public class GlobalPluginManagement : IntegrationTestsBase
 
         logs.GetArrayLength().Should().Be(2);
 
-        logs[1].GetProperty("logMessage").GetString().Should().Be(
-            "admin added a new global plugin with properties: PluginName = GitLab, IsArchived = False, BaseUrl = https://gitlab.com, Keys[0] = key1");
-        logs[0].GetProperty("logMessage").GetString().Should().Be(
-            "admin added a new global plugin with properties: PluginName = Jira, IsArchived = False, BaseUrl = https://jira.com, Keys[0] = key2");
+        logs[1]
+            .GetProperty("logMessage")
+            .GetString()
+            .Should()
+            .Be(
+                "admin added a new global plugin with properties: PluginName = GitLab, IsArchived = False, BaseUrl = https://gitlab.com, Keys[0] = key1"
+            );
+        logs[0]
+            .GetProperty("logMessage")
+            .GetString()
+            .Should()
+            .Be(
+                "admin added a new global plugin with properties: PluginName = Jira, IsArchived = False, BaseUrl = https://jira.com, Keys[0] = key2"
+            );
     }
 
     [Test]
@@ -59,10 +79,15 @@ public class GlobalPluginManagement : IntegrationTestsBase
 
         // Act
         // Assert
-        var pluginId = (await ToJsonElement(client.PutAsync("/Plugins", CreateRequest), HttpStatusCode.Created))
-            .GetProperty("id").GetInt32();
+        var pluginId = (
+            await ToJsonElement(client.PutAsync("/Plugins", CreateRequest), HttpStatusCode.Created)
+        )
+            .GetProperty("id")
+            .GetInt32();
 
-        var updatedPlugin = await ToJsonElement(client.PatchAsync($"/Plugins/{pluginId}", CreateRequest2));
+        var updatedPlugin = await ToJsonElement(
+            client.PatchAsync($"/Plugins/{pluginId}", CreateRequest2)
+        );
 
         updatedPlugin.GetProperty("id").GetInt32().Should().Be(pluginId);
         updatedPlugin.GetProperty("pluginName").GetString().Should().Be("Jira");
@@ -80,11 +105,21 @@ public class GlobalPluginManagement : IntegrationTestsBase
         var logs = await ToJsonElement(client.GetAsync("/Logs"));
         logs.GetArrayLength().Should().Be(2);
 
-        logs[1].GetProperty("logMessage").GetString().Should().Be(
-            "admin added a new global plugin with properties: PluginName = GitLab, IsArchived = False, BaseUrl = https://gitlab.com, Keys[0] = key1");
+        logs[1]
+            .GetProperty("logMessage")
+            .GetString()
+            .Should()
+            .Be(
+                "admin added a new global plugin with properties: PluginName = GitLab, IsArchived = False, BaseUrl = https://gitlab.com, Keys[0] = key1"
+            );
 
-        logs[0].GetProperty("logMessage").GetString().Should().Be(
-            "admin updated global plugin GitLab: set PluginName from GitLab to Jira, set BaseUrl from https://gitlab.com to https://jira.com");
+        logs[0]
+            .GetProperty("logMessage")
+            .GetString()
+            .Should()
+            .Be(
+                "admin updated global plugin GitLab: set PluginName from GitLab to Jira, set BaseUrl from https://gitlab.com to https://jira.com"
+            );
     }
 
     [Test]
@@ -96,10 +131,15 @@ public class GlobalPluginManagement : IntegrationTestsBase
 
         // Act
         // Assert
-        var pluginId = (await ToJsonElement(client.PutAsync("/Plugins", CreateRequest), HttpStatusCode.Created))
-            .GetProperty("id").GetInt32();
+        var pluginId = (
+            await ToJsonElement(client.PutAsync("/Plugins", CreateRequest), HttpStatusCode.Created)
+        )
+            .GetProperty("id")
+            .GetInt32();
 
-        var updatedPlugin = await ToJsonElement(client.PatchAsync($"/Plugins/{pluginId}", StringContent("""{ "isArchived": true }""")));
+        var updatedPlugin = await ToJsonElement(
+            client.PatchAsync($"/Plugins/{pluginId}", StringContent("""{ "isArchived": true }"""))
+        );
 
         updatedPlugin.GetProperty("id").GetInt32().Should().Be(pluginId);
         updatedPlugin.GetProperty("pluginName").GetString().Should().Be("GitLab");
@@ -114,7 +154,9 @@ public class GlobalPluginManagement : IntegrationTestsBase
         plugins[0].GetProperty("isArchived").GetBoolean().Should().BeTrue();
         plugins[0].GetProperty("keys").EnumerateArray().Should().BeEmpty();
 
-        updatedPlugin = await ToJsonElement(client.PatchAsync($"/Plugins/{pluginId}", StringContent("""{ "isArchived": false }""")));
+        updatedPlugin = await ToJsonElement(
+            client.PatchAsync($"/Plugins/{pluginId}", StringContent("""{ "isArchived": false }"""))
+        );
 
         updatedPlugin.GetProperty("id").GetInt32().Should().Be(pluginId);
         updatedPlugin.GetProperty("pluginName").GetString().Should().Be("GitLab");
@@ -132,14 +174,25 @@ public class GlobalPluginManagement : IntegrationTestsBase
         var logs = await ToJsonElement(client.GetAsync("/Logs"));
         logs.GetArrayLength().Should().Be(3);
 
-        logs[2].GetProperty("logMessage").GetString().Should().Be(
-            "admin added a new global plugin with properties: PluginName = GitLab, IsArchived = False, BaseUrl = https://gitlab.com, Keys[0] = key1");
+        logs[2]
+            .GetProperty("logMessage")
+            .GetString()
+            .Should()
+            .Be(
+                "admin added a new global plugin with properties: PluginName = GitLab, IsArchived = False, BaseUrl = https://gitlab.com, Keys[0] = key1"
+            );
 
-        logs[1].GetProperty("logMessage").GetString().Should().Be(
-            "admin archived global plugin GitLab");
+        logs[1]
+            .GetProperty("logMessage")
+            .GetString()
+            .Should()
+            .Be("admin archived global plugin GitLab");
 
-        logs[0].GetProperty("logMessage").GetString().Should().Be(
-            "admin unarchived global plugin GitLab");
+        logs[0]
+            .GetProperty("logMessage")
+            .GetString()
+            .Should()
+            .Be("admin unarchived global plugin GitLab");
     }
 
     [Test]
@@ -151,10 +204,15 @@ public class GlobalPluginManagement : IntegrationTestsBase
 
         // Act
         // Assert
-        var pluginId = (await ToJsonElement(client.PutAsync("/Plugins", CreateRequest), HttpStatusCode.Created))
-            .GetProperty("id").GetInt32();
+        var pluginId = (
+            await ToJsonElement(client.PutAsync("/Plugins", CreateRequest), HttpStatusCode.Created)
+        )
+            .GetProperty("id")
+            .GetInt32();
 
-        var updatedPlugin = await ToJsonElement(client.PatchAsync($"/Plugins/{pluginId}", StringContent("""{ "isArchived": true }""")));
+        var updatedPlugin = await ToJsonElement(
+            client.PatchAsync($"/Plugins/{pluginId}", StringContent("""{ "isArchived": true }"""))
+        );
 
         updatedPlugin.GetProperty("isArchived").GetBoolean().Should().BeTrue();
 
@@ -168,14 +226,25 @@ public class GlobalPluginManagement : IntegrationTestsBase
         var logs = await ToJsonElement(client.GetAsync("/Logs"));
         logs.GetArrayLength().Should().Be(3);
 
-        logs[2].GetProperty("logMessage").GetString().Should().Be(
-            "admin added a new global plugin with properties: PluginName = GitLab, IsArchived = False, BaseUrl = https://gitlab.com, Keys[0] = key1");
+        logs[2]
+            .GetProperty("logMessage")
+            .GetString()
+            .Should()
+            .Be(
+                "admin added a new global plugin with properties: PluginName = GitLab, IsArchived = False, BaseUrl = https://gitlab.com, Keys[0] = key1"
+            );
 
-        logs[1].GetProperty("logMessage").GetString().Should().Be(
-            "admin archived global plugin GitLab");
+        logs[1]
+            .GetProperty("logMessage")
+            .GetString()
+            .Should()
+            .Be("admin archived global plugin GitLab");
 
-        logs[0].GetProperty("logMessage").GetString().Should().Be(
-            "admin removed global plugin GitLab");
+        logs[0]
+            .GetProperty("logMessage")
+            .GetString()
+            .Should()
+            .Be("admin removed global plugin GitLab");
     }
 
     [Test]
@@ -186,8 +255,13 @@ public class GlobalPluginManagement : IntegrationTestsBase
         await GetAuthTokenAndAddItToDefaultRequestHeadersOfClient(client);
 
         // Act
-        (await client.PutAsync("/Plugins", CreateRequest)).StatusCode.Should().Be(HttpStatusCode.Created);
-        var errorResponse = await ToErrorResponse(client.PutAsync("/Plugins", CreateRequest), HttpStatusCode.Conflict);
+        (await client.PutAsync("/Plugins", CreateRequest))
+            .StatusCode.Should()
+            .Be(HttpStatusCode.Created);
+        var errorResponse = await ToErrorResponse(
+            client.PutAsync("/Plugins", CreateRequest),
+            HttpStatusCode.Conflict
+        );
 
         // Assert
         errorResponse.Message.Should().Be("A global Plugin with the name GitLab already exists.");
@@ -219,9 +293,15 @@ public class GlobalPluginManagement : IntegrationTestsBase
         await GetAuthTokenAndAddItToDefaultRequestHeadersOfClient(client);
 
         // Act
-        var pluginId = (await ToJsonElement(client.PutAsync("/Plugins", CreateRequest), HttpStatusCode.Created))
-            .GetProperty("id").GetInt32();
-        var errorResponse = await ToErrorResponse(client.DeleteAsync($"/Plugins/{pluginId}"), HttpStatusCode.BadRequest);
+        var pluginId = (
+            await ToJsonElement(client.PutAsync("/Plugins", CreateRequest), HttpStatusCode.Created)
+        )
+            .GetProperty("id")
+            .GetInt32();
+        var errorResponse = await ToErrorResponse(
+            client.DeleteAsync($"/Plugins/{pluginId}"),
+            HttpStatusCode.BadRequest
+        );
 
         // Assert
         errorResponse.Message.Should().Be("The plugin 1 is not archived.");

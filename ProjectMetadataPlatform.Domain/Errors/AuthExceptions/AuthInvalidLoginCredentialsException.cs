@@ -3,4 +3,4 @@
 /// <summary>
 /// Exception thrown when invalid login credentials are provided.
 /// </summary>
-public class AuthInvalidLoginCredentialsException(): AuthException("Invalid login credentials.");
+public class AuthInvalidLoginCredentialsException() : AuthException("Invalid login credentials.");

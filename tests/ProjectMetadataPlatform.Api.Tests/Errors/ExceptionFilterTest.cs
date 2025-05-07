@@ -12,8 +12,8 @@ using ProjectMetadataPlatform.Domain.Errors;
 using ProjectMetadataPlatform.Domain.Errors.AuthExceptions;
 using ProjectMetadataPlatform.Domain.Errors.BasicExceptions;
 using ProjectMetadataPlatform.Domain.Errors.LogExceptions;
-using ProjectMetadataPlatform.Domain.Errors.ProjectExceptions;
 using ProjectMetadataPlatform.Domain.Errors.PluginExceptions;
+using ProjectMetadataPlatform.Domain.Errors.ProjectExceptions;
 using ProjectMetadataPlatform.Domain.Errors.UserException;
 using RouteData = Microsoft.AspNetCore.Routing.RouteData;
 
@@ -40,7 +40,14 @@ public class ExceptionFilterTest
         _authExceptionHandler = new Mock<IExceptionHandler<AuthException>>();
         _userExceptionHandler = new Mock<IExceptionHandler<UserException>>();
         _context = SetupExceptionContext();
-        _filter = new ExceptionFilter(_basicExceptionHandler.Object, _projectExceptionHandler.Object, _logExceptionHandler.Object, _pluginsExceptionHandler.Object, _authExceptionHandler.Object, _userExceptionHandler.Object);
+        _filter = new ExceptionFilter(
+            _basicExceptionHandler.Object,
+            _projectExceptionHandler.Object,
+            _logExceptionHandler.Object,
+            _pluginsExceptionHandler.Object,
+            _authExceptionHandler.Object,
+            _userExceptionHandler.Object
+        );
     }
 
     private static Mock<ExceptionContext> SetupExceptionContext()
@@ -48,7 +55,11 @@ public class ExceptionFilterTest
         var mockHttpContext = new Mock<HttpContext>();
         var mockRouteData = new RouteData();
         var mockActionDescriptor = new ActionDescriptor();
-        var mockActionContext = new Mock<ActionContext>(mockHttpContext.Object, mockRouteData, mockActionDescriptor);
+        var mockActionContext = new Mock<ActionContext>(
+            mockHttpContext.Object,
+            mockRouteData,
+            mockActionDescriptor
+        );
         return new Mock<ExceptionContext>(mockActionContext.Object, new List<IFilterMetadata>());
     }
 
@@ -61,10 +72,14 @@ public class ExceptionFilterTest
         var result = new StatusCodeResult(404);
         _basicExceptionHandler.Setup(h => h.Handle(It.IsAny<PmpException>())).Returns(result);
 
-        _context.SetupSet(c => c.Result = It.IsAny<IActionResult>()).Callback((IActionResult r) =>
-        {
-            Assert.That(r, Is.EqualTo(result));
-        });
+        _context
+            .SetupSet(c => c.Result = It.IsAny<IActionResult>())
+            .Callback(
+                (IActionResult r) =>
+                {
+                    Assert.That(r, Is.EqualTo(result));
+                }
+            );
 
         _filter.OnException(_context.Object);
 
@@ -81,10 +96,14 @@ public class ExceptionFilterTest
         var result = new StatusCodeResult(500);
         _pluginsExceptionHandler.Setup(h => h.Handle(It.IsAny<PluginException>())).Returns(result);
 
-        _context.SetupSet(c => c.Result = It.IsAny<IActionResult>()).Callback((IActionResult r) =>
-        {
-            Assert.That(r, Is.EqualTo(result));
-        });
+        _context
+            .SetupSet(c => c.Result = It.IsAny<IActionResult>())
+            .Callback(
+                (IActionResult r) =>
+                {
+                    Assert.That(r, Is.EqualTo(result));
+                }
+            );
 
         _filter.OnException(_context.Object);
 
@@ -101,10 +120,14 @@ public class ExceptionFilterTest
         var result = new StatusCodeResult(500);
         _projectExceptionHandler.Setup(h => h.Handle(It.IsAny<ProjectException>())).Returns(result);
 
-        _context.SetupSet(c => c.Result = It.IsAny<IActionResult>()).Callback((IActionResult r) =>
-        {
-            Assert.That(r, Is.EqualTo(result));
-        });
+        _context
+            .SetupSet(c => c.Result = It.IsAny<IActionResult>())
+            .Callback(
+                (IActionResult r) =>
+                {
+                    Assert.That(r, Is.EqualTo(result));
+                }
+            );
 
         _filter.OnException(_context.Object);
 
@@ -121,10 +144,14 @@ public class ExceptionFilterTest
         var result = new StatusCodeResult(500);
         _authExceptionHandler.Setup(h => h.Handle(It.IsAny<AuthException>())).Returns(result);
 
-        _context.SetupSet(c => c.Result = It.IsAny<IActionResult>()).Callback((IActionResult r) =>
-        {
-            Assert.That(r, Is.EqualTo(result));
-        });
+        _context
+            .SetupSet(c => c.Result = It.IsAny<IActionResult>())
+            .Callback(
+                (IActionResult r) =>
+                {
+                    Assert.That(r, Is.EqualTo(result));
+                }
+            );
 
         _filter.OnException(_context.Object);
 
@@ -138,16 +165,26 @@ public class ExceptionFilterTest
         var mockException = new Mock<Exception>("some error message");
         _context.SetupGet(c => c.Exception).Returns(mockException.Object);
 
-        _context.SetupSet(c => c.Result = It.IsAny<IActionResult>()).Callback((IActionResult r) =>
-        {
-            Assert.That(r, Is.InstanceOf<ObjectResult>());
-            var objectResult = (ObjectResult) r;
-            Assert.Multiple(() =>
-            {
-                Assert.That(objectResult.StatusCode, Is.EqualTo(StatusCodes.Status500InternalServerError));
-                Assert.That((objectResult.Value as ErrorResponse)?.Message, Is.EqualTo("An unknown error occurred."));
-            });
-        });
+        _context
+            .SetupSet(c => c.Result = It.IsAny<IActionResult>())
+            .Callback(
+                (IActionResult r) =>
+                {
+                    Assert.That(r, Is.InstanceOf<ObjectResult>());
+                    var objectResult = (ObjectResult)r;
+                    Assert.Multiple(() =>
+                    {
+                        Assert.That(
+                            objectResult.StatusCode,
+                            Is.EqualTo(StatusCodes.Status500InternalServerError)
+                        );
+                        Assert.That(
+                            (objectResult.Value as ErrorResponse)?.Message,
+                            Is.EqualTo("An unknown error occurred.")
+                        );
+                    });
+                }
+            );
 
         _filter.OnException(_context.Object);
 
@@ -164,10 +201,14 @@ public class ExceptionFilterTest
         var result = new StatusCodeResult(500);
         _logExceptionHandler.Setup(h => h.Handle(It.IsAny<LogException>())).Returns(result);
 
-        _context.SetupSet(c => c.Result = It.IsAny<IActionResult>()).Callback((IActionResult r) =>
-        {
-            Assert.That(r, Is.EqualTo(result));
-        });
+        _context
+            .SetupSet(c => c.Result = It.IsAny<IActionResult>())
+            .Callback(
+                (IActionResult r) =>
+                {
+                    Assert.That(r, Is.EqualTo(result));
+                }
+            );
 
         _filter.OnException(_context.Object);
 
@@ -181,16 +222,29 @@ public class ExceptionFilterTest
         var mockException = new Mock<ProjectException>("some error message");
         _context.SetupGet(c => c.Exception).Returns(mockException.Object);
 
-        _context.SetupSet(c => c.Result = It.IsAny<IActionResult>()).Callback((IActionResult r) => {
-            Assert.That(r, Is.InstanceOf<ObjectResult>());
-            var objectResult = (ObjectResult) r;
-            Assert.Multiple(() =>
-            {
-                Assert.That(objectResult.StatusCode, Is.EqualTo(StatusCodes.Status500InternalServerError));
-                Assert.That((objectResult.Value as ErrorResponse)?.Message, Is.EqualTo("An unknown error occurred."));
-            });
-        });
-        _projectExceptionHandler.Setup(h => h.Handle(It.IsAny<ProjectException>())).Returns((IActionResult?)null);
+        _context
+            .SetupSet(c => c.Result = It.IsAny<IActionResult>())
+            .Callback(
+                (IActionResult r) =>
+                {
+                    Assert.That(r, Is.InstanceOf<ObjectResult>());
+                    var objectResult = (ObjectResult)r;
+                    Assert.Multiple(() =>
+                    {
+                        Assert.That(
+                            objectResult.StatusCode,
+                            Is.EqualTo(StatusCodes.Status500InternalServerError)
+                        );
+                        Assert.That(
+                            (objectResult.Value as ErrorResponse)?.Message,
+                            Is.EqualTo("An unknown error occurred.")
+                        );
+                    });
+                }
+            );
+        _projectExceptionHandler
+            .Setup(h => h.Handle(It.IsAny<ProjectException>()))
+            .Returns((IActionResult?)null);
 
         _filter.OnException(_context.Object);
 
@@ -207,10 +261,14 @@ public class ExceptionFilterTest
         var result = new StatusCodeResult(500);
         _logExceptionHandler.Setup(h => h.Handle(It.IsAny<LogException>())).Returns(result);
 
-        _context.SetupSet(c => c.Result = It.IsAny<IActionResult>()).Callback((IActionResult r) =>
-        {
-            Assert.That(r, Is.EqualTo(result));
-        });
+        _context
+            .SetupSet(c => c.Result = It.IsAny<IActionResult>())
+            .Callback(
+                (IActionResult r) =>
+                {
+                    Assert.That(r, Is.EqualTo(result));
+                }
+            );
 
         _filter.OnException(_context.Object);
 

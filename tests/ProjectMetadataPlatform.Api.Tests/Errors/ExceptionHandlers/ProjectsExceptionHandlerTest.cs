@@ -36,7 +36,7 @@ public class ProjectsExceptionHandlerTest
         var result = _projectsExceptionHandler.Handle(mockException.Object);
 
         Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
-        var statusCodeResult = (BadRequestObjectResult) result;
+        var statusCodeResult = (BadRequestObjectResult)result;
         Assert.That(statusCodeResult, Is.Not.Null);
         Assert.That(statusCodeResult.StatusCode, Is.EqualTo(400));
     }

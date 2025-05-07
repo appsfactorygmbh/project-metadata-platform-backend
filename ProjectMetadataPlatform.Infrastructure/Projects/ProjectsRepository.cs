@@ -17,11 +17,13 @@ namespace ProjectMetadataPlatform.Infrastructure.Projects;
 public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
 {
     private readonly ProjectMetadataPlatformDbContext _context;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="ProjectsRepository" /> class.
     /// </summary>
     /// <param name="dbContext">The database context for accessing project data.</param>
-    public ProjectsRepository(ProjectMetadataPlatformDbContext dbContext) : base(dbContext)
+    public ProjectsRepository(ProjectMetadataPlatformDbContext dbContext)
+        : base(dbContext)
     {
         _context = dbContext;
     }
@@ -32,9 +34,15 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     /// ///
     /// <param name="query">The query containing filters and search pattern.</param>
     /// <returns>A task representing the asynchronous operation. When this task completes, it returns a collection of projects.</returns>
-    [SuppressMessage("Performance", "CA1862:\"StringComparison\"-Methodenüberladungen verwenden, um Zeichenfolgenvergleiche ohne Beachtung der Groß-/Kleinschreibung durchzuführen")]
+    [SuppressMessage(
+        "Performance",
+        "CA1862:\"StringComparison\"-Methodenüberladungen verwenden, um Zeichenfolgenvergleiche ohne Beachtung der Groß-/Kleinschreibung durchzuführen"
+    )]
     [SuppressMessage("Globalization", "CA1304:CultureInfo angeben")]
-    [SuppressMessage("Globalization", "CA1311:Geben Sie eine Kultur an oder verwenden Sie eine invariante Version")]
+    [SuppressMessage(
+        "Globalization",
+        "CA1311:Geben Sie eine Kultur an oder verwenden Sie eine invariante Version"
+    )]
     [SuppressMessage("Globalization", "CA1305:IFormatProvider angeben")]
     public async Task<IEnumerable<Project>> GetProjectsAsync(GetAllProjectsQuery query)
     {
@@ -44,13 +52,13 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
         {
             var lowerTextSearch = query.Search.ToLower();
 
-            filteredQuery = filteredQuery.Where(project => project.ProjectName.ToLower().Contains(lowerTextSearch)
-                                                  || project.ClientName.ToLower().Contains(lowerTextSearch)
-                                                  || project.BusinessUnit.ToLower().Contains(lowerTextSearch)
-                                                  || project.TeamNumber.ToString().Contains(lowerTextSearch)
-                                                  || project.Company.ToLower().Contains(lowerTextSearch)
-                                                  );
-
+            filteredQuery = filteredQuery.Where(project =>
+                project.ProjectName.ToLower().Contains(lowerTextSearch)
+                || project.ClientName.ToLower().Contains(lowerTextSearch)
+                || project.BusinessUnit.ToLower().Contains(lowerTextSearch)
+                || project.TeamNumber.ToString().Contains(lowerTextSearch)
+                || project.Company.ToLower().Contains(lowerTextSearch)
+            );
         }
 
         if (query.Request != null)
@@ -61,7 +69,6 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
                 filteredQuery = filteredQuery.Where(project =>
                     project.ProjectName.ToLower().Contains(lowerProjectNameSearch)
                 );
-
             }
 
             if (!string.IsNullOrWhiteSpace(query.Request.ClientName))
@@ -70,16 +77,16 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
                 filteredQuery = filteredQuery.Where(project =>
                     project.ClientName.ToLower().Contains(lowerClientNameSearch)
                 );
-
             }
 
             if (query.Request.BusinessUnit is { Count: > 0 })
             {
-                var lowerBusinessUnits = query.Request.BusinessUnit.Select(bu => bu.ToLower()).ToList();
+                var lowerBusinessUnits = query
+                    .Request.BusinessUnit.Select(bu => bu.ToLower())
+                    .ToList();
                 filteredQuery = filteredQuery.Where(project =>
                     lowerBusinessUnits.Contains(project.BusinessUnit.ToLower())
                 );
-
             }
 
             if (query.Request.TeamNumber is { Count: > 0 })
@@ -89,9 +96,11 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
                 );
             }
 
-            if(query.Request.IsArchived is not null)
+            if (query.Request.IsArchived is not null)
             {
-                filteredQuery = filteredQuery.Where(project => project.IsArchived == query.Request.IsArchived);
+                filteredQuery = filteredQuery.Where(project =>
+                    project.IsArchived == query.Request.IsArchived
+                );
             }
 
             if (query.Request.Company is { Count: > 0 })
@@ -129,15 +138,15 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     /// <returns>A task representing the asynchronous operation. When this task completes, it returns one project.</returns>
     public async Task<Project> GetProjectAsync(int id)
     {
-        return await GetIf(p => p.Id == id).FirstOrDefaultAsync() ?? throw new ProjectNotFoundException(id);
+        return await GetIf(p => p.Id == id).FirstOrDefaultAsync()
+            ?? throw new ProjectNotFoundException(id);
     }
 
     /// <inheritdoc />
     public async Task<Project> GetProjectWithPluginsAsync(int id)
     {
-        return await GetIf(p => p.Id == id)
-            .Include(p => p.ProjectPlugins)
-            .FirstOrDefaultAsync() ?? throw new ProjectNotFoundException(id);
+        return await GetIf(p => p.Id == id).Include(p => p.ProjectPlugins).FirstOrDefaultAsync()
+            ?? throw new ProjectNotFoundException(id);
     }
 
     /// <summary>
@@ -151,7 +160,6 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
         {
             Create(project);
         }
-
     }
 
     /// <summary>
@@ -170,7 +178,10 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     /// <returns>A task representing the asynchronous operation, which upon completion returns a collection of distinct business unit names.</returns>
     public async Task<IEnumerable<string>> GetBusinessUnitsAsync()
     {
-        return await _context.Projects.Select(project => project.BusinessUnit).Distinct().ToListAsync();
+        return await _context
+            .Projects.Select(project => project.BusinessUnit)
+            .Distinct()
+            .ToListAsync();
     }
 
     /// <summary>
@@ -179,7 +190,10 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     /// <returns>A task representing the asynchronous operation, which upon completion returns a collection of distinct team numbers.</returns>
     public async Task<IEnumerable<int>> GetTeamNumbersAsync()
     {
-        return await _context.Projects.Select(project => project.TeamNumber).Distinct().ToListAsync();
+        return await _context
+            .Projects.Select(project => project.TeamNumber)
+            .Distinct()
+            .ToListAsync();
     }
 
     /// <summary>
@@ -196,7 +210,9 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     /// <inheritdoc/>
     public async Task<int> GetProjectIdBySlugAsync(string slug)
     {
-        return await _context.Projects.Where(p => p.Slug == slug)
-            .Select(p => (int?)p.Id).FirstOrDefaultAsync() ?? throw new ProjectNotFoundException(slug);
+        return await _context
+                .Projects.Where(p => p.Slug == slug)
+                .Select(p => (int?)p.Id)
+                .FirstOrDefaultAsync() ?? throw new ProjectNotFoundException(slug);
     }
 }

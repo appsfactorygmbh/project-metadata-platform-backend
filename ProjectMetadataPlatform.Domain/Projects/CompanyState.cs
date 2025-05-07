@@ -13,5 +13,5 @@ public enum CompanyState
     /// <summary>
     /// Represents an internal company.
     /// </summary>
-    INTERNAL
+    INTERNAL,
 }

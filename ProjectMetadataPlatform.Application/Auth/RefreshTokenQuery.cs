@@ -1,7 +1,6 @@
 using MediatR;
 using ProjectMetadataPlatform.Domain.Auth;
 
-
 namespace ProjectMetadataPlatform.Application.Auth;
 
 /// <summary>

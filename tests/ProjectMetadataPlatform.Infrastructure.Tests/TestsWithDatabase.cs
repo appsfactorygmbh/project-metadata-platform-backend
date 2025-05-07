@@ -28,7 +28,9 @@ public class TestsWithDatabase
     {
         return new ProjectMetadataPlatformDbContext(
             new DbContextOptionsBuilder<ProjectMetadataPlatformDbContext>()
-                .UseSqlite("Datasource=unittest-db.db").Options);
+                .UseSqlite("Datasource=unittest-db.db")
+                .Options
+        );
     }
 
     /// <summary>

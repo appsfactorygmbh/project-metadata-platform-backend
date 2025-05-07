@@ -9,7 +9,6 @@ using ProjectMetadataPlatform.Api.Users;
 using ProjectMetadataPlatform.Api.Users.Models;
 using ProjectMetadataPlatform.Application.Users;
 
-
 namespace ProjectMetadataPlatform.Api.Tests.Users;
 
 [TestFixture]
@@ -21,6 +20,7 @@ public class PutUserControllerTest
         _mediator = new Mock<IMediator>();
         _controller = new UsersController(_mediator.Object, null!);
     }
+
     private UsersController _controller;
     private Mock<IMediator> _mediator;
 
@@ -28,7 +28,9 @@ public class PutUserControllerTest
     public async Task CreateUser_Test()
     {
         //prepare
-        _mediator.Setup(m => m.Send(It.IsAny<CreateUserCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync("1");
+        _mediator
+            .Setup(m => m.Send(It.IsAny<CreateUserCommand>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync("1");
         var request = new CreateUserRequest("Example Email", "Example Password");
         var result = await _controller.Put(request);
         Assert.That(result.Result, Is.InstanceOf<CreatedResult>());
@@ -45,19 +47,26 @@ public class PutUserControllerTest
 
             Assert.That(createdResult.Location, Is.EqualTo("/Users/1"));
         });
-        _mediator.Verify(mediator => mediator.Send(It.Is<CreateUserCommand>(command => command.Email == "Example Email" && command.Password == "Example Password"),
-            It.IsAny<CancellationToken>()));
-
+        _mediator.Verify(mediator =>
+            mediator.Send(
+                It.Is<CreateUserCommand>(command =>
+                    command.Email == "Example Email" && command.Password == "Example Password"
+                ),
+                It.IsAny<CancellationToken>()
+            )
+        );
     }
 
     [Test]
     public void CreateUser_MediatorThrowsExceptionTest()
     {
-        _mediator.Setup(mediator => mediator.Send(It.IsAny<CreateUserCommand>(), It.IsAny<CancellationToken>()))
+        _mediator
+            .Setup(mediator =>
+                mediator.Send(It.IsAny<CreateUserCommand>(), It.IsAny<CancellationToken>())
+            )
             .ThrowsAsync(new InvalidOperationException());
-        var request = new CreateUserRequest( "Example Email", "Example Password");
+        var request = new CreateUserRequest("Example Email", "Example Password");
 
         Assert.ThrowsAsync<InvalidOperationException>(() => _controller.Put(request));
     }
-
 }

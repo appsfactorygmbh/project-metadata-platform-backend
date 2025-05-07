@@ -26,7 +26,9 @@ public class GetUserByEmailQueryHandlerTest
     {
         var user = new IdentityUser { Id = "13", Email = "squidlauncher@bankofevil.com" };
 
-        _mockUserRepo.Setup(m => m.GetUserByEmailAsync("squidlauncher@bankofevil.com")).ReturnsAsync(user);
+        _mockUserRepo
+            .Setup(m => m.GetUserByEmailAsync("squidlauncher@bankofevil.com"))
+            .ReturnsAsync(user);
 
         var request = new GetUserByEmailQuery("squidlauncher@bankofevil.com");
 

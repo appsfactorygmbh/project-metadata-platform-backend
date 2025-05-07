@@ -78,7 +78,9 @@ public class SlugHelperTest
     public async Task GetProjectIdBySlug_Test()
     {
         const string slug = "example_project";
-        _mockProjectsRepository.Setup(m => m.GetProjectIdBySlugAsync(It.IsAny<string>())).ReturnsAsync(1);
+        _mockProjectsRepository
+            .Setup(m => m.GetProjectIdBySlugAsync(It.IsAny<string>()))
+            .ReturnsAsync(1);
 
         var result = await _slugHelper.GetProjectIdBySlug(slug);
 
@@ -90,7 +92,9 @@ public class SlugHelperTest
     {
         const string slug = "example_project";
 
-        _mockProjectsRepository.Setup(m => m.GetProjectIdBySlugAsync(It.IsAny<string>())).ThrowsAsync(new ProjectNotFoundException("Project not found"));
+        _mockProjectsRepository
+            .Setup(m => m.GetProjectIdBySlugAsync(It.IsAny<string>()))
+            .ThrowsAsync(new ProjectNotFoundException("Project not found"));
 
         Assert.ThrowsAsync<ProjectNotFoundException>(() => _slugHelper.GetProjectIdBySlug(slug));
     }
@@ -99,7 +103,9 @@ public class SlugHelperTest
     public async Task ProjectSlugExists_Test()
     {
         const string slug = "example_project";
-        _mockProjectsRepository.Setup(m => m.GetProjectIdBySlugAsync(It.IsAny<string>())).ReturnsAsync(1);
+        _mockProjectsRepository
+            .Setup(m => m.GetProjectIdBySlugAsync(It.IsAny<string>()))
+            .ReturnsAsync(1);
 
         var result = await _slugHelper.CheckProjectSlugExists(slug);
 
@@ -110,7 +116,9 @@ public class SlugHelperTest
     public async Task ProjectSlugExists_Test_ReturnsFalse()
     {
         const string slug = "example_project";
-        _mockProjectsRepository.Setup(m => m.GetProjectIdBySlugAsync(It.IsAny<string>())).ThrowsAsync(new ProjectNotFoundException("Project not found"));
+        _mockProjectsRepository
+            .Setup(m => m.GetProjectIdBySlugAsync(It.IsAny<string>()))
+            .ThrowsAsync(new ProjectNotFoundException("Project not found"));
 
         var result = await _slugHelper.CheckProjectSlugExists(slug);
 

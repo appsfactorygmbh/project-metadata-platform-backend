@@ -2,9 +2,9 @@
 using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using ProjectMetadataPlatform.Application.Projects;
 using ProjectMetadataPlatform.Domain.Projects;
 using ProjectMetadataPlatform.Infrastructure.DataAccess;
-using ProjectMetadataPlatform.Application.Projects;
 using ProjectMetadataPlatform.Infrastructure.Projects;
 
 namespace ProjectMetadataPlatform.Infrastructure.Tests;
@@ -12,8 +12,6 @@ namespace ProjectMetadataPlatform.Infrastructure.Tests;
 [TestFixture]
 public class ProjectsBySearchTest : TestsWithDatabase
 {
-
-
     [SetUp]
     public void Setup()
     {
@@ -21,6 +19,7 @@ public class ProjectsBySearchTest : TestsWithDatabase
         _repository = new ProjectsRepository(_context);
         ClearData(_context);
     }
+
     private ProjectMetadataPlatformDbContext _context;
     private ProjectsRepository _repository;
 
@@ -36,7 +35,7 @@ public class ProjectsBySearchTest : TestsWithDatabase
             ClientName = "Nasa",
             BusinessUnit = "BuWeather",
             TeamNumber = 42,
-            Department = "Homelandsecurity"
+            Department = "Homelandsecurity",
         };
 
         var query = new GetAllProjectsQuery(null, "Reg");
@@ -72,7 +71,7 @@ public class ProjectsBySearchTest : TestsWithDatabase
             ClientName = "Nasa",
             BusinessUnit = "BuWeather",
             TeamNumber = 42,
-            Department = "Homelandsecurity"
+            Department = "Homelandsecurity",
         };
 
         var query = new GetAllProjectsQuery(null, "x");
@@ -98,7 +97,7 @@ public class ProjectsBySearchTest : TestsWithDatabase
                 ClientName = "whatever_taucht_nicht_auf",
                 BusinessUnit = "BuWeather",
                 TeamNumber = 42,
-                Department = "Homelandsecurity"
+                Department = "Homelandsecurity",
             },
             new()
             {
@@ -108,7 +107,7 @@ public class ProjectsBySearchTest : TestsWithDatabase
                 ClientName = "ESA",
                 BusinessUnit = "BuWeather",
                 TeamNumber = 42,
-                Department = "Homelandsecurity"
+                Department = "Homelandsecurity",
             },
             new()
             {
@@ -118,8 +117,8 @@ public class ProjectsBySearchTest : TestsWithDatabase
                 ClientName = "Regen",
                 BusinessUnit = "BuWeather",
                 TeamNumber = 42,
-                Department = "Homelandsecurity"
-            }
+                Department = "Homelandsecurity",
+            },
         };
 
         var query = new GetAllProjectsQuery(null, "Reg");
@@ -149,7 +148,7 @@ public class ProjectsBySearchTest : TestsWithDatabase
                 ClientName = "whatever_taucht_nicht_auf",
                 BusinessUnit = "BuWeather",
                 TeamNumber = 42,
-                Department = "Homelandsecurity"
+                Department = "Homelandsecurity",
             },
             new()
             {
@@ -159,7 +158,7 @@ public class ProjectsBySearchTest : TestsWithDatabase
                 ClientName = "ESA",
                 BusinessUnit = "BuWeather",
                 TeamNumber = 42,
-                Department = "Homelandsecurity"
+                Department = "Homelandsecurity",
             },
             new()
             {
@@ -169,8 +168,8 @@ public class ProjectsBySearchTest : TestsWithDatabase
                 ClientName = "Regen",
                 BusinessUnit = "BuWeather",
                 TeamNumber = 42,
-                Department = "Homelandsecurity"
-            }
+                Department = "Homelandsecurity",
+            },
         };
 
         var query1 = new GetAllProjectsQuery(null, "Reg");
@@ -206,7 +205,7 @@ public class ProjectsBySearchTest : TestsWithDatabase
                 ClientName = "whatever_taucht_nicht_auf",
                 BusinessUnit = "BuWeather",
                 TeamNumber = 42,
-                Department = "Homelandsecurity"
+                Department = "Homelandsecurity",
             },
             new()
             {
@@ -216,7 +215,7 @@ public class ProjectsBySearchTest : TestsWithDatabase
                 ClientName = "ESA",
                 BusinessUnit = "BuWeather",
                 TeamNumber = 42,
-                Department = "Homelandsecurity"
+                Department = "Homelandsecurity",
             },
             new()
             {
@@ -226,8 +225,8 @@ public class ProjectsBySearchTest : TestsWithDatabase
                 ClientName = "Regen",
                 BusinessUnit = "BuWeather",
                 TeamNumber = 41,
-                Department = "Homelandsecurity"
-            }
+                Department = "Homelandsecurity",
+            },
         };
 
         var query1 = new GetAllProjectsQuery(null, "42");

@@ -9,7 +9,6 @@ namespace ProjectMetadataPlatform.Infrastructure.DataAccess.ModelConfigs;
 /// </summary>
 public class LogModelConfig : IEntityTypeConfiguration<Log>
 {
-
     /// <summary>
     /// Configures Log entity
     /// </summary>

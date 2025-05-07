@@ -27,7 +27,11 @@ public class DeleteProjectCommandHandlerTest
         _mockProjectRepo = new Mock<IProjectsRepository>();
         _mockLogRepo = new Mock<ILogRepository>();
         _mockUnitOfWork = new Mock<IUnitOfWork>();
-        _handler = new DeleteProjectCommandHandler(_mockProjectRepo.Object, _mockLogRepo.Object, _mockUnitOfWork.Object);
+        _handler = new DeleteProjectCommandHandler(
+            _mockProjectRepo.Object,
+            _mockLogRepo.Object,
+            _mockUnitOfWork.Object
+        );
     }
 
     [Test]
@@ -42,12 +46,17 @@ public class DeleteProjectCommandHandlerTest
             BusinessUnit = "666",
             Department = "Silent Hill",
             TeamNumber = 3,
-            IsArchived = true
+            IsArchived = true,
         };
         _mockProjectRepo.Setup(m => m.GetProjectAsync(It.IsAny<int>())).ReturnsAsync(project);
-        _mockProjectRepo.Setup(m => m.DeleteProjectAsync(It.IsAny<Project>())).ReturnsAsync(project);
+        _mockProjectRepo
+            .Setup(m => m.DeleteProjectAsync(It.IsAny<Project>()))
+            .ReturnsAsync(project);
 
-        var result = await _handler.Handle(new DeleteProjectCommand(1), It.IsAny<CancellationToken>());
+        var result = await _handler.Handle(
+            new DeleteProjectCommand(1),
+            It.IsAny<CancellationToken>()
+        );
 
         Assert.That(project, Is.EqualTo(result));
     }
@@ -64,21 +73,30 @@ public class DeleteProjectCommandHandlerTest
             BusinessUnit = "666",
             Department = "Silent Hill",
             TeamNumber = 3,
-            IsArchived = false
+            IsArchived = false,
         };
         _mockProjectRepo.Setup(m => m.GetProjectAsync(It.IsAny<int>())).ReturnsAsync(project);
 
-        var ex = Assert.ThrowsAsync<ProjectNotArchivedException>(() => _handler.Handle(new DeleteProjectCommand(1), It.IsAny<CancellationToken>()));
+        var ex = Assert.ThrowsAsync<ProjectNotArchivedException>(() =>
+            _handler.Handle(new DeleteProjectCommand(1), It.IsAny<CancellationToken>())
+        );
         Assert.That(ex.Message, Is.EqualTo("The project 1 is not archived."));
     }
 
     [Test]
     public void DeleteProject_NotFound_Test()
     {
-        _mockProjectRepo.Setup(m => m.GetProjectAsync(It.IsAny<int>())).ThrowsAsync(new ProjectNotFoundException("Project not found."));
+        _mockProjectRepo
+            .Setup(m => m.GetProjectAsync(It.IsAny<int>()))
+            .ThrowsAsync(new ProjectNotFoundException("Project not found."));
 
-        var ex = Assert.ThrowsAsync<ProjectNotFoundException>(() => _handler.Handle(new DeleteProjectCommand(1), It.IsAny<CancellationToken>()));
-        Assert.That(ex.Message, Is.EqualTo("The project with slug Project not found. was not found."));
+        var ex = Assert.ThrowsAsync<ProjectNotFoundException>(() =>
+            _handler.Handle(new DeleteProjectCommand(1), It.IsAny<CancellationToken>())
+        );
+        Assert.That(
+            ex.Message,
+            Is.EqualTo("The project with slug Project not found. was not found.")
+        );
     }
 
     [Test]
@@ -93,22 +111,55 @@ public class DeleteProjectCommandHandlerTest
             BusinessUnit = "666",
             Department = "Silent Hill",
             TeamNumber = 3,
-            IsArchived = true
+            IsArchived = true,
         };
         _mockProjectRepo.Setup(m => m.GetProjectAsync(It.IsAny<int>())).ReturnsAsync(project);
-        _mockProjectRepo.Setup(m => m.DeleteProjectAsync(It.IsAny<Project>())).ReturnsAsync(project);
+        _mockProjectRepo
+            .Setup(m => m.DeleteProjectAsync(It.IsAny<Project>()))
+            .ReturnsAsync(project);
 
         _ = _handler.Handle(new DeleteProjectCommand(1), It.IsAny<CancellationToken>());
 
-        _mockLogRepo.Verify(m => m.AddProjectLogForCurrentUser(It.Is<Project>(
-                p => p.ProjectName == "Heather" && p.ClientName == "Metatron" &&
-                           p.BusinessUnit == "666" && p.Department == "Silent Hill" && p.TeamNumber == 3),
-            Action.REMOVED_PROJECT, It.Is<List<LogChange>>(
-                changes => changes.Any(change => change.Property == "ProjectName" && change.OldValue == "Heather" && change.NewValue == "")
-                           && changes.Any(change => change.Property == "ClientName" && change.OldValue == "Metatron" && change.NewValue == "")
-                           && changes.Any(change => change.Property == "BusinessUnit" && change.OldValue == "666" && change.NewValue == "")
-                           && changes.Any(change => change.Property == "Department" && change.OldValue == "Silent Hill" && change.NewValue == "")
-                           && changes.Any(change => change.Property == "TeamNumber" && change.OldValue == "3" && change.NewValue == ""))), Times.Once);
+        _mockLogRepo.Verify(
+            m =>
+                m.AddProjectLogForCurrentUser(
+                    It.Is<Project>(p =>
+                        p.ProjectName == "Heather"
+                        && p.ClientName == "Metatron"
+                        && p.BusinessUnit == "666"
+                        && p.Department == "Silent Hill"
+                        && p.TeamNumber == 3
+                    ),
+                    Action.REMOVED_PROJECT,
+                    It.Is<List<LogChange>>(changes =>
+                        changes.Any(change =>
+                            change.Property == "ProjectName"
+                            && change.OldValue == "Heather"
+                            && change.NewValue == ""
+                        )
+                        && changes.Any(change =>
+                            change.Property == "ClientName"
+                            && change.OldValue == "Metatron"
+                            && change.NewValue == ""
+                        )
+                        && changes.Any(change =>
+                            change.Property == "BusinessUnit"
+                            && change.OldValue == "666"
+                            && change.NewValue == ""
+                        )
+                        && changes.Any(change =>
+                            change.Property == "Department"
+                            && change.OldValue == "Silent Hill"
+                            && change.NewValue == ""
+                        )
+                        && changes.Any(change =>
+                            change.Property == "TeamNumber"
+                            && change.OldValue == "3"
+                            && change.NewValue == ""
+                        )
+                    )
+                ),
+            Times.Once
+        );
     }
-
 }

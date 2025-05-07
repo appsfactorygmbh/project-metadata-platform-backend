@@ -25,7 +25,11 @@ public class CreatePluginCommandHandler : IRequestHandler<CreatePluginCommand, i
     /// <param name="pluginRepository">The repository for managing plugins.</param>
     /// <param name="logRepository">The repository for managing logs.</param>
     /// <param name="unitOfWork">The unit of work for managing transactions.</param>
-    public CreatePluginCommandHandler(IPluginRepository pluginRepository, ILogRepository logRepository, IUnitOfWork unitOfWork)
+    public CreatePluginCommandHandler(
+        IPluginRepository pluginRepository,
+        ILogRepository logRepository,
+        IUnitOfWork unitOfWork
+    )
     {
         _pluginRepository = pluginRepository;
         _logRepository = logRepository;
@@ -52,7 +56,7 @@ public class CreatePluginCommandHandler : IRequestHandler<CreatePluginCommand, i
             IsArchived = request.IsArchived,
             //keys are not used in the current implementation
             ProjectPlugins = [],
-            BaseUrl = request.BaseUrl
+            BaseUrl = request.BaseUrl,
         };
 
         await AddCreatedPluginLog(plugin, request);
@@ -66,27 +70,41 @@ public class CreatePluginCommandHandler : IRequestHandler<CreatePluginCommand, i
     {
         var logChanges = new List<LogChange>
         {
-            new ()
+            new()
             {
                 Property = nameof(Plugin.PluginName),
                 OldValue = "",
-                NewValue = request.Name
+                NewValue = request.Name,
             },
-            new ()
+            new()
             {
                 Property = nameof(Plugin.IsArchived),
                 OldValue = "",
-                NewValue = request.IsArchived.ToString()
+                NewValue = request.IsArchived.ToString(),
             },
-            new ()
+            new()
             {
                 Property = nameof(Plugin.BaseUrl),
                 OldValue = "",
-                NewValue = request.BaseUrl
-            }
+                NewValue = request.BaseUrl,
+            },
         };
-        logChanges.AddRange(request.Keys.Select((t, i) => new LogChange { Property = "Keys[" + i + "]", OldValue = "", NewValue = t }));
+        logChanges.AddRange(
+            request.Keys.Select(
+                (t, i) =>
+                    new LogChange
+                    {
+                        Property = "Keys[" + i + "]",
+                        OldValue = "",
+                        NewValue = t,
+                    }
+            )
+        );
 
-        await _logRepository.AddGlobalPluginLogForCurrentUser(plugin, Action.ADDED_GLOBAL_PLUGIN, logChanges);
+        await _logRepository.AddGlobalPluginLogForCurrentUser(
+            plugin,
+            Action.ADDED_GLOBAL_PLUGIN,
+            logChanges
+        );
     }
 }

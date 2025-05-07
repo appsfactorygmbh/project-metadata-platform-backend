@@ -15,9 +15,12 @@ public class AuthManagement : IntegrationTestsBase
     {
         //Arrange
         var client = CreateClient();
-        var loginResponse =
-            await ToJsonElement(client.PostAsJsonAsync("/auth/basic",
-                new { Email = "admin@admin.admin", Password = "admin" }));
+        var loginResponse = await ToJsonElement(
+            client.PostAsJsonAsync(
+                "/auth/basic",
+                new { Email = "admin@admin.admin", Password = "admin" }
+            )
+        );
         var firstAuthToken = loginResponse.GetProperty("accessToken").GetString();
         var refreshToken = loginResponse.GetProperty("refreshToken").GetString();
 
@@ -34,7 +37,9 @@ public class AuthManagement : IntegrationTestsBase
 
         client.DefaultRequestHeaders.Clear();
         client.DefaultRequestHeaders.Add("Authorization", $"Bearer {newAuthToken}");
-        (await client.GetAsync("/Projects")).IsSuccessStatusCode.Should().BeTrue(" the new access token should be valid");
+        (await client.GetAsync("/Projects"))
+            .IsSuccessStatusCode.Should()
+            .BeTrue(" the new access token should be valid");
     }
 
     [Test]
@@ -45,9 +50,12 @@ public class AuthManagement : IntegrationTestsBase
         Environment.SetEnvironmentVariable("PMP_JWT_CLOCK_SKEW_SECONDS", "0");
 
         var client = CreateClient();
-        var loginResponse =
-            await ToJsonElement(client.PostAsJsonAsync("/auth/basic",
-                new { Email = "admin@admin.admin", Password = "admin" }));
+        var loginResponse = await ToJsonElement(
+            client.PostAsJsonAsync(
+                "/auth/basic",
+                new { Email = "admin@admin.admin", Password = "admin" }
+            )
+        );
         var accessToken = loginResponse.GetProperty("accessToken").GetString();
 
         client.DefaultRequestHeaders.Clear();
@@ -68,9 +76,12 @@ public class AuthManagement : IntegrationTestsBase
         Environment.SetEnvironmentVariable("REFRESH_TOKEN_EXPIRATION_HOURS", "0");
 
         var client = CreateClient();
-        var loginResponse =
-            await ToJsonElement(client.PostAsJsonAsync("/auth/basic",
-                new { Email = "admin@admin.admin", Password = "admin" }));
+        var loginResponse = await ToJsonElement(
+            client.PostAsJsonAsync(
+                "/auth/basic",
+                new { Email = "admin@admin.admin", Password = "admin" }
+            )
+        );
         var refreshToken = loginResponse.GetProperty("refreshToken").GetString();
 
         client.DefaultRequestHeaders.Clear();
@@ -91,8 +102,12 @@ public class AuthManagement : IntegrationTestsBase
 
         //Act
         var response = await ToErrorResponse(
-                client.PostAsJsonAsync("/auth/basic", new { Email = "wrong@email.de", Password = "invalid" }),
-                HttpStatusCode.BadRequest);
+            client.PostAsJsonAsync(
+                "/auth/basic",
+                new { Email = "wrong@email.de", Password = "invalid" }
+            ),
+            HttpStatusCode.BadRequest
+        );
 
         //Assert
         response.Message.Should().Be("Invalid login credentials.");
@@ -108,8 +123,9 @@ public class AuthManagement : IntegrationTestsBase
 
         //Act
         var response = await ToErrorResponse(
-                client.GetAsync("/auth/refresh"),
-                HttpStatusCode.BadRequest);
+            client.GetAsync("/auth/refresh"),
+            HttpStatusCode.BadRequest
+        );
 
         //Assert
         response.Message.Should().Be("Invalid refresh token.");

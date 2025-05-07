@@ -27,11 +27,20 @@ public class GetMeControllerTest
     [Test]
     public async Task getMe_Test()
     {
-        var user = new IdentityUser{Id = "42", Email = "moonstealer@gruhq.com"};
+        var user = new IdentityUser { Id = "42", Email = "moonstealer@gruhq.com" };
 
-        _mediator.Setup(m => m.Send(It.IsAny<GetUserByEmailQuery>(), It.IsAny<System.Threading.CancellationToken>()))
+        _mediator
+            .Setup(m =>
+                m.Send(
+                    It.IsAny<GetUserByEmailQuery>(),
+                    It.IsAny<System.Threading.CancellationToken>()
+                )
+            )
             .ReturnsAsync(user);
-        var controller = new UsersController(_mediator.Object, MockHttpContextAccessor("moonstealer@gruhq.com"));
+        var controller = new UsersController(
+            _mediator.Object,
+            MockHttpContextAccessor("moonstealer@gruhq.com")
+        );
 
         var result = await controller.GetMe();
         var okResult = result.Result as OkObjectResult;
@@ -49,7 +58,13 @@ public class GetMeControllerTest
     [Test]
     public void getMe_Test_NotFound()
     {
-        _mediator.Setup(m => m.Send(It.IsAny<GetUserByEmailQuery>(), It.IsAny<System.Threading.CancellationToken>()))
+        _mediator
+            .Setup(m =>
+                m.Send(
+                    It.IsAny<GetUserByEmailQuery>(),
+                    It.IsAny<System.Threading.CancellationToken>()
+                )
+            )
             .ThrowsAsync(new UserNotFoundException("Dr. Dre"));
         var controller = new UsersController(_mediator.Object, MockHttpContextAccessor("Dr. Dre"));
         Assert.ThrowsAsync<UserNotFoundException>(() => controller.GetMe());
@@ -58,9 +73,18 @@ public class GetMeControllerTest
     [Test]
     public void getMe_Test_InternalError()
     {
-        _mediator.Setup(m => m.Send(It.IsAny<GetUserByEmailQuery>(), It.IsAny<System.Threading.CancellationToken>()))
+        _mediator
+            .Setup(m =>
+                m.Send(
+                    It.IsAny<GetUserByEmailQuery>(),
+                    It.IsAny<System.Threading.CancellationToken>()
+                )
+            )
             .ThrowsAsync(new InvalidOperationException("Internal error"));
-        var controller = new UsersController(_mediator.Object, MockHttpContextAccessor("Dr. Nefario"));
+        var controller = new UsersController(
+            _mediator.Object,
+            MockHttpContextAccessor("Dr. Nefario")
+        );
 
         Assert.ThrowsAsync<InvalidOperationException>(() => controller.GetMe());
     }
@@ -68,7 +92,13 @@ public class GetMeControllerTest
     [Test]
     public void getMe_Test_Unauthorized()
     {
-        _mediator.Setup(m => m.Send(It.IsAny<GetUserByEmailQuery>(), It.IsAny<System.Threading.CancellationToken>()))
+        _mediator
+            .Setup(m =>
+                m.Send(
+                    It.IsAny<GetUserByEmailQuery>(),
+                    It.IsAny<System.Threading.CancellationToken>()
+                )
+            )
             .ThrowsAsync(new UserUnauthorizedException());
         var controller = new UsersController(_mediator.Object, MockHttpContextAccessor(null));
 
@@ -79,23 +109,14 @@ public class GetMeControllerTest
     {
         if (email == null)
         {
-            return new HttpContextAccessor
-            {
-                HttpContext = null
-            };
+            return new HttpContextAccessor { HttpContext = null };
         }
         var claims = new System.Collections.Generic.List<Claim> { new(ClaimTypes.Email, email) };
         var identity = new ClaimsIdentity(claims, "TestAuthType");
         var claimsPrincipal = new ClaimsPrincipal(identity);
 
-        var httpContext = new DefaultHttpContext
-        {
-            User = claimsPrincipal
-        };
+        var httpContext = new DefaultHttpContext { User = claimsPrincipal };
 
-        return new HttpContextAccessor
-        {
-            HttpContext = httpContext
-        };
+        return new HttpContextAccessor { HttpContext = httpContext };
     }
 }

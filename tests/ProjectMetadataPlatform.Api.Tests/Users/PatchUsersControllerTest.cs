@@ -16,6 +16,7 @@ public class PatchUsersControllerTest
 {
     private UsersController _controller;
     private Mock<IMediator> _mediator;
+
     [SetUp]
     public void Setup()
     {
@@ -30,10 +31,12 @@ public class PatchUsersControllerTest
         {
             Id = "42",
             Email = "dr@core.fr",
-            PasswordHash = "someHash"
+            PasswordHash = "someHash",
         };
 
-        _mediator.Setup(m => m.Send(It.IsAny<PatchUserCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(user);
+        _mediator
+            .Setup(m => m.Send(It.IsAny<PatchUserCommand>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(user);
 
         var request = new PatchUserRequest(null, "Dr. Peacock");
 
@@ -52,7 +55,8 @@ public class PatchUsersControllerTest
     [Test]
     public void PatchUser_NotFound_Test()
     {
-        _mediator.Setup(m => m.Send(It.IsAny<PatchUserCommand>(), It.IsAny<CancellationToken>()))
+        _mediator
+            .Setup(m => m.Send(It.IsAny<PatchUserCommand>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new UserNotFoundException("Dr. Dre"));
         var request = new PatchUserRequest(null, "Dr. Dre");
         Assert.ThrowsAsync<UserNotFoundException>(() => _controller.Patch("Dr. Dre", request));
@@ -62,8 +66,13 @@ public class PatchUsersControllerTest
     public void PatchUser_InvalidPassword_Test()
     {
         var request = new PatchUserRequest(null, "The Smiths");
-        _mediator.Setup(mediator => mediator.Send(It.IsAny<PatchUserCommand>(), It.IsAny<CancellationToken>()))
+        _mediator
+            .Setup(mediator =>
+                mediator.Send(It.IsAny<PatchUserCommand>(), It.IsAny<CancellationToken>())
+            )
             .ThrowsAsync(new UserInvalidPasswordFormatException(IdentityResult.Failed()));
-        Assert.ThrowsAsync<UserInvalidPasswordFormatException>(()=> _controller.Patch("13", request));
+        Assert.ThrowsAsync<UserInvalidPasswordFormatException>(() =>
+            _controller.Patch("13", request)
+        );
     }
 }

@@ -31,17 +31,21 @@ public class LogRepositoryTest : TestsWithDatabase
         _context = DbContext();
         var httpContextAccessorMock = new Mock<IHttpContextAccessor>();
 
-        var identity = new ClaimsIdentity(new[] { new Claim(ClaimTypes.Email, "camo") }, "TestAuth");
+        var identity = new ClaimsIdentity(
+            new[] { new Claim(ClaimTypes.Email, "camo") },
+            "TestAuth"
+        );
         var contextUser = new ClaimsPrincipal(identity); //add claims as needed
-        var httpContext = new DefaultHttpContext
-        {
-            User = contextUser
-        };
+        var httpContext = new DefaultHttpContext { User = contextUser };
         httpContextAccessorMock.Setup(accessor => accessor.HttpContext).Returns(httpContext);
 
         _mockUserRepository = new Mock<IUsersRepository>();
 
-        _loggingRepository = new LogRepository(_context, httpContextAccessorMock.Object, _mockUserRepository.Object);
+        _loggingRepository = new LogRepository(
+            _context,
+            httpContextAccessorMock.Object,
+            _mockUserRepository.Object
+        );
     }
 
     [TearDown]
@@ -60,15 +64,11 @@ public class LogRepositoryTest : TestsWithDatabase
             BusinessUnit = "Example Business Unit",
             TeamNumber = 1,
             Department = "Example Department",
-            ClientName = "Example Client"
+            ClientName = "Example Client",
         };
         await _context.Projects.AddAsync(exampleProject);
 
-        var user = new IdentityUser
-        {
-            Id = "42",
-            Email = "camo",
-        };
+        var user = new IdentityUser { Id = "42", Email = "camo" };
         await _context.Users.AddAsync(user);
 
         await _context.SaveChangesAsync();
@@ -79,40 +79,46 @@ public class LogRepositoryTest : TestsWithDatabase
             {
                 OldValue = "",
                 NewValue = "Example Project",
-                Property = "ProjectName"
+                Property = "ProjectName",
             },
             new()
             {
                 OldValue = "",
                 NewValue = "Example Business Unit",
-                Property = "BusinessUnit"
+                Property = "BusinessUnit",
             },
             new()
             {
                 OldValue = "",
                 NewValue = "1",
-                Property = "TeamNumber"
+                Property = "TeamNumber",
             },
             new()
             {
                 OldValue = "",
                 NewValue = "Example Department",
-                Property = "Department"
+                Property = "Department",
             },
             new()
             {
                 OldValue = "",
                 NewValue = "Example Client",
-                Property = "ClientName"
-            }
+                Property = "ClientName",
+            },
         };
 
-        _mockUserRepository.Setup(repository => repository.GetUserByEmailAsync("camo")).ReturnsAsync(user);
+        _mockUserRepository
+            .Setup(repository => repository.GetUserByEmailAsync("camo"))
+            .ReturnsAsync(user);
 
-        await _loggingRepository.AddProjectLogForCurrentUser(exampleProject, Action.ADDED_PROJECT, logChanges);
+        await _loggingRepository.AddProjectLogForCurrentUser(
+            exampleProject,
+            Action.ADDED_PROJECT,
+            logChanges
+        );
         await _context.SaveChangesAsync();
-        var dbLog = await _context.Logs
-            .Include(log => log.Project)
+        var dbLog = await _context
+            .Logs.Include(log => log.Project)
             .Include(log => log.Changes)
             .Include(log => log.Author)
             .Include(log => log.Project)
@@ -136,18 +142,9 @@ public class LogRepositoryTest : TestsWithDatabase
     [Test]
     public async Task UpdateUserLogTest()
     {
+        var author = new IdentityUser { Id = "42", Email = "camo" };
 
-        var author = new IdentityUser
-        {
-            Id = "42",
-            Email = "camo",
-        };
-
-        var affectedUser = new IdentityUser
-        {
-            Id = "12",
-            Email = "gagarin@vostok.su",
-        };
+        var affectedUser = new IdentityUser { Id = "12", Email = "gagarin@vostok.su" };
         await _context.Users.AddAsync(author);
         await _context.Users.AddAsync(affectedUser);
 
@@ -159,16 +156,22 @@ public class LogRepositoryTest : TestsWithDatabase
             {
                 OldValue = "no",
                 NewValue = "yes",
-                Property = "isAstronaut"
+                Property = "isAstronaut",
             },
         };
 
-        _mockUserRepository.Setup(repository => repository.GetUserByEmailAsync("camo")).ReturnsAsync(author);
+        _mockUserRepository
+            .Setup(repository => repository.GetUserByEmailAsync("camo"))
+            .ReturnsAsync(author);
 
-        await _loggingRepository.AddUserLogForCurrentUser(affectedUser, Action.UPDATED_USER, logChanges);
+        await _loggingRepository.AddUserLogForCurrentUser(
+            affectedUser,
+            Action.UPDATED_USER,
+            logChanges
+        );
         await _context.SaveChangesAsync();
-        var dbLog = await _context.Logs
-            .Include(log => log.Changes)
+        var dbLog = await _context
+            .Logs.Include(log => log.Changes)
             .Include(log => log.Author)
             .Include(log => log.Changes)
             .Include(log => log.AffectedUser)
@@ -190,20 +193,10 @@ public class LogRepositoryTest : TestsWithDatabase
     [Test]
     public async Task UpdateGlobalPluginLogTest()
     {
-
-        var author = new IdentityUser
-        {
-            Id = "42",
-            Email = "camo",
-
-        };
+        var author = new IdentityUser { Id = "42", Email = "camo" };
         await _context.Users.AddAsync(author);
 
-        var globalPlugin = new Plugin
-        {
-            PluginName = "Canadarm2",
-            Id = 13
-        };
+        var globalPlugin = new Plugin { PluginName = "Canadarm2", Id = 13 };
         await _context.Plugins.AddAsync(globalPlugin);
 
         await _context.SaveChangesAsync();
@@ -214,16 +207,22 @@ public class LogRepositoryTest : TestsWithDatabase
             {
                 OldValue = "in storage",
                 NewValue = "installed",
-                Property = "status"
+                Property = "status",
             },
         };
 
-        _mockUserRepository.Setup(repository => repository.GetUserByEmailAsync("camo")).ReturnsAsync(author);
+        _mockUserRepository
+            .Setup(repository => repository.GetUserByEmailAsync("camo"))
+            .ReturnsAsync(author);
 
-        await _loggingRepository.AddGlobalPluginLogForCurrentUser(globalPlugin, Action.UPDATED_GLOBAL_PLUGIN, logChanges);
+        await _loggingRepository.AddGlobalPluginLogForCurrentUser(
+            globalPlugin,
+            Action.UPDATED_GLOBAL_PLUGIN,
+            logChanges
+        );
         await _context.SaveChangesAsync();
-        var dbLog = await _context.Logs
-            .Include(log => log.GlobalPlugin)
+        var dbLog = await _context
+            .Logs.Include(log => log.GlobalPlugin)
             .Include(log => log.Changes)
             .Include(log => log.Author)
             .Include(log => log.Changes)
@@ -261,25 +260,28 @@ public class LogRepositoryTest : TestsWithDatabase
             BusinessUnit = "Example Business Unit",
             TeamNumber = 1,
             Department = "Example Department",
-            ClientName = "Example Client"
+            ClientName = "Example Client",
         };
         await _context.Projects.AddAsync(exampleProject);
 
-        var user = new IdentityUser
-        {
-            Id = "42",
-            Email = "camo",
-        };
+        var user = new IdentityUser { Id = "42", Email = "camo" };
 
         await _context.Users.AddAsync(user);
         await _context.SaveChangesAsync();
 
         var logChanges = new List<LogChange>
         {
-            new() { OldValue = "", NewValue = "Example Project", Property = "ProjectName" },
+            new()
+            {
+                OldValue = "",
+                NewValue = "Example Project",
+                Property = "ProjectName",
+            },
         };
 
-        Assert.ThrowsAsync<LogActionNotSupportedException>(() => _loggingRepository.AddProjectLogForCurrentUser(exampleProject, action, logChanges));
+        Assert.ThrowsAsync<LogActionNotSupportedException>(() =>
+            _loggingRepository.AddProjectLogForCurrentUser(exampleProject, action, logChanges)
+        );
     }
 
     [TestCase(Action.ADDED_PROJECT)]
@@ -297,18 +299,9 @@ public class LogRepositoryTest : TestsWithDatabase
     [TestCase(Action.REMOVED_GLOBAL_PLUGIN)]
     public async Task UserLogTest_RejectsActionNotInWhitelist(Action action)
     {
+        var author = new IdentityUser { Id = "42", Email = "camo" };
 
-        var author = new IdentityUser
-        {
-            Id = "42",
-            Email = "camo",
-        };
-
-        var affectedUser = new IdentityUser
-        {
-            Id = "12",
-            Email = "gagarin@vostok.su",
-        };
+        var affectedUser = new IdentityUser { Id = "12", Email = "gagarin@vostok.su" };
         await _context.Users.AddAsync(author);
         await _context.Users.AddAsync(affectedUser);
 
@@ -320,11 +313,13 @@ public class LogRepositoryTest : TestsWithDatabase
             {
                 OldValue = "no",
                 NewValue = "yes",
-                Property = "isAstronaut"
+                Property = "isAstronaut",
             },
         };
 
-        Assert.ThrowsAsync<LogActionNotSupportedException>(() => _loggingRepository.AddUserLogForCurrentUser(affectedUser, action, logChanges));
+        Assert.ThrowsAsync<LogActionNotSupportedException>(() =>
+            _loggingRepository.AddUserLogForCurrentUser(affectedUser, action, logChanges)
+        );
     }
 
     [TestCase(Action.ADDED_USER)]
@@ -340,18 +335,10 @@ public class LogRepositoryTest : TestsWithDatabase
     [TestCase(Action.REMOVED_PROJECT)]
     public async Task GlobalPluginLogTest_RejectsActionNotInWhitelist(Action action)
     {
-        var author = new IdentityUser
-        {
-            Id = "42",
-            Email = "camo",
-        };
+        var author = new IdentityUser { Id = "42", Email = "camo" };
         await _context.Users.AddAsync(author);
 
-        var globalPlugin = new Plugin
-        {
-            PluginName = "Canadarm2",
-            Id = 13
-        };
+        var globalPlugin = new Plugin { PluginName = "Canadarm2", Id = 13 };
         await _context.Plugins.AddAsync(globalPlugin);
 
         await _context.SaveChangesAsync();
@@ -362,11 +349,13 @@ public class LogRepositoryTest : TestsWithDatabase
             {
                 OldValue = "in storage",
                 NewValue = "installed",
-                Property = "status"
+                Property = "status",
             },
         };
 
-        Assert.ThrowsAsync<LogActionNotSupportedException>(() => _loggingRepository.AddGlobalPluginLogForCurrentUser(globalPlugin, action, logChanges));
+        Assert.ThrowsAsync<LogActionNotSupportedException>(() =>
+            _loggingRepository.AddGlobalPluginLogForCurrentUser(globalPlugin, action, logChanges)
+        );
     }
 
     [Test]
@@ -382,8 +371,13 @@ public class LogRepositoryTest : TestsWithDatabase
             Action = Action.ADDED_PROJECT,
             Changes =
             [
-                new LogChange { OldValue = "", NewValue = "Example Project", Property = "ProjectName" }
-            ]
+                new LogChange
+                {
+                    OldValue = "",
+                    NewValue = "Example Project",
+                    Property = "ProjectName",
+                },
+            ],
         };
 
         var exampleProject = new Project
@@ -394,7 +388,7 @@ public class LogRepositoryTest : TestsWithDatabase
             TeamNumber = 1,
             Department = "Example Department",
             ClientName = "Example Client",
-            Logs = new List<Log> { exampleLog }
+            Logs = new List<Log> { exampleLog },
         };
         exampleLog.Project = exampleProject;
 
@@ -429,7 +423,7 @@ public class LogRepositoryTest : TestsWithDatabase
             TeamNumber = 1,
             Department = "Example Department",
             ClientName = "Example Client",
-            Logs = null
+            Logs = null,
         };
         await _context.Projects.AddAsync(exampleProject);
         await _context.SaveChangesAsync();
@@ -452,8 +446,13 @@ public class LogRepositoryTest : TestsWithDatabase
             Action = Action.ADDED_PROJECT,
             Changes =
             [
-                new LogChange { OldValue = "", NewValue = "Example Project", Property = "ProjectName" }
-            ]
+                new LogChange
+                {
+                    OldValue = "",
+                    NewValue = "Example Project",
+                    Property = "ProjectName",
+                },
+            ],
         };
 
         var exampleProject1 = new Project
@@ -464,7 +463,7 @@ public class LogRepositoryTest : TestsWithDatabase
             TeamNumber = 1,
             Department = "Example Department",
             ClientName = "Example Client",
-            Logs = new List<Log> { exampleLog1 }
+            Logs = new List<Log> { exampleLog1 },
         };
 
         var exampleLog2 = new Log
@@ -477,8 +476,13 @@ public class LogRepositoryTest : TestsWithDatabase
             Action = Action.UPDATED_PROJECT,
             Changes =
             [
-                new LogChange { OldValue = "Example Project", NewValue = "Another Project", Property = "ProjectName" }
-            ]
+                new LogChange
+                {
+                    OldValue = "Example Project",
+                    NewValue = "Another Project",
+                    Property = "ProjectName",
+                },
+            ],
         };
 
         var exampleProject2 = new Project
@@ -489,7 +493,7 @@ public class LogRepositoryTest : TestsWithDatabase
             TeamNumber = 1,
             Department = "Example Department",
             ClientName = "Example Client",
-            Logs = new List<Log> { exampleLog2 }
+            Logs = new List<Log> { exampleLog2 },
         };
         await _context.Projects.AddAsync(exampleProject1);
         await _context.Projects.AddAsync(exampleProject2);
@@ -513,8 +517,13 @@ public class LogRepositoryTest : TestsWithDatabase
             Action = Action.ADDED_PROJECT,
             Changes =
             [
-                new LogChange { OldValue = "", NewValue = "Example Project", Property = "ProjectName" }
-            ]
+                new LogChange
+                {
+                    OldValue = "",
+                    NewValue = "Example Project",
+                    Property = "ProjectName",
+                },
+            ],
         };
 
         var exampleProject1 = new Project
@@ -525,7 +534,7 @@ public class LogRepositoryTest : TestsWithDatabase
             TeamNumber = 1,
             Department = "Example Department",
             ClientName = "Example Client",
-            Logs = new List<Log> { exampleLog1 }
+            Logs = new List<Log> { exampleLog1 },
         };
 
         var exampleLog2 = new Log
@@ -538,8 +547,13 @@ public class LogRepositoryTest : TestsWithDatabase
             Action = Action.UPDATED_PROJECT,
             Changes =
             [
-                new LogChange { OldValue = "Example Project", NewValue = "Another Project", Property = "ProjectName" }
-            ]
+                new LogChange
+                {
+                    OldValue = "Example Project",
+                    NewValue = "Another Project",
+                    Property = "ProjectName",
+                },
+            ],
         };
 
         var exampleProject2 = new Project
@@ -550,7 +564,7 @@ public class LogRepositoryTest : TestsWithDatabase
             TeamNumber = 1,
             Department = "Example Department",
             ClientName = "Example Client",
-            Logs = new List<Log> { exampleLog2 }
+            Logs = new List<Log> { exampleLog2 },
         };
         await _context.Projects.AddAsync(exampleProject1);
         await _context.Projects.AddAsync(exampleProject2);
@@ -585,8 +599,13 @@ public class LogRepositoryTest : TestsWithDatabase
             Action = Action.ADDED_PROJECT,
             Changes =
             [
-                new LogChange { OldValue = "", NewValue = "Example Project", Property = "ProjectName" }
-            ]
+                new LogChange
+                {
+                    OldValue = "",
+                    NewValue = "Example Project",
+                    Property = "ProjectName",
+                },
+            ],
         };
 
         var exampleProject1 = new Project
@@ -597,7 +616,7 @@ public class LogRepositoryTest : TestsWithDatabase
             TeamNumber = 1,
             Department = "Example Department",
             ClientName = "Example Client",
-            Logs = new List<Log> { exampleLog1 }
+            Logs = new List<Log> { exampleLog1 },
         };
 
         var exampleLog2 = new Log
@@ -610,8 +629,13 @@ public class LogRepositoryTest : TestsWithDatabase
             Action = Action.UPDATED_PROJECT,
             Changes =
             [
-                new LogChange { OldValue = "Example Project", NewValue = "Another Project", Property = "ProjectName" }
-            ]
+                new LogChange
+                {
+                    OldValue = "Example Project",
+                    NewValue = "Another Project",
+                    Property = "ProjectName",
+                },
+            ],
         };
 
         var exampleProject2 = new Project
@@ -622,7 +646,7 @@ public class LogRepositoryTest : TestsWithDatabase
             TeamNumber = 1,
             Department = "Example Department",
             ClientName = "Example Client",
-            Logs = new List<Log> { exampleLog2 }
+            Logs = new List<Log> { exampleLog2 },
         };
         await _context.Projects.AddAsync(exampleProject1);
         await _context.Projects.AddAsync(exampleProject2);
@@ -657,14 +681,19 @@ public class LogRepositoryTest : TestsWithDatabase
             Action = Action.REMOVED_PROJECT,
             Changes =
             [
-                new LogChange { OldValue = "", NewValue = "Example Project", Property = "ProjectName" }
-            ]
+                new LogChange
+                {
+                    OldValue = "",
+                    NewValue = "Example Project",
+                    Property = "ProjectName",
+                },
+            ],
         };
 
         var exampleUser = new IdentityUser
         {
             Id = "Newton",
-            Email = "newton@royalastronomicalsociety.co.uk"
+            Email = "newton@royalastronomicalsociety.co.uk",
         };
 
         var exampleLog2 = new Log
@@ -679,8 +708,13 @@ public class LogRepositoryTest : TestsWithDatabase
             AffectedUser = exampleUser,
             Changes =
             [
-                new LogChange { OldValue = "yes", NewValue = "no", Property = "flying" }
-            ]
+                new LogChange
+                {
+                    OldValue = "yes",
+                    NewValue = "no",
+                    Property = "flying",
+                },
+            ],
         };
 
         await _context.Users.AddAsync(exampleUser);
@@ -720,15 +754,16 @@ public class LogRepositoryTest : TestsWithDatabase
             Action = Action.REMOVED_PROJECT,
             Changes =
             [
-                new LogChange { OldValue = "", NewValue = "Example Project", Property = "ProjectName" }
-            ]
+                new LogChange
+                {
+                    OldValue = "",
+                    NewValue = "Example Project",
+                    Property = "ProjectName",
+                },
+            ],
         };
 
-        var examplePlugin = new Plugin
-        {
-            Id = 42,
-            PluginName = "Gravity"
-        };
+        var examplePlugin = new Plugin { Id = 42, PluginName = "Gravity" };
 
         var exampleLog2 = new Log
         {
@@ -742,8 +777,13 @@ public class LogRepositoryTest : TestsWithDatabase
             GlobalPlugin = examplePlugin,
             Changes =
             [
-                new LogChange { OldValue = "no", NewValue = "yes", Property = "discovered" }
-            ]
+                new LogChange
+                {
+                    OldValue = "no",
+                    NewValue = "yes",
+                    Property = "discovered",
+                },
+            ],
         };
 
         await _context.Plugins.AddAsync(examplePlugin);

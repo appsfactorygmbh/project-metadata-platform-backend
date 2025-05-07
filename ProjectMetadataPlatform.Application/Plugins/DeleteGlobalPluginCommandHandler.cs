@@ -17,15 +17,17 @@ public class DeleteGlobalPluginCommandHandler : IRequestHandler<DeleteGlobalPlug
     private readonly ILogRepository _logRepository;
     private readonly IUnitOfWork _unitOfWork;
 
-
     /// <summary>
     /// Creates a new instance of<see cref="DeleteGlobalPluginCommandHandler"/>.
     /// </summary>
     /// <param name="pluginRepository"></param>
     /// <param name="logRepository"></param>
     /// <param name="unitOfWork"></param>
-    public DeleteGlobalPluginCommandHandler(IPluginRepository pluginRepository
-        , ILogRepository logRepository, IUnitOfWork unitOfWork)
+    public DeleteGlobalPluginCommandHandler(
+        IPluginRepository pluginRepository,
+        ILogRepository logRepository,
+        IUnitOfWork unitOfWork
+    )
     {
         _pluginRepository = pluginRepository;
         _logRepository = logRepository;
@@ -38,16 +40,25 @@ public class DeleteGlobalPluginCommandHandler : IRequestHandler<DeleteGlobalPlug
     /// <param name="request">The request that needs to be handled.</param>
     /// <param name="cancellationToken"></param>
     /// <returns>The response of the request.</returns>
-    public async Task<bool> Handle(DeleteGlobalPluginCommand request, CancellationToken cancellationToken)
+    public async Task<bool> Handle(
+        DeleteGlobalPluginCommand request,
+        CancellationToken cancellationToken
+    )
     {
-        var plugin = await _pluginRepository.GetPluginByIdAsync(request.Id) ?? throw new PluginNotFoundException(request.Id);
+        var plugin =
+            await _pluginRepository.GetPluginByIdAsync(request.Id)
+            ?? throw new PluginNotFoundException(request.Id);
         if (plugin.IsArchived)
         {
             await _pluginRepository.DeleteGlobalPlugin(plugin);
 
             var changes = new List<LogChange>();
 
-            await _logRepository.AddGlobalPluginLogForCurrentUser(plugin, Action.REMOVED_GLOBAL_PLUGIN, changes);
+            await _logRepository.AddGlobalPluginLogForCurrentUser(
+                plugin,
+                Action.REMOVED_GLOBAL_PLUGIN,
+                changes
+            );
             await _unitOfWork.CompleteAsync();
             return true;
         }
@@ -55,4 +66,3 @@ public class DeleteGlobalPluginCommandHandler : IRequestHandler<DeleteGlobalPlug
         throw new PluginNotArchivedException(plugin);
     }
 }
-

@@ -28,4 +28,5 @@ public record CreateProjectRequest(
     CompanyState CompanyState,
     SecurityLevel IsmsLevel,
     List<UpdateProjectPluginRequest>? PluginList = null,
-    bool IsArchived = false);
+    bool IsArchived = false
+);

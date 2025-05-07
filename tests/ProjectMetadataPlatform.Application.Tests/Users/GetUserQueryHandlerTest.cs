@@ -17,17 +17,14 @@ public class GetUserQueryHandlerTest
         _mockUserRepo = new Mock<IUsersRepository>();
         _handler = new GetUserQueryHandler(_mockUserRepo.Object);
     }
+
     private GetUserQueryHandler _handler;
     private Mock<IUsersRepository> _mockUserRepo;
 
     [Test]
     public async Task HandleGetUserRequest_Test()
     {
-        var userResponseContent = new IdentityUser
-        {
-            Id = "1",
-            Email = "Hinz"
-        };
+        var userResponseContent = new IdentityUser { Id = "1", Email = "Hinz" };
 
         _mockUserRepo.Setup(m => m.GetUserByIdAsync("1")).ReturnsAsync(userResponseContent);
         var request = new GetUserQuery("1");

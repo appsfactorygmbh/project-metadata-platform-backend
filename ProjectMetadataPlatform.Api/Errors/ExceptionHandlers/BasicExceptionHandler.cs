@@ -10,7 +10,7 @@ namespace ProjectMetadataPlatform.Api.Errors.ExceptionHandlers;
 /// <summary>
 /// Handles exceptions that are not use case specific for the Project Metadata Platform API.
 /// </summary>
-public class BasicExceptionHandler: ControllerBase, IExceptionHandler<PmpException>
+public class BasicExceptionHandler : ControllerBase, IExceptionHandler<PmpException>
 {
     /// <summary>
     /// Handles the specified basic exception and returns an appropriate IActionResult.
@@ -21,10 +21,14 @@ public class BasicExceptionHandler: ControllerBase, IExceptionHandler<PmpExcepti
     {
         return exception switch
         {
-            EntityNotFoundException entityNotFoundException => NotFound(new ErrorResponse(entityNotFoundException.Message)),
-            EntityAlreadyExistsException entityAlreadyExistsException => Conflict(new ErrorResponse(entityAlreadyExistsException.Message)),
+            EntityNotFoundException entityNotFoundException => NotFound(
+                new ErrorResponse(entityNotFoundException.Message)
+            ),
+            EntityAlreadyExistsException entityAlreadyExistsException => Conflict(
+                new ErrorResponse(entityAlreadyExistsException.Message)
+            ),
             DatabaseException databaseException => HandleDatabaseException(databaseException),
-            _ => null
+            _ => null,
         };
     }
 
@@ -37,6 +41,9 @@ public class BasicExceptionHandler: ControllerBase, IExceptionHandler<PmpExcepti
     {
         Console.WriteLine(databaseException.Message);
         Console.WriteLine(databaseException.StackTrace);
-        return StatusCode(StatusCodes.Status502BadGateway, new ErrorResponse("An error occurred while accessing the database."));
+        return StatusCode(
+            StatusCodes.Status502BadGateway,
+            new ErrorResponse("An error occurred while accessing the database.")
+        );
     }
 }

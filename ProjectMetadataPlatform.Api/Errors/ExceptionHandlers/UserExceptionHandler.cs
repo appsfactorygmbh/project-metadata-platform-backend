@@ -23,7 +23,7 @@ public class UserExceptionHandler : ControllerBase, IExceptionHandler<UserExcept
             UserCantDeleteThemselfException => BadRequest(new ErrorResponse(exception.Message)),
             UserCouldNotBeDeletedException => BadRequest(new ErrorResponse(exception.Message)),
             UserCouldNotBeCreatedException => BadRequest(new ErrorResponse(exception.Message)),
-            _ => null
+            _ => null,
         };
     }
 }

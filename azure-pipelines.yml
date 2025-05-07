@@ -18,11 +18,11 @@ variables:
   - name: dockerImageRepository
     value: appsfactorylej/project-metadata-platform-backend
   - name: dockerfilePath
-    value: Dockerfile 
+    value: Dockerfile
   - name: sonarCloudProjectKey
     value: "1efbc6d1-5ad3-4fc9-bcf7-070a68663af4_342d515e-e562-4bf9-951a-68c43423b028"
   - name: SonarCloudOrg
-    value: "appsfactory" 
+    value: "appsfactory"
   - name: today
     value: $[ format('{0:yyyy}.{0:MM}.{0:dd}-{0:HH}.{0:mm}', pipeline.startTime) ]
   - group: ProdCreds
@@ -60,14 +60,22 @@ stages:
           organization: $(SonarCloudOrg)
           cliprojectKey: $(sonarCloudProjectKey)
           scannerMode: "CLI"
-          configMode: manual        
+          configMode: manual
           extraProperties: |
                 sonar.cs.vscoveragexml.reportsPaths=coverage.xml
-                sonar.exclusions=/ProjectMetadataPlatform.Infrastructure/Migrations/**  
+                sonar.exclusions=/ProjectMetadataPlatform.Infrastructure/Migrations/**
+
+      - script: |
+          dotnet tool install --global csharpier
+          export PATH="$PATH:$HOME/.dotnet/tools"
+        displayName: "Install CSharpier"
+
+      - script: csharpier check $(System.DefaultWorkingDirectory)
+        displayName: "Verify Formatting"
 
       - script: dotnet tool run dotnet-coverage collect "dotnet test --no-restore --configuration Release" -f xml -o "coverage.xml"
         displayName: 'Unit Tests with Coverage'
-      
+
       - task: PublishCodeCoverageResults@2
         displayName: Publish code coverage
         inputs:
@@ -81,7 +89,7 @@ stages:
         inputs:
           pollingTimeoutSec: "300"
 
-    
+
   - stage: Build
     displayName: Build + Push Stage
     dependsOn: Test
@@ -90,7 +98,7 @@ stages:
     - job: Build
       displayName: Build job
       steps:
-  
+
       - task: Docker@2
         displayName: Build docker image
         inputs:
@@ -110,7 +118,7 @@ stages:
           containerRegistry: $(dockerRegistryServiceConnection)
           repository: $(dockerImageRepository)
           tags: $(today),dev
-  
+
   - stage: DeployProd
     displayName: Deploy Production
     dependsOn: Test
@@ -121,7 +129,7 @@ stages:
       steps:
         - task: Docker@2
           displayName: Login to registry
-          inputs: 
+          inputs:
             command: login
             containerRegistry: $(dockerRegistryServiceConnection)
 
@@ -133,7 +141,7 @@ stages:
 
         - script: docker push $(dockerImageRepository):prod
           displayName: Push prod image to DockerHub
-          
+
         - task: CopyFilesOverSSH@0
           displayName: Copy compose file to VM
           inputs:
@@ -148,7 +156,7 @@ stages:
             interactiveSession: true
             commands:  |
               sed -i -e "s/{PMP_DB_USER}/$(PMP_DB_USER)/g" -e "s/{PMP_DB_PASSWORD}/$(PMP_DB_PASSWORD)/g" -e "s/{PMP_DB_NAME}/$(PMP_DB_NAME)/g" -e "s/{JWT_ISSUER_SIGNING_KEY}/$(JWT_ISSUER_SIGNING_KEY)/g" -e "s/{PMP_ADMIN_PASSWORD}/$(PMP_ADMIN_PASSWORD)/g" ~/pmp-backend/docker-compose-production.yml
-              echo $(DOCKER_HUB_PAT) | docker login -u $(DOCKER_HUB_NAME) --password-stdin   
+              echo $(DOCKER_HUB_PAT) | docker login -u $(DOCKER_HUB_NAME) --password-stdin
               docker compose -f ~/pmp-backend/docker-compose-production.yml pull
               docker compose -f ~/pmp-backend/docker-compose-production.yml up -d
               rm ~/.docker/config.json

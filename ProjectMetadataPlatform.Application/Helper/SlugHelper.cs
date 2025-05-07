@@ -6,7 +6,7 @@ using ProjectMetadataPlatform.Domain.Errors.ProjectExceptions;
 namespace ProjectMetadataPlatform.Application.Helper;
 
 /// <inheritdoc/>
-public partial class SlugHelper: ISlugHelper
+public partial class SlugHelper : ISlugHelper
 {
     [GeneratedRegex("[^a-zA-Z0-9_ ]")]
     private static partial Regex ProjectNameToSlugRegex();
@@ -25,7 +25,11 @@ public partial class SlugHelper: ISlugHelper
     /// <inheritdoc/>
     public string GenerateSlug(string input)
     {
-        return ProjectNameToSlugRegex().Replace(input, "").Trim().Replace(" ", "_").ToLowerInvariant();
+        return ProjectNameToSlugRegex()
+            .Replace(input, "")
+            .Trim()
+            .Replace(" ", "_")
+            .ToLowerInvariant();
     }
 
     /// <inheritdoc/>

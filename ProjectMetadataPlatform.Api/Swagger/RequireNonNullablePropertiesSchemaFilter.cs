@@ -1,7 +1,7 @@
-using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace ProjectMetadataPlatform.Api.Swagger;
 
@@ -18,8 +18,10 @@ public class RequireNonNullablePropertiesSchemaFilter : ISchemaFilter
     /// </summary>
     public void Apply(OpenApiSchema schema, SchemaFilterContext context)
     {
-        var additionalRequiredProps = schema.Properties
-            .Where(x => !x.Value.Nullable && !schema.Required.Contains(x.Key) && !IsCreatedResponse(x))
+        var additionalRequiredProps = schema
+            .Properties.Where(x =>
+                !x.Value.Nullable && !schema.Required.Contains(x.Key) && !IsCreatedResponse(x)
+            )
             .Select(x => x.Key);
         foreach (var propKey in additionalRequiredProps)
         {

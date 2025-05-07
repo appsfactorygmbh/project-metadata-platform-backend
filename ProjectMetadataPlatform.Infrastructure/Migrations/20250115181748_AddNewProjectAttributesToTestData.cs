@@ -15,21 +15,24 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
                 keyColumn: "Id",
                 keyValue: 100,
                 columns: new[] { "Company", "CompanyState", "OfferId" },
-                values: new object[] { "AppsFactory", 1, "Offer1" });
+                values: new object[] { "AppsFactory", 1, "Offer1" }
+            );
 
             migrationBuilder.UpdateData(
                 table: "Projects",
                 keyColumn: "Id",
                 keyValue: 200,
                 columns: new[] { "Company", "IsmsLevel", "OfferId" },
-                values: new object[] { "AppsCompany", 1, "Offer2" });
+                values: new object[] { "AppsCompany", 1, "Offer2" }
+            );
 
             migrationBuilder.UpdateData(
                 table: "Projects",
                 keyColumn: "Id",
                 keyValue: 300,
                 columns: new[] { "Company", "CompanyState", "IsmsLevel", "OfferId" },
-                values: new object[] { "AppsFactory", 1, 2, "Offer3" });
+                values: new object[] { "AppsFactory", 1, 2, "Offer3" }
+            );
         }
 
         /// <inheritdoc />
@@ -40,21 +43,24 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
                 keyColumn: "Id",
                 keyValue: 100,
                 columns: new[] { "Company", "CompanyState", "OfferId" },
-                values: new object[] { "", 0, "" });
+                values: new object[] { "", 0, "" }
+            );
 
             migrationBuilder.UpdateData(
                 table: "Projects",
                 keyColumn: "Id",
                 keyValue: 200,
                 columns: new[] { "Company", "IsmsLevel", "OfferId" },
-                values: new object[] { "", 0, "" });
+                values: new object[] { "", 0, "" }
+            );
 
             migrationBuilder.UpdateData(
                 table: "Projects",
                 keyColumn: "Id",
                 keyValue: 300,
                 columns: new[] { "Company", "CompanyState", "IsmsLevel", "OfferId" },
-                values: new object[] { "", 0, 0, "" });
+                values: new object[] { "", 0, 0, "" }
+            );
         }
     }
 }

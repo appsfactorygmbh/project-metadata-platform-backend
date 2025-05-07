@@ -16,34 +16,36 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
                 table: "Projects",
                 type: "text",
                 nullable: false,
-                defaultValue: "");
+                defaultValue: ""
+            );
 
             if (migrationBuilder.IsNpgsql())
             {
-                migrationBuilder.Sql("UPDATE \"Projects\" SET \"Slug\" = LOWER(REPLACE(TRIM(REGEXP_REPLACE(\"ProjectName\", '[^a-zA-Z0-9_ ]', '')), ' ', '_'));");
+                migrationBuilder.Sql(
+                    "UPDATE \"Projects\" SET \"Slug\" = LOWER(REPLACE(TRIM(REGEXP_REPLACE(\"ProjectName\", '[^a-zA-Z0-9_ ]', '')), ' ', '_'));"
+                );
             }
             else
             {
-                migrationBuilder.Sql("UPDATE \"Projects\" SET \"Slug\" = LOWER(REPLACE(TRIM(\"ProjectName\"), ' ', '_'));");
+                migrationBuilder.Sql(
+                    "UPDATE \"Projects\" SET \"Slug\" = LOWER(REPLACE(TRIM(\"ProjectName\"), ' ', '_'));"
+                );
             }
 
             migrationBuilder.CreateIndex(
                 name: "IX_Projects_Slug",
                 table: "Projects",
                 column: "Slug",
-                unique: true);
+                unique: true
+            );
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropIndex(
-                name: "IX_Projects_Slug",
-                table: "Projects");
+            migrationBuilder.DropIndex(name: "IX_Projects_Slug", table: "Projects");
 
-            migrationBuilder.DropColumn(
-                name: "Slug",
-                table: "Projects");
+            migrationBuilder.DropColumn(name: "Slug", table: "Projects");
         }
     }
 }

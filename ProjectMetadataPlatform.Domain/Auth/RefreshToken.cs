@@ -12,6 +12,7 @@ public class RefreshToken
     /// Id of the refresh token.
     /// </summary>
     public int Id { get; set; }
+
     /// <summary>
     /// Value of the token.
     /// </summary>
@@ -26,6 +27,7 @@ public class RefreshToken
     /// Id of the user.
     /// </summary>
     public string? UserId { get; set; }
+
     /// <summary>
     /// Expiration date of the token.
     /// </summary>
