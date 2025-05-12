@@ -19,6 +19,7 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
 {
     private readonly IProjectsRepository _projectsRepository;
     private readonly IPluginRepository _pluginRepository;
+    private readonly ITeamRepository _teamRepository;
     private readonly ILogRepository _logRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ISlugHelper _slugHelper;
@@ -28,12 +29,14 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
     /// </summary>
     /// <param name="projectsRepository">Repository for Projects</param>
     /// <param name="pluginRepository">Repository for Plugins</param>
+    /// <param name="teamRepository">Repository for Team</param>
     /// <param name="logRepository">Repository for Logs</param>
     /// <param name="unitOfWork"> Used to save changes to the DbContext</param>
     /// <param name="slugHelper"> Used to generate slugs</param>
     public CreateProjectCommandHandler(
         IProjectsRepository projectsRepository,
         IPluginRepository pluginRepository,
+        ITeamRepository teamRepository,
         ILogRepository logRepository,
         IUnitOfWork unitOfWork,
         ISlugHelper slugHelper
@@ -41,6 +44,7 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
     {
         _projectsRepository = projectsRepository;
         _pluginRepository = pluginRepository;
+        _teamRepository = teamRepository;
         _logRepository = logRepository;
         _unitOfWork = unitOfWork;
         _slugHelper = slugHelper;
@@ -63,6 +67,12 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
             }
         }
 
+        // TODO add handling for team exists
+        if (request.TeamId != null && await _teamRepository.CheckIfTeamExists(request.TeamId.Value))
+        {
+            throw new TeamNotFoundException(request.TeamId.Value);
+        }
+
         var projectSlug = _slugHelper.GenerateSlug(request.ProjectName);
 
         if (await _slugHelper.CheckProjectSlugExists(projectSlug))
@@ -74,15 +84,13 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
         {
             ProjectName = request.ProjectName,
             Slug = projectSlug,
-            BusinessUnit = request.BusinessUnit,
-            TeamNumber = request.TeamNumber,
-            Department = request.Department,
             ClientName = request.ClientName,
             OfferId = request.OfferId,
             Company = request.Company,
             CompanyState = request.CompanyState,
             IsmsLevel = request.IsmsLevel,
             ProjectPlugins = request.Plugins,
+            TeamId = request.TeamId,
         };
 
         await _projectsRepository.Add(project);
@@ -112,26 +120,8 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
             new()
             {
                 OldValue = "",
-                NewValue = project.BusinessUnit,
-                Property = nameof(Project.BusinessUnit),
-            },
-            new()
-            {
-                OldValue = "",
-                NewValue = project.Department,
-                Property = nameof(Project.Department),
-            },
-            new()
-            {
-                OldValue = "",
                 NewValue = project.ClientName,
                 Property = nameof(Project.ClientName),
-            },
-            new()
-            {
-                OldValue = "",
-                NewValue = project.TeamNumber.ToString(CultureInfo.InvariantCulture),
-                Property = nameof(Project.TeamNumber),
             },
             new()
             {
@@ -158,6 +148,17 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
                 Property = nameof(Project.IsmsLevel),
             },
         };
+        if (project.TeamId != null)
+        {
+            changes.Add(
+                new()
+                {
+                    OldValue = "",
+                    NewValue = await _teamRepository.RetrieveNameForId(project.TeamId.Value),
+                    Property = "Team",
+                }
+            );
+        }
         await _logRepository.AddProjectLogForCurrentUser(project, Action.ADDED_PROJECT, changes);
         if (project.ProjectPlugins != null)
         {

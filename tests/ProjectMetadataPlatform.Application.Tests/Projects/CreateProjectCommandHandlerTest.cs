@@ -20,6 +20,7 @@ public class CreateProjectCommandHandlerTest
     private CreateProjectCommandHandler _handler;
     private Mock<IProjectsRepository> _mockProjectRepo;
     private Mock<IPluginRepository> _mockPluginRepo;
+    private Mock<ITeamRepository> _teamRepository;
     private Mock<ILogRepository> _mockLogRepo;
     private Mock<IUnitOfWork> _mockUnitOfWork;
     private Mock<ISlugHelper> _mockSlugHelper;
@@ -29,12 +30,14 @@ public class CreateProjectCommandHandlerTest
     {
         _mockProjectRepo = new Mock<IProjectsRepository>();
         _mockPluginRepo = new Mock<IPluginRepository>();
+        _teamRepository = new Mock<ITeamRepository>();
         _mockLogRepo = new Mock<ILogRepository>();
         _mockUnitOfWork = new Mock<IUnitOfWork>();
         _mockSlugHelper = new Mock<ISlugHelper>();
         _handler = new CreateProjectCommandHandler(
             _mockProjectRepo.Object,
             _mockPluginRepo.Object,
+            _teamRepository.Object,
             _mockLogRepo.Object,
             _mockUnitOfWork.Object,
             _mockSlugHelper.Object
@@ -61,16 +64,14 @@ public class CreateProjectCommandHandlerTest
 
         var result = await _handler.Handle(
             new CreateProjectCommand(
-                "Example Project",
-                "Example Business Unit",
-                1,
-                "Example Department",
-                "Example Client",
-                "Example OfferId",
-                "Example Company",
-                CompanyState.EXTERNAL,
-                SecurityLevel.HIGH,
-                plugins
+                ProjectName: "Example Project",
+                ClientName: "Example Business Unit",
+                OfferId: "1",
+                Company: "Example Company",
+                CompanyState: CompanyState.EXTERNAL,
+                TeamId: null,
+                IsmsLevel: SecurityLevel.HIGH,
+                Plugins: plugins
             ),
             It.IsAny<CancellationToken>()
         );
@@ -110,16 +111,14 @@ public class CreateProjectCommandHandlerTest
         {
             await _handler.Handle(
                 new CreateProjectCommand(
-                    "Example Project",
-                    "Example Business Unit",
-                    1,
-                    "Example Department",
-                    "Example Client",
-                    "Example OfferId",
-                    "Example Company",
-                    CompanyState.EXTERNAL,
-                    SecurityLevel.HIGH,
-                    plugins
+                    ProjectName: "Example Project",
+                    ClientName: "Example Business Unit",
+                    OfferId: "1",
+                    Company: "Example Department",
+                    CompanyState: CompanyState.EXTERNAL,
+                    TeamId: null,
+                    IsmsLevel: SecurityLevel.HIGH,
+                    Plugins: plugins
                 ),
                 It.IsAny<CancellationToken>()
             );

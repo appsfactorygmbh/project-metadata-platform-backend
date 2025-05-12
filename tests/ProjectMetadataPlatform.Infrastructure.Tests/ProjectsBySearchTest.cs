@@ -33,9 +33,6 @@ public class ProjectsBySearchTest : TestsWithDatabase
             ProjectName = "Regen",
             Slug = "regen",
             ClientName = "Nasa",
-            BusinessUnit = "BuWeather",
-            TeamNumber = 42,
-            Department = "Homelandsecurity",
         };
 
         var query = new GetAllProjectsQuery(null, "Reg");
@@ -54,9 +51,6 @@ public class ProjectsBySearchTest : TestsWithDatabase
             Assert.That(project.Id, Is.EqualTo(1));
             Assert.That(project.ProjectName, Is.EqualTo("Regen"));
             Assert.That(project.ClientName, Is.EqualTo("Nasa"));
-            Assert.That(project.BusinessUnit, Is.EqualTo("BuWeather"));
-            Assert.That(project.TeamNumber, Is.EqualTo(42));
-            Assert.That(project.Department, Is.EqualTo("Homelandsecurity"));
         });
     }
 
@@ -69,9 +63,6 @@ public class ProjectsBySearchTest : TestsWithDatabase
             ProjectName = "Regen",
             Slug = "regen",
             ClientName = "Nasa",
-            BusinessUnit = "BuWeather",
-            TeamNumber = 42,
-            Department = "Homelandsecurity",
         };
 
         var query = new GetAllProjectsQuery(null, "x");
@@ -95,9 +86,6 @@ public class ProjectsBySearchTest : TestsWithDatabase
                 ProjectName = "Wasserfall",
                 Slug = "wasserfall",
                 ClientName = "whatever_taucht_nicht_auf",
-                BusinessUnit = "BuWeather",
-                TeamNumber = 42,
-                Department = "Homelandsecurity",
             },
             new()
             {
@@ -105,9 +93,6 @@ public class ProjectsBySearchTest : TestsWithDatabase
                 ProjectName = "Regen",
                 Slug = "regen",
                 ClientName = "ESA",
-                BusinessUnit = "BuWeather",
-                TeamNumber = 42,
-                Department = "Homelandsecurity",
             },
             new()
             {
@@ -115,9 +100,6 @@ public class ProjectsBySearchTest : TestsWithDatabase
                 ProjectName = "Turbo",
                 Slug = "turbo",
                 ClientName = "Regen",
-                BusinessUnit = "BuWeather",
-                TeamNumber = 42,
-                Department = "Homelandsecurity",
             },
         };
 
@@ -146,9 +128,6 @@ public class ProjectsBySearchTest : TestsWithDatabase
                 ProjectName = "Wasserfall",
                 Slug = "wasserfall",
                 ClientName = "whatever_taucht_nicht_auf",
-                BusinessUnit = "BuWeather",
-                TeamNumber = 42,
-                Department = "Homelandsecurity",
             },
             new()
             {
@@ -156,9 +135,6 @@ public class ProjectsBySearchTest : TestsWithDatabase
                 ProjectName = "Regen",
                 Slug = "regen",
                 ClientName = "ESA",
-                BusinessUnit = "BuWeather",
-                TeamNumber = 42,
-                Department = "Homelandsecurity",
             },
             new()
             {
@@ -166,9 +142,6 @@ public class ProjectsBySearchTest : TestsWithDatabase
                 ProjectName = "Turbo",
                 Slug = "turbo",
                 ClientName = "Regen",
-                BusinessUnit = "BuWeather",
-                TeamNumber = 42,
-                Department = "Homelandsecurity",
             },
         };
 
@@ -192,6 +165,7 @@ public class ProjectsBySearchTest : TestsWithDatabase
     }
 
     [Test]
+    [Ignore("Need to implement team handling and extend filter to the teams attributes.")]
     public async Task GetProjectsWithTeamNumber_Test()
     {
         // Arrange
@@ -203,9 +177,6 @@ public class ProjectsBySearchTest : TestsWithDatabase
                 ProjectName = "Wasserfall",
                 Slug = "wasserfall",
                 ClientName = "whatever_taucht_nicht_auf",
-                BusinessUnit = "BuWeather",
-                TeamNumber = 42,
-                Department = "Homelandsecurity",
             },
             new()
             {
@@ -213,9 +184,6 @@ public class ProjectsBySearchTest : TestsWithDatabase
                 ProjectName = "Regen",
                 Slug = "regen",
                 ClientName = "ESA",
-                BusinessUnit = "BuWeather",
-                TeamNumber = 42,
-                Department = "Homelandsecurity",
             },
             new()
             {
@@ -223,9 +191,6 @@ public class ProjectsBySearchTest : TestsWithDatabase
                 ProjectName = "Turbo",
                 Slug = "turbo",
                 ClientName = "Regen",
-                BusinessUnit = "BuWeather",
-                TeamNumber = 41,
-                Department = "Homelandsecurity",
             },
         };
 

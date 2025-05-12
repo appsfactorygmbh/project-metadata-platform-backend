@@ -39,9 +39,6 @@ public class GetProjectByIdQueryHandlerTest
             ProjectName = "Regen",
             Slug = "regen",
             ClientName = "Nasa",
-            BusinessUnit = "BuWeather",
-            TeamNumber = 42,
-            Department = "Homelandsecurity",
         };
         _mockProjectRepo.Setup(m => m.GetProjectAsync(2)).ReturnsAsync(projectsResponseContent);
         var query = new GetProjectQuery(2);

@@ -23,6 +23,13 @@ public class ProjectModelConfig : IEntityTypeConfiguration<Project>
             .WithOne(pp => pp.Project)
             .HasForeignKey(pp => pp.ProjectId);
 
+        // relationship a project has one team
+        _ = builder
+            .HasOne(p => p.Team)
+            .WithMany(t => t.Projects)
+            .HasForeignKey(p => p.TeamId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         _ = builder.HasIndex(p => p.Slug).IsUnique();
     }
 }

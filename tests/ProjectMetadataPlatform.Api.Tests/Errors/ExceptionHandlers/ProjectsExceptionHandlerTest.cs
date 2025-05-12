@@ -26,9 +26,6 @@ public class ProjectsExceptionHandlerTest
             ProjectName = "Test Project",
             Slug = "test_project",
             ClientName = "Test Client",
-            BusinessUnit = "Test Business Unit",
-            TeamNumber = 0,
-            Department = "Test Department",
         };
 
         var mockException = new Mock<ProjectNotArchivedException>(project);

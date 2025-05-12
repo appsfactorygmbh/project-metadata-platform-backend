@@ -21,6 +21,7 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
 {
     private readonly IProjectsRepository _projectsRepository;
     private readonly IPluginRepository _pluginRepository;
+    private readonly ITeamRepository _teamRepository;
     private readonly ILogRepository _logRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ISlugHelper _slugHelper;
@@ -31,6 +32,7 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
     public UpdateProjectCommandHandler(
         IProjectsRepository projectsRepository,
         IPluginRepository pluginRepository,
+        ITeamRepository teamRepository,
         ILogRepository logRepository,
         IUnitOfWork unitOfWork,
         ISlugHelper slugHelper
@@ -38,6 +40,7 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
     {
         _projectsRepository = projectsRepository;
         _pluginRepository = pluginRepository;
+        _teamRepository = teamRepository;
         _logRepository = logRepository;
         _unitOfWork = unitOfWork;
         _slugHelper = slugHelper;
@@ -56,11 +59,11 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
             await _projectsRepository.GetProjectWithPluginsAsync(request.Id)
             ?? throw new ProjectNotFoundException(request.Id);
 
-        await UpdateProjectProperties(request, project);
-
         var globalPluginsById = (await _pluginRepository.GetGlobalPluginsAsync()).ToDictionary(
             plugin => plugin.Id
         );
+
+        await UpdateProjectProperties(request, project);
 
         var invalidPluginIds = request
             .Plugins.Select(plugin => plugin.PluginId)
@@ -120,6 +123,29 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
     {
         var changes = new List<LogChange>();
 
+        if (project.TeamId != request.TeamId)
+        {
+            // if team will be + team id does not exists -> throw Exception
+            if (
+                request.TeamId != null
+                && await _teamRepository.CheckIfTeamExists(request.TeamId.Value)
+            )
+            {
+                throw new TeamNotFoundException(request.TeamId.Value);
+            }
+            var change = new LogChange
+            {
+                Property = "Team",
+                OldValue = project.Team == null ? string.Empty : project.Team.TeamName,
+                NewValue =
+                    request.TeamId == null
+                        ? string.Empty
+                        : await _teamRepository.RetrieveNameForId(request.TeamId.Value),
+            };
+            changes.Add(change);
+            project.TeamId = request.TeamId;
+        }
+
         if (project.ProjectName != request.ProjectName)
         {
             var projectSlug = _slugHelper.GenerateSlug(request.ProjectName);
@@ -146,42 +172,6 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
             changes.Add(changeName);
             project.ProjectName = request.ProjectName;
             project.Slug = projectSlug;
-        }
-
-        if (project.BusinessUnit != request.BusinessUnit)
-        {
-            var change = new LogChange
-            {
-                Property = nameof(Project.BusinessUnit),
-                OldValue = project.BusinessUnit,
-                NewValue = request.BusinessUnit,
-            };
-            changes.Add(change);
-            project.BusinessUnit = request.BusinessUnit;
-        }
-
-        if (project.TeamNumber != request.TeamNumber)
-        {
-            var change = new LogChange
-            {
-                Property = nameof(Project.TeamNumber),
-                OldValue = project.TeamNumber.ToString(CultureInfo.InvariantCulture),
-                NewValue = request.TeamNumber.ToString(CultureInfo.InvariantCulture),
-            };
-            changes.Add(change);
-            project.TeamNumber = request.TeamNumber;
-        }
-
-        if (project.Department != request.Department)
-        {
-            var change = new LogChange
-            {
-                Property = nameof(Project.Department),
-                OldValue = project.Department,
-                NewValue = request.Department,
-            };
-            changes.Add(change);
-            project.Department = request.Department;
         }
 
         if (project.ClientName != request.ClientName)

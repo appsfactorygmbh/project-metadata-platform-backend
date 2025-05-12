@@ -97,10 +97,11 @@ public class PatchGlobalPluginCommandHandlerTest
             );
 
             Assert.That(capturedLogChanges, Has.Count.EqualTo(1));
-            Assert.That(capturedLogChanges.First(), Is.Not.Null);
-            Assert.That(capturedLogChanges.First().Property, Is.EqualTo(nameof(plugin.PluginName)));
-            Assert.That(capturedLogChanges.First().OldValue, Is.EqualTo("Mercury Redstone"));
-            Assert.That(capturedLogChanges.First().NewValue, Is.EqualTo("Mercury Atlas"));
+            var firstLogChange = capturedLogChanges!.First();
+            Assert.That(firstLogChange, Is.Not.Null);
+            Assert.That(firstLogChange.Property, Is.EqualTo(nameof(plugin.PluginName)));
+            Assert.That(firstLogChange.OldValue, Is.EqualTo("Mercury Redstone"));
+            Assert.That(firstLogChange.NewValue, Is.EqualTo("Mercury Atlas"));
 
             _mockUnitOfWork.Verify(uow => uow.CompleteAsync(), Times.Once);
         });
@@ -360,16 +361,11 @@ public class PatchGlobalPluginCommandHandlerTest
             );
 
             Assert.That(capturedLogChanges, Has.Count.EqualTo(1));
-            Assert.That(capturedLogChanges.First(), Is.Not.Null);
-            Assert.That(capturedLogChanges.First().Property, Is.EqualTo(nameof(plugin.BaseUrl)));
-            Assert.That(
-                capturedLogChanges.First().OldValue,
-                Is.EqualTo("https://mercuryredstone.com")
-            );
-            Assert.That(
-                capturedLogChanges.First().NewValue,
-                Is.EqualTo("https://mercuryatlas.com")
-            );
+            var firstLogChange = capturedLogChanges!.First();
+            Assert.That(firstLogChange, Is.Not.Null);
+            Assert.That(firstLogChange.Property, Is.EqualTo(nameof(plugin.BaseUrl)));
+            Assert.That(firstLogChange.OldValue, Is.EqualTo("https://mercuryredstone.com"));
+            Assert.That(firstLogChange.NewValue, Is.EqualTo("https://mercuryatlas.com"));
 
             _mockUnitOfWork.Verify(uow => uow.CompleteAsync(), Times.Once);
         });
@@ -522,10 +518,11 @@ public class PatchGlobalPluginCommandHandlerTest
             );
 
             Assert.That(capturedLogChanges, Has.Count.EqualTo(1));
-            Assert.That(capturedLogChanges.First(), Is.Not.Null);
-            Assert.That(capturedLogChanges.First().Property, Is.EqualTo(nameof(plugin.PluginName)));
-            Assert.That(capturedLogChanges.First().OldValue, Is.EqualTo("Vega c"));
-            Assert.That(capturedLogChanges.First().NewValue, Is.EqualTo("VEGA C"));
+            var firstLogChange = capturedLogChanges!.First();
+            Assert.That(firstLogChange, Is.Not.Null);
+            Assert.That(firstLogChange.Property, Is.EqualTo(nameof(plugin.PluginName)));
+            Assert.That(firstLogChange.OldValue, Is.EqualTo("Vega c"));
+            Assert.That(firstLogChange.NewValue, Is.EqualTo("VEGA C"));
 
             _mockUnitOfWork.Verify(uow => uow.CompleteAsync(), Times.Once);
         });

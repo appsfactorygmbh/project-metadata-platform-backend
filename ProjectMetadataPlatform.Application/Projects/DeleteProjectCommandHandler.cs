@@ -80,29 +80,23 @@ public class DeleteProjectCommandHandler : IRequestHandler<DeleteProjectCommand,
             },
             new()
             {
-                OldValue = project.BusinessUnit,
-                NewValue = "",
-                Property = nameof(Project.BusinessUnit),
-            },
-            new()
-            {
-                OldValue = project.Department,
-                NewValue = "",
-                Property = nameof(Project.Department),
-            },
-            new()
-            {
                 OldValue = project.ClientName,
                 NewValue = "",
                 Property = nameof(Project.ClientName),
             },
-            new()
-            {
-                OldValue = project.TeamNumber.ToString(CultureInfo.InvariantCulture),
-                NewValue = "",
-                Property = nameof(Project.TeamNumber),
-            },
         };
+
+        if (project.Team != null)
+        {
+            changes.Add(
+                new()
+                {
+                    OldValue = project.Team.TeamName,
+                    NewValue = "",
+                    Property = "Team",
+                }
+            );
+        }
 
         await _logRepository.AddProjectLogForCurrentUser(project, Action.REMOVED_PROJECT, changes);
     }

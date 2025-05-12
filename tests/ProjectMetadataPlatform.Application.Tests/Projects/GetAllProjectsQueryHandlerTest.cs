@@ -7,6 +7,7 @@ using NUnit.Framework;
 using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Application.Projects;
 using ProjectMetadataPlatform.Domain.Projects;
+using ProjectMetadataPlatform.Domain.Teams;
 
 namespace ProjectMetadataPlatform.Application.Tests.Projects;
 
@@ -40,6 +41,12 @@ public class GetAllProjectsQueryHandlerTest
     public async Task ReturnsProjectsFromRepository()
     {
         var request = new GetAllProjectsQuery(null, "");
+        var team = new Team()
+        {
+            TeamName = "AF_1",
+            Id = 1,
+            BusinessUnit = "Health",
+        };
         var projects = new List<Project>
         {
             new()
@@ -47,10 +54,9 @@ public class GetAllProjectsQueryHandlerTest
                 Id = 1,
                 ProjectName = "Heather",
                 Slug = "heather",
-                BusinessUnit = "666",
                 ClientName = "Metatron",
-                Department = "Mars",
-                TeamNumber = 42,
+                Team = team,
+                TeamId = 1,
                 Company = "Ag der Ags",
                 IsmsLevel = SecurityLevel.HIGH,
             },
@@ -59,10 +65,7 @@ public class GetAllProjectsQueryHandlerTest
                 Id = 2,
                 ProjectName = "James",
                 Slug = "james",
-                BusinessUnit = "777",
                 ClientName = "Lucifer",
-                Department = "Venus",
-                TeamNumber = 43,
                 Company = "Ag der Ags",
                 IsmsLevel = SecurityLevel.HIGH,
             },
@@ -71,10 +74,7 @@ public class GetAllProjectsQueryHandlerTest
                 Id = 3,
                 ProjectName = "Marika",
                 Slug = "marika",
-                BusinessUnit = "999",
                 ClientName = "Satan",
-                Department = "Earth",
-                TeamNumber = 44,
                 Company = "Ark",
                 IsmsLevel = SecurityLevel.HIGH,
             },
@@ -93,63 +93,53 @@ public class GetAllProjectsQueryHandlerTest
     {
         var projects = new List<Project>
         {
-            new Project
+            new()
             {
                 Id = 5,
                 ProjectName = "Aapfel",
                 Slug = "marika",
-                BusinessUnit = "999",
                 ClientName = "Zatan",
-                Department = "Earth",
-                TeamNumber = 44,
+                TeamId = 1,
                 Company = "Ark",
                 IsmsLevel = SecurityLevel.HIGH,
             },
-            new Project
+            new()
             {
                 Id = 1,
                 ProjectName = "Beta",
                 Slug = "heather",
-                BusinessUnit = "666",
                 ClientName = "Metatron",
-                Department = "Mars",
-                TeamNumber = 42,
+                TeamId = 1,
                 Company = "Ag der Ags",
                 IsmsLevel = SecurityLevel.HIGH,
             },
-            new Project
+            new()
             {
                 Id = 2,
                 ProjectName = "Apfel",
                 Slug = "james",
-                BusinessUnit = "777",
                 ClientName = "Metatron",
-                Department = "Venus",
-                TeamNumber = 43,
+                TeamId = 1,
                 Company = "Ag der Ags",
                 IsmsLevel = SecurityLevel.HIGH,
             },
-            new Project
+            new()
             {
                 Id = 3,
                 ProjectName = "Marika",
                 Slug = "marika",
-                BusinessUnit = "999",
                 ClientName = "Satan",
-                Department = "Earth",
-                TeamNumber = 44,
+                TeamId = 1,
                 Company = "Ark",
                 IsmsLevel = SecurityLevel.HIGH,
             },
-            new Project
+            new()
             {
                 Id = 4,
                 ProjectName = "Aarika",
                 Slug = "marika",
-                BusinessUnit = "999",
                 ClientName = "Satan",
-                Department = "Earth",
-                TeamNumber = 44,
+                TeamId = 1,
                 Company = "Ark",
                 IsmsLevel = SecurityLevel.HIGH,
             },

@@ -16,9 +16,6 @@ public class ProjectManagement : IntegrationTestsBase
         """
         {
           "projectName": "testProject",
-          "businessUnit": "BU1",
-          "teamNumber": 3,
-          "department": "testDepartment",
           "clientName": "testClient",
           "offerId": "testId",
           "company": "testCompany",
@@ -32,9 +29,6 @@ public class ProjectManagement : IntegrationTestsBase
         """
         {
           "projectName": "otherTestProject2",
-          "businessUnit": "BU2",
-          "teamNumber": 4,
-          "department": "testDepartment2",
           "clientName": "testClient2",
           "offerId": "testId2",
           "company": "testCompany2",
@@ -48,9 +42,6 @@ public class ProjectManagement : IntegrationTestsBase
         """
         {
           "projectName": "testProject",
-          "businessUnit": "BU1",
-          "teamNumber": 3,
-          "department": "testDepartment",
           "clientName": "testClient",
           "isArchived": true,
           "offerId": "testId",
@@ -65,9 +56,6 @@ public class ProjectManagement : IntegrationTestsBase
         """
         {
           "projectName": "testProject",
-          "businessUnit": "BU2",
-          "teamNumber": 7,
-          "department": "testDepartment2",
           "clientName": "testClient2",
           "offerId": "testId2",
           "company": "testCompany2",
@@ -82,9 +70,6 @@ public class ProjectManagement : IntegrationTestsBase
             """
                    {
                      "projectName": "testProject",
-                     "businessUnit": "BU1",
-                     "teamNumber": 3,
-                     "department": "testDepartment",
                      "clientName": "testClient",
                      "offerId": "testId",
                      "company": "testCompany",
@@ -117,9 +102,6 @@ public class ProjectManagement : IntegrationTestsBase
             """
                    {
                      "projectName": "testProject",
-                     "businessUnit": "BU1",
-                     "teamNumber": 3,
-                     "department": "testDepartment",
                      "clientName": "testClient",
                      "offerId": "testId",
                      "company": "testCompany",
@@ -168,9 +150,6 @@ public class ProjectManagement : IntegrationTestsBase
 
         var rootElement = getResponseContent!.RootElement;
         rootElement.GetProperty("projectName").GetString().Should().Be("testProject");
-        rootElement.GetProperty("businessUnit").GetString().Should().Be("BU1");
-        rootElement.GetProperty("teamNumber").GetInt32().Should().Be(3);
-        rootElement.GetProperty("department").GetString().Should().Be("testDepartment");
         rootElement.GetProperty("clientName").GetString().Should().Be("testClient");
         rootElement.GetProperty("offerId").GetString().Should().Be("testId");
         rootElement.GetProperty("company").GetString().Should().Be("testCompany");
@@ -204,9 +183,6 @@ public class ProjectManagement : IntegrationTestsBase
 
         var firstProject = rootElement[0];
         firstProject.GetProperty("projectName").GetString().Should().Be("testProject");
-        firstProject.GetProperty("businessUnit").GetString().Should().Be("BU1");
-        firstProject.GetProperty("teamNumber").GetInt32().Should().Be(3);
-        firstProject.TryGetProperty("department", out _).Should().BeFalse();
         firstProject.GetProperty("clientName").GetString().Should().Be("testClient");
         firstProject.GetProperty("company").GetString().Should().Be("testCompany");
         firstProject.GetProperty("ismsLevel").GetString().Should().Be("NORMAL");
@@ -214,9 +190,6 @@ public class ProjectManagement : IntegrationTestsBase
 
         var secondProject = rootElement[1];
         secondProject.GetProperty("projectName").GetString().Should().Be("otherTestProject2");
-        secondProject.GetProperty("businessUnit").GetString().Should().Be("BU2");
-        secondProject.GetProperty("teamNumber").GetInt32().Should().Be(4);
-        secondProject.TryGetProperty("department", out _).Should().BeFalse();
         secondProject.GetProperty("clientName").GetString().Should().Be("testClient2");
         secondProject.GetProperty("company").GetString().Should().Be("testCompany2");
         secondProject.GetProperty("ismsLevel").GetString().Should().Be("VERY_HIGH");
@@ -252,9 +225,6 @@ public class ProjectManagement : IntegrationTestsBase
 
         var rootElement = getResponseContent!.RootElement;
         rootElement.GetProperty("projectName").GetString().Should().Be("testProject");
-        rootElement.GetProperty("businessUnit").GetString().Should().Be("BU2");
-        rootElement.GetProperty("teamNumber").GetInt32().Should().Be(7);
-        rootElement.GetProperty("department").GetString().Should().Be("testDepartment2");
         rootElement.GetProperty("clientName").GetString().Should().Be("testClient2");
         rootElement.GetProperty("offerId").GetString().Should().Be("testId2");
         rootElement.GetProperty("company").GetString().Should().Be("testCompany2");
@@ -324,9 +294,6 @@ public class ProjectManagement : IntegrationTestsBase
         var project = await ToJsonElement(client.GetAsync(updateResponse.Headers.Location));
 
         project.GetProperty("projectName").GetString().Should().Be("testProject");
-        project.GetProperty("businessUnit").GetString().Should().Be("BU1");
-        project.GetProperty("teamNumber").GetInt32().Should().Be(3);
-        project.GetProperty("department").GetString().Should().Be("testDepartment");
         project.GetProperty("clientName").GetString().Should().Be("testClient");
         project.GetProperty("offerId").GetString().Should().Be("testId");
         project.GetProperty("company").GetString().Should().Be("testCompany");

@@ -41,9 +41,6 @@ public class PluginsRepositoryTest : TestsWithDatabase
             ProjectName = "Regen",
             Slug = "regen",
             ClientName = "Nasa",
-            BusinessUnit = "BuWeather",
-            TeamNumber = 42,
-            Department = "Homelandsecurity",
         };
 
         _context.Projects.Add(project);
@@ -106,7 +103,7 @@ public class PluginsRepositoryTest : TestsWithDatabase
     }
 
     [Test]
-    public async Task StorePlugin_noIdIncrementWhenIdExists_Test()
+    public async Task StorePlugin_NoIdIncrementWhenIdExists_Test()
     {
         var examplePlugin = new Plugin
         {
@@ -198,9 +195,6 @@ public class PluginsRepositoryTest : TestsWithDatabase
             ProjectName = "Test Project",
             Slug = "test_project",
             ClientName = "Test Client", // Ensure ClientName is set
-            BusinessUnit = "Test Business",
-            TeamNumber = 42,
-            Department = "Test Department",
         };
 
         var unarchivedPlugin = new Plugin
@@ -251,9 +245,6 @@ public class PluginsRepositoryTest : TestsWithDatabase
             ProjectName = "Test Project",
             Slug = "test_project",
             ClientName = "Test Client", // Make sure this is set
-            BusinessUnit = "Test Business",
-            TeamNumber = 42,
-            Department = "Test Department",
         };
         var archivedPlugin = new Plugin
         {
@@ -288,9 +279,6 @@ public class PluginsRepositoryTest : TestsWithDatabase
             ProjectName = "Test Project",
             Slug = "test_project",
             ClientName = "Test Client", // Make sure this is set
-            BusinessUnit = "Test Business",
-            TeamNumber = 42,
-            Department = "Test Department",
         };
         _context.Projects.Add(project);
         await _context.SaveChangesAsync();
@@ -309,9 +297,6 @@ public class PluginsRepositoryTest : TestsWithDatabase
             ProjectName = "Test Project",
             Slug = "test_project",
             ClientName = "Test Client", // Make sure this is set
-            BusinessUnit = "Test Business",
-            TeamNumber = 42,
-            Department = "Test Department",
         };
         var archivedPlugin = new Plugin
         {
@@ -348,9 +333,6 @@ public class PluginsRepositoryTest : TestsWithDatabase
             ProjectName = "Test Project",
             Slug = "test_project",
             ClientName = "Test Client", // Make sure this is set
-            BusinessUnit = "Test Business",
-            TeamNumber = 42,
-            Department = "Test Department",
         };
         var unarchivedPlugin = new Plugin
         {
@@ -400,9 +382,6 @@ public class PluginsRepositoryTest : TestsWithDatabase
             ProjectName = "Test Project",
             Slug = "test_project",
             ClientName = "Test Client", // Make sure this is set
-            BusinessUnit = "Test Business",
-            TeamNumber = 42,
-            Department = "Test Department",
         };
         var project2 = new Project
         {
@@ -410,9 +389,6 @@ public class PluginsRepositoryTest : TestsWithDatabase
             ProjectName = "Test Project2",
             Slug = "test_project2",
             ClientName = "Test Client2", // Make sure this is set
-            BusinessUnit = "Test Business2",
-            TeamNumber = 37,
-            Department = "Test Department2",
         };
         var unarchivedPlugin = new Plugin
         {
@@ -471,9 +447,6 @@ public class PluginsRepositoryTest : TestsWithDatabase
             Id = 1,
             ProjectName = "Test Project",
             ClientName = "Test Client",
-            BusinessUnit = "Test Business",
-            TeamNumber = 42,
-            Department = "Test Department",
             Slug = "testProject",
         };
         var project2 = new Project
@@ -481,9 +454,6 @@ public class PluginsRepositoryTest : TestsWithDatabase
             Id = 2,
             ProjectName = "Test Project2",
             ClientName = "Test Client2",
-            BusinessUnit = "Test Business2",
-            TeamNumber = 37,
-            Department = "Test Department2",
             Slug = "testProject2",
         };
         var archivedPlugin = new Plugin

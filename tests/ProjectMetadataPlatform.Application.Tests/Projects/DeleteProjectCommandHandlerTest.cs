@@ -43,9 +43,6 @@ public class DeleteProjectCommandHandlerTest
             ProjectName = "Heather",
             Slug = "heather",
             ClientName = "Metatron",
-            BusinessUnit = "666",
-            Department = "Silent Hill",
-            TeamNumber = 3,
             IsArchived = true,
         };
         _mockProjectRepo.Setup(m => m.GetProjectAsync(It.IsAny<int>())).ReturnsAsync(project);
@@ -70,9 +67,6 @@ public class DeleteProjectCommandHandlerTest
             ProjectName = "Heather",
             Slug = "heather",
             ClientName = "Metatron",
-            BusinessUnit = "666",
-            Department = "Silent Hill",
-            TeamNumber = 3,
             IsArchived = false,
         };
         _mockProjectRepo.Setup(m => m.GetProjectAsync(It.IsAny<int>())).ReturnsAsync(project);
@@ -108,9 +102,6 @@ public class DeleteProjectCommandHandlerTest
             ProjectName = "Heather",
             Slug = "heather",
             ClientName = "Metatron",
-            BusinessUnit = "666",
-            Department = "Silent Hill",
-            TeamNumber = 3,
             IsArchived = true,
         };
         _mockProjectRepo.Setup(m => m.GetProjectAsync(It.IsAny<int>())).ReturnsAsync(project);
@@ -123,13 +114,7 @@ public class DeleteProjectCommandHandlerTest
         _mockLogRepo.Verify(
             m =>
                 m.AddProjectLogForCurrentUser(
-                    It.Is<Project>(p =>
-                        p.ProjectName == "Heather"
-                        && p.ClientName == "Metatron"
-                        && p.BusinessUnit == "666"
-                        && p.Department == "Silent Hill"
-                        && p.TeamNumber == 3
-                    ),
+                    It.Is<Project>(p => p.ProjectName == "Heather" && p.ClientName == "Metatron"),
                     Action.REMOVED_PROJECT,
                     It.Is<List<LogChange>>(changes =>
                         changes.Any(change =>
@@ -140,21 +125,6 @@ public class DeleteProjectCommandHandlerTest
                         && changes.Any(change =>
                             change.Property == "ClientName"
                             && change.OldValue == "Metatron"
-                            && change.NewValue == ""
-                        )
-                        && changes.Any(change =>
-                            change.Property == "BusinessUnit"
-                            && change.OldValue == "666"
-                            && change.NewValue == ""
-                        )
-                        && changes.Any(change =>
-                            change.Property == "Department"
-                            && change.OldValue == "Silent Hill"
-                            && change.NewValue == ""
-                        )
-                        && changes.Any(change =>
-                            change.Property == "TeamNumber"
-                            && change.OldValue == "3"
                             && change.NewValue == ""
                         )
                     )

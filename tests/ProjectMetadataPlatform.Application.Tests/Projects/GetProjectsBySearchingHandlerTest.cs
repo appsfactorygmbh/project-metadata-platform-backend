@@ -46,9 +46,6 @@ public class GetProjectsBySearchingHandlerTest
                 ProjectName = "Regen",
                 Slug = "regen",
                 ClientName = "Nasa",
-                BusinessUnit = "BuWeather",
-                TeamNumber = 42,
-                Department = "Homelandsecurity",
             },
         };
 
@@ -74,9 +71,6 @@ public class GetProjectsBySearchingHandlerTest
                 ProjectName = "Regen",
                 Slug = "regen",
                 ClientName = "Nasa",
-                BusinessUnit = "BuWeather",
-                TeamNumber = 42,
-                Department = "Homelandsecurity",
             },
             new()
             {
@@ -84,9 +78,6 @@ public class GetProjectsBySearchingHandlerTest
                 ProjectName = "Sonne",
                 Slug = "sonne",
                 ClientName = "Nasa",
-                BusinessUnit = "BuWeather",
-                TeamNumber = 42,
-                Department = "Homelandsecurity",
             },
         };
         _mockProjectRepo

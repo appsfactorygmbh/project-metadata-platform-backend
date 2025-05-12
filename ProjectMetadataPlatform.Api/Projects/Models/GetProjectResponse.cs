@@ -1,20 +1,19 @@
 using ProjectMetadataPlatform.Domain.Projects;
+using ProjectMetadataPlatform.Domain.Teams;
 
 namespace ProjectMetadataPlatform.Api.Projects.Models;
 
 /// <summary>
 /// Represents a response to the GetProject API call.
 /// </summary>
+/// <param name="ProjectName"></param>
+/// <param name="ClientName"></param>
 /// <param name="Id">The identification number for the project.</param>
 /// <param name="Slug">The Slug for the project name.</param>
-/// <param name="ProjectName">The name of the project.</param>
-/// <param name="ClientName">The name of the client for the project.</param>
-/// <param name="BusinessUnit">The name of the Business Unit associated with the project.</param>
-/// <param name="TeamNumber">The number of the team working on the project.</param>
-/// <param name="Department">The name of the department associated with the project.</param>
 /// <param name="IsArchived">If the project is archived or not.</param>
 /// <param name="OfferId">Internal id of the offer associated with the project.</param>
 /// <param name="Company">The company that is responsible for the project.</param>
+/// <param name="Team">The team working on the project.</param>
 /// <param name="CompanyState">The state of the company. (INTERNAL or EXTERNAL)</param>
 /// <param name="IsmsLevel">The security level of the project (NORMAL, HIGH, VERY_HIGH)</param>
 public record GetProjectResponse(
@@ -22,12 +21,10 @@ public record GetProjectResponse(
     string Slug,
     string ProjectName,
     string ClientName,
-    string BusinessUnit,
-    int TeamNumber,
-    string Department,
-    bool IsArchived,
     string OfferId,
     string Company,
+    bool IsArchived,
+    Team Team,
     CompanyState CompanyState,
     SecurityLevel IsmsLevel
 );

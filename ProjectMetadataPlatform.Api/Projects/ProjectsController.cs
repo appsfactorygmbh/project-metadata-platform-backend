@@ -51,15 +51,14 @@ public class ProjectsController : ControllerBase
         var projects = await _mediator.Send(query);
 
         var response = projects.Select(project => new GetProjectsResponse(
-            project.Id,
-            project.Slug,
-            project.ProjectName,
-            project.ClientName,
-            project.BusinessUnit,
-            project.TeamNumber,
-            project.IsArchived,
-            project.Company,
-            project.IsmsLevel
+            Id: project.Id,
+            Slug: project.Slug,
+            ProjectName: project.ProjectName,
+            ClientName: project.ClientName,
+            IsArchived: project.IsArchived,
+            Company: project.Company,
+            Team: project.Team,
+            IsmsLevel: project.IsmsLevel
         ));
         return Ok(response);
     }
@@ -97,19 +96,15 @@ public class ProjectsController : ControllerBase
         var query = new GetProjectQuery(id);
         var project = await _mediator.Send(query);
 
-        var response = new GetProjectResponse(
-            project.Id,
-            project.Slug,
-            project.ProjectName,
-            project.ClientName,
-            project.BusinessUnit,
-            project.TeamNumber,
-            project.Department,
-            project.IsArchived,
-            project.OfferId,
-            project.Company,
-            project.CompanyState,
-            project.IsmsLevel
+        var response = new GetProjectsResponse(
+            Id: project.Id,
+            Slug: project.Slug,
+            ProjectName: project.ProjectName,
+            ClientName: project.ClientName,
+            IsArchived: project.IsArchived,
+            Company: project.Company,
+            Team: project.Team,
+            IsmsLevel: project.IsmsLevel
         );
 
         return Ok(response);
@@ -231,7 +226,7 @@ public class ProjectsController : ControllerBase
     /// <summary>
     /// Creates a new project or updates the one with given id.
     /// </summary>
-    /// <param name="project">The data of the new project.</param>
+    /// <param name="projectRequest">The data of the new project.</param>
     /// <param name="projectId">The id, if an existing project should be overwritten.</param>
     /// <returns>A response containing the id of the created project.</returns>
     /// <response code="201">The Project has been created successfully.</response>
@@ -243,37 +238,29 @@ public class ProjectsController : ControllerBase
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status409Conflict)]
     public async Task<ActionResult<CreateProjectResponse>> Put(
-        [FromBody] CreateProjectRequest project,
+        [FromBody] CreateProjectRequest projectRequest,
         int? projectId = null
     )
     {
         if (
-            string.IsNullOrWhiteSpace(project.ProjectName)
-            || string.IsNullOrWhiteSpace(project.BusinessUnit)
-            || string.IsNullOrWhiteSpace(project.Department)
-            || string.IsNullOrWhiteSpace(project.ClientName)
+            string.IsNullOrWhiteSpace(projectRequest.ProjectName)
+            || string.IsNullOrWhiteSpace(projectRequest.ClientName)
         )
         {
-            return BadRequest(
-                new ErrorResponse(
-                    "ProjectName, BusinessUnit, Department and ClientName must not be empty."
-                )
-            );
+            return BadRequest(new ErrorResponse("ProjectName and ClientName must not be empty."));
         }
 
         IRequest<int> command =
             projectId == null
                 ? new CreateProjectCommand(
-                    project.ProjectName,
-                    project.BusinessUnit,
-                    project.TeamNumber,
-                    project.Department,
-                    project.ClientName,
-                    project.OfferId,
-                    project.Company,
-                    project.CompanyState,
-                    project.IsmsLevel,
-                    (project.PluginList ?? [])
+                    ProjectName: projectRequest.ProjectName,
+                    ClientName: projectRequest.ClientName,
+                    OfferId: projectRequest.OfferId,
+                    Company: projectRequest.Company,
+                    CompanyState: projectRequest.CompanyState,
+                    TeamId: projectRequest.TeamId,
+                    IsmsLevel: projectRequest.IsmsLevel,
+                    Plugins: (projectRequest.PluginList ?? [])
                         .Select(p => new ProjectPlugins
                         {
                             PluginId = p.Id,
@@ -283,17 +270,15 @@ public class ProjectsController : ControllerBase
                         .ToList()
                 )
                 : new UpdateProjectCommand(
-                    project.ProjectName,
-                    project.BusinessUnit,
-                    project.TeamNumber,
-                    project.Department,
-                    project.ClientName,
-                    project.OfferId,
-                    project.Company,
-                    project.CompanyState,
-                    project.IsmsLevel,
-                    projectId.Value,
-                    (project.PluginList ?? [])
+                    Id: projectId.Value,
+                    ProjectName: projectRequest.ProjectName,
+                    ClientName: projectRequest.ClientName,
+                    OfferId: projectRequest.OfferId,
+                    Company: projectRequest.Company,
+                    CompanyState: projectRequest.CompanyState,
+                    TeamId: projectRequest.TeamId,
+                    IsmsLevel: projectRequest.IsmsLevel,
+                    Plugins: (projectRequest.PluginList ?? [])
                         .Select(p => new ProjectPlugins
                         {
                             ProjectId = projectId.Value,
@@ -302,55 +287,13 @@ public class ProjectsController : ControllerBase
                             Url = p.Url,
                         })
                         .ToList(),
-                    project.IsArchived
+                    IsArchived: projectRequest.IsArchived
                 );
 
         var id = await _mediator.Send(command);
 
         var response = new CreateProjectResponse(id);
         return Created("/Projects/" + id, response);
-    }
-
-    /// <summary>
-    /// Retrieves a distinct list of all business units from the projects.
-    /// </summary>
-    /// <remarks>
-    /// This endpoint queries all projects without any filter (empty search string) and extracts the business units.
-    /// It then returns a distinct list of these business units. This can be useful for filtering projects by business unit
-    /// or simply to obtain an overview of all business units involved in the projects.
-    /// </remarks>
-    /// <returns>An <see cref="ActionResult"/> containing a list of distinct business units.</returns>
-    /// <response code="200">Returns the list of distinct business units successfully.</response>
-    /// <response code="500">Indicates an internal error occurred while processing the request.</response>
-    [HttpGet("filterData/businessunits")]
-    [ProducesResponseType(typeof(IEnumerable<string>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<string>>> GetAllBusinessUnits()
-    {
-        var query = new GetAllBusinessUnitsQuery();
-        var businessUnits = await _mediator.Send(query);
-
-        return Ok(businessUnits);
-    }
-
-    /// <summary>
-    /// Retrieves a distinct list of all team numbers from the projects.
-    /// </summary>
-    /// <remarks>
-    /// This endpoint queries all projects without any filter (empty search string) and extracts the team numbers.
-    /// It then returns a distinct list of these team numbers. This can be useful for filtering projects by team number
-    /// or simply to obtain an overview of all team numbers involved in the projects.
-    /// </remarks>
-    /// <returns>An <see cref="ActionResult"/> containing a list of distinct team numbers.</returns>
-    /// <response code="200">Returns the list of distinct team numbers successfully.</response>
-    /// <response code="500">Indicates an internal error occurred while processing the request.</response>
-    [HttpGet("filterData/teamnumbers")]
-    [ProducesResponseType(typeof(IEnumerable<int>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<int>>> GetAllTeamNumbers()
-    {
-        var query = new GetAllTeamNumbersQuery();
-        var teamNumbers = await _mediator.Send(query);
-
-        return Ok(teamNumbers);
     }
 
     /// <summary>

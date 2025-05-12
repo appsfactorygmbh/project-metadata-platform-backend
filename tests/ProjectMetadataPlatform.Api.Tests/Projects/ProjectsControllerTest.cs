@@ -72,9 +72,6 @@ public class ProjectsControllerTest
                 ProjectName = "Regen",
                 Slug = "regen",
                 ClientName = "Nasa",
-                BusinessUnit = "BuWeather",
-                TeamNumber = 42,
-                Department = "Homelandsecurity",
                 Company = "Geostorm",
                 IsmsLevel = SecurityLevel.VERY_HIGH,
             },
@@ -107,8 +104,6 @@ public class ProjectsControllerTest
             Assert.That(project.Slug, Is.EqualTo("regen"));
             Assert.That(project.ProjectName, Is.EqualTo("Regen"));
             Assert.That(project.ClientName, Is.EqualTo("Nasa"));
-            Assert.That(project.BusinessUnit, Is.EqualTo("BuWeather"));
-            Assert.That(project.TeamNumber, Is.EqualTo(42));
             Assert.That(project.Company, Is.EqualTo("Geostorm"));
             Assert.That(project.IsmsLevel, Is.EqualTo(SecurityLevel.VERY_HIGH));
         });
@@ -126,9 +121,6 @@ public class ProjectsControllerTest
                 ProjectName = "Regen",
                 Slug = "regen",
                 ClientName = "Nasa",
-                BusinessUnit = "BuWeather",
-                TeamNumber = 42,
-                Department = "Homelandsecurity",
                 Company = "NothingButTheBest GmbH",
                 IsmsLevel = SecurityLevel.HIGH,
             },
@@ -166,8 +158,6 @@ public class ProjectsControllerTest
             Assert.That(project.ProjectName, Is.EqualTo("Regen"));
             Assert.That(project.Slug, Is.EqualTo("regen"));
             Assert.That(project.ClientName, Is.EqualTo("Nasa"));
-            Assert.That(project.BusinessUnit, Is.EqualTo("BuWeather"));
-            Assert.That(project.TeamNumber, Is.EqualTo(42));
             Assert.That(project.Company, Is.EqualTo("NothingButTheBest GmbH"));
             Assert.That(project.IsmsLevel, Is.EqualTo(SecurityLevel.HIGH));
         });
@@ -227,12 +217,10 @@ public class ProjectsControllerTest
         var projcet = new Project
         {
             Id = 1,
-            Department = "department 1",
-            BusinessUnit = "business unit 1",
             ClientName = "client name 1",
             ProjectName = "project 1",
             Slug = "project_1",
-            TeamNumber = 1,
+            TeamId = 1,
         };
         var responseContent = new List<ProjectPlugins>
         {
@@ -402,12 +390,9 @@ public class ProjectsControllerTest
         var project = new Project
         {
             Id = 1,
-            Department = "department 1",
-            BusinessUnit = "business unit 1",
             ClientName = "client name 1",
             ProjectName = "project 1",
             Slug = "project_1",
-            TeamNumber = 1,
         };
         var responseContent = new List<ProjectPlugins>
         {
@@ -486,12 +471,9 @@ public class ProjectsControllerTest
         var project = new Project
         {
             Id = 1,
-            Department = "department 1",
-            BusinessUnit = "business unit 1",
             ClientName = "client name 1",
             ProjectName = "project 1",
             Slug = "project_1",
-            TeamNumber = 1,
         };
         var responseContent = new List<ProjectPlugins>
         {
@@ -557,12 +539,9 @@ public class ProjectsControllerTest
         var projcet = new Project
         {
             Id = 1,
-            Department = "department 1",
-            BusinessUnit = "business unit 1",
             ClientName = "client name 1",
             ProjectName = "project 1",
             Slug = "project_1",
-            TeamNumber = 1,
         };
         var responseContent = new List<ProjectPlugins>
         {
@@ -602,7 +581,7 @@ public class ProjectsControllerTest
             "Heather",
             "Metatron",
             new List<string> { "666", "777" },
-            new List<int> { 42, 43 },
+            new List<string> { "42", "43" },
             true,
             new List<string> { "Optimus Prime" },
             SecurityLevel.HIGH
@@ -618,10 +597,7 @@ public class ProjectsControllerTest
                         Id = 1,
                         ProjectName = "Heather",
                         Slug = "heather",
-                        BusinessUnit = "666",
                         ClientName = "Metatron",
-                        Department = "Mars",
-                        TeamNumber = 42,
                         IsArchived = true,
                         Company = "Optimus Prime",
                         IsmsLevel = SecurityLevel.HIGH,
@@ -647,9 +623,7 @@ public class ProjectsControllerTest
             Assert.That(response.ToArray()[0].Id, Is.EqualTo(1));
             Assert.That(response.ToArray()[0].ProjectName, Is.EqualTo("Heather"));
             Assert.That(response.ToArray()[0].Slug, Is.EqualTo("heather"));
-            Assert.That(response.ToArray()[0].BusinessUnit, Is.EqualTo("666"));
             Assert.That(response.ToArray()[0].ClientName, Is.EqualTo("Metatron"));
-            Assert.That(response.ToArray()[0].TeamNumber, Is.EqualTo(42));
             Assert.That(response.ToArray()[0].IsArchived, Is.EqualTo(true));
             Assert.That(response.ToArray()[0].Company, Is.EqualTo("Optimus Prime"));
             Assert.That(response.ToArray()[0].IsmsLevel, Is.EqualTo(SecurityLevel.HIGH));
@@ -664,7 +638,7 @@ public class ProjectsControllerTest
             "Heather",
             "Gilgamesch",
             new List<string> { "666", "777" },
-            new List<int> { 42, 43 },
+            new List<string> { "42", "43" },
             false,
             new List<string> { "Minas Tirith" },
             SecurityLevel.NORMAL
@@ -1074,9 +1048,6 @@ public class ProjectsControllerTest
             ProjectName = "Heather",
             Slug = "heather",
             ClientName = "Metatron",
-            BusinessUnit = "666",
-            Department = "Silent Hill",
-            TeamNumber = 3,
             IsArchived = true,
         };
 
@@ -1100,9 +1071,6 @@ public class ProjectsControllerTest
             ProjectName = "Heather",
             Slug = "heather",
             ClientName = "Metatron",
-            BusinessUnit = "666",
-            Department = "Silent Hill",
-            TeamNumber = 3,
             IsArchived = false,
         };
 
@@ -1146,9 +1114,6 @@ public class ProjectsControllerTest
             ProjectName = "Heather",
             Slug = "heather",
             ClientName = "Metatron",
-            BusinessUnit = "666",
-            Department = "Silent Hill",
-            TeamNumber = 3,
             IsArchived = true,
         };
 

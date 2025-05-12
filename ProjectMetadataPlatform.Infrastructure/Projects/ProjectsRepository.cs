@@ -55,8 +55,14 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
             filteredQuery = filteredQuery.Where(project =>
                 project.ProjectName.ToLower().Contains(lowerTextSearch)
                 || project.ClientName.ToLower().Contains(lowerTextSearch)
-                || project.BusinessUnit.ToLower().Contains(lowerTextSearch)
-                || project.TeamNumber.ToString().Contains(lowerTextSearch)
+                || (
+                    project.Team != null
+                    && project.Team.BusinessUnit.ToLower().Contains(lowerTextSearch)
+                )
+                || (
+                    project.Team != null
+                    && project.Team.TeamName.ToString().Contains(lowerTextSearch)
+                )
                 || project.Company.ToLower().Contains(lowerTextSearch)
             );
         }
@@ -85,14 +91,15 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
                     .Request.BusinessUnit.Select(bu => bu.ToLower())
                     .ToList();
                 filteredQuery = filteredQuery.Where(project =>
-                    lowerBusinessUnits.Contains(project.BusinessUnit.ToLower())
+                    project.Team != null
+                    && lowerBusinessUnits.Contains(project.Team.BusinessUnit.ToLower())
                 );
             }
 
-            if (query.Request.TeamNumber is { Count: > 0 })
+            if (query.Request.TeamName is { Count: > 0 })
             {
                 filteredQuery = filteredQuery.Where(project =>
-                    query.Request.TeamNumber.Contains(project.TeamNumber)
+                    project.Team != null && query.Request.TeamName.Contains(project.Team.TeamName)
                 );
             }
 
@@ -170,30 +177,6 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     public async Task<bool> CheckProjectExists(int id)
     {
         return await _context.Projects.AnyAsync(project => project.Id == id);
-    }
-
-    /// <summary>
-    /// Asynchronously retrieves a distinct list of business units from all projects.
-    /// </summary>
-    /// <returns>A task representing the asynchronous operation, which upon completion returns a collection of distinct business unit names.</returns>
-    public async Task<IEnumerable<string>> GetBusinessUnitsAsync()
-    {
-        return await _context
-            .Projects.Select(project => project.BusinessUnit)
-            .Distinct()
-            .ToListAsync();
-    }
-
-    /// <summary>
-    /// Asynchronously retrieves a distinct list of team numbers from all projects.
-    /// </summary>
-    /// <returns>A task representing the asynchronous operation, which upon completion returns a collection of distinct team numbers.</returns>
-    public async Task<IEnumerable<int>> GetTeamNumbersAsync()
-    {
-        return await _context
-            .Projects.Select(project => project.TeamNumber)
-            .Distinct()
-            .ToListAsync();
     }
 
     /// <summary>

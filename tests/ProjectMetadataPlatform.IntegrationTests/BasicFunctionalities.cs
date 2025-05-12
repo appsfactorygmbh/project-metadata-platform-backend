@@ -26,8 +26,6 @@ public class BasicFunctionalities : IntegrationTestsBase
     [TestCase("/Projects", "GET")]
     [TestCase("/Projects/1", "GET")]
     [TestCase("/Projects/1/plugins", "GET")]
-    [TestCase("/Projects/filterData/businessunits", "GET")]
-    [TestCase("/Projects/filterData/teamnumbers", "GET")]
     [TestCase("/Projects", "PUT")]
     [TestCase("/Plugins", "GET")]
     [TestCase("/Plugins", "PUT")]

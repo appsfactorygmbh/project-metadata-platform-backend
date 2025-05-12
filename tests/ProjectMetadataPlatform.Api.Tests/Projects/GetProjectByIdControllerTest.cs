@@ -46,9 +46,6 @@ public class GetProjectByIdControllerTest
             ProjectName = "MetaDataPlatform",
             Slug = "metadataplatform",
             ClientName = "Appsfactory",
-            BusinessUnit = "BusinessUnit",
-            TeamNumber = 200,
-            Department = "Security",
             OfferId = "1023",
             Company = "Charlies Schokoladenfabrik",
             CompanyState = CompanyState.EXTERNAL,
@@ -79,9 +76,6 @@ public class GetProjectByIdControllerTest
             Assert.That(project.ProjectName, Is.EqualTo("MetaDataPlatform"));
             Assert.That(project.Slug, Is.EqualTo("metadataplatform"));
             Assert.That(project.ClientName, Is.EqualTo("Appsfactory"));
-            Assert.That(project.BusinessUnit, Is.EqualTo("BusinessUnit"));
-            Assert.That(project.TeamNumber, Is.EqualTo(200));
-            Assert.That(project.Department, Is.EqualTo("Security"));
             Assert.That(project.OfferId, Is.EqualTo("1023"));
             Assert.That(project.Company, Is.EqualTo("Charlies Schokoladenfabrik"));
             Assert.That(project.CompanyState, Is.EqualTo(CompanyState.EXTERNAL));

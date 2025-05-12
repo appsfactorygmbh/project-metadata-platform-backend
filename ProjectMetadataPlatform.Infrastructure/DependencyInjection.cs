@@ -16,6 +16,7 @@ using ProjectMetadataPlatform.Infrastructure.DataAccess;
 using ProjectMetadataPlatform.Infrastructure.Logs;
 using ProjectMetadataPlatform.Infrastructure.Plugins;
 using ProjectMetadataPlatform.Infrastructure.Projects;
+using ProjectMetadataPlatform.Infrastructure.Teams;
 using ProjectMetadataPlatform.Infrastructure.Users;
 
 namespace ProjectMetadataPlatform.Infrastructure;
@@ -45,6 +46,7 @@ public static class DependencyInjection
         _ = serviceCollection.AddScoped<IProjectsRepository, ProjectsRepository>();
         _ = serviceCollection.AddScoped<IAuthRepository, AuthRepository>();
         _ = serviceCollection.AddScoped<IUsersRepository, UsersRepository>();
+        _ = serviceCollection.AddScoped<ITeamRepository, TeamRepository>();
         _ = serviceCollection.AddScoped<
             IPasswordHasher<IdentityUser>,
             PasswordHasher<IdentityUser>

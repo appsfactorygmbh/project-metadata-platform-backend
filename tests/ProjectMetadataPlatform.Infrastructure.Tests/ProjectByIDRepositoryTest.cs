@@ -36,9 +36,6 @@ public class ProjectByIdRepositoryTest : TestsWithDatabase
             ProjectName = "Regen",
             Slug = "regen",
             ClientName = "Nasa",
-            BusinessUnit = "BuWeather",
-            TeamNumber = 42,
-            Department = "Homelandsecurity",
         };
 
         _context.Projects.Add(project);
@@ -54,9 +51,6 @@ public class ProjectByIdRepositoryTest : TestsWithDatabase
             Assert.That(result.Id, Is.EqualTo(1));
             Assert.That(result.ProjectName, Is.EqualTo("Regen"));
             Assert.That(result.ClientName, Is.EqualTo("Nasa"));
-            Assert.That(result.BusinessUnit, Is.EqualTo("BuWeather"));
-            Assert.That(result.TeamNumber, Is.EqualTo(42));
-            Assert.That(result.Department, Is.EqualTo("Homelandsecurity"));
         });
     }
 }
