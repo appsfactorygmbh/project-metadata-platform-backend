@@ -96,9 +96,11 @@ public class ProjectsController : ControllerBase
         var query = new GetProjectQuery(id);
         var project = await _mediator.Send(query);
 
-        var response = new GetProjectsResponse(
+        var response = new GetProjectResponse(
             Id: project.Id,
             Slug: project.Slug,
+            OfferId: project.OfferId,
+            CompanyState: project.CompanyState,
             ProjectName: project.ProjectName,
             ClientName: project.ClientName,
             IsArchived: project.IsArchived,

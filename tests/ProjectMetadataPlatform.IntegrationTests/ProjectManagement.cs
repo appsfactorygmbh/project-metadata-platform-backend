@@ -240,7 +240,7 @@ public class ProjectManagement : IntegrationTestsBase
             .GetString()
             .Should()
             .Be(
-                "admin created a new project with properties: ProjectName = testProject, Slug = testproject, BusinessUnit = BU1, Department = testDepartment, ClientName = testClient, TeamNumber = 3, OfferId = testId, Company = testCompany, CompanyState = EXTERNAL, IsmsLevel = NORMAL"
+                "admin created a new project with properties: ProjectName = testProject, Slug = testproject, ClientName = testClient, OfferId = testId, Company = testCompany, CompanyState = EXTERNAL, IsmsLevel = NORMAL"
             );
 
         logs[0]
@@ -248,7 +248,7 @@ public class ProjectManagement : IntegrationTestsBase
             .GetString()
             .Should()
             .Be(
-                "admin updated project testProject:  set BusinessUnit from BU1 to BU2,  set TeamNumber from 3 to 7,  set Department from testDepartment to testDepartment2,  set ClientName from testClient to testClient2,  set OfferId from testId to testId2,  set Company from testCompany to testCompany2,  set CompanyState from EXTERNAL to INTERNAL,  set IsmsLevel from NORMAL to HIGH"
+                "admin updated project testProject:  set ClientName from testClient to testClient2,  set OfferId from testId to testId2,  set Company from testCompany to testCompany2,  set CompanyState from EXTERNAL to INTERNAL,  set IsmsLevel from NORMAL to HIGH"
             );
     }
 
@@ -323,7 +323,7 @@ public class ProjectManagement : IntegrationTestsBase
             .GetString()
             .Should()
             .Be(
-                "admin created a new project with properties: ProjectName = testProject, Slug = testproject, BusinessUnit = BU1, Department = testDepartment, ClientName = testClient, TeamNumber = 3, OfferId = testId, Company = testCompany, CompanyState = EXTERNAL, IsmsLevel = NORMAL"
+                "admin created a new project with properties: ProjectName = testProject, Slug = testproject, ClientName = testClient, OfferId = testId, Company = testCompany, CompanyState = EXTERNAL, IsmsLevel = NORMAL"
             );
 
         logs[4]
@@ -418,7 +418,7 @@ public class ProjectManagement : IntegrationTestsBase
             .GetString()
             .Should()
             .Be(
-                "admin created a new project with properties: ProjectName = testProject, Slug = testproject, BusinessUnit = BU1, Department = testDepartment, ClientName = testClient, TeamNumber = 3, OfferId = testId, Company = testCompany, CompanyState = EXTERNAL, IsmsLevel = NORMAL"
+                "admin created a new project with properties: ProjectName = testProject, Slug = testproject, ClientName = testClient, OfferId = testId, Company = testCompany, CompanyState = EXTERNAL, IsmsLevel = NORMAL"
             );
         logs[1]
             .GetProperty("logMessage")
@@ -546,6 +546,6 @@ public class ProjectManagement : IntegrationTestsBase
         );
 
         // Assert
-        errorResponse.Message.Should().Be("The project 1 is not archived.");
+        errorResponse.Message.Should().Be($"The project {projectId} is not archived.");
     }
 }

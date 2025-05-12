@@ -24,7 +24,7 @@ public record GetProjectResponse(
     string OfferId,
     string Company,
     bool IsArchived,
-    Team Team,
+    Team? Team,
     CompanyState CompanyState,
     SecurityLevel IsmsLevel
 );

@@ -40,8 +40,8 @@ public class PutProjectControllerTest
         var request = new CreateProjectRequest(
             ProjectName: "Example Project",
             ClientName: "Example Client",
-            OfferId: "1",
-            Company: "Example Comapny",
+            OfferId: "Example OfferId",
+            Company: "Example Company",
             TeamId: null,
             CompanyState: CompanyState.EXTERNAL,
             IsmsLevel: SecurityLevel.NORMAL,
@@ -90,9 +90,9 @@ public class PutProjectControllerTest
             .ReturnsAsync(1);
         var request = new CreateProjectRequest(
             ProjectName: "Example Project",
-            ClientName: "Example Business Unit",
-            OfferId: "1",
-            Company: "Example Department",
+            ClientName: "Example Client",
+            OfferId: "Example OfferId",
+            Company: "Example Company",
             TeamId: null,
             CompanyState: CompanyState.EXTERNAL,
             IsmsLevel: SecurityLevel.NORMAL
@@ -120,13 +120,13 @@ public class PutProjectControllerTest
     {
         //prepare
         _mediator
-            .Setup(m => m.Send(It.IsAny<CreateProjectCommand>(), It.IsAny<CancellationToken>()))
+            .Setup(m => m.Send(It.IsAny<UpdateProjectCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(1);
         var request = new CreateProjectRequest(
             ProjectName: "Example Project",
-            ClientName: "Example Business Unit",
-            OfferId: "1",
-            Company: "Example Department",
+            ClientName: "Example Client",
+            OfferId: "Example OfferId",
+            Company: "Example Company",
             TeamId: null,
             CompanyState: CompanyState.EXTERNAL,
             IsmsLevel: SecurityLevel.NORMAL
@@ -238,9 +238,9 @@ public class PutProjectControllerTest
             .ReturnsAsync(1);
         var request = new CreateProjectRequest(
             ProjectName: "Example Project",
-            ClientName: "Example Business Unit",
-            OfferId: "1",
-            Company: "Example Department",
+            ClientName: "Example Client",
+            OfferId: "Example OfferId",
+            Company: "Example Company",
             TeamId: null,
             CompanyState: CompanyState.EXTERNAL,
             IsmsLevel: SecurityLevel.NORMAL,
@@ -291,9 +291,9 @@ public class PutProjectControllerTest
             .ReturnsAsync(1);
         var request = new CreateProjectRequest(
             ProjectName: "Example Project",
-            ClientName: "Example Business Unit",
-            OfferId: "1",
-            Company: "Example Department",
+            ClientName: "Example Client",
+            OfferId: "Example OfferId",
+            Company: "Example Company",
             TeamId: null,
             CompanyState: CompanyState.EXTERNAL,
             IsmsLevel: SecurityLevel.NORMAL,
@@ -349,16 +349,13 @@ public class PutProjectControllerTest
             .ReturnsAsync(1);
         var updateRequest = new CreateProjectRequest(
             ProjectName: "UpdatedProject",
-            ClientName: "Updated Business Unit",
-            OfferId: "2",
-            Company: "Updated Department",
+            ClientName: "Updated Client",
+            OfferId: "Updated OfferId",
+            Company: "Updated Company",
             TeamId: 2,
             CompanyState: CompanyState.INTERNAL,
             IsmsLevel: SecurityLevel.HIGH,
-            PluginList:
-            [
-                new UpdateProjectPluginRequest("UpdatedUrl", "UpdatedPluginName", 4),
-            ]
+            PluginList: [new UpdateProjectPluginRequest("UpdatedUrl", "UpdatedPluginName", 4)]
         );
         var updateResult = await _controller.Put(updateRequest, "updatedproject");
 
@@ -430,16 +427,13 @@ public class PutProjectControllerTest
             .ReturnsAsync(1);
         var updateRequest = new CreateProjectRequest(
             ProjectName: "UpdatedProject",
-            ClientName: "Updated Business Unit",
-            OfferId: "2",
-            Company: "Updated Department",
+            ClientName: "Updated Client",
+            OfferId: "Updated OfferId",
+            Company: "Updated Company",
             TeamId: 2,
             CompanyState: CompanyState.INTERNAL,
             IsmsLevel: SecurityLevel.HIGH,
-            PluginList:
-            [
-                new UpdateProjectPluginRequest("UpdatedUrl", "UpdatedPluginName", 4),
-            ],
+            PluginList: [new UpdateProjectPluginRequest("UpdatedUrl", "UpdatedPluginName", 4)],
             IsArchived: true
         );
         var updateResult = await _controller.Put(updateRequest, "updatedproject");
