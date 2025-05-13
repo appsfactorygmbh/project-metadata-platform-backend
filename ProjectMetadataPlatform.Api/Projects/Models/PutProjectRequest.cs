@@ -4,7 +4,7 @@ using ProjectMetadataPlatform.Domain.Projects;
 namespace ProjectMetadataPlatform.Api.Projects.Models;
 
 /// <summary>
-/// Represents a request to create a new project.
+/// Represents a request to create a new / update an existing project.
 /// </summary>
 /// <param name="ProjectName">The name of the project.</param>
 /// <param name="ClientName">The name of the client for the project.</param>
@@ -15,7 +15,7 @@ namespace ProjectMetadataPlatform.Api.Projects.Models;
 /// <param name="IsmsLevel">Security Level of project.</param>
 /// <param name="PluginList">An optional list of plugins associated to the project.</param>
 /// <param name="IsArchived">Indicates if the project is archived.</param>
-public record CreateProjectRequest(
+public record PutProjectRequest(
     string ProjectName,
     string ClientName,
     string OfferId,

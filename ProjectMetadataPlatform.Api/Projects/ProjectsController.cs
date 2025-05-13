@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using ProjectMetadataPlatform.Api.Errors;
 using ProjectMetadataPlatform.Api.Plugins.Models;
 using ProjectMetadataPlatform.Api.Projects.Models;
+using ProjectMetadataPlatform.Api.Teams.Models;
 using ProjectMetadataPlatform.Application.Plugins;
 using ProjectMetadataPlatform.Application.Projects;
 using ProjectMetadataPlatform.Domain.Plugins;
@@ -49,7 +50,6 @@ public class ProjectsController : ControllerBase
     {
         var query = new GetAllProjectsQuery(request, search);
         var projects = await _mediator.Send(query);
-
         var response = projects.Select(project => new GetProjectsResponse(
             Id: project.Id,
             Slug: project.Slug,
@@ -57,7 +57,15 @@ public class ProjectsController : ControllerBase
             ClientName: project.ClientName,
             IsArchived: project.IsArchived,
             Company: project.Company,
-            Team: project.Team,
+            Team: project.Team == null
+                ? null
+                : new()
+                {
+                    Id = project.Team.Id,
+                    TeamName = project.Team.TeamName,
+                    BusinessUnit = project.Team.BusinessUnit,
+                    PTL = project.Team.PTL,
+                },
             IsmsLevel: project.IsmsLevel
         ));
         return Ok(response);
@@ -105,7 +113,15 @@ public class ProjectsController : ControllerBase
             ClientName: project.ClientName,
             IsArchived: project.IsArchived,
             Company: project.Company,
-            Team: project.Team,
+            Team: project.Team == null
+                ? null
+                : new()
+                {
+                    Id = project.Team.Id,
+                    TeamName = project.Team.TeamName,
+                    BusinessUnit = project.Team.BusinessUnit,
+                    PTL = project.Team.PTL,
+                },
             IsmsLevel: project.IsmsLevel
         );
 
@@ -212,12 +228,12 @@ public class ProjectsController : ControllerBase
     /// <response code="409">The project with the slug generated from the name already exists.</response>
     /// <response code="500">An internal error occurred.</response>
     [HttpPut("{slug}")]
-    [ProducesResponseType(typeof(CreateProjectResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(PutProjectResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status409Conflict)]
-    public async Task<ActionResult<CreateProjectResponse>> Put(
-        [FromBody] CreateProjectRequest project,
+    public async Task<ActionResult<PutProjectResponse>> Put(
+        [FromBody] PutProjectRequest project,
         string slug
     )
     {
@@ -236,11 +252,11 @@ public class ProjectsController : ControllerBase
     /// <response code="409">The project with the slug generated from the name already exists.</response>
     /// <response code="500">An internal error occurred.</response>
     [HttpPut]
-    [ProducesResponseType(typeof(CreateProjectResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(PutProjectResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status409Conflict)]
-    public async Task<ActionResult<CreateProjectResponse>> Put(
-        [FromBody] CreateProjectRequest projectRequest,
+    public async Task<ActionResult<PutProjectResponse>> Put(
+        [FromBody] PutProjectRequest projectRequest,
         int? projectId = null
     )
     {
@@ -294,7 +310,7 @@ public class ProjectsController : ControllerBase
 
         var id = await _mediator.Send(command);
 
-        var response = new CreateProjectResponse(id);
+        var response = new PutProjectResponse(id);
         return Created("/Projects/" + id, response);
     }
 

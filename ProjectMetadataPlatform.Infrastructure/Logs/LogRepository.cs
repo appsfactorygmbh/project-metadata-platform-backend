@@ -10,6 +10,7 @@ using ProjectMetadataPlatform.Domain.Errors.LogExceptions;
 using ProjectMetadataPlatform.Domain.Logs;
 using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.Projects;
+using ProjectMetadataPlatform.Domain.Teams;
 using ProjectMetadataPlatform.Infrastructure.DataAccess;
 using static System.DateTimeOffset;
 using Action = ProjectMetadataPlatform.Domain.Logs.Action;
@@ -161,6 +162,29 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
             .Property<string>(nameof(Plugin.PluginName))
             .OriginalValue;
 
+        _ = _context.Logs.Add(log);
+    }
+
+    ///  <inheritdoc />
+    public async Task AddTeamLogForCurrentUser(Team team, Action action, List<LogChange> changes)
+    {
+        var actionWhiteList = new List<Action>
+        {
+            Action.ADDED_TEAM,
+            Action.UPDATED_TAM,
+            Action.REMOVED_TEAM,
+        };
+
+        if (!actionWhiteList.Contains(action))
+        {
+            throw new LogActionNotSupportedException(action, nameof(team));
+        }
+
+        var log = await PrepareGenericLogForCurrentUser(action, changes);
+
+        log.Team = team;
+        log.TeamId = team.Id;
+        log.TeamName = team.TeamName;
         _ = _context.Logs.Add(log);
     }
 

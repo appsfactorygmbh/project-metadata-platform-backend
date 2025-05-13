@@ -1,5 +1,10 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using ProjectMetadataPlatform.Application.Interfaces;
+using ProjectMetadataPlatform.Domain.Errors.PluginExceptions;
 using ProjectMetadataPlatform.Domain.Teams;
 using ProjectMetadataPlatform.Infrastructure.DataAccess;
 
@@ -23,14 +28,77 @@ public class TeamRepository : RepositoryBase<Team>, ITeamRepository
     }
 
     /// <inheritdoc/>
-    public Task<bool> CheckIfTeamExists(int id)
+    public async Task<List<Team>> GetTeamsAsync(string? fullTextQuery, string? teamName)
     {
-        throw new System.NotImplementedException();
+        var filteredQuery = _context.Teams.AsQueryable();
+        if (!string.IsNullOrWhiteSpace(fullTextQuery))
+        {
+            var lowerTextSearch = fullTextQuery.ToLowerInvariant();
+            filteredQuery = filteredQuery.Where(team =>
+                team.BusinessUnit.Contains(fullTextQuery)
+                || (team.PTL != null && team.PTL.Contains(fullTextQuery))
+                || team.TeamName.Contains(fullTextQuery)
+            );
+        }
+        if (!string.IsNullOrWhiteSpace(teamName))
+        {
+            filteredQuery = filteredQuery.Where(team => team.TeamName.Contains(teamName));
+        }
+        return await filteredQuery.ToListAsync();
     }
 
     /// <inheritdoc/>
-    public Task<string> RetrieveNameForId(int id)
+    public async Task<Team> GetTeamAsync(int id)
     {
-        throw new System.NotImplementedException();
+        return await _context.Teams.FirstOrDefaultAsync(team => team.Id == id)
+            ?? throw new TeamNotFoundException(id);
+    }
+
+    /// <inheritdoc/>
+    public async Task<bool> CheckIfTeamExistsAsync(int id)
+    {
+        return await _context.Teams.AnyAsync(team => team.Id == id);
+    }
+
+    /// <inheritdoc/>
+    public async Task<string> RetrieveNameForIdAsync(int id)
+    {
+        return (
+            (await _context.Teams.FirstOrDefaultAsync(team => team.Id == id))
+            ?? throw new TeamNotFoundException(id)
+        ).TeamName;
+    }
+
+    /// <inheritdoc/>
+    public async Task AddTeamAsync(Team team)
+    {
+        if (!await GetIf(p => p.Id == team.Id).AnyAsync())
+        {
+            _context.Teams.Add(team);
+        }
+    }
+
+    /// <inheritdoc/>
+    public async Task<Team> DeleteTeamAsync(Team team)
+    {
+        _context.Teams.Remove(team);
+        return await Task.FromResult(team);
+    }
+
+    /// <inheritdoc/>
+    public async Task<bool> CheckIfTeamNameExistsAsync(string name)
+    {
+        return await _context.Teams.AnyAsync(team => team.TeamName == name);
+    }
+
+    /// <inheritdoc/>
+    public async Task<Team> UpdateTeamAsync(Team team)
+    {
+        if (!await CheckIfTeamExistsAsync(team.Id))
+        {
+            throw new TeamNotFoundException(team.Id);
+        }
+        _context.Teams.Update(team);
+        return team;
     }
 }

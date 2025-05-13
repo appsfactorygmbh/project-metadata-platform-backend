@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using ProjectMetadataPlatform.Domain.Logs;
 using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.Projects;
+using ProjectMetadataPlatform.Domain.Teams;
 
 namespace ProjectMetadataPlatform.Application.Interfaces;
 
@@ -46,6 +47,15 @@ public interface ILogRepository
         Action action,
         List<LogChange> changes
     );
+
+    /// <summary>
+    /// Adds Logs for changes made to a team. Sets the current User as the Author.
+    /// </summary>
+    /// <param name="team">The team changes were made to.</param>
+    /// <param name="action">The type of change that was made.</param>
+    /// <param name="changes">A list of the changed properties.</param>
+    /// <returns></returns>
+    Task AddTeamLogForCurrentUser(Team team, Action action, List<LogChange> changes);
 
     /// <summary>
     /// Retrieves the logs for a specific project.

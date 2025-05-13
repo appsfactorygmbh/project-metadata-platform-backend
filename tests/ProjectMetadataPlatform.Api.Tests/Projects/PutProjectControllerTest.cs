@@ -37,7 +37,7 @@ public class PutProjectControllerTest
             .Setup(m => m.Send(It.IsAny<CreateProjectCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(1);
 
-        var request = new CreateProjectRequest(
+        var request = new PutProjectRequest(
             ProjectName: "Example Project",
             ClientName: "Example Client",
             OfferId: "Example OfferId",
@@ -52,9 +52,9 @@ public class PutProjectControllerTest
         var createdResult = result.Result as CreatedResult;
 
         Assert.That(createdResult, Is.Not.Null);
-        Assert.That(createdResult.Value, Is.InstanceOf<CreateProjectResponse>());
+        Assert.That(createdResult.Value, Is.InstanceOf<PutProjectResponse>());
 
-        var projectResponse = createdResult.Value as CreateProjectResponse;
+        var projectResponse = createdResult.Value as PutProjectResponse;
         Assert.That(projectResponse, Is.Not.Null);
         Assert.Multiple(() =>
         {
@@ -88,7 +88,7 @@ public class PutProjectControllerTest
         _mediator
             .Setup(m => m.Send(It.IsAny<CreateProjectCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(1);
-        var request = new CreateProjectRequest(
+        var request = new PutProjectRequest(
             ProjectName: "Example Project",
             ClientName: "Example Client",
             OfferId: "Example OfferId",
@@ -122,7 +122,7 @@ public class PutProjectControllerTest
         _mediator
             .Setup(m => m.Send(It.IsAny<UpdateProjectCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(1);
-        var request = new CreateProjectRequest(
+        var request = new PutProjectRequest(
             ProjectName: "Example Project",
             ClientName: "Example Client",
             OfferId: "Example OfferId",
@@ -151,7 +151,7 @@ public class PutProjectControllerTest
     [Test]
     public async Task CreateProject_BadRequestTest()
     {
-        var request = new CreateProjectRequest(
+        var request = new PutProjectRequest(
             ProjectName: "",
             ClientName: " ",
             OfferId: "1",
@@ -174,7 +174,7 @@ public class PutProjectControllerTest
             )
             .ThrowsAsync(new ProjectSlugAlreadyExistsException("example_project"));
 
-        var request = new CreateProjectRequest(
+        var request = new PutProjectRequest(
             ProjectName: "Tour Eiffel",
             ClientName: "BusinessUnit 9001",
             OfferId: "42",
@@ -195,7 +195,7 @@ public class PutProjectControllerTest
                 mediator.Send(It.IsAny<CreateProjectCommand>(), It.IsAny<CancellationToken>())
             )
             .ThrowsAsync(new InvalidOperationException("An error message"));
-        var request = new CreateProjectRequest(
+        var request = new PutProjectRequest(
             ProjectName: "p",
             ClientName: "b",
             OfferId: "1",
@@ -217,7 +217,7 @@ public class PutProjectControllerTest
             )
             .ThrowsAsync(new InvalidDataException("An error message"));
 
-        var request = new CreateProjectRequest(
+        var request = new PutProjectRequest(
             ProjectName: "p",
             ClientName: "b",
             OfferId: "1",
@@ -236,7 +236,7 @@ public class PutProjectControllerTest
         _mediator
             .Setup(m => m.Send(It.IsAny<UpdateProjectCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(1);
-        var request = new CreateProjectRequest(
+        var request = new PutProjectRequest(
             ProjectName: "Example Project",
             ClientName: "Example Client",
             OfferId: "Example OfferId",
@@ -253,9 +253,9 @@ public class PutProjectControllerTest
         var createdResult = result.Result as CreatedResult;
 
         Assert.That(createdResult, Is.Not.Null);
-        Assert.That(createdResult.Value, Is.InstanceOf<CreateProjectResponse>());
+        Assert.That(createdResult.Value, Is.InstanceOf<PutProjectResponse>());
 
-        var projectResponse = createdResult.Value as CreateProjectResponse;
+        var projectResponse = createdResult.Value as PutProjectResponse;
         Assert.That(projectResponse, Is.Not.Null);
         Assert.Multiple(() =>
         {
@@ -289,7 +289,7 @@ public class PutProjectControllerTest
         _mediator
             .Setup(m => m.Send(It.IsAny<UpdateProjectCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(1);
-        var request = new CreateProjectRequest(
+        var request = new PutProjectRequest(
             ProjectName: "Example Project",
             ClientName: "Example Client",
             OfferId: "Example OfferId",
@@ -306,9 +306,9 @@ public class PutProjectControllerTest
         Assert.That(result, Is.Not.Null);
         var createdResult = result.Result as CreatedResult;
         Assert.That(createdResult, Is.Not.Null);
-        Assert.That(createdResult.Value, Is.InstanceOf<CreateProjectResponse>());
+        Assert.That(createdResult.Value, Is.InstanceOf<PutProjectResponse>());
 
-        var projectResponse = createdResult.Value as CreateProjectResponse;
+        var projectResponse = createdResult.Value as PutProjectResponse;
         Assert.That(projectResponse, Is.Not.Null);
         Assert.Multiple(() =>
         {
@@ -347,7 +347,7 @@ public class PutProjectControllerTest
         _mediator
             .Setup(m => m.Send(It.IsAny<UpdateProjectCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(1);
-        var updateRequest = new CreateProjectRequest(
+        var updateRequest = new PutProjectRequest(
             ProjectName: "UpdatedProject",
             ClientName: "Updated Client",
             OfferId: "Updated OfferId",
@@ -362,9 +362,9 @@ public class PutProjectControllerTest
         Assert.That(updateResult, Is.Not.Null);
         var createdResult = updateResult.Result as CreatedResult;
         Assert.That(createdResult, Is.Not.Null);
-        Assert.That(createdResult.Value, Is.InstanceOf<CreateProjectResponse>());
+        Assert.That(createdResult.Value, Is.InstanceOf<PutProjectResponse>());
 
-        var projectResponse = createdResult.Value as CreateProjectResponse;
+        var projectResponse = createdResult.Value as PutProjectResponse;
         Assert.That(projectResponse, Is.Not.Null);
         Assert.Multiple(() =>
         {
@@ -397,7 +397,7 @@ public class PutProjectControllerTest
         _mediator
             .Setup(m => m.Send(It.IsAny<GetProjectIdBySlugQuery>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new ProjectNotFoundException("updatedproject"));
-        var updateRequest = new CreateProjectRequest(
+        var updateRequest = new PutProjectRequest(
             ProjectName: "UpdatedProject",
             ClientName: "Updated Business Unit",
             OfferId: "2",
@@ -425,7 +425,7 @@ public class PutProjectControllerTest
         _mediator
             .Setup(m => m.Send(It.IsAny<UpdateProjectCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(1);
-        var updateRequest = new CreateProjectRequest(
+        var updateRequest = new PutProjectRequest(
             ProjectName: "UpdatedProject",
             ClientName: "Updated Client",
             OfferId: "Updated OfferId",
@@ -441,9 +441,9 @@ public class PutProjectControllerTest
         Assert.That(updateResult, Is.Not.Null);
         var createdResult = updateResult.Result as CreatedResult;
         Assert.That(createdResult, Is.Not.Null);
-        Assert.That(createdResult.Value, Is.InstanceOf<CreateProjectResponse>());
+        Assert.That(createdResult.Value, Is.InstanceOf<PutProjectResponse>());
 
-        var projectResponse = createdResult.Value as CreateProjectResponse;
+        var projectResponse = createdResult.Value as PutProjectResponse;
         Assert.That(projectResponse, Is.Not.Null);
         Assert.Multiple(() =>
         {

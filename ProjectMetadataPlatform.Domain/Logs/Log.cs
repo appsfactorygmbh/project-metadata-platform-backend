@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
 using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.Projects;
+using ProjectMetadataPlatform.Domain.Teams;
 
 namespace ProjectMetadataPlatform.Domain.Logs;
 
@@ -27,22 +28,22 @@ public class Log
     public required string? AuthorId { get; set; }
 
     /// <summary>
-    ///     the Email of the user taking action
+    /// The Email of the user taking action.
     /// </summary>
     public required string? AuthorEmail { get; set; }
 
     /// <summary>
-    ///     The TImeStamp when the action was taken
+    /// The TImeStamp when the action was taken
     /// </summary>
     public DateTimeOffset TimeStamp { get; set; }
 
     /// <summary>
-    ///     The Project, on wich the action was taken
+    /// The Project, on wich the action was taken
     /// </summary>
     public Project? Project { get; set; }
 
     /// <summary>
-    ///     The Project Id of the related Project
+    /// The Project Id of the related Project
     /// </summary>
     public int? ProjectId { get; set; }
 
@@ -82,12 +83,27 @@ public class Log
     public string? AffectedUserEmail { get; set; }
 
     /// <summary>
-    ///     The taken action
+    /// The Team, on wich the action was taken.
+    /// </summary>
+    public Team? Team { get; set; }
+
+    /// <summary>
+    /// The Team id of the related project.
+    /// </summary>
+    public int? TeamId { get; set; }
+
+    /// <summary>
+    /// The Team name of the related project.
+    /// </summary>
+    public string? TeamName { get; set; }
+
+    /// <summary>
+    /// The taken action
     /// </summary>
     public Action Action { get; set; }
 
     /// <summary>
-    ///     The changes that were made.
+    /// The changes that were made.
     /// </summary>
     public List<LogChange>? Changes { get; set; }
 }

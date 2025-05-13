@@ -128,7 +128,7 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
             // if team will be + team id does not exists -> throw Exception
             if (
                 request.TeamId != null
-                && await _teamRepository.CheckIfTeamExists(request.TeamId.Value)
+                && !await _teamRepository.CheckIfTeamExistsAsync(request.TeamId.Value)
             )
             {
                 throw new TeamNotFoundException(request.TeamId.Value);
@@ -140,7 +140,7 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
                 NewValue =
                     request.TeamId == null
                         ? string.Empty
-                        : await _teamRepository.RetrieveNameForId(request.TeamId.Value),
+                        : await _teamRepository.RetrieveNameForIdAsync(request.TeamId.Value),
             };
             changes.Add(change);
             project.TeamId = request.TeamId;

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ProjectMetadataPlatform.Infrastructure.DataAccess;
@@ -11,9 +12,11 @@ using ProjectMetadataPlatform.Infrastructure.DataAccess;
 namespace ProjectMetadataPlatform.Infrastructure.Migrations
 {
     [DbContext(typeof(ProjectMetadataPlatformDbContext))]
-    partial class ProjectMetadataPlatformDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250512144152_LogRepositoryChangesForTeamReferencing")]
+    partial class LogRepositoryChangesForTeamReferencing
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -277,6 +280,12 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
                     b.Property<string>("ProjectName")
                         .HasColumnType("text");
 
+                    b.Property<int?>("TeamId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("TeamName")
+                        .HasColumnType("text");
+
                     b.Property<DateTimeOffset>("TimeStamp")
                         .HasColumnType("timestamp with time zone");
 
@@ -289,6 +298,8 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
                     b.HasIndex("GlobalPluginId");
 
                     b.HasIndex("ProjectId");
+
+                    b.HasIndex("TeamId");
 
                     b.ToTable("Logs");
                 });
@@ -567,7 +578,7 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
                     b.HasIndex("TeamName")
                         .IsUnique();
 
-                    b.ToTable("Team");
+                    b.ToTable("Teams");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -652,6 +663,10 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.SetNull);
 
+                    b.HasOne("ProjectMetadataPlatform.Domain.Teams.Team", "Team")
+                        .WithMany()
+                        .HasForeignKey("TeamId");
+
                     b.Navigation("AffectedUser");
 
                     b.Navigation("Author");
@@ -659,6 +674,8 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
                     b.Navigation("GlobalPlugin");
 
                     b.Navigation("Project");
+
+                    b.Navigation("Team");
                 });
 
             modelBuilder.Entity("ProjectMetadataPlatform.Domain.Logs.LogChange", b =>

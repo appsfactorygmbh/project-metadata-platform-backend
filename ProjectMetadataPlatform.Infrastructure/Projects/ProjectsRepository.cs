@@ -31,39 +31,22 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     /// <summary>
     /// Asynchronously retrieves all projects with specific search pattern or filter matches from the database.
     /// </summary>
-    /// ///
     /// <param name="query">The query containing filters and search pattern.</param>
     /// <returns>A task representing the asynchronous operation. When this task completes, it returns a collection of projects.</returns>
-    [SuppressMessage(
-        "Performance",
-        "CA1862:\"StringComparison\"-Methodenüberladungen verwenden, um Zeichenfolgenvergleiche ohne Beachtung der Groß-/Kleinschreibung durchzuführen"
-    )]
-    [SuppressMessage("Globalization", "CA1304:CultureInfo angeben")]
-    [SuppressMessage(
-        "Globalization",
-        "CA1311:Geben Sie eine Kultur an oder verwenden Sie eine invariante Version"
-    )]
-    [SuppressMessage("Globalization", "CA1305:IFormatProvider angeben")]
     public async Task<IEnumerable<Project>> GetProjectsAsync(GetAllProjectsQuery query)
     {
         var filteredQuery = _context.Projects.AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(query.Search))
         {
-            var lowerTextSearch = query.Search.ToLower();
+            var lowerTextSearch = query.Search.ToLowerInvariant();
 
             filteredQuery = filteredQuery.Where(project =>
-                project.ProjectName.ToLower().Contains(lowerTextSearch)
-                || project.ClientName.ToLower().Contains(lowerTextSearch)
-                || (
-                    project.Team != null
-                    && project.Team.BusinessUnit.ToLower().Contains(lowerTextSearch)
-                )
-                || (
-                    project.Team != null
-                    && project.Team.TeamName.ToString().Contains(lowerTextSearch)
-                )
-                || project.Company.ToLower().Contains(lowerTextSearch)
+                project.ProjectName.Contains(lowerTextSearch)
+                || project.ClientName.Contains(lowerTextSearch)
+                || (project.Team != null && project.Team.BusinessUnit.Contains(lowerTextSearch))
+                || (project.Team != null && project.Team.TeamName.Contains(lowerTextSearch))
+                || project.Company.Contains(lowerTextSearch)
             );
         }
 
@@ -71,28 +54,25 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
         {
             if (!string.IsNullOrWhiteSpace(query.Request.ProjectName))
             {
-                var lowerProjectNameSearch = query.Request.ProjectName.ToLower();
+                var lowerProjectNameSearch = query.Request.ProjectName;
                 filteredQuery = filteredQuery.Where(project =>
-                    project.ProjectName.ToLower().Contains(lowerProjectNameSearch)
+                    project.ProjectName.Contains(lowerProjectNameSearch)
                 );
             }
 
             if (!string.IsNullOrWhiteSpace(query.Request.ClientName))
             {
-                var lowerClientNameSearch = query.Request.ClientName.ToLower();
+                var lowerClientNameSearch = query.Request.ClientName;
                 filteredQuery = filteredQuery.Where(project =>
-                    project.ClientName.ToLower().Contains(lowerClientNameSearch)
+                    project.ClientName.Contains(lowerClientNameSearch)
                 );
             }
 
             if (query.Request.BusinessUnit is { Count: > 0 })
             {
-                var lowerBusinessUnits = query
-                    .Request.BusinessUnit.Select(bu => bu.ToLower())
-                    .ToList();
+                var lowerBusinessUnits = query.Request.BusinessUnit.Select(bu => bu).ToList();
                 filteredQuery = filteredQuery.Where(project =>
-                    project.Team != null
-                    && lowerBusinessUnits.Contains(project.Team.BusinessUnit.ToLower())
+                    project.Team != null && lowerBusinessUnits.Contains(project.Team.BusinessUnit)
                 );
             }
 
@@ -112,9 +92,9 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
 
             if (query.Request.Company is { Count: > 0 })
             {
-                var lowerCompanies = query.Request.Company.Select(c => c.ToLower()).ToList();
+                var lowerCompanies = query.Request.Company.Select(c => c).ToList();
                 filteredQuery = filteredQuery.Where(project =>
-                    lowerCompanies.Contains(project.Company.ToLower())
+                    lowerCompanies.Contains(project.Company)
                 );
             }
 
@@ -126,7 +106,7 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
             }
         }
 
-        return await filteredQuery.ToListAsync();
+        return await filteredQuery.Include(p => p.Team).ToListAsync();
     }
 
     /// <summary>
@@ -135,13 +115,13 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     /// <returns>A task representing the asynchronous operation. When this task completes, it returns a collection of projects.</returns>
     public async Task<IEnumerable<Project>> GetProjectsAsync()
     {
-        return await GetEverything().ToListAsync();
+        return await _context.Projects.AsNoTracking().Include(p => p.Team).ToListAsync();
     }
 
     /// <summary>
     /// Asynchronously retrieves a project from the database by its identifier.
     /// </summary>
-    /// <param name="id">Identification number for a project</param>
+    /// <param name="id">Identification number for a project.</param>
     /// <returns>A task representing the asynchronous operation. When this task completes, it returns one project.</returns>
     public async Task<Project> GetProjectAsync(int id)
     {
@@ -152,8 +132,10 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     /// <inheritdoc />
     public async Task<Project> GetProjectWithPluginsAsync(int id)
     {
-        return await GetIf(p => p.Id == id).Include(p => p.ProjectPlugins).FirstOrDefaultAsync()
-            ?? throw new ProjectNotFoundException(id);
+        return await GetIf(p => p.Id == id)
+                .Include(p => p.ProjectPlugins)
+                .Include(p => p.Team)
+                .FirstOrDefaultAsync() ?? throw new ProjectNotFoundException(id);
     }
 
     /// <summary>
@@ -161,7 +143,7 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     /// </summary>
     /// <param name="project">Project to be saved in the database</param>
     /// <returns>Project is returned</returns>
-    public async Task Add(Project project)
+    public async Task AddProjectAsync(Project project)
     {
         if (!await GetIf(p => p.Id == project.Id).AnyAsync())
         {

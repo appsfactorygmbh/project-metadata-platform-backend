@@ -8,6 +8,7 @@ using ProjectMetadataPlatform.Domain.Errors.BasicExceptions;
 using ProjectMetadataPlatform.Domain.Logs;
 using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.Projects;
+using ProjectMetadataPlatform.Domain.Teams;
 
 namespace ProjectMetadataPlatform.Infrastructure.DataAccess;
 
@@ -32,7 +33,12 @@ public sealed class ProjectMetadataPlatformDbContext : IdentityDbContext<Identit
     public DbSet<Project> Projects { get; set; }
 
     /// <summary>
-    ///     Represents the table for log entities.
+    /// Represents the table for team entities.
+    /// </summary>
+    public DbSet<Team> Teams { get; set; }
+
+    /// <summary>
+    /// Represents the table for log entities.
     /// </summary>
     public DbSet<Log> Logs { get; set; }
 
@@ -61,7 +67,13 @@ public sealed class ProjectMetadataPlatformDbContext : IdentityDbContext<Identit
         _ = builder.ApplyConfigurationsFromAssembly(
             typeof(ProjectMetadataPlatformDbContext).Assembly
         );
-
+        _ = builder.HasCollation(
+            schema: "public",
+            name: "case_insensitive_collation",
+            locale: "und-u-ks-level2",
+            provider: "icu",
+            deterministic: true
+        );
         SeedData(builder);
     }
 
@@ -214,5 +226,11 @@ public sealed class ProjectMetadataPlatformDbContext : IdentityDbContext<Identit
         {
             throw new DatabaseException(e);
         }
+    }
+
+    /// <inheritdoc/>
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+    {
+        configurationBuilder.Properties<string>().UseCollation("case_insensitive_collation");
     }
 }

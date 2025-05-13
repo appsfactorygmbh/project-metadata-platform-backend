@@ -34,7 +34,7 @@ public class TestsWithDatabase
     }
 
     /// <summary>
-    ///     This method deletes the initially loaded Data from SeedData.
+    /// This method deletes the initially loaded Data from SeedData.
     /// </summary>
     /// <param name="context"></param>
     /// <returns>Database context</returns>

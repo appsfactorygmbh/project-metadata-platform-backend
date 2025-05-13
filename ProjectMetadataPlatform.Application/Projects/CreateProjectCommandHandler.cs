@@ -68,7 +68,10 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
         }
 
         // TODO add handling for team exists
-        if (request.TeamId != null && await _teamRepository.CheckIfTeamExists(request.TeamId.Value))
+        if (
+            request.TeamId != null
+            && !await _teamRepository.CheckIfTeamExistsAsync(request.TeamId.Value)
+        )
         {
             throw new TeamNotFoundException(request.TeamId.Value);
         }
@@ -93,7 +96,7 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
             TeamId = request.TeamId,
         };
 
-        await _projectsRepository.Add(project);
+        await _projectsRepository.AddProjectAsync(project);
 
         await AddCreatedProjectLog(project);
 
@@ -154,7 +157,7 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
                 new()
                 {
                     OldValue = "",
-                    NewValue = await _teamRepository.RetrieveNameForId(project.TeamId.Value),
+                    NewValue = await _teamRepository.RetrieveNameForIdAsync(project.TeamId.Value),
                     Property = "Team",
                 }
             );

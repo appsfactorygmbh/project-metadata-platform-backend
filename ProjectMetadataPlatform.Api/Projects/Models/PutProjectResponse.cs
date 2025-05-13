@@ -4,4 +4,4 @@ namespace ProjectMetadataPlatform.Api.Projects.Models;
 /// Represents a response to create a new project.
 /// </summary>
 /// <param name="Id">The id of the newly created project.</param>
-public record CreateProjectResponse(int Id);
+public record PutProjectResponse(int Id);

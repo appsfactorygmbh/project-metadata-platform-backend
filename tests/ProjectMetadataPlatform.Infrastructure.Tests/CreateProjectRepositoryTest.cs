@@ -36,7 +36,7 @@ public class CreateProjectRepositoryTest : TestsWithDatabase
             Slug = "example_project",
             ClientName = "Example Client",
         };
-        await _repository.Add(exampleProject);
+        await _repository.AddProjectAsync(exampleProject);
         await _context.SaveChangesAsync();
         Assert.That(exampleProject, Is.Not.Null);
         Assert.Multiple(() =>
@@ -57,10 +57,10 @@ public class CreateProjectRepositoryTest : TestsWithDatabase
             Slug = "example_project",
             ClientName = "Example Client",
         };
-        await _repository.Add(exampleProject);
+        await _repository.AddProjectAsync(exampleProject);
         await _context.SaveChangesAsync();
         var firstResult = await _repository.GetProjectsAsync();
-        await _repository.Add(exampleProject);
+        await _repository.AddProjectAsync(exampleProject);
         await _context.SaveChangesAsync();
 
         Assert.That(exampleProject, Is.Not.Null);
@@ -94,7 +94,7 @@ public class CreateProjectRepositoryTest : TestsWithDatabase
         };
         var examplePlugin = new Plugin { PluginName = "DummyPlug" };
         var storedPlugin = await _pluginRepository.StorePlugin(examplePlugin);
-        await _repository.Add(exampleProject);
+        await _repository.AddProjectAsync(exampleProject);
         await _context.SaveChangesAsync();
         var projectResult = _context.Projects.FirstOrDefault(p => p.Id == exampleProject.Id);
         Assert.That(projectResult, Is.Not.Null);
