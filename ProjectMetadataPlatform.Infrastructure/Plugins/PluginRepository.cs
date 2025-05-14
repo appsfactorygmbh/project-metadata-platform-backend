@@ -14,16 +14,6 @@ namespace ProjectMetadataPlatform.Infrastructure.Plugins;
 /// <summary>
 /// The repository for plugins that handles the data access.
 /// </summary>
-[SuppressMessage(
-    "Performance",
-    "CA1862:\"StringComparison\"-Methodenüberladungen verwenden, um Zeichenfolgenvergleiche ohne Beachtung der Groß-/Kleinschreibung durchzuführen"
-)]
-[SuppressMessage("Globalization", "CA1304:CultureInfo angeben")]
-[SuppressMessage(
-    "Globalization",
-    "CA1311:Geben Sie eine Kultur an oder verwenden Sie eine invariante Version"
-)]
-[SuppressMessage("Globalization", "CA1305:IFormatProvider angeben")]
 public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
 {
     /// <summary>
@@ -139,7 +129,8 @@ public class PluginRepository : RepositoryBase<Plugin>, IPluginRepository
     /// <inheritdoc />
     public async Task<bool> CheckGlobalPluginNameExists(string name)
     {
-        var queryResult = GetIf(plugin => plugin.PluginName.ToLower() == name.ToLower());
+        var lowerName = name.ToLower();
+        var queryResult = GetIf(plugin => plugin.PluginName.ToLower().Equals(lowerName));
         return await queryResult.AnyAsync();
     }
 }
