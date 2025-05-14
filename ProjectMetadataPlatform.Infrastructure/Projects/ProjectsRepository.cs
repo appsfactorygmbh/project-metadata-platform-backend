@@ -42,11 +42,20 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
             var lowerTextSearch = query.Search.ToLowerInvariant();
 
             filteredQuery = filteredQuery.Where(project =>
-                project.ProjectName.Contains(lowerTextSearch)
-                || project.ClientName.Contains(lowerTextSearch)
-                || (project.Team != null && project.Team.BusinessUnit.Contains(lowerTextSearch))
-                || (project.Team != null && project.Team.TeamName.Contains(lowerTextSearch))
-                || project.Company.Contains(lowerTextSearch)
+                EF.Functions.Like(project.ProjectName.ToLower(), $"%{lowerTextSearch}%")
+                || EF.Functions.Like(project.ClientName.ToLower(), $"%{lowerTextSearch}%")
+                || (
+                    project.Team != null
+                    && EF.Functions.Like(
+                        project.Team.BusinessUnit.ToLower(),
+                        $"%{lowerTextSearch}%"
+                    )
+                )
+                || (
+                    project.Team != null
+                    && EF.Functions.Like(project.Team.TeamName.ToLower(), $"%{lowerTextSearch}%")
+                )
+                || EF.Functions.Like(project.Company.ToLower(), $"%{lowerTextSearch}%")
             );
         }
 
@@ -54,32 +63,36 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
         {
             if (!string.IsNullOrWhiteSpace(query.Request.ProjectName))
             {
-                var lowerProjectNameSearch = query.Request.ProjectName;
+                var lowerProjectNameSearch = query.Request.ProjectName.ToLower();
                 filteredQuery = filteredQuery.Where(project =>
-                    project.ProjectName.Contains(lowerProjectNameSearch)
+                    EF.Functions.Like(project.ProjectName.ToLower(), $"%{lowerProjectNameSearch}%")
                 );
             }
 
             if (!string.IsNullOrWhiteSpace(query.Request.ClientName))
             {
-                var lowerClientNameSearch = query.Request.ClientName;
+                var lowerClientNameSearch = query.Request.ClientName.ToLower();
                 filteredQuery = filteredQuery.Where(project =>
-                    project.ClientName.Contains(lowerClientNameSearch)
+                    EF.Functions.Like(project.ClientName.ToLower(), $"%{lowerClientNameSearch}%")
                 );
             }
 
             if (query.Request.BusinessUnit is { Count: > 0 })
             {
-                var lowerBusinessUnits = query.Request.BusinessUnit.Select(bu => bu).ToList();
+                var lowerBusinessUnits = query
+                    .Request.BusinessUnit.Select(bu => bu.ToLower())
+                    .ToList();
                 filteredQuery = filteredQuery.Where(project =>
-                    project.Team != null && lowerBusinessUnits.Contains(project.Team.BusinessUnit)
+                    project.Team != null
+                    && lowerBusinessUnits.Contains(project.Team.BusinessUnit.ToLower())
                 );
             }
 
             if (query.Request.TeamName is { Count: > 0 })
             {
+                var lowerTeamNames = query.Request.TeamName.Select(tn => tn.ToLower()).ToList();
                 filteredQuery = filteredQuery.Where(project =>
-                    project.Team != null && query.Request.TeamName.Contains(project.Team.TeamName)
+                    project.Team != null && lowerTeamNames.Contains(project.Team.TeamName.ToLower())
                 );
             }
 
@@ -92,9 +105,9 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
 
             if (query.Request.Company is { Count: > 0 })
             {
-                var lowerCompanies = query.Request.Company.Select(c => c).ToList();
+                var lowerCompanies = query.Request.Company.Select(c => c.ToLower()).ToList();
                 filteredQuery = filteredQuery.Where(project =>
-                    lowerCompanies.Contains(project.Company)
+                    lowerCompanies.Contains(project.Company.ToLower())
                 );
             }
 

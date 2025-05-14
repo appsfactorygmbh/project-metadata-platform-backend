@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -35,14 +34,19 @@ public class TeamRepository : RepositoryBase<Team>, ITeamRepository
         {
             var lowerTextSearch = fullTextQuery.ToLowerInvariant();
             filteredQuery = filteredQuery.Where(team =>
-                team.BusinessUnit.Contains(fullTextQuery)
-                || (team.PTL != null && team.PTL.Contains(fullTextQuery))
-                || team.TeamName.Contains(fullTextQuery)
+                EF.Functions.Like(team.BusinessUnit.ToLower(), $"%{lowerTextSearch}%")
+                || (
+                    team.PTL != null
+                    && EF.Functions.Like(team.PTL.ToLower(), $"%{lowerTextSearch}%")
+                )
+                || EF.Functions.Like(team.TeamName.ToLower(), $"%{lowerTextSearch}%")
             );
         }
         if (!string.IsNullOrWhiteSpace(teamName))
         {
-            filteredQuery = filteredQuery.Where(team => team.TeamName.Contains(teamName));
+            filteredQuery = filteredQuery.Where(team =>
+                EF.Functions.Like(team.TeamName.ToLower(), $"%{teamName.ToLower()}%")
+            );
         }
         return await filteredQuery.ToListAsync();
     }

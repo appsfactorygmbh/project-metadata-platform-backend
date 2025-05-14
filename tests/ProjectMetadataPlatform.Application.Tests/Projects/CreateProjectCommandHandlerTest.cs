@@ -50,7 +50,9 @@ public class CreateProjectCommandHandlerTest
         // prepare
         var plugins = new List<ProjectPlugins>();
         plugins.Add(new ProjectPlugins { Url = "https://example.com", PluginId = 200 });
-        _mockProjectRepo.Setup(m => m.AddProjectAsync(It.IsAny<Project>())).Callback<Project>(p => p.Id = 1);
+        _mockProjectRepo
+            .Setup(m => m.AddProjectAsync(It.IsAny<Project>()))
+            .Callback<Project>(p => p.Id = 1);
         _mockPluginRepo.Setup(m => m.CheckPluginExists(It.IsAny<int>())).ReturnsAsync(true);
         _mockSlugHelper.Setup(m => m.GenerateSlug(It.IsAny<string>())).Returns("example_project");
         _mockSlugHelper

@@ -56,7 +56,6 @@ public class ProjectsRepositoryTests : TestsWithDatabase
     }
 
     [Test]
-    [Ignore("Need to implement team handling and extend filter to the teams attributes.")]
     public async Task GetProjectByMultipleFiltersAndSearchAsync_ReturnsCorrectProjects()
     {
         var filters = new ProjectFilterRequest(
@@ -79,6 +78,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
                 IsArchived = true,
                 Company = "AppsFact",
                 IsmsLevel = SecurityLevel.VERY_HIGH,
+                Team = new() { TeamName = "42", BusinessUnit = "666" },
             },
             new()
             {
@@ -89,6 +89,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
                 IsArchived = true,
                 Company = "AppsFact",
                 IsmsLevel = SecurityLevel.VERY_HIGH,
+                Team = new() { TeamName = "43", BusinessUnit = "777" },
             },
             new()
             {
@@ -99,6 +100,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
                 IsArchived = false,
                 Company = "AppsFact",
                 IsmsLevel = SecurityLevel.VERY_HIGH,
+                Team = new() { TeamName = "44", BusinessUnit = "999" },
             },
         };
 

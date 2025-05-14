@@ -67,13 +67,6 @@ public sealed class ProjectMetadataPlatformDbContext : IdentityDbContext<Identit
         _ = builder.ApplyConfigurationsFromAssembly(
             typeof(ProjectMetadataPlatformDbContext).Assembly
         );
-        _ = builder.HasCollation(
-            schema: "public",
-            name: "case_insensitive_collation",
-            locale: "und-u-ks-level2",
-            provider: "icu",
-            deterministic: true
-        );
         SeedData(builder);
     }
 
@@ -226,11 +219,5 @@ public sealed class ProjectMetadataPlatformDbContext : IdentityDbContext<Identit
         {
             throw new DatabaseException(e);
         }
-    }
-
-    /// <inheritdoc/>
-    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
-    {
-        configurationBuilder.Properties<string>().UseCollation("case_insensitive_collation");
     }
 }

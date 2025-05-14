@@ -165,7 +165,6 @@ public class ProjectsBySearchTest : TestsWithDatabase
     }
 
     [Test]
-    [Ignore("Need to implement team handling and extend filter to the teams attributes.")]
     public async Task GetProjectsWithTeamNumber_Test()
     {
         // Arrange
@@ -177,6 +176,7 @@ public class ProjectsBySearchTest : TestsWithDatabase
                 ProjectName = "Wasserfall",
                 Slug = "wasserfall",
                 ClientName = "whatever_taucht_nicht_auf",
+                Team = new() { TeamName = "41", BusinessUnit = "BU Test" },
             },
             new()
             {
@@ -184,6 +184,7 @@ public class ProjectsBySearchTest : TestsWithDatabase
                 ProjectName = "Regen",
                 Slug = "regen",
                 ClientName = "ESA",
+                Team = new() { TeamName = "42", BusinessUnit = "BU Test" },
             },
             new()
             {
@@ -191,6 +192,7 @@ public class ProjectsBySearchTest : TestsWithDatabase
                 ProjectName = "Turbo",
                 Slug = "turbo",
                 ClientName = "Regen",
+                Team = new() { TeamName = "422", BusinessUnit = "BU Test" },
             },
         };
 
