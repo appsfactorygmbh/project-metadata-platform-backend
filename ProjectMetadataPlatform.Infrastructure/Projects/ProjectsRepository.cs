@@ -138,7 +138,7 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
     /// <returns>A task representing the asynchronous operation. When this task completes, it returns one project.</returns>
     public async Task<Project> GetProjectAsync(int id)
     {
-        return await GetIf(p => p.Id == id).FirstOrDefaultAsync()
+        return await GetIf(p => p.Id == id).Include(proj => proj.Team).FirstOrDefaultAsync()
             ?? throw new ProjectNotFoundException(id);
     }
 
