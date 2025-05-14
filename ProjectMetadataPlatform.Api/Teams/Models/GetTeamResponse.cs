@@ -21,7 +21,7 @@ public class GetTeamResponse
     public required string BusinessUnit { get; set; }
 
     /// <summary>
-    /// Gets or sets the business unit associated with the team. This property is required.
+    /// Gets or sets the PTL associated with the team. This property is optional.
     /// </summary>
     public string? PTL { get; set; }
 }

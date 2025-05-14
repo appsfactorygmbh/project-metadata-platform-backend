@@ -19,9 +19,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
+    options.SupportNonNullableReferenceTypes();
     options.SchemaFilter<RequireNonNullablePropertiesSchemaFilter>();
     options.OperationFilter<UnauthorizedResponseOperationFilter>();
-    options.SupportNonNullableReferenceTypes();
 
     var xmlDocFiles = Directory.GetFiles(Path.Combine(AppContext.BaseDirectory), "*.xml").ToList();
 

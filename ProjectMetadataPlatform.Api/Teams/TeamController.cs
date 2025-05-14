@@ -128,7 +128,7 @@ public class TeamsController : ControllerBase
     /// <response code="404">No team with the requested id was found.</response>
     /// <response code="409">The team name already exists.</response>
     /// <response code="500">An internal error occurred.</response>
-    [HttpPatch("{pluginId:int}")]
+    [HttpPatch("{teamId:int}")]
     [ProducesResponseType(typeof(GetTeamResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status409Conflict)]
