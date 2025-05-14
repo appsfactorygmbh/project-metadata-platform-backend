@@ -105,4 +105,12 @@ public class TeamRepository : RepositoryBase<Team>, ITeamRepository
         _context.Teams.Update(team);
         return team;
     }
+
+    /// <inheritdoc/>
+    public async Task<Team> GetTeamWithProjectsAsync(int id)
+    {
+        return await _context
+                .Teams.Include(team => team.Projects)
+                .FirstOrDefaultAsync(team => team.Id == id) ?? throw new TeamNotFoundException(id);
+    }
 }

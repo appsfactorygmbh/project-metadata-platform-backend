@@ -39,6 +39,7 @@ public static class DependencyInjection
             PluginsExceptionHandler
         >();
         _ = serviceCollection.AddScoped<IExceptionHandler<LogException>, LogsExceptionHandler>();
+        _ = serviceCollection.AddScoped<IExceptionHandler<TeamException>, TeamExceptionHandler>();
         _ = serviceCollection.AddScoped<IExceptionHandler<AuthException>, AuthExceptionHandler>();
         _ = serviceCollection.AddScoped<IExceptionHandler<UserException>, UserExceptionHandler>();
         _ = serviceCollection

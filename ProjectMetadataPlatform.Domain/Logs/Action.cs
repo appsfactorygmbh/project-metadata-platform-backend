@@ -97,7 +97,7 @@ public enum Action
     /// <summary>
     /// Represents the action of updating a team.
     /// </summary>
-    UPDATED_TAM,
+    UPDATED_TEAM,
 
     /// <summary>
     /// Represents the action of removing a team.

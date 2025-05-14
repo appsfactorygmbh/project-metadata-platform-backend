@@ -136,7 +136,7 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
             var change = new LogChange
             {
                 Property = "Team",
-                OldValue = project.Team == null ? string.Empty : project.Team.TeamName,
+                OldValue = project.Team == null ? "null" : project.Team.TeamName,
                 NewValue =
                     request.TeamId == null
                         ? string.Empty

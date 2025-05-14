@@ -67,10 +67,68 @@ public class LogConverter : ILogConverter
                 Action.REMOVED_GLOBAL_PLUGIN => BuildRemovedGlobalPluginMessage(
                     log.GlobalPluginName ?? "<Unknown Plugin>"
                 ),
+                Action.ADDED_TEAM => BuildAddedTeamMessage(log.Changes),
+                Action.UPDATED_TEAM => BuildUpdatedTeamMessage(
+                    log.Changes,
+                    log.TeamName ?? "<Unknown Team>"
+                ),
+                Action.REMOVED_TEAM => BuildRemovedTeamMessage(log.TeamName ?? "<Unknown Team>"),
                 _ => "",
             };
 
         return new LogResponse(message, GetTimestamp(log.TimeStamp));
+    }
+
+    /// <summary>
+    /// Builds a message for an added project.
+    /// </summary>
+    /// <param name="changes">The list of changes.</param>
+    /// <returns>The constructed message.</returns>
+    private static string BuildAddedTeamMessage(List<LogChange>? changes)
+    {
+        var message = "created a new team";
+        if (changes == null)
+        {
+            return message;
+        }
+        message += " with properties: ";
+        message += string.Join(
+            ", ",
+            changes.Select(change => $"{change.Property} = {change.NewValue}")
+        );
+        return message;
+    }
+
+    /// <summary>
+    /// Builds a message for an updated team.
+    /// </summary>
+    /// <param name="changes">The list of changes.</param>
+    /// <param name="teamName">The name of the updated team.</param>
+    /// <returns>The constructed message.</returns>
+    private static string BuildUpdatedTeamMessage(List<LogChange>? changes, string teamName)
+    {
+        var message = $"updated team {teamName}: ";
+        if (changes == null)
+        {
+            return message;
+        }
+        message += string.Join(
+            ", ",
+            changes.Select(change =>
+                $" set {change.Property} from {change.OldValue} to {change.NewValue}"
+            )
+        );
+        return message;
+    }
+
+    /// <summary>
+    /// Builds a message for a removed team.
+    /// </summary>
+    /// <param name="teamName">The name of the removed team.</param>
+    /// <returns>The constructed message.</returns>
+    private static string BuildRemovedTeamMessage(string teamName)
+    {
+        return "removed team " + teamName;
     }
 
     /// <summary>

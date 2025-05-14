@@ -45,6 +45,9 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
         { Action.ARCHIVED_GLOBAL_PLUGIN, "archived global plugin" },
         { Action.UNARCHIVED_GLOBAL_PLUGIN, "unarchived global plugin" },
         { Action.REMOVED_GLOBAL_PLUGIN, "removed global plugin" },
+        { Action.ADDED_TEAM, "created a new team with properties: ," },
+        { Action.UPDATED_TEAM, "updated team properties: set from to," },
+        { Action.REMOVED_TEAM, "removed team" },
     };
 
     /// <summary>
@@ -171,7 +174,7 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
         var actionWhiteList = new List<Action>
         {
             Action.ADDED_TEAM,
-            Action.UPDATED_TAM,
+            Action.UPDATED_TEAM,
             Action.REMOVED_TEAM,
         };
 
@@ -226,8 +229,10 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
     ///  <inheritdoc />
     public async Task<List<Log>> GetLogsWithSearch(string search)
     {
+        var lowerSearch = search.ToLower();
+
         var actionsToInclude = ActionMessages
-            .Keys.Where(action => ActionMessages[action].Contains(search))
+            .Keys.Where(action => ActionMessages[action].Contains(lowerSearch))
             .ToList();
 
         var res = _context
@@ -237,17 +242,29 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
             .Include(l => l.AffectedUser)
             .Include(l => l.GlobalPlugin)
             .Where(log =>
-                (log.AuthorEmail != null && log.AuthorEmail.Contains(search))
-                || (log.AffectedUserEmail != null && log.AffectedUserEmail.Contains(search))
-                || (log.GlobalPluginName != null && log.GlobalPluginName.Contains(search))
+                (
+                    log.AuthorEmail != null
+                    && EF.Functions.Like(log.AuthorEmail.ToLower(), $"%{lowerSearch}%")
+                )
+                || (
+                    log.AffectedUserEmail != null
+                    && EF.Functions.Like(log.AffectedUserEmail.ToLower(), $"%{lowerSearch}%")
+                )
+                || (
+                    log.GlobalPluginName != null
+                    && EF.Functions.Like(log.GlobalPluginName.ToLower(), $"%{lowerSearch}%")
+                )
                 || actionsToInclude.Contains(log.Action)
-                || (log.Project != null && log.Project.ProjectName.Contains(search))
+                || (
+                    log.Project != null
+                    && EF.Functions.Like(log.Project.ProjectName.ToLower(), $"%{lowerSearch}%")
+                )
                 || (
                     log.Changes != null
                     && log.Changes.Any(change =>
-                        change.Property.Contains(search)
-                        || change.OldValue.Contains(search)
-                        || change.NewValue.Contains(search)
+                        EF.Functions.Like(change.Property.ToLower(), $"%{lowerSearch}%")
+                        || EF.Functions.Like(change.OldValue.ToLower(), $"%{lowerSearch}%")
+                        || EF.Functions.Like(change.NewValue.ToLower(), $"%{lowerSearch}%")
                     )
                 )
             );
@@ -283,6 +300,7 @@ public class LogRepository : RepositoryBase<Log>, ILogRepository
         return SortByTimestamp(
             await GetEverything()
                 .Include(log => log.Project)
+                .Include(log => log.Team)
                 .Include(log => log.Author)
                 .Include(log => log.Changes)
                 .ToListAsync()

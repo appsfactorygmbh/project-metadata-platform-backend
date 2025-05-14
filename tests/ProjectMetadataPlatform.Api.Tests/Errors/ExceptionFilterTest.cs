@@ -26,6 +26,7 @@ public class ExceptionFilterTest
     private Mock<IExceptionHandler<LogException>> _logExceptionHandler;
     private Mock<IExceptionHandler<ProjectException>> _projectExceptionHandler;
     private Mock<IExceptionHandler<UserException>> _userExceptionHandler;
+    private Mock<IExceptionHandler<TeamException>> _teamExceptionHandler;
     private Mock<IExceptionHandler<PluginException>> _pluginsExceptionHandler;
     private Mock<IExceptionHandler<AuthException>> _authExceptionHandler;
     private Mock<ExceptionContext> _context;
@@ -39,14 +40,16 @@ public class ExceptionFilterTest
         _logExceptionHandler = new Mock<IExceptionHandler<LogException>>();
         _authExceptionHandler = new Mock<IExceptionHandler<AuthException>>();
         _userExceptionHandler = new Mock<IExceptionHandler<UserException>>();
+        _teamExceptionHandler = new();
         _context = SetupExceptionContext();
         _filter = new ExceptionFilter(
-            _basicExceptionHandler.Object,
-            _projectExceptionHandler.Object,
-            _logExceptionHandler.Object,
-            _pluginsExceptionHandler.Object,
-            _authExceptionHandler.Object,
-            _userExceptionHandler.Object
+            basicExceptionHandler: _basicExceptionHandler.Object,
+            projectExceptionHandler: _projectExceptionHandler.Object,
+            logExceptionHandler: _logExceptionHandler.Object,
+            pluginExceptionHandler: _pluginsExceptionHandler.Object,
+            authExceptionHandler: _authExceptionHandler.Object,
+            userExceptionHandler: _userExceptionHandler.Object,
+            teamExceptionHandler: _teamExceptionHandler.Object
         );
     }
 

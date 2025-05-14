@@ -30,6 +30,12 @@ public class LogModelConfig : IEntityTypeConfiguration<Log>
             .OnDelete(DeleteBehavior.SetNull);
 
         _ = builder
+            .HasOne(e => e.Team)
+            .WithMany()
+            .HasForeignKey(e => e.TeamId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        _ = builder
             .HasOne(e => e.AffectedUser)
             .WithMany()
             .HasForeignKey(e => e.AffectedUserId)

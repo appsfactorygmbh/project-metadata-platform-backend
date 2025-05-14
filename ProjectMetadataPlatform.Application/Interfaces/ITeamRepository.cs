@@ -25,6 +25,13 @@ public interface ITeamRepository
     Task<Team> GetTeamAsync(int id);
 
     /// <summary>
+    /// Retrieves the team by the given id.
+    /// </summary>
+    /// <param name="id">Id of the team.</param>
+    /// <returns>The team specified by the given id.</returns>
+    Task<Team> GetTeamWithProjectsAsync(int id);
+
+    /// <summary>
     /// Retrieves the name of the team specified by the given id.
     /// </summary>
     /// <param name="id">Id of the team.</param>

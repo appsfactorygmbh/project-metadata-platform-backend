@@ -98,7 +98,7 @@ public class PatchTeamCommandHandler : IRequestHandler<PatchTeamCommand, Team>
             var patchedTeam = await _teamRepository.UpdateTeamAsync(team);
             await _logRepository.AddTeamLogForCurrentUser(
                 team: team,
-                action: Action.UPDATED_TAM,
+                action: Action.UPDATED_TEAM,
                 changes: changesLogs
             );
             await _unitOfWork.CompleteAsync();

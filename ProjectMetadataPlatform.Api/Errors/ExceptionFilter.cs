@@ -23,6 +23,7 @@ public class ExceptionFilter : IExceptionFilter
     private readonly IExceptionHandler<PmpException> _basicExceptionHandler;
     private readonly IExceptionHandler<LogException> _logExceptionHandler;
     private readonly IExceptionHandler<ProjectException> _projectExceptionHandler;
+    private readonly IExceptionHandler<TeamException> _teamExceptionHandler;
     private readonly IExceptionHandler<UserException> _userExceptionHandler;
     private readonly IExceptionHandler<PluginException> _pluginExceptionHandler;
     private readonly IExceptionHandler<AuthException> _authExceptionHandler;
@@ -32,6 +33,7 @@ public class ExceptionFilter : IExceptionFilter
     /// </summary>
     /// <param name="basicExceptionHandler">The handler for basic exceptions.</param>
     /// <param name="logExceptionHandler">The handler for log exceptions.></param>
+    /// <param name="teamExceptionHandler">The handler for team exceptions.</param>
     /// <param name="projectExceptionHandler">The handler for project exceptions.</param>
     /// <param name="pluginExceptionHandler">The handler for global plugin exceptions.</param>
     /// <param name="authExceptionHandler">The handler for authentication exceptions.</param>
@@ -40,6 +42,7 @@ public class ExceptionFilter : IExceptionFilter
         IExceptionHandler<PmpException> basicExceptionHandler,
         IExceptionHandler<ProjectException> projectExceptionHandler,
         IExceptionHandler<LogException> logExceptionHandler,
+        IExceptionHandler<TeamException> teamExceptionHandler,
         IExceptionHandler<PluginException> pluginExceptionHandler,
         IExceptionHandler<AuthException> authExceptionHandler,
         IExceptionHandler<UserException> userExceptionHandler
@@ -48,6 +51,7 @@ public class ExceptionFilter : IExceptionFilter
         _basicExceptionHandler = basicExceptionHandler;
         _projectExceptionHandler = projectExceptionHandler;
         _pluginExceptionHandler = pluginExceptionHandler;
+        _teamExceptionHandler = teamExceptionHandler;
         _logExceptionHandler = logExceptionHandler;
         _authExceptionHandler = authExceptionHandler;
         _userExceptionHandler = userExceptionHandler;
@@ -67,6 +71,7 @@ public class ExceptionFilter : IExceptionFilter
             ProjectException projectEx => _projectExceptionHandler.Handle(projectEx),
             PluginException pluginEx => _pluginExceptionHandler.Handle(pluginEx),
             LogException logEx => _logExceptionHandler.Handle(logEx),
+            TeamException teamEx => _teamExceptionHandler.Handle(teamEx),
             AuthException authEx => _authExceptionHandler.Handle(authEx),
             UserException userEx => _userExceptionHandler.Handle(userEx),
             PmpException basicEx => _basicExceptionHandler.Handle(basicEx),
