@@ -183,4 +183,31 @@ public class TeamsController : ControllerBase
 
         return Ok(new DeleteTeamResponse(teamId));
     }
+
+    /// <summary>
+    /// Retrieves the linked projects for a team by its ID.
+    /// </summary>
+    /// <param name="teamId">The unique identifier of the team.</param>
+    /// <returns>
+    /// A <see cref="Task"/> Representing the asynchronous operation, with an <see cref="ActionResult"/> that
+    /// contains a <see cref="GetLinkedProjectsResponse"/> on success, or an error message on failure.
+    /// </returns>
+    /// <response code="200">OK if the team id exists and the request was successful.</response>
+    /// <response code="400">Bad Request if the teamId is smaller than or equal to 0.</response>
+    /// <response code="404">Not Found if no team with the specified ID was found.</response>
+    [HttpGet("{teamId:int}/linkedProjects")]
+    [ProducesResponseType(typeof(GetLinkedProjectsResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<GetLinkedProjectsResponse>> GetLinkedProjects(int teamId)
+    {
+        if (teamId <= 0)
+        {
+            return BadRequest(new ErrorResponse("TeamId can't be smaller than or equal to 0"));
+        }
+        var command = new GetLinkedProjectsQuery(teamId);
+
+        var idList = await _mediator.Send(command);
+
+        return Ok(new GetLinkedProjectsResponse(idList));
+    }
 }
