@@ -50,7 +50,7 @@ public class PatchTeamCommandHandler : IRequestHandler<PatchTeamCommand, Team>
     {
         var team = await _teamRepository.GetTeamAsync(request.Id);
         var changesLogs = new List<LogChange>();
-        if (request.TeamName != null)
+        if (request.TeamName != null && request.TeamName != team.TeamName)
         {
             if (
                 !string.Equals(request.TeamName, team.TeamName, StringComparison.OrdinalIgnoreCase)
@@ -69,7 +69,7 @@ public class PatchTeamCommandHandler : IRequestHandler<PatchTeamCommand, Team>
             );
             team.TeamName = request.TeamName;
         }
-        if (request.BusinessUnit != null)
+        if (request.BusinessUnit != null && request.BusinessUnit != team.BusinessUnit)
         {
             changesLogs.Add(
                 new()
@@ -81,7 +81,7 @@ public class PatchTeamCommandHandler : IRequestHandler<PatchTeamCommand, Team>
             );
             team.BusinessUnit = request.BusinessUnit;
         }
-        if (request.PTL != null)
+        if (request.PTL != null && request.PTL != team.PTL)
         {
             changesLogs.Add(
                 new()
