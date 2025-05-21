@@ -77,14 +77,13 @@ var app = builder.Build();
 
 app.Services.MigrateDatabase();
 app.Services.AddAdminUser();
-
+app.UseCors();
 app.UseSwagger();
 app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
-app.UseCors();
 
 app.Run();
 
