@@ -324,7 +324,8 @@ public class ProjectsControllerTest
             )
             .ThrowsAsync(new ProjectNotFoundException("Mendelev"));
 
-        Assert.ThrowsAsync<ProjectNotFoundException>(() => _controller.GetPluginsBySlug("Mendelev")
+        Assert.ThrowsAsync<ProjectNotFoundException>(() =>
+            _controller.GetPluginsBySlug("Mendelev")
         );
 
         _mediator.Verify(

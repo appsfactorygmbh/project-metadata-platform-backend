@@ -383,7 +383,8 @@ public class TeamsControllerTest
         var request = new PatchTeamRequest { TeamName = existingName };
 
         // Act & Assert
-        Assert.ThrowsAsync<TeamNameAlreadyExistsException>(() => _controller.Patch(teamId, request)
+        Assert.ThrowsAsync<TeamNameAlreadyExistsException>(() =>
+            _controller.Patch(teamId, request)
         );
     }
 
