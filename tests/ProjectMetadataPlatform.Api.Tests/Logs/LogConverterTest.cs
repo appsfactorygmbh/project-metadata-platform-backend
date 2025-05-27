@@ -1,9 +1,11 @@
 using System;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Api.Logs;
 using ProjectMetadataPlatform.Domain.Logs;
 using ProjectMetadataPlatform.Domain.Projects;
+using ProjectMetadataPlatform.Domain.Teams;
 using Action = ProjectMetadataPlatform.Domain.Logs.Action;
 
 namespace ProjectMetadataPlatform.Api.Tests.Logs;
@@ -569,6 +571,114 @@ public class LogConverterTest
             Assert.That(
                 logResponse.LogMessage,
                 Is.EqualTo("Recursively removed global plugin root")
+            );
+            Assert.That(logResponse.Timestamp, Is.EqualTo("1970-01-01T00:00:00+01:00"));
+        });
+    }
+
+    [Test]
+    public void ConvertToLogAddedTeam_Test()
+    {
+        var createdTeam = new Team() { TeamName = "root", BusinessUnit = "Test BU" };
+
+        var log = new Log
+        {
+            Id = 42,
+            TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
+            AuthorId = "42",
+            AuthorEmail = "Recursively",
+            Author = new IdentityUser { Email = "Recursively" },
+            Action = Action.ADDED_TEAM,
+            TeamName = "root",
+            Changes =
+            [
+                new()
+                {
+                    Property = "TeamName",
+                    OldValue = "",
+                    NewValue = "root",
+                },
+                new()
+                {
+                    Property = "BusinessUnit",
+                    OldValue = "",
+                    NewValue = "Test Bu",
+                },
+            ],
+        };
+
+        var logResponse = _logConverter.BuildLogMessage(log);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                logResponse.LogMessage,
+                Is.EqualTo(
+                    "Recursively created a new team with properties: TeamName = root, BusinessUnit = Test Bu"
+                )
+            );
+            Assert.That(logResponse.Timestamp, Is.EqualTo("1970-01-01T00:00:00+01:00"));
+        });
+    }
+
+    [Test]
+    public void ConvertToLogUpdatedTeam_Test()
+    {
+        var log = new Log
+        {
+            Id = 42,
+            TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
+            AuthorId = "42",
+            AuthorEmail = "Recursively",
+            Author = new IdentityUser { Email = "Recursively" },
+            Action = Action.UPDATED_TEAM,
+            TeamName = "root",
+            Changes =
+            [
+                new()
+                {
+                    Property = "TeamName",
+                    OldValue = "root",
+                    NewValue = "New_Team_Name",
+                },
+            ],
+        };
+
+        var logResponse = _logConverter.BuildLogMessage(log);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                logResponse.LogMessage,
+                Is.EqualTo(
+                    "Recursively updated team root:  set TeamName from root to New_Team_Name"
+                )
+            );
+            Assert.That(logResponse.Timestamp, Is.EqualTo("1970-01-01T00:00:00+01:00"));
+        });
+    }
+
+    [Test]
+    public void ConvertToLogDeletedTeam_Test()
+    {
+        var log = new Log
+        {
+            Id = 42,
+            TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
+            AuthorId = "42",
+            AuthorEmail = "Recursively",
+            Author = new IdentityUser { Email = "Recursively" },
+            Action = Action.REMOVED_TEAM,
+            TeamName = "New_Team_Name",
+        };
+
+        var logResponse = _logConverter.BuildLogMessage(log);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                logResponse.LogMessage,
+                Is.EqualTo("Recursively removed team New_Team_Name")
             );
             Assert.That(logResponse.Timestamp, Is.EqualTo("1970-01-01T00:00:00+01:00"));
         });
