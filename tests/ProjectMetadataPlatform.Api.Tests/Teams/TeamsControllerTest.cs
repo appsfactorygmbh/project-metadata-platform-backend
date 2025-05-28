@@ -519,7 +519,7 @@ public class TeamsControllerTest
     {
         // Arrange
         var teamId = 1;
-        var projectIds = new List<int> { 101, 102 };
+        var projectSlugs = new List<string> { "slug_1", "slug_2" };
         _mediatorMock
             .Setup(m =>
                 m.Send(
@@ -527,7 +527,7 @@ public class TeamsControllerTest
                     It.IsAny<CancellationToken>()
                 )
             )
-            .ReturnsAsync(projectIds);
+            .ReturnsAsync(projectSlugs);
 
         // Act
         var actionResult = await _controller.GetLinkedProjects(teamId);
@@ -538,7 +538,7 @@ public class TeamsControllerTest
         Assert.That(okResult, Is.Not.Null);
         var response = okResult.Value as GetLinkedProjectsResponse;
         Assert.That(response, Is.Not.Null);
-        Assert.That(response.ProjectIds, Is.EqualTo(projectIds));
+        Assert.That(response.ProjectSlugs, Is.EqualTo(projectSlugs));
     }
 
     [Test]
@@ -564,7 +564,7 @@ public class TeamsControllerTest
         Assert.That(okResult, Is.Not.Null);
         var response = okResult.Value as GetLinkedProjectsResponse;
         Assert.That(response, Is.Not.Null);
-        Assert.That(response.ProjectIds, Is.Empty);
+        Assert.That(response.ProjectSlugs, Is.Empty);
     }
 
     [Test]

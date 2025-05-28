@@ -38,14 +38,14 @@ public class GetLinkedProjectsQueryHandlerTest
                 {
                     Id = 111,
                     ProjectName = "Projects",
-                    Slug = "project",
+                    Slug = "project_1",
                     ClientName = "Project Client",
                 },
                 new()
                 {
                     Id = 222,
                     ProjectName = "Projects",
-                    Slug = "project",
+                    Slug = "project_2",
                     ClientName = "Project Client",
                 },
             ],
@@ -66,8 +66,8 @@ public class GetLinkedProjectsQueryHandlerTest
         var resultList = result.ToList();
         Assert.Multiple(() =>
         {
-            Assert.That(result, Does.Contain(111));
-            Assert.That(result, Does.Contain(222));
+            Assert.That(result, Does.Contain("project_1"));
+            Assert.That(result, Does.Contain("project_2"));
         });
         _mockTeamRepository.Verify(
             m => m.GetTeamWithProjectsAsync(It.Is<int>(id => id == 1)),

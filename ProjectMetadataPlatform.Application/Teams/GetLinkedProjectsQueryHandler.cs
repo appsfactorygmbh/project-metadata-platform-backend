@@ -8,7 +8,7 @@ using ProjectMetadataPlatform.Application.Interfaces;
 namespace ProjectMetadataPlatform.Application.Teams;
 
 /// <inheritdoc />
-public class GetLinkedProjectsQueryHandler : IRequestHandler<GetLinkedProjectsQuery, List<int>>
+public class GetLinkedProjectsQueryHandler : IRequestHandler<GetLinkedProjectsQuery, List<string>>
 {
     private readonly ITeamRepository _teamRepository;
 
@@ -21,13 +21,13 @@ public class GetLinkedProjectsQueryHandler : IRequestHandler<GetLinkedProjectsQu
     }
 
     /// <inheritdoc/>
-    public async Task<List<int>> Handle(
+    public async Task<List<string>> Handle(
         GetLinkedProjectsQuery request,
         CancellationToken cancellationToken
     )
     {
         return ((await _teamRepository.GetTeamWithProjectsAsync(request.Id)).Projects ?? [])
-            .Select(proj => proj.Id)
+            .Select(proj => proj.Slug)
             .ToList();
     }
 }

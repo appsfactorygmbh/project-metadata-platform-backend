@@ -206,8 +206,8 @@ public class TeamsController : ControllerBase
         }
         var command = new GetLinkedProjectsQuery(teamId);
 
-        var idList = await _mediator.Send(command);
+        var slugList = await _mediator.Send(command);
 
-        return Ok(new GetLinkedProjectsResponse(idList));
+        return Ok(new GetLinkedProjectsResponse(slugList));
     }
 }

@@ -7,4 +7,4 @@ namespace ProjectMetadataPlatform.Application.Teams;
 /// <summary>
 /// Query to get linked projects to team by id.
 /// </summary>
-public record GetLinkedProjectsQuery(int Id) : IRequest<List<int>>;
+public record GetLinkedProjectsQuery(int Id) : IRequest<List<string>>;
