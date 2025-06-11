@@ -128,12 +128,6 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
             new()
             {
                 OldValue = "",
-                NewValue = project.OfferId,
-                Property = nameof(Project.OfferId),
-            },
-            new()
-            {
-                OldValue = "",
                 NewValue = project.Company,
                 Property = nameof(Project.Company),
             },
@@ -158,6 +152,20 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
                     OldValue = "",
                     NewValue = await _teamRepository.RetrieveNameForIdAsync(project.TeamId.Value),
                     Property = "Team",
+                }
+            );
+        }
+        if (project.OfferId != null)
+        {
+            // handling for order based integration tests
+            // (OfferId log expected at index 3)
+            changes.Insert(
+                3,
+                new()
+                {
+                    OldValue = "",
+                    NewValue = project.OfferId,
+                    Property = nameof(Project.OfferId),
                 }
             );
         }

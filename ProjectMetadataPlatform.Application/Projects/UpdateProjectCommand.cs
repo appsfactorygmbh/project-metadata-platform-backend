@@ -22,7 +22,7 @@ public record UpdateProjectCommand(
     int Id,
     string ProjectName,
     string ClientName,
-    string OfferId,
+    string? OfferId,
     string Company,
     CompanyState CompanyState,
     int? TeamId,

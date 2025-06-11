@@ -18,7 +18,7 @@ namespace ProjectMetadataPlatform.Api.Projects.Models;
 public record PutProjectRequest(
     string ProjectName,
     string ClientName,
-    string OfferId,
+    string? OfferId,
     string Company,
     int? TeamId,
     CompanyState CompanyState,

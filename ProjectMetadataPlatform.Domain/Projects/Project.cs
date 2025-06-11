@@ -58,7 +58,7 @@ public class Project
     /// <summary>
     /// Internal id of the offer associated with the project.
     /// </summary>
-    public string OfferId { get; set; } = "";
+    public string? OfferId { get; set; }
 
     /// <summary>
     /// The company that is responsible for the project.

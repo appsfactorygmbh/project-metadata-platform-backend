@@ -22,7 +22,7 @@ public record GetProjectResponse(
     string Slug,
     string ProjectName,
     string ClientName,
-    string OfferId,
+    string? OfferId,
     string Company,
     bool IsArchived,
     GetTeamResponse? Team,

@@ -19,7 +19,7 @@ namespace ProjectMetadataPlatform.Application.Projects;
 public record CreateProjectCommand(
     string ProjectName,
     string ClientName,
-    string OfferId,
+    string? OfferId,
     string Company,
     CompanyState CompanyState,
     int? TeamId,
