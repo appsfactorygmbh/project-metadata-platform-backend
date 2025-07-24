@@ -1,5 +1,10 @@
 name: SonarCloud Analysis
 
+env:
+  DOTNET_VERSION: '8.0.x'
+  SONAR_ORGANIZATION_KEY: 'appsfactory'
+  SONAR_PROJECT_KEY: '1efbc6d1-5ad3-4fc9-bcf7-070a68663af4_342d515e-e562-4bf9-951a-68c43423b028'
+
 on:
   push:
     branches:
@@ -27,7 +32,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 8.0.x
+          dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Restore packages (dotnet restore)
         run: dotnet restore
@@ -53,10 +58,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: |
+        run: >
           dotnet sonarscanner begin
-          /k:"YOUR_PROJECT_KEY"
-          /o:"YOUR_ORGANIZATION_KEY"
+          /k:"${{ env.SONAR_PROJECT_KEY }}"
+          /o:"${{ env.SONAR_ORGANIZATION_KEY }}"
           /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
           /d:sonar.host.url="https://sonarcloud.io"
           /d:sonar.cs.opencover.reportsPaths="**/coverage.cobertura.xml"
@@ -65,8 +70,7 @@ jobs:
 
       - name: Build and Test
         run: |
-          dotnet build --no-restore
-          dotnet test --no-build --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./TestResults --logger "trx" -- DataCollectionRunSettings.DataCollectors.XPlatCodeCoverage.Configuration.Format=Cobertura -- DataCollectionRunSettings.DataCollectors.XPlatCodeCoverage.Configuration.File=coverage.cobertura.xml
+           dotnet tool run dotnet-coverage collect "dotnet test --no-restore --configuration Release" -f xml -o "coverage.xml"
 
       - name: End SonarCloud Scan
         env:
