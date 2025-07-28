@@ -3,7 +3,7 @@ name: SonarCloud Analysis
 env:
   DOTNET_VERSION: '8.0.x'
   SONAR_ORGANIZATION_KEY: 'appsfactory'
-  SONAR_PROJECT_KEY: '1efbc6d1-5ad3-4fc9-bcf7-070a68663af4_342d515e-e562-4bf9-951a-68c43423b028'
+  SONAR_PROJECT_KEY: 'appsfactory_project-metadata-platform-backend'
 
 on:
   push:
