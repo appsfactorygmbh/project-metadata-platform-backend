@@ -1,4 +1,4 @@
-name: Build and Push Docker Image
+name: Build_and_Push_Docker_Image
 
 on:
   workflow_run:
@@ -28,10 +28,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Generate date tag using Ubuntu 'date' command
-        id: date
-        run: echo "tag=$(date +'%Y.%m.%d-%H.%M')" >> $GITHUB_OUTPUT
-
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
@@ -39,6 +35,5 @@ jobs:
           push: true
           tags: |
             ghcr.io/${{ github.repository }}:dev
-            ghcr.io/${{ github.repository }}:${{ steps.date.outputs.tag }}
           build-args: |
             BUILD_CONFIGURATION=Release
