@@ -54,6 +54,10 @@ jobs:
       - name: Install dotnet-coverage global tool
         run: dotnet tool install --global dotnet-coverage --version 1.*
 
+      - name: Build and Test
+        run: |
+          dotnet tool run dotnet-coverage collect "dotnet test --no-restore --configuration Release" -f xml -o "coverage.xml"
+
       - name: SonarCloud Prepare / Begin
         run: |
           dotnet-sonarscanner begin \
@@ -65,10 +69,6 @@ jobs:
         env:
           SONAR_PROJECT_KEY: ${{ env.SONAR_PROJECT_KEY }}
           SONAR_ORGANIZATION_KEY: ${{ env.SONAR_ORGANIZATION_KEY }}
-
-      - name: Build and Test
-        run: |
-          dotnet tool run dotnet-coverage collect "dotnet test --no-restore --configuration Release" -f xml -o "coverage.xml"
 
       - name: SonarCloud Analyze / End
         run: |
