@@ -61,7 +61,7 @@ jobs:
             /o:"$SONAR_ORGANIZATION_KEY" \
             /d:sonar.login="${{ secrets.SONAR_TOKEN }}" \
             /d:sonar.host.url="https://sonarcloud.io" \
-            /d:sonar.cs.opencover.reportsPaths="coverage.xml"
+            /d:sonar.cs.vscoveragexml.reportsPaths="coverage.xml"
         env:
           SONAR_PROJECT_KEY: ${{ env.SONAR_PROJECT_KEY }}
           SONAR_ORGANIZATION_KEY: ${{ env.SONAR_ORGANIZATION_KEY }}
@@ -69,6 +69,8 @@ jobs:
       - name: Build and Test
         run: |
           dotnet tool run dotnet-coverage collect "dotnet test --no-restore --configuration Release" -f xml -o "coverage.xml"
+
+
 
       - name: SonarCloud Analyze / End
         run: |
