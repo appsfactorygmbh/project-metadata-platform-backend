@@ -1,7 +1,7 @@
 # Backend and database service for local frontend development
 services:
   backend:
-    image: appsfactorylej/project-metadata-platform-backend:dev
+    image: ghcr.io/appsfactorygmbh/project-metadata-platform-backend:dev
     depends_on:
       - db
     ports:

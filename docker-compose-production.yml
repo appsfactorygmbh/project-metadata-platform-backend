@@ -1,6 +1,6 @@
 services:
   backend:
-    image: appsfactorylej/project-metadata-platform-backend:prod
+    image: ghcr.io/appsfactorygmbh/project-metadata-platform-backend:prod
     container_name: backend-production
     depends_on:
       - db
