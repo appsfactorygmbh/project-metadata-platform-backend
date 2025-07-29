@@ -2,7 +2,8 @@ name: Build and Push Docker Image
 
 on:
   workflow_run:
-    workflows: ["Unit Tests + SonarCloud Analysis"]
+    workflows:
+      - Unit_Tests_and_SonarCloud_Analysis
     types:
       - completed
     branches:
