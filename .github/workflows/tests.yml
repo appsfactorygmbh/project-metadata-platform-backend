@@ -1,4 +1,4 @@
-name: Unit Tests + SonarCloud Analysis
+name: Unit_Tests_and_SonarCloud_Analysis
 
 env:
   DOTNET_VERSION: '8.0.x'
