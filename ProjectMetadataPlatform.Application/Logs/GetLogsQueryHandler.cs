@@ -32,19 +32,20 @@ public class GetLogsQueryHandler : IRequestHandler<GetLogsQuery, IEnumerable<Log
     /// <param name="request">The request containing project ID and search criteria.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A list of log responses.</returns>
-    public async Task<IEnumerable<Log>> Handle(GetLogsQuery request, CancellationToken cancellationToken)
+    public async Task<IEnumerable<Log>> Handle(
+        GetLogsQuery request,
+        CancellationToken cancellationToken
+    )
     {
         return request switch
         {
-            { ProjectId: { } projectId }
-                => await _logRepository.GetLogsForProject(projectId),
-            { Search: { } search }
-                => await _logRepository.GetLogsWithSearch(search),
-            { UserId: { } userId }
-                => await _logRepository.GetLogsForUser(userId),
-            { GlobalPluginId: { } globalPluginId }
-                => await _logRepository.GetLogsForGlobalPlugin(globalPluginId),
-            _ => await _logRepository.GetAllLogs()
+            { ProjectId: { } projectId } => await _logRepository.GetLogsForProject(projectId),
+            { Search: { } search } => await _logRepository.GetLogsWithSearch(search),
+            { UserId: { } userId } => await _logRepository.GetLogsForUser(userId),
+            { GlobalPluginId: { } globalPluginId } => await _logRepository.GetLogsForGlobalPlugin(
+                globalPluginId
+            ),
+            _ => await _logRepository.GetAllLogs(),
         };
     }
 }

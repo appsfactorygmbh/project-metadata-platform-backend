@@ -15,7 +15,8 @@ public class PmpWebApplicationFactory : WebApplicationFactory<Program>
         builder.ConfigureServices(services =>
         {
             var dbContextDescriptor = services.SingleOrDefault(descriptor =>
-                descriptor.ServiceType == typeof(DbContextOptions<ProjectMetadataPlatformDbContext>));
+                descriptor.ServiceType == typeof(DbContextOptions<ProjectMetadataPlatformDbContext>)
+            );
 
             if (dbContextDescriptor != null)
             {
@@ -23,7 +24,8 @@ public class PmpWebApplicationFactory : WebApplicationFactory<Program>
             }
 
             var dbConnectionDescriptor = services.SingleOrDefault(descriptor =>
-                descriptor.ServiceType == typeof(DbConnection));
+                descriptor.ServiceType == typeof(DbConnection)
+            );
 
             if (dbConnectionDescriptor != null)
             {
@@ -31,7 +33,8 @@ public class PmpWebApplicationFactory : WebApplicationFactory<Program>
             }
 
             services.AddDbContext<ProjectMetadataPlatformDbContext>(options =>
-                options.UseSqlite("Datasource=unittest-db.db"));
+                options.UseSqlite("Datasource=unittest-db.db")
+            );
         });
 
         builder.UseEnvironment("Production");

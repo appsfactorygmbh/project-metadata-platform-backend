@@ -26,22 +26,30 @@ public class BasicFunctionalities : IntegrationTestsBase
     [TestCase("/Projects", "GET")]
     [TestCase("/Projects/1", "GET")]
     [TestCase("/Projects/1/plugins", "GET")]
-    [TestCase("/Projects/filterData/businessunits", "GET")]
-    [TestCase("/Projects/filterData/teamnumbers", "GET")]
     [TestCase("/Projects", "PUT")]
     [TestCase("/Plugins", "GET")]
     [TestCase("/Plugins", "PUT")]
     [TestCase("/Plugins/1", "PATCH")]
     [TestCase("/Plugins/1", "DELETE")]
-    public async Task AllRelevantEndpointsShouldReturnUnauthorizedWhenNotAuthenticated(string endpoint, string method)
+    public async Task AllRelevantEndpointsShouldReturnUnauthorizedWhenNotAuthenticated(
+        string endpoint,
+        string method
+    )
     {
         // Arrange
         var client = CreateClient();
 
         // Act
-        var response = await ToErrorResponse(client.SendAsync(new HttpRequestMessage(new HttpMethod(method), endpoint)), HttpStatusCode.Unauthorized);
+        var response = await ToErrorResponse(
+            client.SendAsync(new HttpRequestMessage(new HttpMethod(method), endpoint)),
+            HttpStatusCode.Unauthorized
+        );
 
         // Assert
-        response.Message.Should().Be("You are either not logged in or do not have the necessary permissions to perform this action.");
+        response
+            .Message.Should()
+            .Be(
+                "You are either not logged in or do not have the necessary permissions to perform this action."
+            );
     }
 }

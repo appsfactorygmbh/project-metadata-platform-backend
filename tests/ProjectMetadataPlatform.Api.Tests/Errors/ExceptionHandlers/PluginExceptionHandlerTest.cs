@@ -26,7 +26,7 @@ public class PluginExceptionHandlerTest
             PluginName = "Test Plugin",
             IsArchived = false,
             BaseUrl = "https://test.com",
-            ProjectPlugins = null
+            ProjectPlugins = null,
         };
 
         var mockException = new Mock<PluginNotArchivedException>(plugin);
@@ -44,6 +44,5 @@ public class PluginExceptionHandlerTest
 
         var result = _pluginExceptionHandler.Handle(mockException.Object);
         Assert.That(result, Is.Null);
-
     }
 }

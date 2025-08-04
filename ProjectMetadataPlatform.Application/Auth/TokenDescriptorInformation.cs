@@ -8,7 +8,11 @@ namespace ProjectMetadataPlatform.Application.Auth;
 /// <param name="ValidIssuer">The valid issuer.</param>
 /// <param name="ValidAudience">The valid audience.</param>
 /// <param name="IssuerSigningKey">The issuer signing key.</param>
-public record TokenDescriptorInformation(string ValidIssuer, string ValidAudience, string IssuerSigningKey)
+public record TokenDescriptorInformation(
+    string ValidIssuer,
+    string ValidAudience,
+    string IssuerSigningKey
+)
 {
     /// <summary>
     /// Reads the token descriptor information from the corresponding environment variables.

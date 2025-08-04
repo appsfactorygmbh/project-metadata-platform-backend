@@ -47,11 +47,20 @@ public class LogsControllerTest
             Action = Action.UPDATED_PROJECT,
             Changes =
             [
-                new LogChange { Property = "Fjords", OldValue = "None", NewValue = "Many" }
-            ]
+                new LogChange
+                {
+                    Property = "Fjords",
+                    OldValue = "None",
+                    NewValue = "Many",
+                },
+            ],
         };
-        _mediator.Setup(m => m.Send(It.IsAny<GetLogsQuery>(), CancellationToken.None)).ReturnsAsync([log]);
-        _logConverter.Setup(lc => lc.BuildLogMessage(log)).Returns(new LogResponse("Project updated", "1970-01-01T00:00:00+01:00"));
+        _mediator
+            .Setup(m => m.Send(It.IsAny<GetLogsQuery>(), CancellationToken.None))
+            .ReturnsAsync([log]);
+        _logConverter
+            .Setup(lc => lc.BuildLogMessage(log))
+            .Returns(new LogResponse("Project updated", "1970-01-01T00:00:00+01:00"));
 
         var result = await _controller.Get(null, null, null, null, null);
 
@@ -85,11 +94,20 @@ public class LogsControllerTest
             Action = Action.UPDATED_PROJECT,
             Changes =
             [
-                new LogChange { Property = "Fjords", OldValue = "None", NewValue = "Many" }
-            ]
+                new LogChange
+                {
+                    Property = "Fjords",
+                    OldValue = "None",
+                    NewValue = "Many",
+                },
+            ],
         };
-        _mediator.Setup(m => m.Send(It.IsAny<GetLogsQuery>(), CancellationToken.None)).ReturnsAsync([log]);
-        _logConverter.Setup(lc => lc.BuildLogMessage(log)).Returns(new LogResponse("Project updated", "1970-01-01T00:00:00+01:00"));
+        _mediator
+            .Setup(m => m.Send(It.IsAny<GetLogsQuery>(), CancellationToken.None))
+            .ReturnsAsync([log]);
+        _logConverter
+            .Setup(lc => lc.BuildLogMessage(log))
+            .Returns(new LogResponse("Project updated", "1970-01-01T00:00:00+01:00"));
 
         var result = await _controller.Get(42, null, null, null, null);
 
@@ -105,7 +123,10 @@ public class LogsControllerTest
             Assert.That(logResponses[0].Timestamp, Is.EqualTo("1970-01-01T00:00:00+01:00"));
         });
 
-        _mediator.Verify(m => m.Send(It.Is<GetLogsQuery>(q => q.ProjectId == 42), CancellationToken.None), Times.Once);
+        _mediator.Verify(
+            m => m.Send(It.Is<GetLogsQuery>(q => q.ProjectId == 42), CancellationToken.None),
+            Times.Once
+        );
         _logConverter.Verify(lc => lc.BuildLogMessage(log), Times.Once);
     }
 
@@ -123,11 +144,20 @@ public class LogsControllerTest
             Action = Action.UPDATED_PROJECT,
             Changes =
             [
-                new LogChange { Property = "Fjords", OldValue = "None", NewValue = "Many" }
-            ]
+                new LogChange
+                {
+                    Property = "Fjords",
+                    OldValue = "None",
+                    NewValue = "Many",
+                },
+            ],
         };
-        _mediator.Setup(m => m.Send(It.IsAny<GetLogsQuery>(), CancellationToken.None)).ReturnsAsync([log]);
-        _logConverter.Setup(lc => lc.BuildLogMessage(log)).Returns(new LogResponse("Project updated", "1970-01-01T00:00:00+01:00"));
+        _mediator
+            .Setup(m => m.Send(It.IsAny<GetLogsQuery>(), CancellationToken.None))
+            .ReturnsAsync([log]);
+        _logConverter
+            .Setup(lc => lc.BuildLogMessage(log))
+            .Returns(new LogResponse("Project updated", "1970-01-01T00:00:00+01:00"));
 
         var result = await _controller.Get(null, "updated", null, null, null);
 
@@ -143,7 +173,10 @@ public class LogsControllerTest
             Assert.That(logResponses[0].Timestamp, Is.EqualTo("1970-01-01T00:00:00+01:00"));
         });
 
-        _mediator.Verify(m => m.Send(It.Is<GetLogsQuery>(q => q.Search == "updated"), CancellationToken.None), Times.Once);
+        _mediator.Verify(
+            m => m.Send(It.Is<GetLogsQuery>(q => q.Search == "updated"), CancellationToken.None),
+            Times.Once
+        );
         _logConverter.Verify(lc => lc.BuildLogMessage(log), Times.Once);
     }
 
@@ -161,11 +194,20 @@ public class LogsControllerTest
             AffectedUserId = "Newton",
             Changes =
             [
-                new LogChange { Property = "flying", OldValue = "yes", NewValue = "no" }
-            ]
+                new LogChange
+                {
+                    Property = "flying",
+                    OldValue = "yes",
+                    NewValue = "no",
+                },
+            ],
         };
-        _mediator.Setup(m => m.Send(It.IsAny<GetLogsQuery>(), CancellationToken.None)).ReturnsAsync([log]);
-        _logConverter.Setup(lc => lc.BuildLogMessage(log)).Returns(new LogResponse("User updated", "1970-01-01T00:00:00+01:00"));
+        _mediator
+            .Setup(m => m.Send(It.IsAny<GetLogsQuery>(), CancellationToken.None))
+            .ReturnsAsync([log]);
+        _logConverter
+            .Setup(lc => lc.BuildLogMessage(log))
+            .Returns(new LogResponse("User updated", "1970-01-01T00:00:00+01:00"));
 
         var result = await _controller.Get(null, null, "Newton", null, null);
 
@@ -181,7 +223,10 @@ public class LogsControllerTest
             Assert.That(logResponses[0].Timestamp, Is.EqualTo("1970-01-01T00:00:00+01:00"));
         });
 
-        _mediator.Verify(m => m.Send(It.Is<GetLogsQuery>(q => q.UserId == "Newton"), CancellationToken.None), Times.Once);
+        _mediator.Verify(
+            m => m.Send(It.Is<GetLogsQuery>(q => q.UserId == "Newton"), CancellationToken.None),
+            Times.Once
+        );
         _logConverter.Verify(lc => lc.BuildLogMessage(log), Times.Once);
     }
 
@@ -200,11 +245,20 @@ public class LogsControllerTest
             GlobalPluginName = "Gravity",
             Changes =
             [
-                new LogChange { Property = "discovered", OldValue = "no", NewValue = "yes" }
-            ]
+                new LogChange
+                {
+                    Property = "discovered",
+                    OldValue = "no",
+                    NewValue = "yes",
+                },
+            ],
         };
-        _mediator.Setup(m => m.Send(It.IsAny<GetLogsQuery>(), CancellationToken.None)).ReturnsAsync([log]);
-        _logConverter.Setup(lc => lc.BuildLogMessage(log)).Returns(new LogResponse("Global plugin updated", "1970-01-01T00:00:00+01:00"));
+        _mediator
+            .Setup(m => m.Send(It.IsAny<GetLogsQuery>(), CancellationToken.None))
+            .ReturnsAsync([log]);
+        _logConverter
+            .Setup(lc => lc.BuildLogMessage(log))
+            .Returns(new LogResponse("Global plugin updated", "1970-01-01T00:00:00+01:00"));
 
         var result = await _controller.Get(null, null, null, 42, null);
 
@@ -220,7 +274,10 @@ public class LogsControllerTest
             Assert.That(logResponses[0].Timestamp, Is.EqualTo("1970-01-01T00:00:00+01:00"));
         });
 
-        _mediator.Verify(m => m.Send(It.Is<GetLogsQuery>(q => q.GlobalPluginId == 42), CancellationToken.None), Times.Once);
+        _mediator.Verify(
+            m => m.Send(It.Is<GetLogsQuery>(q => q.GlobalPluginId == 42), CancellationToken.None),
+            Times.Once
+        );
         _logConverter.Verify(lc => lc.BuildLogMessage(log), Times.Once);
     }
 
@@ -238,12 +295,23 @@ public class LogsControllerTest
             Action = Action.UPDATED_PROJECT,
             Changes =
             [
-                new LogChange { Property = "Fjords", OldValue = "None", NewValue = "Many" }
-            ]
+                new LogChange
+                {
+                    Property = "Fjords",
+                    OldValue = "None",
+                    NewValue = "Many",
+                },
+            ],
         };
-        _mediator.Setup(m => m.Send(It.IsAny<GetLogsQuery>(), CancellationToken.None)).ReturnsAsync([log]);
-        _mediator.Setup(m => m.Send(It.IsAny<GetProjectIdBySlugQuery>(), CancellationToken.None)).ReturnsAsync(42);
-        _logConverter.Setup(lc => lc.BuildLogMessage(log)).Returns(new LogResponse("Project updated", "1970-01-01T00:00:00+01:00"));
+        _mediator
+            .Setup(m => m.Send(It.IsAny<GetLogsQuery>(), CancellationToken.None))
+            .ReturnsAsync([log]);
+        _mediator
+            .Setup(m => m.Send(It.IsAny<GetProjectIdBySlugQuery>(), CancellationToken.None))
+            .ReturnsAsync(42);
+        _logConverter
+            .Setup(lc => lc.BuildLogMessage(log))
+            .Returns(new LogResponse("Project updated", "1970-01-01T00:00:00+01:00"));
 
         var result = await _controller.Get(null, null, null, null, "deepthought");
 
@@ -259,8 +327,18 @@ public class LogsControllerTest
             Assert.That(logResponses[0].Timestamp, Is.EqualTo("1970-01-01T00:00:00+01:00"));
         });
 
-        _mediator.Verify(m => m.Send(It.Is<GetLogsQuery>(q => q.ProjectId == 42), CancellationToken.None), Times.Once);
-        _mediator.Verify(m => m.Send(It.Is<GetProjectIdBySlugQuery>(q => q.Slug == "deepthought"), CancellationToken.None), Times.Once);
+        _mediator.Verify(
+            m => m.Send(It.Is<GetLogsQuery>(q => q.ProjectId == 42), CancellationToken.None),
+            Times.Once
+        );
+        _mediator.Verify(
+            m =>
+                m.Send(
+                    It.Is<GetProjectIdBySlugQuery>(q => q.Slug == "deepthought"),
+                    CancellationToken.None
+                ),
+            Times.Once
+        );
         _logConverter.Verify(lc => lc.BuildLogMessage(log), Times.Once);
     }
 
@@ -278,11 +356,20 @@ public class LogsControllerTest
             Action = Action.UPDATED_PROJECT,
             Changes =
             [
-                new LogChange { Property = "Fjords", OldValue = "None", NewValue = "Many" }
-            ]
+                new LogChange
+                {
+                    Property = "Fjords",
+                    OldValue = "None",
+                    NewValue = "Many",
+                },
+            ],
         };
-        _mediator.Setup(m => m.Send(It.IsAny<GetLogsQuery>(), CancellationToken.None)).ReturnsAsync([log]);
-        _logConverter.Setup(lc => lc.BuildLogMessage(log)).Returns(new LogResponse("Project updated", "1970-01-01T00:00:00+01:00"));
+        _mediator
+            .Setup(m => m.Send(It.IsAny<GetLogsQuery>(), CancellationToken.None))
+            .ReturnsAsync([log]);
+        _logConverter
+            .Setup(lc => lc.BuildLogMessage(log))
+            .Returns(new LogResponse("Project updated", "1970-01-01T00:00:00+01:00"));
 
         var result = await _controller.Get(42, null, null, null, "deepthought");
 
@@ -298,25 +385,43 @@ public class LogsControllerTest
             Assert.That(logResponses[0].Timestamp, Is.EqualTo("1970-01-01T00:00:00+01:00"));
         });
 
-        _mediator.Verify(m => m.Send(It.Is<GetLogsQuery>(q => q.ProjectId == 42), CancellationToken.None), Times.Once);
-        _mediator.Verify(m => m.Send(It.Is<GetProjectIdBySlugQuery>(q => q.Slug == "deepthought"), CancellationToken.None), Times.Never);
+        _mediator.Verify(
+            m => m.Send(It.Is<GetLogsQuery>(q => q.ProjectId == 42), CancellationToken.None),
+            Times.Once
+        );
+        _mediator.Verify(
+            m =>
+                m.Send(
+                    It.Is<GetProjectIdBySlugQuery>(q => q.Slug == "deepthought"),
+                    CancellationToken.None
+                ),
+            Times.Never
+        );
         _logConverter.Verify(lc => lc.BuildLogMessage(log), Times.Once);
     }
 
     [Test]
     public void GetLogsByProjectSlugNoId_NotFoundThrowsException()
     {
-        _mediator.Setup(m => m.Send(It.IsAny<GetProjectIdBySlugQuery>(), CancellationToken.None)).ThrowsAsync(new ProjectNotFoundException("answerToLifeTheUniverseAndEverything"));
+        _mediator
+            .Setup(m => m.Send(It.IsAny<GetProjectIdBySlugQuery>(), CancellationToken.None))
+            .ThrowsAsync(new ProjectNotFoundException("answerToLifeTheUniverseAndEverything"));
 
-        Assert.ThrowsAsync<ProjectNotFoundException>(() => _controller.Get(null, null, null, null, "answerToLifeTheUniverseAndEverything"));
+        Assert.ThrowsAsync<ProjectNotFoundException>(() =>
+            _controller.Get(null, null, null, null, "answerToLifeTheUniverseAndEverything")
+        );
     }
 
     [Test]
     public void GetLogs_ThrowsException_Test()
     {
-        _mediator.Setup(m => m.Send(It.IsAny<GetLogsQuery>(), CancellationToken.None)).ThrowsAsync(new FormatException("Something went wrong"));
+        _mediator
+            .Setup(m => m.Send(It.IsAny<GetLogsQuery>(), CancellationToken.None))
+            .ThrowsAsync(new FormatException("Something went wrong"));
 
-        var exception = Assert.ThrowsAsync<FormatException>(() => _controller.Get(null, null, null, null, null));
+        var exception = Assert.ThrowsAsync<FormatException>(() =>
+            _controller.Get(null, null, null, null, null)
+        );
         Assert.That(exception.Message, Is.EqualTo("Something went wrong"));
     }
 }

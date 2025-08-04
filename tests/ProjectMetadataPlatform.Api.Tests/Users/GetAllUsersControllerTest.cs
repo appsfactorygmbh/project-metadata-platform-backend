@@ -1,16 +1,16 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Api.Users;
-using ProjectMetadataPlatform.Application.Users;
 using ProjectMetadataPlatform.Api.Users.Models;
-using System;
-using Microsoft.AspNetCore.Identity;
+using ProjectMetadataPlatform.Application.Users;
 
 namespace ProjectMetadataPlatform.Api.Tests.Users;
 
@@ -32,19 +32,11 @@ public class GetAllUsersControllerTest
     {
         var users = new List<IdentityUser>
         {
-            new IdentityUser
-            {
-                Id = "1",
-                Email = "Hinz",
-
-            },
-            new IdentityUser
-            {
-                Id = "2",
-                Email = "Kunz"
-            }
+            new IdentityUser { Id = "1", Email = "Hinz" },
+            new IdentityUser { Id = "2", Email = "Kunz" },
         };
-        _mediator.Setup(m => m.Send(It.IsAny<GetAllUsersQuery>(), It.IsAny<CancellationToken>()))
+        _mediator
+            .Setup(m => m.Send(It.IsAny<GetAllUsersQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(users);
 
         var result = await _controller.Get();
@@ -68,7 +60,8 @@ public class GetAllUsersControllerTest
     [Test]
     public async Task Get_ReturnsEmptyList()
     {
-        _mediator.Setup(m => m.Send(It.IsAny<GetAllUsersQuery>(), It.IsAny<CancellationToken>()))
+        _mediator
+            .Setup(m => m.Send(It.IsAny<GetAllUsersQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<IdentityUser>());
 
         var result = await _controller.Get();
@@ -83,10 +76,10 @@ public class GetAllUsersControllerTest
     [Test]
     public void Get_ReturnsMediatorException()
     {
-        _mediator.Setup(m => m.Send(It.IsAny<GetAllUsersQuery>(), It.IsAny<CancellationToken>()))
+        _mediator
+            .Setup(m => m.Send(It.IsAny<GetAllUsersQuery>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidOperationException("Test exception"));
 
         Assert.ThrowsAsync<InvalidOperationException>(() => _controller.Get());
     }
-
 }

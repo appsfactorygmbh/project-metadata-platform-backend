@@ -10,19 +10,13 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.RenameColumn(
-                name: "Username",
-                table: "Logs",
-                newName: "Email");
+            migrationBuilder.RenameColumn(name: "Username", table: "Logs", newName: "Email");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.RenameColumn(
-                name: "Email",
-                table: "Logs",
-                newName: "Username");
+            migrationBuilder.RenameColumn(name: "Email", table: "Logs", newName: "Username");
         }
     }
 }

@@ -9,7 +9,6 @@ namespace ProjectMetadataPlatform.Infrastructure.DataAccess.ModelConfigs;
 /// </summary>
 public class LogModelConfig : IEntityTypeConfiguration<Log>
 {
-
     /// <summary>
     /// Configures Log entity
     /// </summary>
@@ -31,9 +30,21 @@ public class LogModelConfig : IEntityTypeConfiguration<Log>
             .OnDelete(DeleteBehavior.SetNull);
 
         _ = builder
+            .HasOne(e => e.Team)
+            .WithMany()
+            .HasForeignKey(e => e.TeamId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        _ = builder
             .HasOne(e => e.AffectedUser)
             .WithMany()
             .HasForeignKey(e => e.AffectedUserId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        _ = builder
+            .HasOne(e => e.GlobalPlugin)
+            .WithMany()
+            .HasForeignKey(e => e.GlobalPluginId)
             .OnDelete(DeleteBehavior.SetNull);
 
         _ = builder

@@ -2,9 +2,9 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using ProjectMetadataPlatform.Application.Interfaces;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Domain.Errors.UserException;
 using ProjectMetadataPlatform.Domain.Logs;
 using Action = ProjectMetadataPlatform.Domain.Logs.Action;
@@ -14,7 +14,7 @@ namespace ProjectMetadataPlatform.Application.Users;
 /// <summary>
 /// Handles the command to delete a user by their unique identifier.
 /// </summary>
-public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand,IdentityUser>
+public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand, IdentityUser>
 {
     private readonly IUsersRepository _usersRepository;
     private readonly IHttpContextAccessor _httpContextAccessor;
@@ -28,7 +28,12 @@ public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand,Identi
     /// <param name="httpContextAccessor">Provides Access to the current Http Context.</param>
     /// <param name="logRepository">The log repository.</param>
     /// <param name="unitOfWork">Unit of Work</param>
-    public DeleteUserCommandHandler(IUsersRepository usersRepository, IHttpContextAccessor httpContextAccessor, ILogRepository logRepository, IUnitOfWork unitOfWork)
+    public DeleteUserCommandHandler(
+        IUsersRepository usersRepository,
+        IHttpContextAccessor httpContextAccessor,
+        ILogRepository logRepository,
+        IUnitOfWork unitOfWork
+    )
     {
         _usersRepository = usersRepository;
         _httpContextAccessor = httpContextAccessor;
@@ -47,10 +52,15 @@ public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand,Identi
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The deleted user, if present, otherwise null.</returns>
     /// <exception cref="UserCantDeleteThemselfException">If the active user tries to delete themselves.</exception>
-    public async Task<IdentityUser> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
+    public async Task<IdentityUser> Handle(
+        DeleteUserCommand request,
+        CancellationToken cancellationToken
+    )
     {
         var user = await _usersRepository.GetUserByIdAsync(request.Id);
-        var email = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.Email) ?? "Unknown user";
+        var email =
+            _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.Email)
+            ?? "Unknown user";
         var activeUser = await _usersRepository.GetUserByEmailAsync(email);
 
         if (user == activeUser)
@@ -58,7 +68,12 @@ public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand,Identi
             throw new UserCantDeleteThemselfException();
         }
 
-        var change = new LogChange { OldValue = user.Email!, NewValue = "", Property = nameof(IdentityUser.Email) };
+        var change = new LogChange
+        {
+            OldValue = user.Email!,
+            NewValue = "",
+            Property = nameof(IdentityUser.Email),
+        };
         await _logRepository.AddUserLogForCurrentUser(user, Action.REMOVED_USER, [change]);
 
         var response = await _usersRepository.DeleteUserAsync(user);

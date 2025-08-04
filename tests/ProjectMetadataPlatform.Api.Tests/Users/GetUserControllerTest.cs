@@ -1,14 +1,14 @@
-﻿using System.Threading;
+﻿using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Api.Users;
-using ProjectMetadataPlatform.Application.Users;
 using ProjectMetadataPlatform.Api.Users.Models;
-using System.IO;
-using Microsoft.AspNetCore.Identity;
+using ProjectMetadataPlatform.Application.Users;
 using ProjectMetadataPlatform.Domain.Errors.UserException;
 
 namespace ProjectMetadataPlatform.Api.Tests.Users;
@@ -29,12 +29,9 @@ public class GetUserControllerTest
     [Test]
     public async Task Get_ReturnsUser()
     {
-        var user = new IdentityUser
-        {
-            Id = "1",
-            Email = "Hinz"
-        };
-        _mediator.Setup(m => m.Send(It.IsAny<GetUserQuery>(), It.IsAny<CancellationToken>()))
+        var user = new IdentityUser { Id = "1", Email = "Hinz" };
+        _mediator
+            .Setup(m => m.Send(It.IsAny<GetUserQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
         var result = await _controller.GetUserById("1");
@@ -54,7 +51,10 @@ public class GetUserControllerTest
     [Test]
     public void GetUserById_NonexistentUser_Test()
     {
-        _mediator.Setup(mediator => mediator.Send(It.IsAny<GetUserQuery>(), It.IsAny<CancellationToken>()))
+        _mediator
+            .Setup(mediator =>
+                mediator.Send(It.IsAny<GetUserQuery>(), It.IsAny<CancellationToken>())
+            )
             .ThrowsAsync(new UserNotFoundException("1"));
         Assert.ThrowsAsync<UserNotFoundException>(() => _controller.GetUserById("1"));
     }
@@ -62,7 +62,10 @@ public class GetUserControllerTest
     [Test]
     public void MediatorThrowsExceptionTest()
     {
-        _mediator.Setup(mediator => mediator.Send(It.IsAny<GetUserQuery>(), It.IsAny<CancellationToken>()))
+        _mediator
+            .Setup(mediator =>
+                mediator.Send(It.IsAny<GetUserQuery>(), It.IsAny<CancellationToken>())
+            )
             .ThrowsAsync(new InvalidDataException("An error message"));
         Assert.ThrowsAsync<InvalidDataException>(() => _controller.GetUserById("1"));
     }

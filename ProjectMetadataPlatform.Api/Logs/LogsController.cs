@@ -19,7 +19,7 @@ namespace ProjectMetadataPlatform.Api.Logs;
 [ApiController]
 [Authorize]
 [Route("[controller]")]
-public class LogsController: ControllerBase
+public class LogsController : ControllerBase
 {
     private readonly IMediator _mediator;
     private readonly ILogConverter _converter;
@@ -53,7 +53,13 @@ public class LogsController: ControllerBase
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<LogResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<IEnumerable<LogResponse>>> Get(int? projectId, string? search, string? userId, int? globalPluginId, string? projectSlug)
+    public async Task<ActionResult<IEnumerable<LogResponse>>> Get(
+        int? projectId,
+        string? search,
+        string? userId,
+        int? globalPluginId,
+        string? projectSlug
+    )
     {
         var projectFromSlugId = (int?)null;
 
@@ -63,7 +69,12 @@ public class LogsController: ControllerBase
             projectFromSlugId = await _mediator.Send(projectIdFromSlugQuery);
         }
 
-        var query = new GetLogsQuery(projectId ?? projectFromSlugId, search, userId, globalPluginId);
+        var query = new GetLogsQuery(
+            projectId ?? projectFromSlugId,
+            search,
+            userId,
+            globalPluginId
+        );
 
         var logs = await _mediator.Send(query);
 

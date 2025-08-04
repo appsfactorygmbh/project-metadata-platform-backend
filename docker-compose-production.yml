@@ -1,76 +1,52 @@
 services:
   backend:
-    image: gitlab.dit.htwk-leipzig.de:5050/projekt2024_a_appsfactory_project_metadata_platform/backend/production:latest
+    image: ghcr.io/appsfactorygmbh/project-metadata-platform-backend:prod
     container_name: backend-production
     depends_on:
       - db
     environment:
       - PMP_DB_URL=db-production
-      - PMP_DB_USER_FILE=/run/secrets/db_user
-      - PMP_DB_PASSWORD_FILE=/run/secrets/db_password
-      - PMP_DB_NAME_FILE=/run/secrets/db_name
+      - PMP_DB_USER={PMP_DB_USER}
+      - PMP_DB_PASSWORD={PMP_DB_PASSWORD}
+      - PMP_DB_NAME={PMP_DB_NAME}
       - PMP_DB_PORT=5432
+      #- PMP_MIGRATE_DB_ON_STARTUP=true
       - JWT_VALID_ISSUER=validIssue
       - JWT_VALID_AUDIENCE=validAudience
-      - JWT_ISSUER_SIGNING_KEY_FILE=/run/secrets/jwt_issuer_signing_key
-      - REFRESH_TOKEN_EXPIRATION_HOURS=6
-      - ACCESS_TOKEN_EXPIRATION_MINUTES=15
-      - PMP_ADMIN_PASSWORD_FILE=/run/secrets/admin_password
+      - JWT_ISSUER_SIGNING_KEY={JWT_ISSUER_SIGNING_KEY}
+      - REFRESH_TOKEN_EXPIRATION_HOURS=1460
+      - ACCESS_TOKEN_EXPIRATION_MINUTES=120
+      - PMP_ADMIN_PASSWORD={PMP_ADMIN_PASSWORD}
     networks:
-      - backend-production
-    secrets:
-      - db_user
-      - db_password
-      - db_name
-      - jwt_issuer_signing_key
-      - admin_password
+      - proxy
+      - default
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1m"
+        max-file: "1"
     labels:
       - traefik.enable=true
-      - traefik.http.routers.backend-production.rule=Host(`api.htwk.appsfactory.app`)
-      - traefik.http.routers.backend-production.entrypoints=websecure
-      - traefik.http.routers.backend-production.tls.certresolver=le-tls
-      - traefik.http.services.backend-production-service.loadbalancer.server.port=8080
+      - traefik.http.routers.pmp-be.rule=Host(`api.pmp.appsfactory.app`)
+      - traefik.http.routers.pmp-be.tls.certresolver=le-tls
+      - traefik.http.routers.pmp-be.middlewares=pmp-be-ipallowlist,external-secure
+      - traefik.http.middlewares.pmp-be-ipallowlist.ipallowlist.sourcerange=85.239.102.130/32,213.187.82.10/32
 
   db:
     image: postgres:15
     container_name: db-production
     environment:
-      - POSTGRES_USER_FILE=/run/secrets/db_user
-      - POSTGRES_PASSWORD_FILE=/run/secrets/db_password
-      - POSTGRES_DB_FILE=/run/secrets/db_name
+      - POSTGRES_USER={PMP_DB_USER}
+      - POSTGRES_PASSWORD={PMP_DB_PASSWORD}
+      - POSTGRES_DB={PMP_DB_NAME}
     volumes:
       - db_data:/var/lib/postgresql/data
-    ports:
-      - 5432:5432
     networks:
-      - backend-production
-    secrets:
-      - db_user
-      - db_password
-      - db_name
-    labels:
-      - traefik.enable=true
-      - traefik.tcp.routers.database-production.rule=HostSNI(`database.htwk.appsfactory.app`)
-      - traefik.tcp.routers.database-production.entrypoints=tcp
-      - traefik.tcp.routers.database-production.tls.certresolver=le-tls
-      - traefik.tcp.services.database-production-service.loadbalancer.server.port=5432
-
-secrets:
-  db_password:
-    file: db_password.txt
-  db_user:
-    file: db_user.txt
-  db_name:
-    file: db_name.txt
-  jwt_issuer_signing_key:
-    file: jwt_issuer_signing_key.txt
-  admin_password:
-    file: admin_password.txt
+      - default
 
 volumes:
   db_data:
 
 networks:
-  backend-production:
-    name: backend-production
-    driver: bridge
+  proxy:
+    external: true

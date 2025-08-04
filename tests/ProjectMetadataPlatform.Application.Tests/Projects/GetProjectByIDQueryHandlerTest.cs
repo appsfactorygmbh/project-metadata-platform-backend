@@ -17,6 +17,7 @@ public class GetProjectByIdQueryHandlerTest
         _mockProjectRepo = new Mock<IProjectsRepository>();
         _handler = new GetProjectQueryHandler(_mockProjectRepo.Object);
     }
+
     private GetProjectQueryHandler _handler;
     private Mock<IProjectsRepository> _mockProjectRepo;
 
@@ -38,9 +39,6 @@ public class GetProjectByIdQueryHandlerTest
             ProjectName = "Regen",
             Slug = "regen",
             ClientName = "Nasa",
-            BusinessUnit = "BuWeather",
-            TeamNumber = 42,
-            Department = "Homelandsecurity"
         };
         _mockProjectRepo.Setup(m => m.GetProjectAsync(2)).ReturnsAsync(projectsResponseContent);
         var query = new GetProjectQuery(2);

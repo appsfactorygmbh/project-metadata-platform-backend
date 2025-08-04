@@ -25,16 +25,24 @@ public class DeleteUserCommandHandlerTest
         var identity = new ClaimsIdentity([new Claim(ClaimTypes.Email, "camo")], "TestAuth");
         var contextUser = new ClaimsPrincipal(identity);
 
-        var httpContext = new DefaultHttpContext
-        {
-            User = contextUser
-        };
-        httpContextAccessorMock.Setup(contextAccessor => contextAccessor.HttpContext).Returns(httpContext);
+        var httpContext = new DefaultHttpContext { User = contextUser };
+        httpContextAccessorMock
+            .Setup(contextAccessor => contextAccessor.HttpContext)
+            .Returns(httpContext);
         _mockUnitOfWork = new Mock<IUnitOfWork>();
         _mockLogRepository = new Mock<ILogRepository>();
-        _mockLogRepository.Setup(repository => repository.GetLogsWithSearch(It.IsAny<string>())).ReturnsAsync([]);
-        _handler = new DeleteUserCommandHandler(_mockUsersRepo.Object, httpContextAccessorMock.Object,_mockLogRepository.Object,_mockUnitOfWork.Object);
-        httpContextAccessorMock.Setup(contextAccessor => contextAccessor.HttpContext.User).Returns(contextUser);
+        _mockLogRepository
+            .Setup(repository => repository.GetLogsWithSearch(It.IsAny<string>()))
+            .ReturnsAsync([]);
+        _handler = new DeleteUserCommandHandler(
+            _mockUsersRepo.Object,
+            httpContextAccessorMock.Object,
+            _mockLogRepository.Object,
+            _mockUnitOfWork.Object
+        );
+        httpContextAccessorMock
+            .Setup(contextAccessor => contextAccessor.HttpContext.User)
+            .Returns(contextUser);
     }
 
     private DeleteUserCommandHandler _handler;
@@ -45,19 +53,22 @@ public class DeleteUserCommandHandlerTest
     [Test]
     public async Task DeleteUser_Test()
     {
-        var user = new IdentityUser { Id = "1", Email = "user@example.com"};
+        var user = new IdentityUser { Id = "1", Email = "user@example.com" };
         _mockUsersRepo.Setup(m => m.GetUserByIdAsync("1")).ReturnsAsync(user);
         _mockUsersRepo.Setup(m => m.DeleteUserAsync(user)).ReturnsAsync(user);
         var result = await _handler.Handle(new DeleteUserCommand("1"), CancellationToken.None);
         _mockLogRepository.Verify(
-            m => m.AddUserLogForCurrentUser(
-                It.Is<IdentityUser>(u => u.Id == "1"),
-                UserAction.REMOVED_USER,
-                It.Is<List<LogChange>>(changes => changes.Count == 1 &&
-                                                  changes[0].OldValue == "user@example.com" &&
-                                                  changes[0].NewValue == "" &&
-                                                  changes[0].Property == nameof(IdentityUser.Email))
-            ),
+            m =>
+                m.AddUserLogForCurrentUser(
+                    It.Is<IdentityUser>(u => u.Id == "1"),
+                    UserAction.REMOVED_USER,
+                    It.Is<List<LogChange>>(changes =>
+                        changes.Count == 1
+                        && changes[0].OldValue == "user@example.com"
+                        && changes[0].NewValue == ""
+                        && changes[0].Property == nameof(IdentityUser.Email)
+                    )
+                ),
             Times.Once
         );
         Assert.That(result, Is.EqualTo(user));
@@ -66,19 +77,25 @@ public class DeleteUserCommandHandlerTest
     [Test]
     public void DeleteUser_InvalidUser_Test()
     {
-        _mockUsersRepo.Setup(m => m.GetUserByIdAsync("1")).ThrowsAsync(new UserNotFoundException("1"));
+        _mockUsersRepo
+            .Setup(m => m.GetUserByIdAsync("1"))
+            .ThrowsAsync(new UserNotFoundException("1"));
 
-        Assert.ThrowsAsync<UserNotFoundException>(()=> _handler.Handle(new DeleteUserCommand("1"), CancellationToken.None));
+        Assert.ThrowsAsync<UserNotFoundException>(() =>
+            _handler.Handle(new DeleteUserCommand("1"), CancellationToken.None)
+        );
     }
 
     [Test]
     public void DeleteUser_SelfDeletionAttempt_Test()
     {
-        var user = new IdentityUser {Email = "camo", Id = "1"};
+        var user = new IdentityUser { Email = "camo", Id = "1" };
 
         _mockUsersRepo.Setup(m => m.GetUserByIdAsync("1")).ReturnsAsync(user);
         _mockUsersRepo.Setup(m => m.GetUserByEmailAsync("camo")).ReturnsAsync(user);
 
-        Assert.ThrowsAsync<UserCantDeleteThemselfException>(() => _handler.Handle(new DeleteUserCommand("1"), CancellationToken.None));
+        Assert.ThrowsAsync<UserCantDeleteThemselfException>(() =>
+            _handler.Handle(new DeleteUserCommand("1"), CancellationToken.None)
+        );
     }
 }

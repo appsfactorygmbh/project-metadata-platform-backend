@@ -18,16 +18,20 @@ public class AuthRepository : RepositoryBase<RefreshToken>, IAuthRepository
 {
     private readonly UserManager<IdentityUser> _userManager;
     private readonly ProjectMetadataPlatformDbContext _context;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="ProjectsRepository" /> class.
     /// </summary>
     /// <param name="dbContext"></param>
     /// <param name="userManager"></param>
-    public AuthRepository(ProjectMetadataPlatformDbContext dbContext, UserManager<IdentityUser> userManager) : base(dbContext)
+    public AuthRepository(
+        ProjectMetadataPlatformDbContext dbContext,
+        UserManager<IdentityUser> userManager
+    )
+        : base(dbContext)
     {
         _userManager = userManager;
         _context = dbContext;
-
     }
 
     /// <summary>
@@ -51,15 +55,16 @@ public class AuthRepository : RepositoryBase<RefreshToken>, IAuthRepository
     public async Task StoreRefreshToken(string email, string refreshToken)
     {
         var user = await _userManager.FindByEmailAsync(email);
-        var expirationTime = int.Parse(EnvironmentUtils.GetEnvVarOrLoadFromFile("REFRESH_TOKEN_EXPIRATION_HOURS"), CultureInfo.InvariantCulture);
+        var expirationTime = int.Parse(
+            EnvironmentUtils.GetEnvVarOrLoadFromFile("REFRESH_TOKEN_EXPIRATION_HOURS"),
+            CultureInfo.InvariantCulture
+        );
         var token = new RefreshToken
         {
-
             Token = refreshToken,
             User = user,
             UserId = user?.Id,
-            ExpirationDate = DateTime.UtcNow.AddHours(expirationTime)
-
+            ExpirationDate = DateTime.UtcNow.AddHours(expirationTime),
         };
         Create(token);
         _ = await _context.SaveChangesAsync();
@@ -75,7 +80,10 @@ public class AuthRepository : RepositoryBase<RefreshToken>, IAuthRepository
     {
         var user = await _userManager.FindByEmailAsync(email);
         var token = GetIf(rt => user != null && rt.UserId == user.Id).FirstOrDefaultAsync().Result;
-        var expirationTime = int.Parse(EnvironmentUtils.GetEnvVarOrLoadFromFile("REFRESH_TOKEN_EXPIRATION_HOURS"), CultureInfo.InvariantCulture);
+        var expirationTime = int.Parse(
+            EnvironmentUtils.GetEnvVarOrLoadFromFile("REFRESH_TOKEN_EXPIRATION_HOURS"),
+            CultureInfo.InvariantCulture
+        );
         if (token != null)
         {
             token.Token = refreshToken;
@@ -84,7 +92,6 @@ public class AuthRepository : RepositoryBase<RefreshToken>, IAuthRepository
         }
 
         _ = await _context.SaveChangesAsync();
-
     }
 
     /// <summary>
@@ -104,7 +111,9 @@ public class AuthRepository : RepositoryBase<RefreshToken>, IAuthRepository
     /// <returns>true if the token is valid; false if the token isn't valid</returns>
     public async Task<bool> CheckRefreshTokenRequest(string refreshToken)
     {
-        var token = await GetIf(rt => rt.Token == refreshToken).AsNoTracking().FirstOrDefaultAsync();
+        var token = await GetIf(rt => rt.Token == refreshToken)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
 
         return token != null && token.ExpirationDate > DateTime.UtcNow;
     }
@@ -116,11 +125,13 @@ public class AuthRepository : RepositoryBase<RefreshToken>, IAuthRepository
     /// <returns>a username</returns>
     public async Task<string?> GetEmailByRefreshToken(string refreshToken)
     {
-        var token = await GetIf(rt => rt.Token == refreshToken).AsNoTracking().FirstOrDefaultAsync();
-        var user = await _userManager.Users.FirstOrDefaultAsync(a => token != null && a.Id == token.UserId);
+        var token = await GetIf(rt => rt.Token == refreshToken)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
+        var user = await _userManager.Users.FirstOrDefaultAsync(a =>
+            token != null && a.Id == token.UserId
+        );
 
         return user?.Email;
     }
-
-
 }

@@ -87,5 +87,20 @@ public enum Action
     /// <summary>
     /// Represents the action of removing a global plugin.
     /// </summary>
-    REMOVED_GLOBAL_PLUGIN
+    REMOVED_GLOBAL_PLUGIN,
+
+    /// <summary>
+    /// Represents the action of adding a team.
+    /// </summary>
+    ADDED_TEAM,
+
+    /// <summary>
+    /// Represents the action of updating a team.
+    /// </summary>
+    UPDATED_TEAM,
+
+    /// <summary>
+    /// Represents the action of removing a team.
+    /// </summary>
+    REMOVED_TEAM,
 }

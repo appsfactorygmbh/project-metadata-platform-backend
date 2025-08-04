@@ -20,7 +20,9 @@ public class GetAllUnarchivedPluginsForProjectIdQueryHandlerTest
     public void SetUp()
     {
         _pluginRepositoryMock = new Mock<IPluginRepository>();
-        _handler = new GetAllUnarchivedPluginsForProjectIdQueryHandler(_pluginRepositoryMock.Object);
+        _handler = new GetAllUnarchivedPluginsForProjectIdQueryHandler(
+            _pluginRepositoryMock.Object
+        );
     }
 
     [Test]
@@ -31,22 +33,33 @@ public class GetAllUnarchivedPluginsForProjectIdQueryHandlerTest
             new()
             {
                 PluginId = 1,
-                Plugin = new Plugin { Id = 1, PluginName = "Plugin 1", IsArchived = false }, // Unarchived
+                Plugin = new Plugin
+                {
+                    Id = 1,
+                    PluginName = "Plugin 1",
+                    IsArchived = false,
+                }, // Unarchived
                 ProjectId = 1,
                 Url = "Plugin1.com",
-                DisplayName = "GitLab"
+                DisplayName = "GitLab",
             },
             new()
             {
                 PluginId = 2,
-                Plugin = new Plugin { Id = 2, PluginName = "Plugin 2", IsArchived = false }, // Unarchived
+                Plugin = new Plugin
+                {
+                    Id = 2,
+                    PluginName = "Plugin 2",
+                    IsArchived = false,
+                }, // Unarchived
                 ProjectId = 1,
                 Url = "Plugin2.com",
-                DisplayName = "Jira"
-            }
+                DisplayName = "Jira",
+            },
         };
 
-        _pluginRepositoryMock.Setup(r => r.GetAllUnarchivedPluginsForProjectIdAsync(1))
+        _pluginRepositoryMock
+            .Setup(r => r.GetAllUnarchivedPluginsForProjectIdAsync(1))
             .ReturnsAsync(plugins);
 
         var query = new GetAllUnarchivedPluginsForProjectIdQuery(1);
@@ -67,7 +80,8 @@ public class GetAllUnarchivedPluginsForProjectIdQueryHandlerTest
     public async Task Handle_WhenNoUnarchivedPluginsExist_ReturnsEmptyList()
     {
         var plugins = new List<ProjectPlugins>(); // No plugins found
-        _pluginRepositoryMock.Setup(r => r.GetAllUnarchivedPluginsForProjectIdAsync(1))
+        _pluginRepositoryMock
+            .Setup(r => r.GetAllUnarchivedPluginsForProjectIdAsync(1))
             .ReturnsAsync(plugins);
 
         var query = new GetAllUnarchivedPluginsForProjectIdQuery(1);
@@ -85,7 +99,8 @@ public class GetAllUnarchivedPluginsForProjectIdQueryHandlerTest
 
         var query = new GetAllUnarchivedPluginsForProjectIdQuery(1);
 
-        _pluginRepositoryMock.Setup(r => r.GetAllUnarchivedPluginsForProjectIdAsync(1))
+        _pluginRepositoryMock
+            .Setup(r => r.GetAllUnarchivedPluginsForProjectIdAsync(1))
             .ReturnsAsync(new List<ProjectPlugins>());
 
         var ex = Assert.ThrowsAsync<OperationCanceledException>(async () =>
@@ -96,8 +111,6 @@ public class GetAllUnarchivedPluginsForProjectIdQueryHandlerTest
         Assert.That(ex, Is.InstanceOf<OperationCanceledException>());
     }
 
-
-
     [Test]
     public async Task Handle_WhenSomePluginsAreArchived_ReturnsOnlyUnarchivedPlugins()
     {
@@ -106,22 +119,33 @@ public class GetAllUnarchivedPluginsForProjectIdQueryHandlerTest
             new()
             {
                 PluginId = 1,
-                Plugin = new Plugin { Id = 1, PluginName = "Plugin 1", IsArchived = false }, // Unarchived
+                Plugin = new Plugin
+                {
+                    Id = 1,
+                    PluginName = "Plugin 1",
+                    IsArchived = false,
+                }, // Unarchived
                 ProjectId = 1,
                 Url = "Plugin1.com",
-                DisplayName = "GitLab"
+                DisplayName = "GitLab",
             },
             new()
             {
                 PluginId = 2,
-                Plugin = new Plugin { Id = 2, PluginName = "Plugin 2", IsArchived = true }, // Archived
+                Plugin = new Plugin
+                {
+                    Id = 2,
+                    PluginName = "Plugin 2",
+                    IsArchived = true,
+                }, // Archived
                 ProjectId = 1,
                 Url = "Plugin2.com",
-                DisplayName = "Jira"
-            }
+                DisplayName = "Jira",
+            },
         };
 
-        _pluginRepositoryMock.Setup(r => r.GetAllUnarchivedPluginsForProjectIdAsync(1))
+        _pluginRepositoryMock
+            .Setup(r => r.GetAllUnarchivedPluginsForProjectIdAsync(1))
             .ReturnsAsync(plugins.Where(p => !p.Plugin!.IsArchived).ToList());
 
         var query = new GetAllUnarchivedPluginsForProjectIdQuery(1);
@@ -134,7 +158,8 @@ public class GetAllUnarchivedPluginsForProjectIdQueryHandlerTest
     [Test]
     public void Handle_WhenProjectDoesNotExist_ThrowsArgumentException()
     {
-        _pluginRepositoryMock.Setup(r => r.GetAllUnarchivedPluginsForProjectIdAsync(It.IsAny<int>()))
+        _pluginRepositoryMock
+            .Setup(r => r.GetAllUnarchivedPluginsForProjectIdAsync(It.IsAny<int>()))
             .ThrowsAsync(new ArgumentException("Project with Id 999 does not exist."));
 
         var query = new GetAllUnarchivedPluginsForProjectIdQuery(999); // Non-existent project ID

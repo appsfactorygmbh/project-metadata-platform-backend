@@ -20,6 +20,7 @@ public class CreateProjectCommandHandlerTest
     private CreateProjectCommandHandler _handler;
     private Mock<IProjectsRepository> _mockProjectRepo;
     private Mock<IPluginRepository> _mockPluginRepo;
+    private Mock<ITeamRepository> _teamRepository;
     private Mock<ILogRepository> _mockLogRepo;
     private Mock<IUnitOfWork> _mockUnitOfWork;
     private Mock<ISlugHelper> _mockSlugHelper;
@@ -29,10 +30,18 @@ public class CreateProjectCommandHandlerTest
     {
         _mockProjectRepo = new Mock<IProjectsRepository>();
         _mockPluginRepo = new Mock<IPluginRepository>();
+        _teamRepository = new Mock<ITeamRepository>();
         _mockLogRepo = new Mock<ILogRepository>();
         _mockUnitOfWork = new Mock<IUnitOfWork>();
         _mockSlugHelper = new Mock<ISlugHelper>();
-        _handler = new CreateProjectCommandHandler(_mockProjectRepo.Object, _mockPluginRepo.Object, _mockLogRepo.Object, _mockUnitOfWork.Object, _mockSlugHelper.Object);
+        _handler = new CreateProjectCommandHandler(
+            _mockProjectRepo.Object,
+            _mockPluginRepo.Object,
+            _teamRepository.Object,
+            _mockLogRepo.Object,
+            _mockUnitOfWork.Object,
+            _mockSlugHelper.Object
+        );
     }
 
     [Test]
@@ -40,37 +49,61 @@ public class CreateProjectCommandHandlerTest
     {
         // prepare
         var plugins = new List<ProjectPlugins>();
-        plugins.Add(new ProjectPlugins
-        {
-            Url = "https://example.com",
-            PluginId = 200
-        });
-        _mockProjectRepo.Setup(m => m.Add(It.IsAny<Project>())).Callback<Project>(p => p.Id = 1);
+        plugins.Add(new ProjectPlugins { Url = "https://example.com", PluginId = 200 });
+        _mockProjectRepo
+            .Setup(m => m.AddProjectAsync(It.IsAny<Project>()))
+            .Callback<Project>(p => p.Id = 1);
         _mockPluginRepo.Setup(m => m.CheckPluginExists(It.IsAny<int>())).ReturnsAsync(true);
         _mockSlugHelper.Setup(m => m.GenerateSlug(It.IsAny<string>())).Returns("example_project");
-        _mockSlugHelper.Setup(m => m.GetProjectIdBySlug("example_project")).ThrowsAsync(new InvalidOperationException("Project with this slug does not exist: example_project"));
+        _mockSlugHelper
+            .Setup(m => m.GetProjectIdBySlug("example_project"))
+            .ThrowsAsync(
+                new InvalidOperationException(
+                    "Project with this slug does not exist: example_project"
+                )
+            );
         // act
 
-        var result =
-            await _handler.Handle(
-                new CreateProjectCommand("Example Project", "Example Business Unit", 1, "Example Department",
-                    "Example Client", "Example OfferId", "Example Company", CompanyState.EXTERNAL, SecurityLevel.HIGH,
-                    plugins), It.IsAny<CancellationToken>());
+        var result = await _handler.Handle(
+            new CreateProjectCommand(
+                ProjectName: "Example Project",
+                ClientName: "Example Business Unit",
+                OfferId: "1",
+                Company: "Example Company",
+                CompanyState: CompanyState.EXTERNAL,
+                TeamId: null,
+                IsmsLevel: SecurityLevel.HIGH,
+                Plugins: plugins
+            ),
+            It.IsAny<CancellationToken>()
+        );
 
         Assert.That(result, Is.EqualTo(1));
-        _mockLogRepo.Verify(m => m.AddProjectLogForCurrentUser(It.IsAny<Project>(), Action.ADDED_PROJECT, It.IsAny<List<LogChange>>()), Times.Once);
-        _mockLogRepo.Verify(m => m.AddProjectLogForCurrentUser(It.IsAny<Project>(), Action.ADDED_PROJECT_PLUGIN, It.IsAny<List<LogChange>>()), Times.Once);
+        _mockLogRepo.Verify(
+            m =>
+                m.AddProjectLogForCurrentUser(
+                    It.IsAny<Project>(),
+                    Action.ADDED_PROJECT,
+                    It.IsAny<List<LogChange>>()
+                ),
+            Times.Once
+        );
+        _mockLogRepo.Verify(
+            m =>
+                m.AddProjectLogForCurrentUser(
+                    It.IsAny<Project>(),
+                    Action.ADDED_PROJECT_PLUGIN,
+                    It.IsAny<List<LogChange>>()
+                ),
+            Times.Once
+        );
     }
 
     [Test]
     public void CreateProject_Test_ThrowsExceptionWhenSlugAlreadyExists()
     {
         var plugins = new List<ProjectPlugins>();
-        plugins.Add(new ProjectPlugins
-        {
-            Url = "https://example.com",
-            PluginId = 200
-        });
+        plugins.Add(new ProjectPlugins { Url = "https://example.com", PluginId = 200 });
         _mockPluginRepo.Setup(m => m.CheckPluginExists(It.IsAny<int>())).ReturnsAsync(true);
         _mockSlugHelper.Setup(m => m.GenerateSlug(It.IsAny<string>())).Returns("example_project");
         _mockSlugHelper.Setup(m => m.GetProjectIdBySlug("example_project")).ReturnsAsync(1);
@@ -79,15 +112,43 @@ public class CreateProjectCommandHandlerTest
         var ex = Assert.ThrowsAsync<ProjectSlugAlreadyExistsException>(async () =>
         {
             await _handler.Handle(
-                new CreateProjectCommand("Example Project", "Example Business Unit", 1, "Example Department",
-                    "Example Client", "Example OfferId", "Example Company", CompanyState.EXTERNAL, SecurityLevel.HIGH, plugins), It.IsAny<CancellationToken>());
+                new CreateProjectCommand(
+                    ProjectName: "Example Project",
+                    ClientName: "Example Business Unit",
+                    OfferId: "1",
+                    Company: "Example Department",
+                    CompanyState: CompanyState.EXTERNAL,
+                    TeamId: null,
+                    IsmsLevel: SecurityLevel.HIGH,
+                    Plugins: plugins
+                ),
+                It.IsAny<CancellationToken>()
+            );
         });
 
-        Assert.That(ex.Message, Is.EqualTo("A Project with this slug already exists: example_project"));
+        Assert.That(
+            ex.Message,
+            Is.EqualTo("A Project with this slug already exists: example_project")
+        );
 
-        _mockLogRepo.Verify(m => m.AddProjectLogForCurrentUser(It.IsAny<Project>(), Action.ADDED_PROJECT, It.IsAny<List<LogChange>>()), Times.Never);
-        _mockLogRepo.Verify(m => m.AddProjectLogForCurrentUser(It.IsAny<Project>(), Action.ADDED_PROJECT_PLUGIN, It.IsAny<List<LogChange>>()), Times.Never);
-        _mockProjectRepo.Verify(m => m.Add(It.IsAny<Project>()), Times.Never);
+        _mockLogRepo.Verify(
+            m =>
+                m.AddProjectLogForCurrentUser(
+                    It.IsAny<Project>(),
+                    Action.ADDED_PROJECT,
+                    It.IsAny<List<LogChange>>()
+                ),
+            Times.Never
+        );
+        _mockLogRepo.Verify(
+            m =>
+                m.AddProjectLogForCurrentUser(
+                    It.IsAny<Project>(),
+                    Action.ADDED_PROJECT_PLUGIN,
+                    It.IsAny<List<LogChange>>()
+                ),
+            Times.Never
+        );
+        _mockProjectRepo.Verify(m => m.AddProjectAsync(It.IsAny<Project>()), Times.Never);
     }
-
 }

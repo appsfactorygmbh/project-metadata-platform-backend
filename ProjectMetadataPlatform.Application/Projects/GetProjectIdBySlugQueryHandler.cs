@@ -20,15 +20,16 @@ public class GetProjectIdBySlugQueryHandler : IRequestHandler<GetProjectIdBySlug
         _projectsRepository = projectsRepository;
     }
 
-
-
     /// <summary>
     /// Handles the <see cref="GetProjectIdBySlugQuery"/>.
     /// </summary>
     /// <param name="request">request containing the Slug of a project</param>
     /// <param name="cancellationToken"></param>
     /// <returns>Either a projectId or null.</returns>
-    public async Task<int> Handle(GetProjectIdBySlugQuery request, CancellationToken cancellationToken)
+    public async Task<int> Handle(
+        GetProjectIdBySlugQuery request,
+        CancellationToken cancellationToken
+    )
     {
         return await _projectsRepository.GetProjectIdBySlugAsync(request.Slug);
     }

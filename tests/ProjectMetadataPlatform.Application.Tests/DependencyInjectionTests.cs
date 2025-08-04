@@ -30,5 +30,4 @@ public class DependencyInjectionTests
 
         serviceCollection.BuildServiceProvider();
     }
-
 }

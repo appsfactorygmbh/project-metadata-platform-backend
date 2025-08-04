@@ -6,4 +6,5 @@ namespace ProjectMetadataPlatform.Domain.Errors.PluginExceptions;
 /// Exception for when a plugin is not archived when deleting it.
 /// </summary>
 /// <param name="plugin">The plugin that could not be deleted.</param>
-public class PluginNotArchivedException(Plugin plugin) : PluginException("The plugin " + plugin.Id + " is not archived.");
+public class PluginNotArchivedException(Plugin plugin)
+    : PluginException("The plugin " + plugin.Id + " is not archived.");

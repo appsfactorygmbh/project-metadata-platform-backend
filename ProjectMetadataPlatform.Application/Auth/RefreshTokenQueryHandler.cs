@@ -31,7 +31,10 @@ public class RefreshTokenQueryHandler : IRequestHandler<RefreshTokenQuery, JwtTo
     /// <param name="cancellationToken"></param>
     /// <returns>The JWT tokens.</returns>
     /// <exception cref="AuthenticationException"></exception>
-    public async Task<JwtTokens> Handle(RefreshTokenQuery request, CancellationToken cancellationToken)
+    public async Task<JwtTokens> Handle(
+        RefreshTokenQuery request,
+        CancellationToken cancellationToken
+    )
     {
         if (!await _authRepository.CheckRefreshTokenRequest(request.RefreshToken))
         {

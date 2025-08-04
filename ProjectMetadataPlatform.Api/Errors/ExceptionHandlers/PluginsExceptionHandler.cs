@@ -9,7 +9,6 @@ namespace ProjectMetadataPlatform.Api.Errors.ExceptionHandlers;
 /// </summary>
 public class PluginsExceptionHandler : ControllerBase, IExceptionHandler<PluginException>
 {
-
     /// <summary>
     /// Handles a specific plugin exception and returns an appropriate HTTP response.
     /// </summary>
@@ -19,9 +18,10 @@ public class PluginsExceptionHandler : ControllerBase, IExceptionHandler<PluginE
     {
         return exception switch
         {
-            PluginNotArchivedException pluginNotArchivedException => BadRequest(new ErrorResponse(pluginNotArchivedException.Message)),
-            _ => null
+            PluginNotArchivedException pluginNotArchivedException => BadRequest(
+                new ErrorResponse(pluginNotArchivedException.Message)
+            ),
+            _ => null,
         };
     }
-
 }

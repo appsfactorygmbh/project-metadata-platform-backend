@@ -26,9 +26,6 @@ public class ProjectsExceptionHandlerTest
             ProjectName = "Test Project",
             Slug = "test_project",
             ClientName = "Test Client",
-            BusinessUnit = "Test Business Unit",
-            TeamNumber = 0,
-            Department = "Test Department",
         };
 
         var mockException = new Mock<ProjectNotArchivedException>(project);
@@ -36,7 +33,7 @@ public class ProjectsExceptionHandlerTest
         var result = _projectsExceptionHandler.Handle(mockException.Object);
 
         Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
-        var statusCodeResult = (BadRequestObjectResult) result;
+        var statusCodeResult = (BadRequestObjectResult)result;
         Assert.That(statusCodeResult, Is.Not.Null);
         Assert.That(statusCodeResult.StatusCode, Is.EqualTo(400));
     }

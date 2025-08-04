@@ -19,6 +19,7 @@ public class GetProjectsBySearchingHandlerTest
         _mockProjectRepo = new Mock<IProjectsRepository>();
         _handler = new GetAllProjectsQueryHandler(_mockProjectRepo.Object);
     }
+
     private GetAllProjectsQueryHandler _handler;
     private Mock<IProjectsRepository> _mockProjectRepo;
 
@@ -45,20 +46,20 @@ public class GetProjectsBySearchingHandlerTest
                 ProjectName = "Regen",
                 Slug = "regen",
                 ClientName = "Nasa",
-                BusinessUnit = "BuWeather",
-                TeamNumber = 42,
-                Department = "Homelandsecurity"
-            }
+            },
         };
 
         var query = new GetAllProjectsQuery(null, "R");
 
-        _mockProjectRepo.Setup(m => m.GetProjectsAsync(query)).ReturnsAsync(projectsResponseContent);
+        _mockProjectRepo
+            .Setup(m => m.GetProjectsAsync(query))
+            .ReturnsAsync(projectsResponseContent);
 
         var result = await _handler.Handle(query, It.IsAny<CancellationToken>());
 
         Assert.That(result, Is.EqualTo(projectsResponseContent));
     }
+
     [Test]
     public async Task HandleGetProjectRequestBySearchingWithNullSearch_Test()
     {
@@ -70,9 +71,6 @@ public class GetProjectsBySearchingHandlerTest
                 ProjectName = "Regen",
                 Slug = "regen",
                 ClientName = "Nasa",
-                BusinessUnit = "BuWeather",
-                TeamNumber = 42,
-                Department = "Homelandsecurity"
             },
             new()
             {
@@ -80,12 +78,11 @@ public class GetProjectsBySearchingHandlerTest
                 ProjectName = "Sonne",
                 Slug = "sonne",
                 ClientName = "Nasa",
-                BusinessUnit = "BuWeather",
-                TeamNumber = 42,
-                Department = "Homelandsecurity"
-            }
+            },
         };
-        _mockProjectRepo.Setup(m => m.GetProjectsAsync(It.IsAny<GetAllProjectsQuery>())).ReturnsAsync(projectsResponseContent);
+        _mockProjectRepo
+            .Setup(m => m.GetProjectsAsync(It.IsAny<GetAllProjectsQuery>()))
+            .ReturnsAsync(projectsResponseContent);
         var query = new GetAllProjectsQuery(null, "");
         var result = await _handler.Handle(query, It.IsAny<CancellationToken>());
 

@@ -17,7 +17,7 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.7")
+                .HasAnnotation("ProductVersion", "8.0.16")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -277,6 +277,12 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
                     b.Property<string>("ProjectName")
                         .HasColumnType("text");
 
+                    b.Property<int?>("TeamId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("TeamName")
+                        .HasColumnType("text");
+
                     b.Property<DateTimeOffset>("TimeStamp")
                         .HasColumnType("timestamp with time zone");
 
@@ -289,6 +295,8 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
                     b.HasIndex("GlobalPluginId");
 
                     b.HasIndex("ProjectId");
+
+                    b.HasIndex("TeamId");
 
                     b.ToTable("Logs");
                 });
@@ -463,10 +471,6 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("BusinessUnit")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("ClientName")
                         .IsRequired()
                         .HasColumnType("text");
@@ -478,10 +482,6 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
                     b.Property<int>("CompanyState")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Department")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<bool>("IsArchived")
                         .HasColumnType("boolean");
 
@@ -489,7 +489,6 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("OfferId")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("ProjectName")
@@ -500,7 +499,7 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("TeamNumber")
+                    b.Property<int?>("TeamId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
@@ -508,54 +507,74 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
                     b.HasIndex("Slug")
                         .IsUnique();
 
+                    b.HasIndex("TeamId");
+
                     b.ToTable("Projects");
 
                     b.HasData(
                         new
                         {
                             Id = 100,
-                            BusinessUnit = "Unit 1",
                             ClientName = "Deutsche Bahn",
                             Company = "AppsFactory",
                             CompanyState = 1,
-                            Department = "Department 1",
                             IsArchived = false,
                             IsmsLevel = 0,
                             OfferId = "Offer1",
                             ProjectName = "DB App",
-                            Slug = "db_app",
-                            TeamNumber = 1
+                            Slug = "db_app"
                         },
                         new
                         {
                             Id = 200,
-                            BusinessUnit = "Unit 2",
                             ClientName = "ARD",
                             Company = "AppsCompany",
                             CompanyState = 0,
-                            Department = "Department 2",
                             IsArchived = false,
                             IsmsLevel = 1,
                             OfferId = "Offer2",
                             ProjectName = "Tagesschau App",
-                            Slug = "tagesschau_app",
-                            TeamNumber = 2
+                            Slug = "tagesschau_app"
                         },
                         new
                         {
                             Id = 300,
-                            BusinessUnit = "Unit 3",
                             ClientName = "AOK",
                             Company = "AppsFactory",
                             CompanyState = 1,
-                            Department = "Department 3",
                             IsArchived = false,
                             IsmsLevel = 2,
                             OfferId = "Offer3",
                             ProjectName = "AOK Bonus App",
-                            Slug = "aok_bonus_app",
-                            TeamNumber = 3
+                            Slug = "aok_bonus_app"
                         });
+                });
+
+            modelBuilder.Entity("ProjectMetadataPlatform.Domain.Teams.Team", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("BusinessUnit")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("PTL")
+                        .HasColumnType("text");
+
+                    b.Property<string>("TeamName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TeamName")
+                        .IsUnique();
+
+                    b.ToTable("Teams");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -640,6 +659,11 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.SetNull);
 
+                    b.HasOne("ProjectMetadataPlatform.Domain.Teams.Team", "Team")
+                        .WithMany()
+                        .HasForeignKey("TeamId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.Navigation("AffectedUser");
 
                     b.Navigation("Author");
@@ -647,6 +671,8 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
                     b.Navigation("GlobalPlugin");
 
                     b.Navigation("Project");
+
+                    b.Navigation("Team");
                 });
 
             modelBuilder.Entity("ProjectMetadataPlatform.Domain.Logs.LogChange", b =>
@@ -679,6 +705,16 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
                     b.Navigation("Project");
                 });
 
+            modelBuilder.Entity("ProjectMetadataPlatform.Domain.Projects.Project", b =>
+                {
+                    b.HasOne("ProjectMetadataPlatform.Domain.Teams.Team", "Team")
+                        .WithMany("Projects")
+                        .HasForeignKey("TeamId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Team");
+                });
+
             modelBuilder.Entity("ProjectMetadataPlatform.Domain.Logs.Log", b =>
                 {
                     b.Navigation("Changes");
@@ -694,6 +730,11 @@ namespace ProjectMetadataPlatform.Infrastructure.Migrations
                     b.Navigation("Logs");
 
                     b.Navigation("ProjectPlugins");
+                });
+
+            modelBuilder.Entity("ProjectMetadataPlatform.Domain.Teams.Team", b =>
+                {
+                    b.Navigation("Projects");
                 });
 #pragma warning restore 612, 618
         }

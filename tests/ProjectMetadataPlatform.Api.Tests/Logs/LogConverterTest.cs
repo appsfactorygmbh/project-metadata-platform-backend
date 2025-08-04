@@ -1,9 +1,11 @@
 using System;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using NUnit.Framework;
 using ProjectMetadataPlatform.Api.Logs;
 using ProjectMetadataPlatform.Domain.Logs;
 using ProjectMetadataPlatform.Domain.Projects;
+using ProjectMetadataPlatform.Domain.Teams;
 using Action = ProjectMetadataPlatform.Domain.Logs.Action;
 
 namespace ProjectMetadataPlatform.Api.Tests.Logs;
@@ -33,16 +35,23 @@ public class LogConverterTest
             Action = Action.UPDATED_PROJECT,
             Changes =
             [
-                new LogChange { Property = "Fjords", OldValue = "None", NewValue = "Many" }
-            ]
+                new LogChange
+                {
+                    Property = "Fjords",
+                    OldValue = "None",
+                    NewValue = "Many",
+                },
+            ],
         };
 
         var logResponse = _logConverter.BuildLogMessage(log);
 
         Assert.Multiple(() =>
         {
-            Assert.That(logResponse.LogMessage,
-                Is.EqualTo("Slartibartfast updated project Norway:  set Fjords from None to Many"));
+            Assert.That(
+                logResponse.LogMessage,
+                Is.EqualTo("Slartibartfast updated project Norway:  set Fjords from None to Many")
+            );
             Assert.That(logResponse.Timestamp, Is.EqualTo("1970-01-01T00:00:00+01:00"));
         });
     }
@@ -63,19 +72,21 @@ public class LogConverterTest
                 ProjectName = "Ultimate Question of Life, the Universe and Everything",
                 Slug = "ultimate question of life, the universe and everything",
                 ClientName = "Mice",
-                BusinessUnit = "",
-                TeamNumber = 1,
-                Department = ""
             },
             ProjectName = "Ultimate Question of Life, the Universe and Everything",
-            Action = Action.ARCHIVED_PROJECT
+            Action = Action.ARCHIVED_PROJECT,
         };
 
         var logResponse = _logConverter.BuildLogMessage(log);
 
         Assert.Multiple(() =>
         {
-            Assert.That(logResponse.LogMessage, Is.EqualTo("Deep Thought archived project Ultimate Question of Life, the Universe and Everything"));
+            Assert.That(
+                logResponse.LogMessage,
+                Is.EqualTo(
+                    "Deep Thought archived project Ultimate Question of Life, the Universe and Everything"
+                )
+            );
             Assert.That(logResponse.Timestamp, Is.EqualTo("1970-01-01T00:00:00+01:00"));
         });
     }
@@ -96,23 +107,30 @@ public class LogConverterTest
                 ProjectName = "Atmosphere",
                 Slug = "atmosphere",
                 ClientName = "",
-                BusinessUnit = "",
-                TeamNumber = 1,
-                Department = ""
             },
             ProjectName = "Atmosphere",
             Action = Action.ADDED_PROJECT_PLUGIN,
             Changes =
             [
-                new LogChange { Property = "flyingObjects", OldValue = "", NewValue = "Wale" }
-            ]
+                new LogChange
+                {
+                    Property = "flyingObjects",
+                    OldValue = "",
+                    NewValue = "Wale",
+                },
+            ],
         };
 
         var logResponse = _logConverter.BuildLogMessage(log);
 
         Assert.Multiple(() =>
         {
-            Assert.That(logResponse.LogMessage, Is.EqualTo("Infinite Improbability Drive added a new plugin to project Atmosphere with properties: flyingObjects = Wale"));
+            Assert.That(
+                logResponse.LogMessage,
+                Is.EqualTo(
+                    "Infinite Improbability Drive added a new plugin to project Atmosphere with properties: flyingObjects = Wale"
+                )
+            );
             Assert.That(logResponse.Timestamp, Is.EqualTo("1970-01-01T00:00:00+01:00"));
         });
     }
@@ -133,23 +151,30 @@ public class LogConverterTest
                 ProjectName = "Wale",
                 Slug = "wale",
                 ClientName = "",
-                BusinessUnit = "",
-                TeamNumber = 1,
-                Department = ""
             },
             ProjectName = "Wale",
             Action = Action.UPDATED_PROJECT_PLUGIN,
             Changes =
             [
-                new LogChange { Property = "alive", OldValue = "yes", NewValue = "no" }
-            ]
+                new LogChange
+                {
+                    Property = "alive",
+                    OldValue = "yes",
+                    NewValue = "no",
+                },
+            ],
         };
 
         var logResponse = _logConverter.BuildLogMessage(log);
 
         Assert.Multiple(() =>
         {
-            Assert.That(logResponse.LogMessage, Is.EqualTo("Ground updated plugin properties in project Wale:  set alive from yes to no"));
+            Assert.That(
+                logResponse.LogMessage,
+                Is.EqualTo(
+                    "Ground updated plugin properties in project Wale:  set alive from yes to no"
+                )
+            );
             Assert.That(logResponse.Timestamp, Is.EqualTo("1970-01-01T00:00:00+01:00"));
         });
     }
@@ -170,23 +195,30 @@ public class LogConverterTest
                 ProjectName = "Solarsystem",
                 Slug = "solarsystem",
                 ClientName = "Mice",
-                BusinessUnit = "",
-                TeamNumber = 1,
-                Department = ""
             },
             ProjectName = "Solarsystem",
             Action = Action.REMOVED_PROJECT_PLUGIN,
             Changes =
             [
-                new LogChange { Property = "Earth", OldValue = "intact", NewValue = "" }
-            ]
+                new LogChange
+                {
+                    Property = "Earth",
+                    OldValue = "intact",
+                    NewValue = "",
+                },
+            ],
         };
 
         var logResponse = _logConverter.BuildLogMessage(log);
 
         Assert.Multiple(() =>
         {
-            Assert.That(logResponse.LogMessage, Is.EqualTo("Prostetnic Vogon Jeltz removed a plugin from project Solarsystem with properties: Earth = intact"));
+            Assert.That(
+                logResponse.LogMessage,
+                Is.EqualTo(
+                    "Prostetnic Vogon Jeltz removed a plugin from project Solarsystem with properties: Earth = intact"
+                )
+            );
             Assert.That(logResponse.Timestamp, Is.EqualTo("1970-01-01T00:00:00+01:00"));
         });
     }
@@ -207,19 +239,21 @@ public class LogConverterTest
                 ProjectName = "Ultimate Question of Life, the Universe and Everything",
                 Slug = "ultimate question of life, the universe and everything",
                 ClientName = "Mice",
-                BusinessUnit = "",
-                TeamNumber = 1,
-                Department = ""
             },
             ProjectName = "Ultimate Question of Life, the Universe and Everything",
-            Action = Action.UNARCHIVED_PROJECT
+            Action = Action.UNARCHIVED_PROJECT,
         };
 
         var logResponse = _logConverter.BuildLogMessage(log);
 
         Assert.Multiple(() =>
         {
-            Assert.That(logResponse.LogMessage, Is.EqualTo("Earth unarchived project Ultimate Question of Life, the Universe and Everything"));
+            Assert.That(
+                logResponse.LogMessage,
+                Is.EqualTo(
+                    "Earth unarchived project Ultimate Question of Life, the Universe and Everything"
+                )
+            );
             Assert.That(logResponse.Timestamp, Is.EqualTo("1970-01-01T00:00:00+01:00"));
         });
     }
@@ -238,16 +272,25 @@ public class LogConverterTest
             ProjectName = "Living Beings",
             Changes =
             [
-                new LogChange { Property = "Home Planet", OldValue = "Earth", NewValue = "None" }
-            ]
+                new LogChange
+                {
+                    Property = "Home Planet",
+                    OldValue = "Earth",
+                    NewValue = "None",
+                },
+            ],
         };
 
         var logResponse = _logConverter.BuildLogMessage(log);
 
         Assert.Multiple(() =>
         {
-            Assert.That(logResponse.LogMessage,
-                Is.EqualTo("Earth Population (deleted user) updated project Living Beings:  set Home Planet from Earth to None"));
+            Assert.That(
+                logResponse.LogMessage,
+                Is.EqualTo(
+                    "Earth Population (deleted user) updated project Living Beings:  set Home Planet from Earth to None"
+                )
+            );
             Assert.That(logResponse.Timestamp, Is.EqualTo("1970-01-01T00:00:00+01:00"));
         });
     }
@@ -265,15 +308,25 @@ public class LogConverterTest
             Action = Action.ADDED_USER,
             Changes =
             [
-                new LogChange { Property = "Email", OldValue = "", NewValue = "Bowl of Petunias" }
-            ]
+                new LogChange
+                {
+                    Property = "Email",
+                    OldValue = "",
+                    NewValue = "Bowl of Petunias",
+                },
+            ],
         };
 
         var logResponse = _logConverter.BuildLogMessage(log);
 
         Assert.Multiple(() =>
         {
-            Assert.That(logResponse.LogMessage, Is.EqualTo("Infinite Improbability Drive added a new user with properties: Email = Bowl of Petunias"));
+            Assert.That(
+                logResponse.LogMessage,
+                Is.EqualTo(
+                    "Infinite Improbability Drive added a new user with properties: Email = Bowl of Petunias"
+                )
+            );
             Assert.That(logResponse.Timestamp, Is.EqualTo("1970-01-01T00:00:00+01:00"));
         });
     }
@@ -294,15 +347,25 @@ public class LogConverterTest
             Action = Action.UPDATED_USER,
             Changes =
             [
-                new LogChange { Property = "Email", OldValue = "Gandalf the Grey", NewValue = "Gandalf the White" }
-            ]
+                new LogChange
+                {
+                    Property = "Email",
+                    OldValue = "Gandalf the Grey",
+                    NewValue = "Gandalf the White",
+                },
+            ],
         };
 
         var logResponse = _logConverter.BuildLogMessage(log);
 
         Assert.Multiple(() =>
         {
-            Assert.That(logResponse.LogMessage, Is.EqualTo("Gandalf updated user Gandalf: set Email from Gandalf the Grey to Gandalf the White"));
+            Assert.That(
+                logResponse.LogMessage,
+                Is.EqualTo(
+                    "Gandalf updated user Gandalf: set Email from Gandalf the Grey to Gandalf the White"
+                )
+            );
             Assert.That(logResponse.Timestamp, Is.EqualTo("1970-01-01T00:00:00+01:00"));
         });
     }
@@ -321,8 +384,13 @@ public class LogConverterTest
             AffectedUserEmail = "whale@air.com",
             Changes =
             [
-                new LogChange { Property = "Email", OldValue = "Whale", NewValue = "" }
-            ]
+                new LogChange
+                {
+                    Property = "Email",
+                    OldValue = "Whale",
+                    NewValue = "",
+                },
+            ],
         };
 
         var logResponse = _logConverter.BuildLogMessage(log);
@@ -352,7 +420,10 @@ public class LogConverterTest
 
         Assert.Multiple(() =>
         {
-            Assert.That(logResponse.LogMessage, Is.EqualTo("Luke Skywalker removed project DeathStar"));
+            Assert.That(
+                logResponse.LogMessage,
+                Is.EqualTo("Luke Skywalker removed project DeathStar")
+            );
             Assert.That(logResponse.Timestamp, Is.EqualTo("1970-01-01T00:00:00+01:00"));
         });
     }
@@ -370,15 +441,25 @@ public class LogConverterTest
             Action = Action.ADDED_GLOBAL_PLUGIN,
             Changes =
             [
-                new LogChange { Property = "PluginName", OldValue = "", NewValue = "Grand Army of the Republic" }
-            ]
+                new LogChange
+                {
+                    Property = "PluginName",
+                    OldValue = "",
+                    NewValue = "Grand Army of the Republic",
+                },
+            ],
         };
 
         var logResponse = _logConverter.BuildLogMessage(log);
 
         Assert.Multiple(() =>
         {
-            Assert.That(logResponse.LogMessage, Is.EqualTo("Chancellor Palpatine added a new global plugin with properties: PluginName = Grand Army of the Republic"));
+            Assert.That(
+                logResponse.LogMessage,
+                Is.EqualTo(
+                    "Chancellor Palpatine added a new global plugin with properties: PluginName = Grand Army of the Republic"
+                )
+            );
             Assert.That(logResponse.Timestamp, Is.EqualTo("1970-01-01T00:00:00+01:00"));
         });
     }
@@ -396,16 +477,26 @@ public class LogConverterTest
             Action = Action.UPDATED_GLOBAL_PLUGIN,
             Changes =
             [
-                new LogChange { Property = "Email", OldValue = "Republic", NewValue = "First Galactic Empire" }
+                new LogChange
+                {
+                    Property = "Email",
+                    OldValue = "Republic",
+                    NewValue = "First Galactic Empire",
+                },
             ],
-            GlobalPluginName = "DeathStar"
+            GlobalPluginName = "DeathStar",
         };
 
         var logResponse = _logConverter.BuildLogMessage(log);
 
         Assert.Multiple(() =>
         {
-            Assert.That(logResponse.LogMessage, Is.EqualTo("Darth Sidious updated global plugin DeathStar: set Email from Republic to First Galactic Empire"));
+            Assert.That(
+                logResponse.LogMessage,
+                Is.EqualTo(
+                    "Darth Sidious updated global plugin DeathStar: set Email from Republic to First Galactic Empire"
+                )
+            );
             Assert.That(logResponse.Timestamp, Is.EqualTo("1970-01-01T00:00:00+01:00"));
         });
     }
@@ -451,7 +542,10 @@ public class LogConverterTest
 
         Assert.Multiple(() =>
         {
-            Assert.That(logResponse.LogMessage, Is.EqualTo("Unzip unarchived global plugin Directory"));
+            Assert.That(
+                logResponse.LogMessage,
+                Is.EqualTo("Unzip unarchived global plugin Directory")
+            );
             Assert.That(logResponse.Timestamp, Is.EqualTo("1970-01-01T00:00:00+01:00"));
         });
     }
@@ -467,14 +561,125 @@ public class LogConverterTest
             AuthorEmail = "Recursively",
             Author = new IdentityUser { Email = "Recursively" },
             Action = Action.REMOVED_GLOBAL_PLUGIN,
-            GlobalPluginName = "root"
+            GlobalPluginName = "root",
         };
 
         var logResponse = _logConverter.BuildLogMessage(log);
 
         Assert.Multiple(() =>
         {
-            Assert.That(logResponse.LogMessage, Is.EqualTo("Recursively removed global plugin root"));
+            Assert.That(
+                logResponse.LogMessage,
+                Is.EqualTo("Recursively removed global plugin root")
+            );
+            Assert.That(logResponse.Timestamp, Is.EqualTo("1970-01-01T00:00:00+01:00"));
+        });
+    }
+
+    [Test]
+    public void ConvertToLogAddedTeam_Test()
+    {
+        var createdTeam = new Team() { TeamName = "root", BusinessUnit = "Test BU" };
+
+        var log = new Log
+        {
+            Id = 42,
+            TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
+            AuthorId = "42",
+            AuthorEmail = "Recursively",
+            Author = new IdentityUser { Email = "Recursively" },
+            Action = Action.ADDED_TEAM,
+            TeamName = "root",
+            Changes =
+            [
+                new()
+                {
+                    Property = "TeamName",
+                    OldValue = "",
+                    NewValue = "root",
+                },
+                new()
+                {
+                    Property = "BusinessUnit",
+                    OldValue = "",
+                    NewValue = "Test Bu",
+                },
+            ],
+        };
+
+        var logResponse = _logConverter.BuildLogMessage(log);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                logResponse.LogMessage,
+                Is.EqualTo(
+                    "Recursively created a new team with properties: TeamName = root, BusinessUnit = Test Bu"
+                )
+            );
+            Assert.That(logResponse.Timestamp, Is.EqualTo("1970-01-01T00:00:00+01:00"));
+        });
+    }
+
+    [Test]
+    public void ConvertToLogUpdatedTeam_Test()
+    {
+        var log = new Log
+        {
+            Id = 42,
+            TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
+            AuthorId = "42",
+            AuthorEmail = "Recursively",
+            Author = new IdentityUser { Email = "Recursively" },
+            Action = Action.UPDATED_TEAM,
+            TeamName = "root",
+            Changes =
+            [
+                new()
+                {
+                    Property = "TeamName",
+                    OldValue = "root",
+                    NewValue = "New_Team_Name",
+                },
+            ],
+        };
+
+        var logResponse = _logConverter.BuildLogMessage(log);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                logResponse.LogMessage,
+                Is.EqualTo(
+                    "Recursively updated team root:  set TeamName from root to New_Team_Name"
+                )
+            );
+            Assert.That(logResponse.Timestamp, Is.EqualTo("1970-01-01T00:00:00+01:00"));
+        });
+    }
+
+    [Test]
+    public void ConvertToLogDeletedTeam_Test()
+    {
+        var log = new Log
+        {
+            Id = 42,
+            TimeStamp = new DateTimeOffset(new DateTime(1970, 1, 1), TimeSpan.FromHours(1)),
+            AuthorId = "42",
+            AuthorEmail = "Recursively",
+            Author = new IdentityUser { Email = "Recursively" },
+            Action = Action.REMOVED_TEAM,
+            TeamName = "New_Team_Name",
+        };
+
+        var logResponse = _logConverter.BuildLogMessage(log);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                logResponse.LogMessage,
+                Is.EqualTo("Recursively removed team New_Team_Name")
+            );
             Assert.That(logResponse.Timestamp, Is.EqualTo("1970-01-01T00:00:00+01:00"));
         });
     }

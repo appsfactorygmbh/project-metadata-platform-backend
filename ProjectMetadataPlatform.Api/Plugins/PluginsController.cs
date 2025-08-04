@@ -43,14 +43,21 @@ public class PluginsController : ControllerBase
     [ProducesResponseType(typeof(CreatePluginResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status409Conflict)]
-    public async Task<ActionResult<CreatePluginResponse>> Put([FromBody] CreatePluginRequest request)
+    public async Task<ActionResult<CreatePluginResponse>> Put(
+        [FromBody] CreatePluginRequest request
+    )
     {
         if (string.IsNullOrWhiteSpace(request.PluginName))
         {
             return BadRequest(new ErrorResponse("PluginName can't be empty or whitespaces"));
         }
 
-        var command = new CreatePluginCommand(request.PluginName, request.IsArchived, request.Keys, request.BaseUrl);
+        var command = new CreatePluginCommand(
+            request.PluginName,
+            request.IsArchived,
+            request.Keys,
+            request.BaseUrl
+        );
 
         var pluginId = await _mediator.Send(command);
 
@@ -75,13 +82,25 @@ public class PluginsController : ControllerBase
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status409Conflict)]
     public async Task<ActionResult<GetGlobalPluginResponse>> Patch(
         int pluginId,
-        [FromBody] PatchGlobalPluginRequest request)
+        [FromBody] PatchGlobalPluginRequest request
+    )
     {
-        var command = new PatchGlobalPluginCommand(pluginId, request.PluginName, request.IsArchived, request.BaseUrl);
+        var command = new PatchGlobalPluginCommand(
+            pluginId,
+            request.PluginName,
+            request.IsArchived,
+            request.BaseUrl
+        );
 
         var plugin = await _mediator.Send(command);
 
-        var response = new GetGlobalPluginResponse(plugin.PluginName, plugin.Id, plugin.IsArchived, [], plugin.BaseUrl);
+        var response = new GetGlobalPluginResponse(
+            plugin.PluginName,
+            plugin.Id,
+            plugin.IsArchived,
+            [],
+            plugin.BaseUrl
+        );
         return Ok(response);
     }
 
@@ -105,7 +124,7 @@ public class PluginsController : ControllerBase
             plugin.IsArchived,
             keys,
             plugin.BaseUrl
-            ));
+        ));
 
         return Ok(response);
     }

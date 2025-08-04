@@ -25,8 +25,12 @@ public class PatchUserCommandHandler : IRequestHandler<PatchUserCommand, Identit
     /// <param name="passwordHasher">The service for hashing user passwords.</param>
     /// <param name="unitOfWork">The unit of work for managing transactions.</param>
     /// <param name="logRepository">The repository for logging user actions.</param>
-
-    public PatchUserCommandHandler(IUsersRepository usersRepository, IPasswordHasher<IdentityUser> passwordHasher, IUnitOfWork unitOfWork, ILogRepository logRepository)
+    public PatchUserCommandHandler(
+        IUsersRepository usersRepository,
+        IPasswordHasher<IdentityUser> passwordHasher,
+        IUnitOfWork unitOfWork,
+        ILogRepository logRepository
+    )
     {
         _usersRepository = usersRepository;
         _passwordHasher = passwordHasher;
@@ -40,24 +44,32 @@ public class PatchUserCommandHandler : IRequestHandler<PatchUserCommand, Identit
     /// <param name="request">The command containing the user information to be patched.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>The updated user information, or null if the user was not found.</returns>
-    public async Task<IdentityUser> Handle(PatchUserCommand request, CancellationToken cancellationToken)
+    public async Task<IdentityUser> Handle(
+        PatchUserCommand request,
+        CancellationToken cancellationToken
+    )
     {
         var user = await _usersRepository.GetUserByIdAsync(request.Id);
 
         var oldEmail = string.Empty;
-        if(request.Email != null)
+        if (request.Email != null)
         {
-            oldEmail= user.Email ?? string.Empty;
+            oldEmail = user.Email ?? string.Empty;
         }
         user.Email = request.Email ?? user.Email;
         user.UserName = user.Email;
 
         var oldPasswordHash = user.PasswordHash ?? string.Empty;
-        if ( request.Password != null && await _usersRepository.CheckPasswordFormat(request.Password))
+        if (
+            request.Password != null
+            && await _usersRepository.CheckPasswordFormat(request.Password)
+        )
         {
-            user.PasswordHash = request.Password != null ? _passwordHasher.HashPassword(user, request.Password) : user.PasswordHash;
+            user.PasswordHash =
+                request.Password != null
+                    ? _passwordHasher.HashPassword(user, request.Password)
+                    : user.PasswordHash;
         }
-
 
         var response = await _usersRepository.StoreUser(user);
 
@@ -65,12 +77,26 @@ public class PatchUserCommandHandler : IRequestHandler<PatchUserCommand, Identit
 
         if (request.Email != null && oldEmail != request.Email)
         {
-            changes.Add(new LogChange { OldValue = oldEmail, NewValue = request.Email, Property = nameof(IdentityUser.Email) });
+            changes.Add(
+                new LogChange
+                {
+                    OldValue = oldEmail,
+                    NewValue = request.Email,
+                    Property = nameof(IdentityUser.Email),
+                }
+            );
         }
 
         if (oldPasswordHash != user.PasswordHash && request.Password != null)
         {
-            changes.Add(new LogChange { OldValue = "old password was changed", NewValue = "new password *****", Property = nameof(IdentityUser.PasswordHash) });
+            changes.Add(
+                new LogChange
+                {
+                    OldValue = "old password was changed",
+                    NewValue = "new password *****",
+                    Property = nameof(IdentityUser.PasswordHash),
+                }
+            );
         }
 
         if (changes.Count > 0)

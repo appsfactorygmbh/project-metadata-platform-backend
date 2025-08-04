@@ -3,11 +3,11 @@ using ProjectMetadataPlatform.Api.Interfaces;
 using ProjectMetadataPlatform.Domain.Errors.AuthExceptions;
 
 namespace ProjectMetadataPlatform.Api.Errors.ExceptionHandlers;
+
 /// <summary>
 /// Handles authentication exceptions and returns appropriate HTTP responses.
 /// </summary>
-public class
-    AuthExceptionHandler: ControllerBase, IExceptionHandler<AuthException>
+public class AuthExceptionHandler : ControllerBase, IExceptionHandler<AuthException>
 {
     /// <summary>
     /// Handles the specified authentication exception and returns an appropriate HTTP response.
@@ -18,9 +18,13 @@ public class
     {
         return exception switch
         {
-            AuthInvalidLoginCredentialsException authInvalidLoginCredentialsException => BadRequest(new ErrorResponse(authInvalidLoginCredentialsException.Message)),
-            AuthInvalidRefreshTokenException authInvalidRefreshTokenException => BadRequest(new ErrorResponse(authInvalidRefreshTokenException.Message)),
-            _ => null
+            AuthInvalidLoginCredentialsException authInvalidLoginCredentialsException => BadRequest(
+                new ErrorResponse(authInvalidLoginCredentialsException.Message)
+            ),
+            AuthInvalidRefreshTokenException authInvalidRefreshTokenException => BadRequest(
+                new ErrorResponse(authInvalidRefreshTokenException.Message)
+            ),
+            _ => null,
         };
     }
 }

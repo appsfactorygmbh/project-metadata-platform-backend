@@ -34,21 +34,15 @@ public class CreateProjectRepositoryTest : TestsWithDatabase
         {
             ProjectName = "Example Project",
             Slug = "example_project",
-            BusinessUnit = "Example Business Unit",
-            TeamNumber = 1,
-            Department = "Example Department",
-            ClientName = "Example Client"
+            ClientName = "Example Client",
         };
-        await _repository.Add(exampleProject);
+        await _repository.AddProjectAsync(exampleProject);
         await _context.SaveChangesAsync();
         Assert.That(exampleProject, Is.Not.Null);
         Assert.Multiple(() =>
         {
             Assert.That(exampleProject.ProjectName, Is.EqualTo("Example Project"));
-            Assert.That(exampleProject.BusinessUnit, Is.EqualTo("Example Business Unit"));
-            Assert.That(exampleProject.TeamNumber, Is.EqualTo(1));
             Assert.That(exampleProject.ClientName, Is.EqualTo("Example Client"));
-            Assert.That(exampleProject.Department, Is.EqualTo("Example Department"));
             Assert.That(exampleProject.Id, Is.GreaterThan(0));
         });
     }
@@ -61,25 +55,19 @@ public class CreateProjectRepositoryTest : TestsWithDatabase
             Id = 1,
             ProjectName = "Example Project",
             Slug = "example_project",
-            BusinessUnit = "Example Business Unit",
-            TeamNumber = 1,
-            Department = "Example Department",
-            ClientName = "Example Client"
+            ClientName = "Example Client",
         };
-        await _repository.Add(exampleProject);
+        await _repository.AddProjectAsync(exampleProject);
         await _context.SaveChangesAsync();
         var firstResult = await _repository.GetProjectsAsync();
-        await _repository.Add(exampleProject);
+        await _repository.AddProjectAsync(exampleProject);
         await _context.SaveChangesAsync();
 
         Assert.That(exampleProject, Is.Not.Null);
         Assert.Multiple(() =>
         {
             Assert.That(exampleProject.ProjectName, Is.EqualTo("Example Project"));
-            Assert.That(exampleProject.BusinessUnit, Is.EqualTo("Example Business Unit"));
-            Assert.That(exampleProject.TeamNumber, Is.EqualTo(1));
             Assert.That(exampleProject.ClientName, Is.EqualTo("Example Client"));
-            Assert.That(exampleProject.Department, Is.EqualTo("Example Department"));
             Assert.That(exampleProject.Id, Is.GreaterThan(0));
         });
         var result = await _repository.GetProjectsAsync();
@@ -94,38 +82,31 @@ public class CreateProjectRepositoryTest : TestsWithDatabase
             PluginId = 301,
             ProjectId = 1,
             Url = "dummy",
-            DisplayName = "Dummy"
+            DisplayName = "Dummy",
         };
         var projectPlugins = new List<ProjectPlugins> { projectPlugin };
         var exampleProject = new Project
         {
             ProjectName = "Example Project",
             Slug = "example_project",
-            BusinessUnit = "Example Business Unit",
-            TeamNumber = 1,
-            Department = "Example Department",
             ClientName = "Example Client",
-            ProjectPlugins = projectPlugins
+            ProjectPlugins = projectPlugins,
         };
-        var examplePlugin = new Plugin
-        {
-            PluginName = "DummyPlug",
-        };
+        var examplePlugin = new Plugin { PluginName = "DummyPlug" };
         var storedPlugin = await _pluginRepository.StorePlugin(examplePlugin);
-        await _repository.Add(exampleProject);
+        await _repository.AddProjectAsync(exampleProject);
         await _context.SaveChangesAsync();
         var projectResult = _context.Projects.FirstOrDefault(p => p.Id == exampleProject.Id);
         Assert.That(projectResult, Is.Not.Null);
         Assert.Multiple(() =>
         {
             Assert.That(projectResult.ProjectName, Is.EqualTo("Example Project"));
-            Assert.That(projectResult.BusinessUnit, Is.EqualTo("Example Business Unit"));
-            Assert.That(projectResult.TeamNumber, Is.EqualTo(1));
-            Assert.That(projectResult.Department, Is.EqualTo("Example Department"));
             Assert.That(projectResult.ClientName, Is.EqualTo("Example Client"));
         });
-        var pluginResult = _context.ProjectPluginsRelation.Where(p => p.ProjectId == exampleProject.Id)
-            .Include(p => p.Plugin).ToList();
+        var pluginResult = _context
+            .ProjectPluginsRelation.Where(p => p.ProjectId == exampleProject.Id)
+            .Include(p => p.Plugin)
+            .ToList();
         Assert.That(pluginResult, Is.Not.Null);
         Assert.That(pluginResult, Has.Count.EqualTo(1));
         Assert.Multiple(() =>

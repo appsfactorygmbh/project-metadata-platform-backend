@@ -10,9 +10,9 @@ using ProjectMetadataPlatform.Application.Interfaces;
 using ProjectMetadataPlatform.Application.Projects;
 using ProjectMetadataPlatform.Domain.Errors.PluginExceptions;
 using ProjectMetadataPlatform.Domain.Errors.ProjectExceptions;
+using ProjectMetadataPlatform.Domain.Logs;
 using ProjectMetadataPlatform.Domain.Plugins;
 using ProjectMetadataPlatform.Domain.Projects;
-using ProjectMetadataPlatform.Domain.Logs;
 using Action = ProjectMetadataPlatform.Domain.Logs.Action;
 
 namespace ProjectMetadataPlatform.Application.Tests.Projects;
@@ -22,6 +22,7 @@ public class UpdateProjectCommandHandlerTest
     private UpdateProjectCommandHandler _handler;
     private Mock<IProjectsRepository> _mockProjectRepo;
     private Mock<IPluginRepository> _mockPluginRepo;
+    private Mock<ITeamRepository> _mockTeamRepository;
     private Mock<IUnitOfWork> _mockUnitOfWork;
     private Mock<ILogRepository> _mockLogRepository;
     private Mock<ISlugHelper> _mockSlugHelper;
@@ -32,9 +33,17 @@ public class UpdateProjectCommandHandlerTest
         _mockProjectRepo = new Mock<IProjectsRepository>();
         _mockPluginRepo = new Mock<IPluginRepository>();
         _mockUnitOfWork = new Mock<IUnitOfWork>();
+        _mockTeamRepository = new Mock<ITeamRepository>();
         _mockLogRepository = new Mock<ILogRepository>();
         _mockSlugHelper = new Mock<ISlugHelper>();
-        _handler = new UpdateProjectCommandHandler(_mockProjectRepo.Object, _mockPluginRepo.Object, _mockLogRepository.Object, _mockUnitOfWork.Object, _mockSlugHelper.Object);
+        _handler = new UpdateProjectCommandHandler(
+            _mockProjectRepo.Object,
+            _mockPluginRepo.Object,
+            _mockTeamRepository.Object,
+            _mockLogRepository.Object,
+            _mockUnitOfWork.Object,
+            _mockSlugHelper.Object
+        );
     }
 
     [Test]
@@ -45,15 +54,12 @@ public class UpdateProjectCommandHandlerTest
             Id = 1,
             ProjectName = "Example Project",
             Slug = "example project",
-            BusinessUnit = "Example Business Unit",
-            TeamNumber = 1,
-            Department = "Example Department",
             ClientName = "Example Client",
             OfferId = "Example OfferId",
             Company = "Example Company",
             CompanyState = CompanyState.EXTERNAL,
             IsmsLevel = SecurityLevel.HIGH,
-            ProjectPlugins = new List<ProjectPlugins>()
+            ProjectPlugins = [],
         };
         var examplePlugin = new Plugin
         {
@@ -68,20 +74,32 @@ public class UpdateProjectCommandHandlerTest
             PluginId = 100,
             ProjectId = 100,
             Url = "dummy",
-            DisplayName = "Dummy"
+            DisplayName = "Dummy",
         };
         var projectPluginList = new List<ProjectPlugins> { projectPlugin };
 
-        _mockProjectRepo.Setup(m => m.GetProjectWithPluginsAsync(1))
-            .ReturnsAsync(exampleProject);
+        _mockProjectRepo.Setup(m => m.GetProjectWithPluginsAsync(1)).ReturnsAsync(exampleProject);
 
-        _mockPluginRepo.Setup(m => m.CheckPluginExists(It.IsAny<int>()))
-            .ReturnsAsync(true);
-        _mockPluginRepo.Setup(repo => repo.GetGlobalPluginsAsync()).ReturnsAsync([new Plugin { Id = 100, PluginName = "Example Plugin" }]);
+        _mockPluginRepo.Setup(m => m.CheckPluginExists(It.IsAny<int>())).ReturnsAsync(true);
+        _mockPluginRepo
+            .Setup(repo => repo.GetGlobalPluginsAsync())
+            .ReturnsAsync([new Plugin { Id = 100, PluginName = "Example Plugin" }]);
 
-        var result = await _handler.Handle(new UpdateProjectCommand(exampleProject.ProjectName, exampleProject.BusinessUnit, exampleProject.TeamNumber, exampleProject.Department, exampleProject.ClientName,
-            exampleProject.OfferId, exampleProject.Company, exampleProject.CompanyState, exampleProject.IsmsLevel,
-            exampleProject.Id, projectPluginList, false), It.IsAny<CancellationToken>());
+        var result = await _handler.Handle(
+            new UpdateProjectCommand(
+                ProjectName: exampleProject.ProjectName,
+                ClientName: exampleProject.ClientName,
+                OfferId: exampleProject.OfferId,
+                Company: exampleProject.Company,
+                CompanyState: exampleProject.CompanyState,
+                IsmsLevel: exampleProject.IsmsLevel,
+                Id: exampleProject.Id,
+                Plugins: projectPluginList,
+                IsArchived: false,
+                TeamId: null
+            ),
+            It.IsAny<CancellationToken>()
+        );
         Assert.That(result, Is.EqualTo(1));
     }
 
@@ -93,15 +111,12 @@ public class UpdateProjectCommandHandlerTest
             Id = 1,
             ProjectName = "Example Project",
             Slug = "example project",
-            BusinessUnit = "Example Business Unit",
-            TeamNumber = 1,
-            Department = "Example Department",
             ClientName = "Example Client",
             OfferId = "Example OfferId",
             Company = "Example Company",
             CompanyState = CompanyState.EXTERNAL,
             IsmsLevel = SecurityLevel.HIGH,
-            ProjectPlugins = new List<ProjectPlugins>()
+            ProjectPlugins = [],
         };
         var examplePlugin = new Plugin
         {
@@ -116,31 +131,30 @@ public class UpdateProjectCommandHandlerTest
             PluginId = 100,
             ProjectId = 100,
             Url = "dummy",
-            DisplayName = "Dummy"
+            DisplayName = "Dummy",
         };
         var projectPluginList = new List<ProjectPlugins> { projectPlugin };
 
-        _mockProjectRepo.Setup(m => m.CheckProjectExists(1))
-            .ReturnsAsync(false);
+        _mockProjectRepo.Setup(m => m.CheckProjectExists(1)).ReturnsAsync(false);
 
-        _mockPluginRepo.Setup(m => m.CheckPluginExists(It.IsAny<int>()))
-            .ReturnsAsync(true);
+        _mockPluginRepo.Setup(m => m.CheckPluginExists(It.IsAny<int>())).ReturnsAsync(true);
 
         var exception = Assert.ThrowsAsync<ProjectNotFoundException>(async () =>
-            await _handler.Handle(new UpdateProjectCommand(
-                    exampleProject.ProjectName,
-                    exampleProject.BusinessUnit,
-                    exampleProject.TeamNumber,
-                    exampleProject.Department,
-                    exampleProject.ClientName,
-                    exampleProject.OfferId,
-                    exampleProject.Company,
-                    exampleProject.CompanyState,
-                    exampleProject.IsmsLevel,
-                    exampleProject.Id,
-                    projectPluginList,
-                    exampleProject.IsArchived),
-                CancellationToken.None)
+            await _handler.Handle(
+                new UpdateProjectCommand(
+                    ProjectName: exampleProject.ProjectName,
+                    ClientName: exampleProject.ClientName,
+                    OfferId: exampleProject.OfferId,
+                    Company: exampleProject.Company,
+                    CompanyState: exampleProject.CompanyState,
+                    IsmsLevel: exampleProject.IsmsLevel,
+                    Id: exampleProject.Id,
+                    Plugins: projectPluginList,
+                    IsArchived: false,
+                    TeamId: null
+                ),
+                CancellationToken.None
+            )
         );
         Assert.That(exception.Message, Is.EqualTo("The project with id 1 was not found."));
     }
@@ -153,15 +167,12 @@ public class UpdateProjectCommandHandlerTest
             Id = 1,
             ProjectName = "Example Project",
             Slug = "example project",
-            BusinessUnit = "Example Business Unit",
-            TeamNumber = 1,
-            Department = "Example Department",
             ClientName = "Example Client",
             OfferId = "Example OfferId",
             Company = "Example Company",
             CompanyState = CompanyState.EXTERNAL,
             IsmsLevel = SecurityLevel.HIGH,
-            ProjectPlugins = new List<ProjectPlugins>()
+            ProjectPlugins = [],
         };
         var examplePlugin = new Plugin
         {
@@ -176,30 +187,30 @@ public class UpdateProjectCommandHandlerTest
             PluginId = 100,
             ProjectId = 100,
             Url = "dummy",
-            DisplayName = "Dummy"
+            DisplayName = "Dummy",
         };
         var projectPluginList = new List<ProjectPlugins> { projectPlugin };
 
-        _mockProjectRepo.Setup(m => m.GetProjectWithPluginsAsync(1))
-            .ReturnsAsync(exampleProject);
+        _mockProjectRepo.Setup(m => m.GetProjectWithPluginsAsync(1)).ReturnsAsync(exampleProject);
 
         _mockPluginRepo.Setup(repo => repo.GetGlobalPluginsAsync()).ReturnsAsync([]);
 
         var exception = Assert.ThrowsAsync<MultiplePluginsNotFoundException>(async () =>
-            await _handler.Handle(new UpdateProjectCommand(
-                    exampleProject.ProjectName,
-                    exampleProject.BusinessUnit,
-                    exampleProject.TeamNumber,
-                    exampleProject.Department,
-                    exampleProject.ClientName,
-                    exampleProject.OfferId,
-                    exampleProject.Company,
-                    exampleProject.CompanyState,
-                    exampleProject.IsmsLevel,
-                    exampleProject.Id,
-                    projectPluginList,
-                    exampleProject.IsArchived),
-                CancellationToken.None)
+            await _handler.Handle(
+                new UpdateProjectCommand(
+                    ProjectName: exampleProject.ProjectName,
+                    ClientName: exampleProject.ClientName,
+                    OfferId: exampleProject.OfferId,
+                    Company: exampleProject.Company,
+                    CompanyState: exampleProject.CompanyState,
+                    IsmsLevel: exampleProject.IsmsLevel,
+                    Id: exampleProject.Id,
+                    Plugins: projectPluginList,
+                    IsArchived: false,
+                    TeamId: null
+                ),
+                CancellationToken.None
+            )
         );
         Assert.That(exception.Message, Is.EqualTo("The Plugins with these ids do not exist: 100"));
     }
@@ -214,30 +225,29 @@ public class UpdateProjectCommandHandlerTest
             ProjectName = "Db App",
             Slug = "db app",
             ClientName = "DB",
-            BusinessUnit = "Unit 1",
-            TeamNumber = 1,
-            Department = "Department 1",
             OfferId = "Offer 1",
             Company = "DeutscheBahn",
             CompanyState = CompanyState.EXTERNAL,
             IsmsLevel = SecurityLevel.HIGH,
-            ProjectPlugins = []
+            ProjectPlugins = [],
         };
 
-        var updateCommand = new UpdateProjectCommand("DB App",
-            "Unit 2",
-            2,
-            "Department 2",
-            "Deutsche Bahn",
-            "Offer 2",
-            "DB",
-            CompanyState.INTERNAL,
-            SecurityLevel.NORMAL,
-            1,
-            new List<ProjectPlugins>(),
-            false);
+        var updateCommand = new UpdateProjectCommand(
+            ProjectName: "DB App",
+            ClientName: "Deutsche Bahn",
+            OfferId: "Offer 2",
+            Company: "DB",
+            CompanyState: CompanyState.INTERNAL,
+            IsmsLevel: SecurityLevel.NORMAL,
+            Id: 1,
+            Plugins: [],
+            IsArchived: false,
+            TeamId: null
+        );
 
-        _mockProjectRepo.Setup(repository => repository.GetProjectWithPluginsAsync(1)).ReturnsAsync(project);
+        _mockProjectRepo
+            .Setup(repository => repository.GetProjectWithPluginsAsync(1))
+            .ReturnsAsync(project);
 
         //Act
         await _handler.Handle(updateCommand, CancellationToken.None);
@@ -246,9 +256,6 @@ public class UpdateProjectCommandHandlerTest
         _mockUnitOfWork.Verify(unitOfWork => unitOfWork.CompleteAsync());
         Assert.Multiple(() =>
         {
-            Assert.That(project.BusinessUnit, Is.EqualTo("Unit 2"));
-            Assert.That(project.TeamNumber, Is.EqualTo(2));
-            Assert.That(project.Department, Is.EqualTo("Department 2"));
             Assert.That(project.ClientName, Is.EqualTo("Deutsche Bahn"));
             Assert.That(project.ProjectName, Is.EqualTo("DB App"));
             Assert.That(project.OfferId, Is.EqualTo("Offer 2"));
@@ -268,44 +275,78 @@ public class UpdateProjectCommandHandlerTest
             ProjectName = "Db App",
             Slug = "db app",
             ClientName = "DB",
-            BusinessUnit = "Unit 1",
-            TeamNumber = 1,
-            Department = "Department 1",
             OfferId = "Offer 1",
             Company = "DeutscheBahn",
             CompanyState = CompanyState.EXTERNAL,
             IsmsLevel = SecurityLevel.HIGH,
             ProjectPlugins =
             [
-                new ProjectPlugins { PluginId = 1, Url = "https://example.com", DisplayName = "Example Plugin" },
-                new ProjectPlugins { PluginId = 1, Url = "https://another-example.com", DisplayName = "Another Plugin" },
-                new ProjectPlugins { PluginId = 2, Url = "https://different-example.com", DisplayName = "Different Plugin" }
-            ]
+                new ProjectPlugins
+                {
+                    PluginId = 1,
+                    Url = "https://example.com",
+                    DisplayName = "Example Plugin",
+                },
+                new ProjectPlugins
+                {
+                    PluginId = 1,
+                    Url = "https://another-example.com",
+                    DisplayName = "Another Plugin",
+                },
+                new ProjectPlugins
+                {
+                    PluginId = 2,
+                    Url = "https://different-example.com",
+                    DisplayName = "Different Plugin",
+                },
+            ],
         };
 
-        var updateCommand = new UpdateProjectCommand("DB App",
-            "Unit 2",
-            2,
-            "Department 2",
-            "Deutsche Bahn",
-            "Offer 2",
-            "DB",
-            CompanyState.INTERNAL,
-            SecurityLevel.NORMAL,
-            1,
+        var updateCommand = new UpdateProjectCommand(
+            ProjectName: "DB App",
+            ClientName: "Unit 2",
+            OfferId: "Offer id 2",
+            Company: "DB",
+            CompanyState: CompanyState.INTERNAL,
+            IsmsLevel: SecurityLevel.NORMAL,
+            Id: 1,
+            Plugins:
             [
-                new ProjectPlugins { PluginId = 1, Url = "https://example.com", DisplayName = "Example Plugin" },
-                new ProjectPlugins { PluginId = 1, Url = "https://another-example.com", DisplayName = "Another example Plugin" },
-                new ProjectPlugins { PluginId = 3, Url = "https://example2.com", DisplayName = "Example 2 Plugin" }
-            ]
-            , false);
+                new ProjectPlugins
+                {
+                    PluginId = 1,
+                    Url = "https://example.com",
+                    DisplayName = "Example Plugin",
+                },
+                new ProjectPlugins
+                {
+                    PluginId = 1,
+                    Url = "https://another-example.com",
+                    DisplayName = "Another example Plugin",
+                },
+                new ProjectPlugins
+                {
+                    PluginId = 3,
+                    Url = "https://example2.com",
+                    DisplayName = "Example 2 Plugin",
+                },
+            ],
+            IsArchived: false,
+            TeamId: null
+        );
 
-        _mockProjectRepo.Setup(repository => repository.GetProjectWithPluginsAsync(1)).ReturnsAsync(project);
-        _mockPluginRepo.Setup(repo => repo.GetGlobalPluginsAsync()).ReturnsAsync([
-            new Plugin { Id = 1, PluginName = "Plugin1" },
-            new Plugin { Id = 2, PluginName = "Plugin2" },
-            new Plugin { Id = 3, PluginName = "Plugin3" }
-        ]);
+        _mockProjectRepo
+            .Setup(repository => repository.GetProjectWithPluginsAsync(1))
+            .ReturnsAsync(project);
+        _mockPluginRepo
+            .Setup(repo => repo.GetGlobalPluginsAsync())
+            .ReturnsAsync(
+                [
+                    new Plugin { Id = 1, PluginName = "Plugin1" },
+                    new Plugin { Id = 2, PluginName = "Plugin2" },
+                    new Plugin { Id = 3, PluginName = "Plugin3" },
+                ]
+            );
 
         //Act
         await _handler.Handle(updateCommand, CancellationToken.None);
@@ -318,21 +359,36 @@ public class UpdateProjectCommandHandlerTest
         {
             Assert.That(project.ProjectPlugins.ElementAt(0).PluginId, Is.EqualTo(1));
             Assert.That(project.ProjectPlugins.ElementAt(0).Url, Is.EqualTo("https://example.com"));
-            Assert.That(project.ProjectPlugins.ElementAt(0).DisplayName, Is.EqualTo("Example Plugin"));
+            Assert.That(
+                project.ProjectPlugins.ElementAt(0).DisplayName,
+                Is.EqualTo("Example Plugin")
+            );
         });
 
         Assert.Multiple(() =>
         {
             Assert.That(project.ProjectPlugins.ElementAt(1).PluginId, Is.EqualTo(1));
-            Assert.That(project.ProjectPlugins.ElementAt(1).Url, Is.EqualTo("https://another-example.com"));
-            Assert.That(project.ProjectPlugins.ElementAt(1).DisplayName, Is.EqualTo("Another example Plugin"));
+            Assert.That(
+                project.ProjectPlugins.ElementAt(1).Url,
+                Is.EqualTo("https://another-example.com")
+            );
+            Assert.That(
+                project.ProjectPlugins.ElementAt(1).DisplayName,
+                Is.EqualTo("Another example Plugin")
+            );
         });
 
         Assert.Multiple(() =>
         {
             Assert.That(project.ProjectPlugins.ElementAt(2).PluginId, Is.EqualTo(3));
-            Assert.That(project.ProjectPlugins.ElementAt(2).Url, Is.EqualTo("https://example2.com"));
-            Assert.That(project.ProjectPlugins.ElementAt(2).DisplayName, Is.EqualTo("Example 2 Plugin"));
+            Assert.That(
+                project.ProjectPlugins.ElementAt(2).Url,
+                Is.EqualTo("https://example2.com")
+            );
+            Assert.That(
+                project.ProjectPlugins.ElementAt(2).DisplayName,
+                Is.EqualTo("Example 2 Plugin")
+            );
         });
     }
 
@@ -345,31 +401,30 @@ public class UpdateProjectCommandHandlerTest
             ProjectName = "Db App",
             Slug = "db app",
             ClientName = "DB",
-            BusinessUnit = "Unit 1",
-            TeamNumber = 1,
-            Department = "Department 1",
             OfferId = "Offer 1",
             Company = "DeutscheBahn",
             CompanyState = CompanyState.EXTERNAL,
             IsmsLevel = SecurityLevel.HIGH,
             ProjectPlugins = [],
-            IsArchived = false
+            IsArchived = false,
         };
 
-        var updateCommand = new UpdateProjectCommand("DB App",
-            "Unit 2",
-            2,
-            "Department 2",
-            "Deutsche Bahn",
-            "Offer 2",
-            "DB",
-            CompanyState.INTERNAL,
-            SecurityLevel.NORMAL,
-            1,
-            new List<ProjectPlugins>(),
-            true);
+        var updateCommand = new UpdateProjectCommand(
+            ProjectName: "DB App",
+            ClientName: "Unit 2",
+            OfferId: "Offer 2",
+            Company: "DB",
+            CompanyState: CompanyState.INTERNAL,
+            IsmsLevel: SecurityLevel.NORMAL,
+            Id: 1,
+            Plugins: [],
+            IsArchived: true,
+            TeamId: null
+        );
 
-        _mockProjectRepo.Setup(repository => repository.GetProjectWithPluginsAsync(1)).ReturnsAsync(project);
+        _mockProjectRepo
+            .Setup(repository => repository.GetProjectWithPluginsAsync(1))
+            .ReturnsAsync(project);
 
         await _handler.Handle(updateCommand, CancellationToken.None);
 
@@ -385,30 +440,26 @@ public class UpdateProjectCommandHandlerTest
             Id = 1,
             ProjectName = "Old Project Name",
             Slug = "old project name",
-            BusinessUnit = "Old Unit",
-            TeamNumber = 1,
-            Department = "Old Department",
             ClientName = "Old Client",
             OfferId = "Old Offer",
             Company = "Old Company",
             CompanyState = CompanyState.EXTERNAL,
             IsmsLevel = SecurityLevel.HIGH,
-            IsArchived = false
+            IsArchived = false,
+            TeamId = null,
         };
 
         var updateCommand = new UpdateProjectCommand(
-            "New Project Name",
-            "New Unit",
-            2,
-            "New Department",
-            "New Client",
-            "New Offer",
-            "New Company",
-            CompanyState.INTERNAL,
-            SecurityLevel.NORMAL,
-            1,
-            new List<ProjectPlugins>(),
-            false
+            ProjectName: "New Project Name",
+            ClientName: "New Client",
+            OfferId: "New Offer",
+            Company: "New Company",
+            CompanyState: CompanyState.INTERNAL,
+            IsmsLevel: SecurityLevel.NORMAL,
+            Id: 1,
+            Plugins: [],
+            IsArchived: false,
+            TeamId: null
         );
 
         var slugHelper = new SlugHelper(_mockProjectRepo.Object);
@@ -420,69 +471,99 @@ public class UpdateProjectCommandHandlerTest
 
         await _handler.Handle(updateCommand, CancellationToken.None);
 
-        _mockLogRepository.Verify(logRepo => logRepo.AddProjectLogForCurrentUser(
-            project,
-            Action.UPDATED_PROJECT,
-            It.Is<List<LogChange>>(changes =>
-                changes.Count == 10 &&
-                changes.Any(change => change.Property == "ProjectName" && change.OldValue == "Old Project Name" && change.NewValue == "New Project Name") &&
-                changes.Any(change => change.Property == "Slug" && change.OldValue == "old project name" && change.NewValue == "new_project_name") &&
-                changes.Any(change => change.Property == "BusinessUnit" && change.OldValue == "Old Unit" && change.NewValue == "New Unit") &&
-                changes.Any(change => change.Property == "TeamNumber" && change.OldValue == "1" && change.NewValue == "2") &&
-                changes.Any(change => change.Property == "Department" && change.OldValue == "Old Department" && change.NewValue == "New Department") &&
-                changes.Any(change => change.Property == "ClientName" && change.OldValue == "Old Client" && change.NewValue == "New Client") &&
-                changes.Any(change => change.Property == "OfferId" && change.OldValue == "Old Offer" && change.NewValue == "New Offer") &&
-                changes.Any(change => change.Property == "Company" && change.OldValue == "Old Company" && change.NewValue == "New Company") &&
-                changes.Any(change => change.Property == "CompanyState" && change.OldValue == "EXTERNAL" && change.NewValue == "INTERNAL") &&
-                changes.Any(change => change.Property == "IsmsLevel" && change.OldValue == "HIGH" && change.NewValue == "NORMAL")
-            )
-        ), Times.Once);
+        _mockLogRepository.Verify(
+            logRepo =>
+                logRepo.AddProjectLogForCurrentUser(
+                    project,
+                    Action.UPDATED_PROJECT,
+                    It.Is<List<LogChange>>(changes =>
+                        changes.Count == 7
+                        && changes.Any(change =>
+                            change.Property == "ProjectName"
+                            && change.OldValue == "Old Project Name"
+                            && change.NewValue == "New Project Name"
+                        )
+                        && changes.Any(change =>
+                            change.Property == "Slug"
+                            && change.OldValue == "old project name"
+                            && change.NewValue == "new_project_name"
+                        )
+                        && changes.Any(change =>
+                            change.Property == "ClientName"
+                            && change.OldValue == "Old Client"
+                            && change.NewValue == "New Client"
+                        )
+                        && changes.Any(change =>
+                            change.Property == "OfferId"
+                            && change.OldValue == "Old Offer"
+                            && change.NewValue == "New Offer"
+                        )
+                        && changes.Any(change =>
+                            change.Property == "Company"
+                            && change.OldValue == "Old Company"
+                            && change.NewValue == "New Company"
+                        )
+                        && changes.Any(change =>
+                            change.Property == "CompanyState"
+                            && change.OldValue == "EXTERNAL"
+                            && change.NewValue == "INTERNAL"
+                        )
+                        && changes.Any(change =>
+                            change.Property == "IsmsLevel"
+                            && change.OldValue == "HIGH"
+                            && change.NewValue == "NORMAL"
+                        )
+                    )
+                ),
+            Times.Once
+        );
     }
 
     [Test]
     public async Task NoLogging_WhenNoPropertiesAreChanged()
     {
-        var project = new Project
+        var exampleProject = new Project
         {
             Id = 1,
             ProjectName = "No Change Project",
             Slug = "no change project",
             ClientName = "Client A",
-            BusinessUnit = "Business Unit A",
-            TeamNumber = 5,
-            Department = "Department A",
+
             OfferId = "Offer A",
             Company = "Company A",
             CompanyState = CompanyState.EXTERNAL,
             IsmsLevel = SecurityLevel.VERY_HIGH,
-            ProjectPlugins = new List<ProjectPlugins>(),
-            IsArchived = false
+            ProjectPlugins = [],
+            IsArchived = false,
         };
 
         var updateCommand = new UpdateProjectCommand(
-            project.ProjectName,
-            project.BusinessUnit,
-            project.TeamNumber,
-            project.Department,
-            project.ClientName,
-            project.OfferId,
-            project.Company,
-            project.CompanyState,
-            project.IsmsLevel,
-            project.Id,
-            project.ProjectPlugins.ToList(),
-            project.IsArchived
+            ProjectName: exampleProject.ProjectName,
+            ClientName: exampleProject.ClientName,
+            OfferId: exampleProject.OfferId,
+            Company: exampleProject.Company,
+            CompanyState: exampleProject.CompanyState,
+            IsmsLevel: exampleProject.IsmsLevel,
+            Id: exampleProject.Id,
+            Plugins: exampleProject.ProjectPlugins.ToList(),
+            IsArchived: false,
+            TeamId: null
         );
-
-        _mockProjectRepo.Setup(repo => repo.GetProjectWithPluginsAsync(project.Id)).ReturnsAsync(project);
+        _mockProjectRepo
+            .Setup(repo => repo.GetProjectWithPluginsAsync(exampleProject.Id))
+            .ReturnsAsync(exampleProject);
 
         await _handler.Handle(updateCommand, CancellationToken.None);
 
-        _mockLogRepository.Verify(logRepo => logRepo.AddProjectLogForCurrentUser(
-            It.IsAny<Project>(),
-            It.IsAny<Action>(),
-            It.IsAny<List<LogChange>>()
-        ), Times.Never);
+        _mockLogRepository.Verify(
+            logRepo =>
+                logRepo.AddProjectLogForCurrentUser(
+                    It.IsAny<Project>(),
+                    It.IsAny<Action>(),
+                    It.IsAny<List<LogChange>>()
+                ),
+            Times.Never
+        );
     }
 
     [Test]
@@ -494,46 +575,55 @@ public class UpdateProjectCommandHandlerTest
             ProjectName = "Partial Update",
             Slug = "partial update",
             ClientName = "Client A",
-            BusinessUnit = "Unit 1",
-            TeamNumber = 5,
-            Department = "Department A",
             OfferId = "Offer A",
             Company = "Company A",
             CompanyState = CompanyState.EXTERNAL,
             IsmsLevel = SecurityLevel.VERY_HIGH,
-            ProjectPlugins = new List<ProjectPlugins>(),
-            IsArchived = false
+            ProjectPlugins = [],
+            IsArchived = false,
+            TeamId = null,
         };
 
         var updateCommand = new UpdateProjectCommand(
-            "Partial Update",
-            "Updated Unit",
-            5,
-            "Department A",
-            "Updated Client",
-            "Updated Offer",
-            "Company A",
-            CompanyState.EXTERNAL,
-            SecurityLevel.VERY_HIGH,
-            1,
-            project.ProjectPlugins.ToList(),
-            false
+            ProjectName: "Partial Update",
+            ClientName: "Updated Client",
+            OfferId: "Updated Offer",
+            Company: "Company A",
+            CompanyState: CompanyState.EXTERNAL,
+            IsmsLevel: SecurityLevel.VERY_HIGH,
+            Id: 1,
+            Plugins: project.ProjectPlugins.ToList(),
+            IsArchived: false,
+            TeamId: null
         );
 
-        _mockProjectRepo.Setup(repo => repo.GetProjectWithPluginsAsync(project.Id)).ReturnsAsync(project);
+        _mockProjectRepo
+            .Setup(repo => repo.GetProjectWithPluginsAsync(project.Id))
+            .ReturnsAsync(project);
 
         await _handler.Handle(updateCommand, CancellationToken.None);
 
-        _mockLogRepository.Verify(logRepo => logRepo.AddProjectLogForCurrentUser(
-            project,
-            Action.UPDATED_PROJECT,
-            It.Is<List<LogChange>>(changes =>
-                changes.Count == 3 &&
-                changes.Any(change => change.Property == "BusinessUnit" && change.OldValue == "Unit 1" && change.NewValue == "Updated Unit") &&
-                changes.Any(change => change.Property == "ClientName" && change.OldValue == "Client A" && change.NewValue == "Updated Client") &&
-                changes.Any(change => change.Property == "OfferId" && change.OldValue == "Offer A" && change.NewValue == "Updated Offer")
-            )
-        ), Times.Once);
+        _mockLogRepository.Verify(
+            logRepo =>
+                logRepo.AddProjectLogForCurrentUser(
+                    project,
+                    Action.UPDATED_PROJECT,
+                    It.Is<List<LogChange>>(changes =>
+                        changes.Count == 2
+                        && changes.Any(change =>
+                            change.Property == "ClientName"
+                            && change.OldValue == "Client A"
+                            && change.NewValue == "Updated Client"
+                        )
+                        && changes.Any(change =>
+                            change.Property == "OfferId"
+                            && change.OldValue == "Offer A"
+                            && change.NewValue == "Updated Offer"
+                        )
+                    )
+                ),
+            Times.Once
+        );
     }
 
     [Test]
@@ -545,49 +635,54 @@ public class UpdateProjectCommandHandlerTest
             ProjectName = "Project With Exception",
             Slug = "project with exception",
             ClientName = "Client C",
-            BusinessUnit = "Unit 3",
-            TeamNumber = 4,
-            Department = "Department C",
             OfferId = "Offer A",
             Company = "Company A",
             CompanyState = CompanyState.EXTERNAL,
             IsmsLevel = SecurityLevel.VERY_HIGH,
-            IsArchived = false
+            IsArchived = false,
         };
 
         var updateCommand = new UpdateProjectCommand(
-            "New Project Name",
-            "New Unit",
-            5,
-            "New Department",
-            "New Client",
-            "Updated Offer",
-            "Company A",
-            CompanyState.EXTERNAL,
-            SecurityLevel.VERY_HIGH,
-            project.Id,
-            new List<ProjectPlugins>(),
-            false
+            ProjectName: "New Project Name",
+            ClientName: "New Client",
+            OfferId: "Updated Offer",
+            Company: "Company A",
+            CompanyState: CompanyState.EXTERNAL,
+            IsmsLevel: SecurityLevel.VERY_HIGH,
+            Id: project.Id,
+            Plugins: [],
+            IsArchived: false,
+            TeamId: null
         );
 
-        _mockProjectRepo.Setup(repo => repo.GetProjectWithPluginsAsync(project.Id)).ReturnsAsync(project);
+        _mockProjectRepo
+            .Setup(repo => repo.GetProjectWithPluginsAsync(project.Id))
+            .ReturnsAsync(project);
 
-        _mockLogRepository.Setup(logRepo => logRepo.AddProjectLogForCurrentUser(
-            It.IsAny<Project>(),
-            It.IsAny<Action>(),
-            It.IsAny<List<LogChange>>()
-        )).Throws(new Exception("Logging error"));
+        _mockLogRepository
+            .Setup(logRepo =>
+                logRepo.AddProjectLogForCurrentUser(
+                    It.IsAny<Project>(),
+                    It.IsAny<Action>(),
+                    It.IsAny<List<LogChange>>()
+                )
+            )
+            .Throws(new Exception("Logging error"));
 
         var exception = Assert.ThrowsAsync<Exception>(async () =>
             await _handler.Handle(updateCommand, CancellationToken.None)
         );
         Assert.That(exception.Message, Is.EqualTo("Logging error"));
 
-        _mockLogRepository.Verify(logRepo => logRepo.AddProjectLogForCurrentUser(
-            It.IsAny<Project>(),
-            It.IsAny<Action>(),
-            It.IsAny<List<LogChange>>()
-        ), Times.Once);
+        _mockLogRepository.Verify(
+            logRepo =>
+                logRepo.AddProjectLogForCurrentUser(
+                    It.IsAny<Project>(),
+                    It.IsAny<Action>(),
+                    It.IsAny<List<LogChange>>()
+                ),
+            Times.Once
+        );
     }
 
     [Test]
@@ -599,50 +694,53 @@ public class UpdateProjectCommandHandlerTest
             ProjectName = "Test Project",
             Slug = "test project",
             ClientName = "Test Client",
-            BusinessUnit = "Test Unit",
-            TeamNumber = 1,
-            Department = "Test Department",
             OfferId = "Offer A",
             Company = "Company A",
             CompanyState = CompanyState.EXTERNAL,
             IsmsLevel = SecurityLevel.VERY_HIGH,
-            ProjectPlugins = new List<ProjectPlugins>(),
-            IsArchived = false
+            ProjectPlugins = [],
+            IsArchived = false,
         };
 
         var updateCommand = new UpdateProjectCommand(
-            project.ProjectName,
-            project.BusinessUnit,
-            project.TeamNumber,
-            project.Department,
-            project.ClientName,
-            project.OfferId,
-            project.Company,
-            project.CompanyState,
-            project.IsmsLevel,
-            project.Id,
-            new List<ProjectPlugins>(),
-            true
+            ProjectName: project.ProjectName,
+            ClientName: project.ClientName,
+            OfferId: project.OfferId,
+            Company: project.Company,
+            CompanyState: project.CompanyState,
+            IsmsLevel: project.IsmsLevel,
+            Id: project.Id,
+            Plugins: [],
+            IsArchived: true,
+            TeamId: null
         );
 
-        _mockProjectRepo.Setup(repo => repo.GetProjectWithPluginsAsync(project.Id)).ReturnsAsync(project);
+        _mockProjectRepo
+            .Setup(repo => repo.GetProjectWithPluginsAsync(project.Id))
+            .ReturnsAsync(project);
 
         await _handler.Handle(updateCommand, CancellationToken.None);
 
         Assert.That(project.IsArchived, Is.True);
 
-        _mockLogRepository.Verify(logRepo => logRepo.AddProjectLogForCurrentUser(
-            project,
-            Action.ARCHIVED_PROJECT,  // Expect Action.ARCHIVED_PROJECT since the project was archived
-            It.Is<List<LogChange>>(changes =>
-                changes.Count == 1 &&
-                changes.Any(change => change.Property == "IsArchived" && change.OldValue == "False" && change.NewValue == "True")
-            )
-        ), Times.Once);
+        _mockLogRepository.Verify(
+            logRepo =>
+                logRepo.AddProjectLogForCurrentUser(
+                    project,
+                    Action.ARCHIVED_PROJECT, // Expect Action.ARCHIVED_PROJECT since the project was archived
+                    It.Is<List<LogChange>>(changes =>
+                        changes.Count == 1
+                        && changes.Any(change =>
+                            change.Property == "IsArchived"
+                            && change.OldValue == "False"
+                            && change.NewValue == "True"
+                        )
+                    )
+                ),
+            Times.Once
+        );
         _mockLogRepository.VerifyNoOtherCalls();
     }
-
-
 
     [Test]
     public async Task UnArchivesProject_WhenIsArchivedFlagIsFalse()
@@ -653,49 +751,53 @@ public class UpdateProjectCommandHandlerTest
             ProjectName = "Archived Project",
             Slug = "archived project",
             ClientName = "Test Client",
-            BusinessUnit = "Test Unit",
-            TeamNumber = 1,
-            Department = "Test Department",
             OfferId = "Offer A",
             Company = "Company A",
             CompanyState = CompanyState.EXTERNAL,
             IsmsLevel = SecurityLevel.VERY_HIGH,
-            ProjectPlugins = new List<ProjectPlugins>(),
-            IsArchived = true
+            ProjectPlugins = [],
+            IsArchived = true,
         };
 
         var updateCommand = new UpdateProjectCommand(
-            project.ProjectName,
-            project.BusinessUnit,
-            project.TeamNumber,
-            project.Department,
-            project.ClientName,
-            project.OfferId,
-            project.Company,
-            project.CompanyState,
-            project.IsmsLevel,
-            project.Id,
-            new List<ProjectPlugins>(),
-            false
+            ProjectName: project.ProjectName,
+            ClientName: project.ClientName,
+            OfferId: project.OfferId,
+            Company: project.Company,
+            CompanyState: project.CompanyState,
+            IsmsLevel: project.IsmsLevel,
+            Id: project.Id,
+            Plugins: [],
+            IsArchived: false,
+            TeamId: null // Assuming TeamId can be null
         );
 
-        _mockProjectRepo.Setup(repo => repo.GetProjectWithPluginsAsync(project.Id)).ReturnsAsync(project);
+        _mockProjectRepo
+            .Setup(repo => repo.GetProjectWithPluginsAsync(project.Id))
+            .ReturnsAsync(project);
 
         await _handler.Handle(updateCommand, CancellationToken.None);
 
         Assert.That(project.IsArchived, Is.False);
 
-        _mockLogRepository.Verify(logRepo => logRepo.AddProjectLogForCurrentUser(
-            project,
-            Action.UNARCHIVED_PROJECT,
-            It.Is<List<LogChange>>(changes =>
-                changes.Count == 1 &&
-                changes.Any(change => change.Property == "IsArchived" && change.OldValue == "True" && change.NewValue == "False")
-            )
-        ), Times.Once);
+        _mockLogRepository.Verify(
+            logRepo =>
+                logRepo.AddProjectLogForCurrentUser(
+                    project,
+                    Action.UNARCHIVED_PROJECT,
+                    It.Is<List<LogChange>>(changes =>
+                        changes.Count == 1
+                        && changes.Any(change =>
+                            change.Property == "IsArchived"
+                            && change.OldValue == "True"
+                            && change.NewValue == "False"
+                        )
+                    )
+                ),
+            Times.Once
+        );
         _mockLogRepository.VerifyNoOtherCalls();
     }
-
 
     [Test]
     public async Task DoesNotLogWhenIsArchivedStatusDoesNotChange()
@@ -706,43 +808,44 @@ public class UpdateProjectCommandHandlerTest
             ProjectName = "Test Project",
             Slug = "test project",
             ClientName = "Test Client",
-            BusinessUnit = "Test Unit",
-            TeamNumber = 1,
-            Department = "Test Department",
             OfferId = "Offer A",
             Company = "Company A",
             CompanyState = CompanyState.EXTERNAL,
             IsmsLevel = SecurityLevel.VERY_HIGH,
-            ProjectPlugins = new List<ProjectPlugins>(),
-            IsArchived = true
+            ProjectPlugins = [],
+            IsArchived = true,
         };
 
         var updateCommand = new UpdateProjectCommand(
-            project.ProjectName,
-            project.BusinessUnit,
-            project.TeamNumber,
-            project.Department,
-            project.ClientName,
-            project.OfferId,
-            project.Company,
-            project.CompanyState,
-            project.IsmsLevel,
-            project.Id,
-            new List<ProjectPlugins>(),
-            true
+            ProjectName: project.ProjectName,
+            ClientName: project.ClientName,
+            OfferId: project.OfferId,
+            Company: project.Company,
+            CompanyState: project.CompanyState,
+            IsmsLevel: project.IsmsLevel,
+            Id: project.Id,
+            Plugins: [],
+            IsArchived: true,
+            TeamId: null // Assuming TeamId can be null
         );
 
-        _mockProjectRepo.Setup(repo => repo.GetProjectWithPluginsAsync(project.Id)).ReturnsAsync(project);
+        _mockProjectRepo
+            .Setup(repo => repo.GetProjectWithPluginsAsync(project.Id))
+            .ReturnsAsync(project);
 
         await _handler.Handle(updateCommand, CancellationToken.None);
 
         Assert.That(project.IsArchived, Is.True);
 
-        _mockLogRepository.Verify(logRepo => logRepo.AddProjectLogForCurrentUser(
-            project,
-            Action.UPDATED_PROJECT,
-            It.IsAny<List<LogChange>>()
-        ), Times.Never);
+        _mockLogRepository.Verify(
+            logRepo =>
+                logRepo.AddProjectLogForCurrentUser(
+                    project,
+                    Action.UPDATED_PROJECT,
+                    It.IsAny<List<LogChange>>()
+                ),
+            Times.Never
+        );
     }
 
     [Test]
@@ -754,54 +857,69 @@ public class UpdateProjectCommandHandlerTest
             ProjectName = "Test Project",
             Slug = "test project",
             ClientName = "Test Client",
-            BusinessUnit = "Test Unit",
-            TeamNumber = 1,
-            Department = "Test Department",
             OfferId = "Offer A",
             Company = "Company A",
             CompanyState = CompanyState.EXTERNAL,
             IsmsLevel = SecurityLevel.VERY_HIGH,
-            ProjectPlugins = new List<ProjectPlugins>
-            {
+            ProjectPlugins =
+            [
                 new()
                 {
                     PluginId = 1,
                     Url = "https://example.com",
-                    DisplayName = "Example Plugin"
-                }
-            },
-            IsArchived = false
+                    DisplayName = "Example Plugin",
+                },
+            ],
+            IsArchived = false,
         };
 
         var updateCommand = new UpdateProjectCommand(
-            project.ProjectName,
-            project.BusinessUnit,
-            project.TeamNumber,
-            project.Department,
-            project.ClientName,
-            project.OfferId,
-            project.Company,
-            project.CompanyState,
-            project.IsmsLevel,
-            project.Id,
-            new List<ProjectPlugins>(),
-            false
+            ProjectName: project.ProjectName,
+            ClientName: project.ClientName,
+            OfferId: project.OfferId,
+            Company: project.Company,
+            CompanyState: project.CompanyState,
+            IsmsLevel: project.IsmsLevel,
+            Id: project.Id,
+            Plugins: [],
+            IsArchived: false,
+            TeamId: null // Assuming TeamId can be null
         );
 
-        _mockProjectRepo.Setup(repo => repo.GetProjectWithPluginsAsync(project.Id)).ReturnsAsync(project);
-        _mockPluginRepo.Setup(repo => repo.GetGlobalPluginsAsync()).ReturnsAsync([new Plugin { Id = 1, PluginName = "ExamplePlugin" }]);
+        _mockProjectRepo
+            .Setup(repo => repo.GetProjectWithPluginsAsync(project.Id))
+            .ReturnsAsync(project);
+        _mockPluginRepo
+            .Setup(repo => repo.GetGlobalPluginsAsync())
+            .ReturnsAsync([new Plugin { Id = 1, PluginName = "ExamplePlugin" }]);
 
         await _handler.Handle(updateCommand, CancellationToken.None);
 
-        _mockLogRepository.Verify(logRepo => logRepo.AddProjectLogForCurrentUser(
-            project,
-            Action.REMOVED_PROJECT_PLUGIN,
-            It.Is<List<LogChange>>(changes =>
-                changes.Any(change => change.Property == "Plugin" && change.OldValue == "ExamplePlugin" && change.NewValue == String.Empty) &&
-                changes.Any(change => change.Property == "Url" && change.OldValue == "https://example.com" && change.NewValue == String.Empty) &&
-                changes.Any(change => change.Property == "DisplayName" && change.OldValue == "Example Plugin" && change.NewValue == String.Empty)
-            )
-        ), Times.Once);
+        _mockLogRepository.Verify(
+            logRepo =>
+                logRepo.AddProjectLogForCurrentUser(
+                    project,
+                    Action.REMOVED_PROJECT_PLUGIN,
+                    It.Is<List<LogChange>>(changes =>
+                        changes.Any(change =>
+                            change.Property == "Plugin"
+                            && change.OldValue == "ExamplePlugin"
+                            && change.NewValue == String.Empty
+                        )
+                        && changes.Any(change =>
+                            change.Property == "Url"
+                            && change.OldValue == "https://example.com"
+                            && change.NewValue == String.Empty
+                        )
+                        && changes.Any(change =>
+                            change.Property == "DisplayName"
+                            && change.OldValue == "Example Plugin"
+                            && change.NewValue == String.Empty
+                        )
+                    )
+                ),
+            Times.Once
+        );
     }
 
     [Test]
@@ -813,54 +931,69 @@ public class UpdateProjectCommandHandlerTest
             ProjectName = "Test Project",
             Slug = "test project",
             ClientName = "Test Client",
-            BusinessUnit = "Test Unit",
-            TeamNumber = 1,
-            Department = "Test Department",
             OfferId = "Offer A",
             Company = "Company A",
             CompanyState = CompanyState.EXTERNAL,
             IsmsLevel = SecurityLevel.VERY_HIGH,
-            ProjectPlugins = new List<ProjectPlugins>(),
-            IsArchived = false
+            ProjectPlugins = [],
+            IsArchived = false,
         };
 
         var updateCommand = new UpdateProjectCommand(
-            project.ProjectName,
-            project.BusinessUnit,
-            project.TeamNumber,
-            project.Department,
-            project.ClientName,
-            project.OfferId,
-            project.Company,
-            project.CompanyState,
-            project.IsmsLevel,
-            project.Id,
-            new List<ProjectPlugins>
-            {
-                new()
+            ProjectName: project.ProjectName,
+            ClientName: project.ClientName,
+            OfferId: project.OfferId,
+            Company: project.Company,
+            CompanyState: project.CompanyState,
+            IsmsLevel: project.IsmsLevel,
+            Id: project.Id,
+            Plugins:
+            [
+                new ProjectPlugins
                 {
                     PluginId = 1,
                     Url = "https://example.com",
-                    DisplayName = "Example Plugin"
-                }
-            },
-            false
+                    DisplayName = "Example Plugin",
+                },
+            ],
+            IsArchived: false,
+            TeamId: null // Assuming TeamId can be null
         );
 
-        _mockProjectRepo.Setup(repo => repo.GetProjectWithPluginsAsync(project.Id)).ReturnsAsync(project);
-        _mockPluginRepo.Setup(repo => repo.GetGlobalPluginsAsync()).ReturnsAsync([new Plugin { Id = 1, PluginName = "ExamplePlugin" }]);
+        _mockProjectRepo
+            .Setup(repo => repo.GetProjectWithPluginsAsync(project.Id))
+            .ReturnsAsync(project);
+        _mockPluginRepo
+            .Setup(repo => repo.GetGlobalPluginsAsync())
+            .ReturnsAsync([new Plugin { Id = 1, PluginName = "ExamplePlugin" }]);
 
         await _handler.Handle(updateCommand, CancellationToken.None);
 
-        _mockLogRepository.Verify(logRepo => logRepo.AddProjectLogForCurrentUser(
-            project,
-            Action.ADDED_PROJECT_PLUGIN,
-            It.Is<List<LogChange>>(changes =>
-                changes.Any(change => change.Property == "Plugin" && change.OldValue == String.Empty && change.NewValue == "ExamplePlugin") &&
-                changes.Any(change => change.Property == "Url" && change.OldValue == String.Empty && change.NewValue == "https://example.com") &&
-                changes.Any(change => change.Property == "DisplayName" && change.OldValue == String.Empty && change.NewValue == "Example Plugin")
-            )
-        ), Times.Once);
+        _mockLogRepository.Verify(
+            logRepo =>
+                logRepo.AddProjectLogForCurrentUser(
+                    project,
+                    Action.ADDED_PROJECT_PLUGIN,
+                    It.Is<List<LogChange>>(changes =>
+                        changes.Any(change =>
+                            change.Property == "Plugin"
+                            && change.OldValue == String.Empty
+                            && change.NewValue == "ExamplePlugin"
+                        )
+                        && changes.Any(change =>
+                            change.Property == "Url"
+                            && change.OldValue == String.Empty
+                            && change.NewValue == "https://example.com"
+                        )
+                        && changes.Any(change =>
+                            change.Property == "DisplayName"
+                            && change.OldValue == String.Empty
+                            && change.NewValue == "Example Plugin"
+                        )
+                    )
+                ),
+            Times.Once
+        );
     }
 
     [Test]
@@ -872,60 +1005,67 @@ public class UpdateProjectCommandHandlerTest
             ProjectName = "Test Project",
             Slug = "test project",
             ClientName = "Test Client",
-            BusinessUnit = "Test Unit",
-            TeamNumber = 1,
-            Department = "Test Department",
             OfferId = "Offer A",
             Company = "Company A",
             CompanyState = CompanyState.EXTERNAL,
             IsmsLevel = SecurityLevel.VERY_HIGH,
-            ProjectPlugins = new List<ProjectPlugins>
-            {
+            ProjectPlugins =
+            [
                 new()
                 {
                     PluginId = 1,
                     Url = "https://example.com",
-                    DisplayName = "Example Plugin"
-                }
-            },
-            IsArchived = false
+                    DisplayName = "Example Plugin",
+                },
+            ],
+            IsArchived = false,
         };
 
         var updateCommand = new UpdateProjectCommand(
-            project.ProjectName,
-            project.BusinessUnit,
-            project.TeamNumber,
-            project.Department,
-            project.ClientName,
-            project.OfferId,
-            project.Company,
-            project.CompanyState,
-            project.IsmsLevel,
-            project.Id,
-            new List<ProjectPlugins>
-            {
-                new()
+            ProjectName: project.ProjectName,
+            ClientName: project.ClientName,
+            OfferId: project.OfferId,
+            Company: project.Company,
+            CompanyState: project.CompanyState,
+            IsmsLevel: project.IsmsLevel,
+            Id: project.Id,
+            Plugins:
+            [
+                new ProjectPlugins
                 {
                     PluginId = 1,
                     Url = "https://example.com",
-                    DisplayName = "Updated Plugin"
-                }
-            },
-            false
+                    DisplayName = "Updated Plugin",
+                },
+            ],
+            IsArchived: false,
+            TeamId: null
         );
 
-        _mockProjectRepo.Setup(repo => repo.GetProjectWithPluginsAsync(project.Id)).ReturnsAsync(project);
-        _mockPluginRepo.Setup(repo => repo.GetGlobalPluginsAsync()).ReturnsAsync([new Plugin { Id = 1, PluginName = "Example Plugin" }]);
+        _mockProjectRepo
+            .Setup(repo => repo.GetProjectWithPluginsAsync(project.Id))
+            .ReturnsAsync(project);
+        _mockPluginRepo
+            .Setup(repo => repo.GetGlobalPluginsAsync())
+            .ReturnsAsync([new Plugin { Id = 1, PluginName = "Example Plugin" }]);
 
         await _handler.Handle(updateCommand, CancellationToken.None);
 
-        _mockLogRepository.Verify(logRepo => logRepo.AddProjectLogForCurrentUser(
-            project,
-            Action.UPDATED_PROJECT_PLUGIN,
-            It.Is<List<LogChange>>(changes =>
-                changes.Any(change => change.Property == "DisplayName" && change.OldValue == "Example Plugin" && change.NewValue == "Updated Plugin")
-            )
-        ), Times.Once);
+        _mockLogRepository.Verify(
+            logRepo =>
+                logRepo.AddProjectLogForCurrentUser(
+                    project,
+                    Action.UPDATED_PROJECT_PLUGIN,
+                    It.Is<List<LogChange>>(changes =>
+                        changes.Any(change =>
+                            change.Property == "DisplayName"
+                            && change.OldValue == "Example Plugin"
+                            && change.NewValue == "Updated Plugin"
+                        )
+                    )
+                ),
+            Times.Once
+        );
     }
 
     [Test]
@@ -937,58 +1077,61 @@ public class UpdateProjectCommandHandlerTest
             ProjectName = "Test Project",
             Slug = "test project",
             ClientName = "Test Client",
-            BusinessUnit = "Test Unit",
-            TeamNumber = 1,
-            Department = "Test Department",
             OfferId = "Offer A",
             Company = "Company A",
             CompanyState = CompanyState.EXTERNAL,
             IsmsLevel = SecurityLevel.VERY_HIGH,
-            ProjectPlugins = new List<ProjectPlugins>
-            {
+            ProjectPlugins =
+            [
                 new()
                 {
                     PluginId = 1,
                     Url = "https://example.com",
-                    DisplayName = "Example Plugin"
-                }
-            },
-            IsArchived = false
+                    DisplayName = "Example Plugin",
+                },
+            ],
+            IsArchived = false,
         };
 
         var updateCommand = new UpdateProjectCommand(
-            project.ProjectName,
-            project.BusinessUnit,
-            project.TeamNumber,
-            project.Department,
-            project.ClientName,
-            project.OfferId,
-            project.Company,
-            project.CompanyState,
-            project.IsmsLevel,
-            project.Id,
-            new List<ProjectPlugins>
-            {
-                new()
+            ProjectName: project.ProjectName,
+            ClientName: project.ClientName,
+            OfferId: project.OfferId,
+            Company: project.Company,
+            CompanyState: project.CompanyState,
+            IsmsLevel: project.IsmsLevel,
+            Id: project.Id,
+            Plugins:
+            [
+                new ProjectPlugins
                 {
                     PluginId = 1,
                     Url = "https://example.com",
-                    DisplayName = "Example Plugin"
-                }
-            },
-            false
+                    DisplayName = "Example Plugin",
+                },
+            ],
+            IsArchived: false,
+            TeamId: null // Assuming TeamId can be null
         );
 
-        _mockProjectRepo.Setup(repo => repo.GetProjectWithPluginsAsync(project.Id)).ReturnsAsync(project);
-        _mockPluginRepo.Setup(repo => repo.GetGlobalPluginsAsync()).ReturnsAsync([new Plugin { Id = 1, PluginName = "Example Plugin" }]);
+        _mockProjectRepo
+            .Setup(repo => repo.GetProjectWithPluginsAsync(project.Id))
+            .ReturnsAsync(project);
+        _mockPluginRepo
+            .Setup(repo => repo.GetGlobalPluginsAsync())
+            .ReturnsAsync([new Plugin { Id = 1, PluginName = "Example Plugin" }]);
 
         await _handler.Handle(updateCommand, CancellationToken.None);
 
-        _mockLogRepository.Verify(logRepo => logRepo.AddProjectLogForCurrentUser(
-            It.IsAny<Project>(),
-            It.IsAny<Action>(),
-            It.IsAny<List<LogChange>>()
-        ), Times.Never);
+        _mockLogRepository.Verify(
+            logRepo =>
+                logRepo.AddProjectLogForCurrentUser(
+                    It.IsAny<Project>(),
+                    It.IsAny<Action>(),
+                    It.IsAny<List<LogChange>>()
+                ),
+            Times.Never
+        );
     }
 
     [Test]
@@ -999,50 +1142,44 @@ public class UpdateProjectCommandHandlerTest
             Id = 1,
             ProjectName = "Example Project",
             Slug = "example project",
-            BusinessUnit = "Example Business Unit",
-            TeamNumber = 1,
-            Department = "Example Department",
             ClientName = "Example Client",
             OfferId = "Offer A",
             Company = "Company A",
             CompanyState = CompanyState.EXTERNAL,
             IsmsLevel = SecurityLevel.VERY_HIGH,
-            ProjectPlugins = new List<ProjectPlugins>
-            {
+            ProjectPlugins =
+            [
                 new()
                 {
                     PluginId = 1,
                     Url = "https://example.com",
-                    DisplayName = "Example Plugin"
-                }
-            }
+                    DisplayName = "Example Plugin",
+                },
+            ],
         };
 
         var updateCommand = new UpdateProjectCommand(
             ProjectName: "New Project",
-            project.BusinessUnit,
-            project.TeamNumber,
-            project.Department,
-            project.ClientName,
-            project.OfferId,
-            project.Company,
-            project.CompanyState,
-            project.IsmsLevel,
-            project.Id,
-            new List<ProjectPlugins>
-            {
-                new()
+            ClientName: project.ClientName,
+            OfferId: project.OfferId,
+            Company: project.Company,
+            CompanyState: project.CompanyState,
+            IsmsLevel: project.IsmsLevel,
+            Id: project.Id,
+            Plugins:
+            [
+                new ProjectPlugins
                 {
                     PluginId = 1,
                     Url = "https://example.com",
-                    DisplayName = "Example Plugin"
-                }
-            },
-            false
+                    DisplayName = "Example Plugin",
+                },
+            ],
+            IsArchived: false,
+            TeamId: null // Assuming TeamId can be null
         );
 
-        _mockProjectRepo.Setup(m => m.GetProjectWithPluginsAsync(1))
-            .ReturnsAsync(project);
+        _mockProjectRepo.Setup(m => m.GetProjectWithPluginsAsync(1)).ReturnsAsync(project);
         _mockSlugHelper.Setup(m => m.GenerateSlug(It.IsAny<string>())).Returns("new project");
         _mockSlugHelper.Setup(m => m.CheckProjectSlugExists("new project")).ReturnsAsync(true);
         _mockPluginRepo.Setup(repo => repo.CheckPluginExists(1)).ReturnsAsync(true);

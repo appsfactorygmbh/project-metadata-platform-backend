@@ -14,7 +14,6 @@ namespace ProjectMetadataPlatform.Infrastructure.Tests;
 [TestFixture]
 public class ProjectsRepositoryTests : TestsWithDatabase
 {
-
     [SetUp]
     public void Setup()
     {
@@ -22,6 +21,7 @@ public class ProjectsRepositoryTests : TestsWithDatabase
         _repository = new ProjectsRepository(_context);
         ClearData(_context);
     }
+
     private ProjectMetadataPlatformDbContext _context;
     private ProjectsRepository _repository;
 
@@ -35,9 +35,6 @@ public class ProjectsRepositoryTests : TestsWithDatabase
             ProjectName = "Regen",
             Slug = "regen",
             ClientName = "Nasa",
-            BusinessUnit = "BuWeather",
-            TeamNumber = 42,
-            Department = "Homelandsecurity"
         };
 
         _context.Projects.RemoveRange(_context.Projects);
@@ -55,23 +52,19 @@ public class ProjectsRepositoryTests : TestsWithDatabase
             Assert.That(project.Id, Is.EqualTo(1));
             Assert.That(project.ProjectName, Is.EqualTo("Regen"));
             Assert.That(project.ClientName, Is.EqualTo("Nasa"));
-            Assert.That(project.BusinessUnit, Is.EqualTo("BuWeather"));
-            Assert.That(project.TeamNumber, Is.EqualTo(42));
-            Assert.That(project.Department, Is.EqualTo("Homelandsecurity"));
         });
     }
 
     [Test]
     public async Task GetProjectByMultipleFiltersAndSearchAsync_ReturnsCorrectProjects()
     {
-        var filters = new ProjectFilterRequest
-        (
+        var filters = new ProjectFilterRequest(
             "Heather",
             "Metatron",
-            new List<string> { "666", "777" },
-            new List<int> { 42, 43 },
+            ["666", "777"],
+            ["42", "43"],
             true,
-            new List<string> { "AppsFact" },
+            ["AppsFact"],
             SecurityLevel.VERY_HIGH
         );
         var projects = new List<Project>
@@ -81,39 +74,33 @@ public class ProjectsRepositoryTests : TestsWithDatabase
                 Id = 1,
                 ProjectName = "Heather",
                 Slug = "heather",
-                BusinessUnit = "666",
                 ClientName = "Metatron",
-                Department = "Mars",
-                TeamNumber = 42,
                 IsArchived = true,
                 Company = "AppsFact",
-                IsmsLevel = SecurityLevel.VERY_HIGH
+                IsmsLevel = SecurityLevel.VERY_HIGH,
+                Team = new() { TeamName = "42", BusinessUnit = "666" },
             },
             new()
             {
                 Id = 2,
                 ProjectName = "James",
                 Slug = "james",
-                BusinessUnit = "777",
                 ClientName = "Lucifer",
-                Department = "Venus",
-                TeamNumber = 43,
                 IsArchived = true,
                 Company = "AppsFact",
-                IsmsLevel = SecurityLevel.VERY_HIGH
+                IsmsLevel = SecurityLevel.VERY_HIGH,
+                Team = new() { TeamName = "43", BusinessUnit = "777" },
             },
             new()
             {
                 Id = 3,
                 ProjectName = "Marika",
                 Slug = "marika",
-                BusinessUnit = "999",
                 ClientName = "Satan",
-                Department = "Earth",
-                TeamNumber = 44,
                 IsArchived = false,
                 Company = "AppsFact",
-                IsmsLevel = SecurityLevel.VERY_HIGH
+                IsmsLevel = SecurityLevel.VERY_HIGH,
+                Team = new() { TeamName = "44", BusinessUnit = "999" },
             },
         };
 
@@ -130,8 +117,6 @@ public class ProjectsRepositoryTests : TestsWithDatabase
         {
             Assert.That(result.Any(p => p.ProjectName == "Heather"), Is.True);
             Assert.That(result.Any(p => p.ClientName == "Metatron"), Is.True);
-            Assert.That(result.Any(p => p.BusinessUnit == "666"), Is.True);
-            Assert.That(result.Any(p => p.TeamNumber == 42), Is.True);
             Assert.That(result.Any(p => p.IsArchived), Is.True);
             Assert.That(result.Any(p => p.Company == "AppsFact"), Is.True);
             Assert.That(result.Any(p => p.IsmsLevel == SecurityLevel.VERY_HIGH), Is.True);
@@ -141,14 +126,13 @@ public class ProjectsRepositoryTests : TestsWithDatabase
     [Test]
     public async Task GetProjectsByFiltersAsync_NoMatchingProjects_ReturnsEmpty()
     {
-        var filters = new ProjectFilterRequest
-        (
+        var filters = new ProjectFilterRequest(
             "Heather",
             "Gilgamesch",
-            new List<string> { "666", "777" },
-            new List<int> { 42, 43 },
+            ["666", "777"],
+            ["42", "43"],
             null,
-            new List<string> { "Nothing else" },
+            ["Nothing else"],
             null
         );
         var projects = new List<Project>
@@ -158,24 +142,18 @@ public class ProjectsRepositoryTests : TestsWithDatabase
                 Id = 1,
                 ProjectName = "Heather",
                 Slug = "heather",
-                BusinessUnit = "666",
                 ClientName = "Metatron",
-                Department = "Mars",
-                TeamNumber = 42,
                 Company = "AddOn",
-                IsmsLevel = SecurityLevel.HIGH
+                IsmsLevel = SecurityLevel.HIGH,
             },
             new()
             {
                 Id = 2,
                 ProjectName = "James",
                 Slug = "james",
-                BusinessUnit = "777",
                 ClientName = "Lucifer",
-                Department = "Venus",
-                TeamNumber = 43,
                 Company = "AddOn",
-                IsmsLevel = SecurityLevel.HIGH
+                IsmsLevel = SecurityLevel.HIGH,
             },
         };
 
@@ -200,30 +178,21 @@ public class ProjectsRepositoryTests : TestsWithDatabase
                 Id = 1,
                 ProjectName = "Heather",
                 Slug = "heather",
-                BusinessUnit = "666",
                 ClientName = "Metatron",
-                Department = "Mars",
-                TeamNumber = 42
             },
             new()
             {
                 Id = 2,
                 ProjectName = "James",
                 Slug = "james",
-                BusinessUnit = "777",
                 ClientName = "Lucifer",
-                Department = "Venus",
-                TeamNumber = 43
             },
             new()
             {
                 Id = 3,
                 ProjectName = "Marika",
                 Slug = "marika",
-                BusinessUnit = "999",
                 ClientName = "Satan",
-                Department = "Earth",
-                TeamNumber = 44
             },
         };
 
@@ -237,137 +206,6 @@ public class ProjectsRepositoryTests : TestsWithDatabase
 
         Assert.That(result.Count(), Is.EqualTo(3));
     }
-    [Test]
-    public async Task GetAllTeamNumbersAsync_ReturnAllTeamNumbers()
-    {
-        var projects = new List<Project>
-        {
-            new()
-            {
-                Id = 1,
-                ProjectName = "Regen",
-                Slug = "regen",
-                ClientName = "Nasa",
-                BusinessUnit = "BuWeather",
-                TeamNumber = 42,
-                Department = "Homelandsecurity"
-            },
-            new()
-            {
-                Id = 2,
-                ProjectName = "Nieselegen",
-                Slug = "nieselregen",
-                ClientName = "Nasa",
-                BusinessUnit = "BuWeather",
-                TeamNumber = 43,
-                Department = "Homelandsecurity"
-            }
-        };
-
-        _context.Projects.RemoveRange(_context.Projects);
-        _context.Projects.AddRange(projects);
-        await _context.SaveChangesAsync();
-
-        var result = await _repository.GetTeamNumbersAsync();
-
-        var expectedTeamNumbers = new[] { 42, 43 };
-        Assert.That(result, Is.EquivalentTo(expectedTeamNumbers));
-    }
-
-    [Test]
-    public async Task GetAllBusinessUnitsAsync_ReturnsAllBusinessUnits()
-    {
-        var projects = new List<Project>
-        {
-            new()
-            {
-                Id = 1,
-                ProjectName = "Project1",
-                Slug = "project1",
-                ClientName = "ClientA",
-                BusinessUnit = "Unit1",
-                TeamNumber = 42,
-                Department = "Dept1"
-            },
-            new()
-            {
-                Id = 2,
-                ProjectName = "Project2",
-                Slug = "project2",
-                ClientName = "ClientB",
-                BusinessUnit = "Unit2",
-                TeamNumber = 43,
-                Department = "Dept2"
-            }
-        };
-
-        _context.Projects.RemoveRange(_context.Projects);
-        _context.Projects.AddRange(projects);
-        await _context.SaveChangesAsync();
-
-        var result = await _repository.GetBusinessUnitsAsync();
-
-        var expectedBusinessUnits = new[] { "Unit1", "Unit2" };
-        Assert.That(result, Is.EquivalentTo(expectedBusinessUnits));
-    }
-
-    [Test]
-    public async Task GetAllBusinessUnitsAsync_WithDuplicateBusinessUnits_ReturnsDistinctBusinessUnits()
-    {
-        var projects = new List<Project>
-        {
-            new()
-            {
-                Id = 1,
-                ProjectName = "Project1",
-                Slug = "project1",
-                ClientName = "ClientA",
-                BusinessUnit = "Unit1",
-                TeamNumber = 42,
-                Department = "Dept1"
-            },
-            new()
-            {
-                Id = 2,
-                ProjectName = "Project2",
-                Slug = "project2",
-                ClientName = "ClientB",
-                BusinessUnit = "Unit1", // Duplicate BusinessUnit
-                TeamNumber = 43,
-                Department = "Dept2"
-            },
-            new()
-            {
-                Id = 3,
-                ProjectName = "Project3",
-                Slug = "project3",
-                ClientName = "ClientC",
-                BusinessUnit = "Unit2",
-                TeamNumber = 44,
-                Department = "Dept3"
-            }
-        };
-
-        _context.Projects.RemoveRange(_context.Projects);
-        _context.Projects.AddRange(projects);
-        await _context.SaveChangesAsync();
-
-        var result = await _repository.GetBusinessUnitsAsync();
-
-        var expectedBusinessUnits = new[] { "Unit1", "Unit2" };
-        Assert.That(result, Is.EquivalentTo(expectedBusinessUnits));
-    }
-
-    [Test]
-    public async Task GetAllBusinessUnitsAsync_WhenNoProjects_ReturnsEmpty()
-    {
-        _context.Projects.RemoveRange(_context.Projects);
-        await _context.SaveChangesAsync();
-
-        var result = await _repository.GetBusinessUnitsAsync();
-
-        Assert.That(result, Is.Empty);
-    }
 
     [Test]
     public async Task DeleteProjectAsync_ShouldDeleteProject()
@@ -378,9 +216,6 @@ public class ProjectsRepositoryTests : TestsWithDatabase
             ProjectName = "Regen",
             Slug = "regen",
             ClientName = "Nasa",
-            BusinessUnit = "BuWeather",
-            TeamNumber = 42,
-            Department = "Homelandsecurity"
         };
 
         _context.Projects.RemoveRange(_context.Projects);
@@ -407,9 +242,6 @@ public class ProjectsRepositoryTests : TestsWithDatabase
             ProjectName = "Regen",
             Slug = "regen",
             ClientName = "Nasa",
-            BusinessUnit = "BuWeather",
-            TeamNumber = 42,
-            Department = "Homelandsecurity"
         };
 
         var project2 = new Project
@@ -418,9 +250,6 @@ public class ProjectsRepositoryTests : TestsWithDatabase
             ProjectName = "Nieselegen",
             Slug = "nieselregen",
             ClientName = "Nasa",
-            BusinessUnit = "BuWeather",
-            TeamNumber = 42,
-            Department = "Homelandsecurity"
         };
 
         _context.Projects.RemoveRange(_context.Projects);
@@ -442,15 +271,14 @@ public class ProjectsRepositoryTests : TestsWithDatabase
             ProjectName = "Nieselegen",
             Slug = "nieselregen",
             ClientName = "Nasa",
-            BusinessUnit = "BuWeather",
-            TeamNumber = 42,
-            Department = "Homelandsecurity"
         };
 
         _context.Projects.RemoveRange(_context.Projects);
         _context.Projects.Add(project2);
         await _context.SaveChangesAsync();
 
-        Assert.ThrowsAsync<ProjectNotFoundException>(() => _repository.GetProjectIdBySlugAsync("regen"));
+        Assert.ThrowsAsync<ProjectNotFoundException>(() =>
+            _repository.GetProjectIdBySlugAsync("regen")
+        );
     }
 }

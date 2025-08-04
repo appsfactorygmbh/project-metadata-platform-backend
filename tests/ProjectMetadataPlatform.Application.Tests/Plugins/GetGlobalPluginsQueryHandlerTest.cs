@@ -4,8 +4,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
-using ProjectMetadataPlatform.Application.Plugins;
 using ProjectMetadataPlatform.Application.Interfaces;
+using ProjectMetadataPlatform.Application.Plugins;
 using ProjectMetadataPlatform.Domain.Plugins;
 
 namespace ProjectMetadataPlatform.Application.Tests.Plugins;
@@ -30,20 +30,21 @@ public class GetGlobalPluginsQueryHandlerTest
         {
             new()
             {
-                Id = 1, PluginName = "plugin 1", IsArchived = false
+                Id = 1,
+                PluginName = "plugin 1",
+                IsArchived = false,
             },
             new()
             {
-                Id = 2, PluginName = "plugin 2", IsArchived = false
-            }
+                Id = 2,
+                PluginName = "plugin 2",
+                IsArchived = false,
+            },
         };
-        _pluginRepositoryMock.Setup(r => r.GetGlobalPluginsAsync())
-            .ReturnsAsync(plugins);
+        _pluginRepositoryMock.Setup(r => r.GetGlobalPluginsAsync()).ReturnsAsync(plugins);
 
         var query = new GetGlobalPluginsQuery();
         var result = (await _handler.Handle(query, It.IsAny<CancellationToken>())).ToList();
-
-
 
         Assert.That(result, Is.Not.Null);
         Assert.That(result, Is.TypeOf<List<Plugin>>());
@@ -57,18 +58,15 @@ public class GetGlobalPluginsQueryHandlerTest
 
         Assert.Multiple(() =>
         {
-
             Assert.That(result[0].PluginName, Is.EqualTo("plugin 1"));
             Assert.That(result[1].PluginName, Is.EqualTo("plugin 2"));
         });
 
         Assert.Multiple(() =>
         {
-
             Assert.That(result[0].IsArchived, Is.False);
             Assert.That(result[1].IsArchived, Is.False);
         });
-
     }
 
     [Test]

@@ -9,4 +9,3 @@ namespace ProjectMetadataPlatform.Application.Auth;
 /// <param name="Email">Username of the user</param>
 /// <param name="Password">Password of the user</param>
 public record LoginQuery(string Email, string Password) : IRequest<JwtTokens>;
-

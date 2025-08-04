@@ -11,7 +11,5 @@ public class UserAlreadyExistsException : EntityAlreadyExistsException
     /// Initializes a new instance of the <see cref="UserAlreadyExistsException"/> class.
     /// </summary>
     public UserAlreadyExistsException()
-        : base("User creation Failed : DuplicateEmail")
-    {
-    }
+        : base("User creation Failed : DuplicateEmail") { }
 }

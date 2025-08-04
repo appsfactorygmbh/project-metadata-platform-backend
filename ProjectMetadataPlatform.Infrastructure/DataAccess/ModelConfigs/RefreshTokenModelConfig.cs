@@ -1,4 +1,3 @@
-
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ProjectMetadataPlatform.Domain.Auth;
@@ -10,7 +9,6 @@ namespace ProjectMetadataPlatform.Infrastructure.DataAccess.ModelConfigs;
 /// </summary>
 public class RefreshTokenModelConfig : IEntityTypeConfiguration<RefreshToken>
 {
-
     /// <summary>
     /// Configures the RefreshToken entity.
     /// </summary>
@@ -20,8 +18,6 @@ public class RefreshTokenModelConfig : IEntityTypeConfiguration<RefreshToken>
         // Set the primary key for the RefreshToken entity
         _ = builder.HasKey(e => e.Id);
 
-        _ = builder.HasOne(pp => pp.User)
-            .WithMany()
-            .HasForeignKey(pp => pp.UserId);
+        _ = builder.HasOne(pp => pp.User).WithMany().HasForeignKey(pp => pp.UserId);
     }
 }

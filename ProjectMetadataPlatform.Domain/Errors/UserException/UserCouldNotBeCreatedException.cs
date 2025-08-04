@@ -12,7 +12,5 @@ public class UserCouldNotBeCreatedException : UserException
     /// </summary>
     /// <param name="identityResult">The result of the identity operation that caused the exception.</param>
     public UserCouldNotBeCreatedException(IdentityResult identityResult)
-        : base("User could not be created: " + TransformIdentityResult(identityResult))
-    {
-    }
+        : base("User could not be created: " + TransformIdentityResult(identityResult)) { }
 }

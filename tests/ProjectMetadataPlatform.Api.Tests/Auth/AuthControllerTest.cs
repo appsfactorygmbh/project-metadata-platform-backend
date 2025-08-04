@@ -2,7 +2,6 @@ using System.Security.Authentication;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
@@ -19,6 +18,7 @@ public class Tests
 {
     private AuthController _controller;
     private Mock<IMediator> _mediator;
+
     [SetUp]
     public void Setup()
     {
@@ -29,8 +29,11 @@ public class Tests
     [Test]
     public async Task SuccessfulLoginTest()
     {
-        _mediator.Setup(m => m.Send(It.IsAny<LoginQuery>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new JwtTokens { AccessToken = "accessToken", RefreshToken = "refreshToken" });
+        _mediator
+            .Setup(m => m.Send(It.IsAny<LoginQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(
+                new JwtTokens { AccessToken = "accessToken", RefreshToken = "refreshToken" }
+            );
 
         var request = new LoginRequest("username", "password");
 
@@ -46,7 +49,8 @@ public class Tests
     [Test]
     public void WrongCredentialsLoginTest()
     {
-        _mediator.Setup(m => m.Send(It.IsAny<LoginQuery>(), It.IsAny<CancellationToken>()))
+        _mediator
+            .Setup(m => m.Send(It.IsAny<LoginQuery>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new AuthInvalidLoginCredentialsException());
 
         var request = new LoginRequest("wrong_username", "password");
@@ -57,8 +61,11 @@ public class Tests
     [Test]
     public async Task SuccessfulRefreshTest()
     {
-        _mediator.Setup(m => m.Send(It.IsAny<RefreshTokenQuery>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new JwtTokens { AccessToken = "accessToken", RefreshToken = "refreshToken" });
+        _mediator
+            .Setup(m => m.Send(It.IsAny<RefreshTokenQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(
+                new JwtTokens { AccessToken = "accessToken", RefreshToken = "refreshToken" }
+            );
 
         var request = "Refresh refreshToken";
 
@@ -69,13 +76,13 @@ public class Tests
             Assert.That(result.Value.AccessToken, Is.EqualTo("accessToken"));
             Assert.That(result.Value.RefreshToken, Is.EqualTo("refreshToken"));
         });
-
     }
 
     [Test]
     public void InvalidRefreshTokenTest()
     {
-        _mediator.Setup(m => m.Send(It.IsAny<RefreshTokenQuery>(), It.IsAny<CancellationToken>()))
+        _mediator
+            .Setup(m => m.Send(It.IsAny<RefreshTokenQuery>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new AuthenticationException("Invalid refresh token."));
 
         const string refreshToken = "Refresh invalidRefreshToken";
@@ -90,6 +97,9 @@ public class Tests
         var result = await _controller.Get(request);
         Assert.That(result.Result, Is.InstanceOf<BadRequestObjectResult>());
         var badRequestObjectResult = result.Result as BadRequestObjectResult;
-        Assert.That((badRequestObjectResult!.Value as ErrorResponse)!.Message, Is.EqualTo("Invalid Header format"));
+        Assert.That(
+            (badRequestObjectResult!.Value as ErrorResponse)!.Message,
+            Is.EqualTo("Invalid Header format")
+        );
     }
 }

@@ -41,9 +41,6 @@ public class PluginsRepositoryTest : TestsWithDatabase
             ProjectName = "Regen",
             Slug = "regen",
             ClientName = "Nasa",
-            BusinessUnit = "BuWeather",
-            TeamNumber = 42,
-            Department = "Homelandsecurity"
         };
 
         _context.Projects.Add(project);
@@ -58,7 +55,7 @@ public class PluginsRepositoryTest : TestsWithDatabase
             Plugin = plugin,
             Project = project,
             Url = "gitlab.com",
-            DisplayName = "gitlab"
+            DisplayName = "gitlab",
         };
         _context.Add(projectPluginRelation);
         await _context.SaveChangesAsync();
@@ -106,9 +103,14 @@ public class PluginsRepositoryTest : TestsWithDatabase
     }
 
     [Test]
-    public async Task StorePlugin_noIdIncrementWhenIdExists_Test()
+    public async Task StorePlugin_NoIdIncrementWhenIdExists_Test()
     {
-        var examplePlugin = new Plugin { PluginName = "Warp-Drive", ProjectPlugins = [], Id = 42 };
+        var examplePlugin = new Plugin
+        {
+            PluginName = "Warp-Drive",
+            ProjectPlugins = [],
+            Id = 42,
+        };
         _context.Add(examplePlugin);
         await _context.SaveChangesAsync();
 
@@ -127,7 +129,12 @@ public class PluginsRepositoryTest : TestsWithDatabase
     [Test]
     public async Task GetGlobalPluginById_Test()
     {
-        var examplePlugin = new Plugin { PluginName = "Warp-Drive", ProjectPlugins = [], Id = 42 };
+        var examplePlugin = new Plugin
+        {
+            PluginName = "Warp-Drive",
+            ProjectPlugins = [],
+            Id = 42,
+        };
         _context.Add(examplePlugin);
         await _context.SaveChangesAsync();
 
@@ -145,13 +152,18 @@ public class PluginsRepositoryTest : TestsWithDatabase
     [Test]
     public void GetGlobalPluginById_NotFound_Test()
     {
-        Assert.ThrowsAsync<PluginNotFoundException>(()=> _repository.GetPluginByIdAsync(42));
+        Assert.ThrowsAsync<PluginNotFoundException>(() => _repository.GetPluginByIdAsync(42));
     }
 
     [Test]
     public async Task GetGlobalPlugins_Test()
     {
-        var examplePlugin = new Plugin { PluginName = "Warp-Drive", ProjectPlugins = [], Id = 42 };
+        var examplePlugin = new Plugin
+        {
+            PluginName = "Warp-Drive",
+            ProjectPlugins = [],
+            Id = 42,
+        };
         _context.Add(examplePlugin);
         await _context.SaveChangesAsync();
 
@@ -183,20 +195,35 @@ public class PluginsRepositoryTest : TestsWithDatabase
             ProjectName = "Test Project",
             Slug = "test_project",
             ClientName = "Test Client", // Ensure ClientName is set
-            BusinessUnit = "Test Business",
-            TeamNumber = 42,
-            Department = "Test Department"
         };
 
-        var unarchivedPlugin = new Plugin { Id = 1, PluginName = "Unarchived Plugin", IsArchived = false };
-        var archivedPlugin = new Plugin { Id = 2, PluginName = "Archived Plugin", IsArchived = true };
+        var unarchivedPlugin = new Plugin
+        {
+            Id = 1,
+            PluginName = "Unarchived Plugin",
+            IsArchived = false,
+        };
+        var archivedPlugin = new Plugin
+        {
+            Id = 2,
+            PluginName = "Archived Plugin",
+            IsArchived = true,
+        };
         var projectPluginRelation1 = new ProjectPlugins
         {
-            ProjectId = 1, PluginId = 1, Plugin = unarchivedPlugin, Project = project, Url = "unarchived.com"
+            ProjectId = 1,
+            PluginId = 1,
+            Plugin = unarchivedPlugin,
+            Project = project,
+            Url = "unarchived.com",
         };
         var projectPluginRelation2 = new ProjectPlugins
         {
-            ProjectId = 1, PluginId = 2, Plugin = archivedPlugin, Project = project, Url = "archived.com"
+            ProjectId = 1,
+            PluginId = 2,
+            Plugin = archivedPlugin,
+            Project = project,
+            Url = "archived.com",
         };
         _context.Projects.Add(project);
         _context.Plugins.AddRange(unarchivedPlugin, archivedPlugin);
@@ -218,14 +245,20 @@ public class PluginsRepositoryTest : TestsWithDatabase
             ProjectName = "Test Project",
             Slug = "test_project",
             ClientName = "Test Client", // Make sure this is set
-            BusinessUnit = "Test Business",
-            TeamNumber = 42,
-            Department = "Test Department"
         };
-        var archivedPlugin = new Plugin { Id = 1, PluginName = "Archived Plugin", IsArchived = true };
+        var archivedPlugin = new Plugin
+        {
+            Id = 1,
+            PluginName = "Archived Plugin",
+            IsArchived = true,
+        };
         var projectPluginRelation = new ProjectPlugins
         {
-            ProjectId = 1, PluginId = 1, Plugin = archivedPlugin, Project = project, Url = "archived.com"
+            ProjectId = 1,
+            PluginId = 1,
+            Plugin = archivedPlugin,
+            Project = project,
+            Url = "archived.com",
         };
         _context.Projects.Add(project);
         _context.Plugins.Add(archivedPlugin);
@@ -246,9 +279,6 @@ public class PluginsRepositoryTest : TestsWithDatabase
             ProjectName = "Test Project",
             Slug = "test_project",
             ClientName = "Test Client", // Make sure this is set
-            BusinessUnit = "Test Business",
-            TeamNumber = 42,
-            Department = "Test Department"
         };
         _context.Projects.Add(project);
         await _context.SaveChangesAsync();
@@ -267,14 +297,20 @@ public class PluginsRepositoryTest : TestsWithDatabase
             ProjectName = "Test Project",
             Slug = "test_project",
             ClientName = "Test Client", // Make sure this is set
-            BusinessUnit = "Test Business",
-            TeamNumber = 42,
-            Department = "Test Department"
         };
-        var archivedPlugin = new Plugin { Id = 1, PluginName = "Archived Plugin", IsArchived = true };
+        var archivedPlugin = new Plugin
+        {
+            Id = 1,
+            PluginName = "Archived Plugin",
+            IsArchived = true,
+        };
         var projectPluginRelation = new ProjectPlugins
         {
-            ProjectId = 1, PluginId = 1, Plugin = archivedPlugin, Project = project, Url = "archived.com"
+            ProjectId = 1,
+            PluginId = 1,
+            Plugin = archivedPlugin,
+            Project = project,
+            Url = "archived.com",
         };
         _context.Projects.Add(project);
         _context.Plugins.Add(archivedPlugin);
@@ -297,19 +333,34 @@ public class PluginsRepositoryTest : TestsWithDatabase
             ProjectName = "Test Project",
             Slug = "test_project",
             ClientName = "Test Client", // Make sure this is set
-            BusinessUnit = "Test Business",
-            TeamNumber = 42,
-            Department = "Test Department"
         };
-        var unarchivedPlugin = new Plugin { Id = 1, PluginName = "Unarchived Plugin", IsArchived = false };
-        var archivedPlugin = new Plugin { Id = 2, PluginName = "Archived Plugin", IsArchived = true };
+        var unarchivedPlugin = new Plugin
+        {
+            Id = 1,
+            PluginName = "Unarchived Plugin",
+            IsArchived = false,
+        };
+        var archivedPlugin = new Plugin
+        {
+            Id = 2,
+            PluginName = "Archived Plugin",
+            IsArchived = true,
+        };
         var projectPluginRelation1 = new ProjectPlugins
         {
-            ProjectId = 1, PluginId = 1, Plugin = unarchivedPlugin, Project = project, Url = "unarchived.com"
+            ProjectId = 1,
+            PluginId = 1,
+            Plugin = unarchivedPlugin,
+            Project = project,
+            Url = "unarchived.com",
         };
         var projectPluginRelation2 = new ProjectPlugins
         {
-            ProjectId = 1, PluginId = 2, Plugin = archivedPlugin, Project = project, Url = "archived.com"
+            ProjectId = 1,
+            PluginId = 2,
+            Plugin = archivedPlugin,
+            Project = project,
+            Url = "archived.com",
         };
         _context.Projects.Add(project);
         _context.Plugins.AddRange(unarchivedPlugin, archivedPlugin);
@@ -331,9 +382,6 @@ public class PluginsRepositoryTest : TestsWithDatabase
             ProjectName = "Test Project",
             Slug = "test_project",
             ClientName = "Test Client", // Make sure this is set
-            BusinessUnit = "Test Business",
-            TeamNumber = 42,
-            Department = "Test Department"
         };
         var project2 = new Project
         {
@@ -341,19 +389,29 @@ public class PluginsRepositoryTest : TestsWithDatabase
             ProjectName = "Test Project2",
             Slug = "test_project2",
             ClientName = "Test Client2", // Make sure this is set
-            BusinessUnit = "Test Business2",
-            TeamNumber = 37,
-            Department = "Test Department2"
         };
-        var unarchivedPlugin = new Plugin { Id = 1, PluginName = "Unarchived Plugin", IsArchived = false };
+        var unarchivedPlugin = new Plugin
+        {
+            Id = 1,
+            PluginName = "Unarchived Plugin",
+            IsArchived = false,
+        };
 
         var projectPluginRelation1 = new ProjectPlugins
         {
-            ProjectId = 1, PluginId = 1, Plugin = unarchivedPlugin, Project = project1, Url = "plugin1.com"
+            ProjectId = 1,
+            PluginId = 1,
+            Plugin = unarchivedPlugin,
+            Project = project1,
+            Url = "plugin1.com",
         };
         var projectPluginRelation2 = new ProjectPlugins
         {
-            ProjectId = 2, PluginId = 1, Plugin = unarchivedPlugin, Project = project2, Url = "plugin2.com"
+            ProjectId = 2,
+            PluginId = 1,
+            Plugin = unarchivedPlugin,
+            Project = project2,
+            Url = "plugin2.com",
         };
 
         _context.Projects.AddRange(project1, project2);
@@ -389,9 +447,6 @@ public class PluginsRepositoryTest : TestsWithDatabase
             Id = 1,
             ProjectName = "Test Project",
             ClientName = "Test Client",
-            BusinessUnit = "Test Business",
-            TeamNumber = 42,
-            Department = "Test Department",
             Slug = "testProject",
         };
         var project2 = new Project
@@ -399,20 +454,30 @@ public class PluginsRepositoryTest : TestsWithDatabase
             Id = 2,
             ProjectName = "Test Project2",
             ClientName = "Test Client2",
-            BusinessUnit = "Test Business2",
-            TeamNumber = 37,
-            Department = "Test Department2",
-            Slug = "testProject2"
+            Slug = "testProject2",
         };
-        var archivedPlugin = new Plugin { Id = 1, PluginName = "Unarchived Plugin", IsArchived = true };
+        var archivedPlugin = new Plugin
+        {
+            Id = 1,
+            PluginName = "Unarchived Plugin",
+            IsArchived = true,
+        };
 
         var projectPluginRelation1 = new ProjectPlugins
         {
-            ProjectId = 1, PluginId = 1, Plugin = archivedPlugin, Project = project1, Url = "plugin1.com"
+            ProjectId = 1,
+            PluginId = 1,
+            Plugin = archivedPlugin,
+            Project = project1,
+            Url = "plugin1.com",
         };
         var projectPluginRelation2 = new ProjectPlugins
         {
-            ProjectId = 2, PluginId = 1, Plugin = archivedPlugin, Project = project2, Url = "plugin2.com"
+            ProjectId = 2,
+            PluginId = 1,
+            Plugin = archivedPlugin,
+            Project = project2,
+            Url = "plugin2.com",
         };
 
         _context.Projects.AddRange(project1, project2);
@@ -430,10 +495,12 @@ public class PluginsRepositoryTest : TestsWithDatabase
         _context.Entry(project1).State = EntityState.Detached;
         _context.Entry(project2).State = EntityState.Detached;
 
-        var reloadedProject1 =
-            await _context.Projects.Include(p => p.ProjectPlugins).FirstOrDefaultAsync(p => p.Id == 1);
-        var reloadedProject2 =
-            await _context.Projects.Include(p => p.ProjectPlugins).FirstOrDefaultAsync(p => p.Id == 2);
+        var reloadedProject1 = await _context
+            .Projects.Include(p => p.ProjectPlugins)
+            .FirstOrDefaultAsync(p => p.Id == 1);
+        var reloadedProject2 = await _context
+            .Projects.Include(p => p.ProjectPlugins)
+            .FirstOrDefaultAsync(p => p.Id == 2);
         Assert.Multiple(() =>
         {
             Assert.That(reloadedProject1, Is.Not.Null);

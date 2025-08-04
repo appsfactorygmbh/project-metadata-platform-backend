@@ -32,7 +32,10 @@ public class LogsExceptionHandlerTest
     [TestCase(Action.ADDED_USER, "IdentityUser")]
     [TestCase(Action.UPDATED_USER, "IdentityUser")]
     [TestCase(Action.REMOVED_USER, "IdentityUser")]
-    public void Handle_LogsNotSupportedAction_ReturnsInternalServerError(Action action, string logType)
+    public void Handle_LogsNotSupportedAction_ReturnsInternalServerError(
+        Action action,
+        string logType
+    )
     {
         var exception = new LogActionNotSupportedException(action, logType);
 

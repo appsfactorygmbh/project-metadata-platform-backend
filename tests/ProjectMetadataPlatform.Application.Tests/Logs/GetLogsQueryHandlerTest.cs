@@ -37,8 +37,13 @@ public class GetLogsQueryHandlerTest
             Action = Action.UPDATED_PROJECT,
             Changes =
             [
-                new LogChange { Property = "Zitrone", OldValue = "Ungefaltet", NewValue = "Gefaltet" }
-            ]
+                new LogChange
+                {
+                    Property = "Zitrone",
+                    OldValue = "Ungefaltet",
+                    NewValue = "Gefaltet",
+                },
+            ],
         };
         var log2 = new Log
         {
@@ -50,8 +55,13 @@ public class GetLogsQueryHandlerTest
             Action = Action.UPDATED_PROJECT,
             Changes =
             [
-                new LogChange { Property = "Silizium", OldValue = "rein", NewValue = "dotiert" }
-            ]
+                new LogChange
+                {
+                    Property = "Silizium",
+                    OldValue = "rein",
+                    NewValue = "dotiert",
+                },
+            ],
         };
 
         _mockLogsRepo.Setup(r => r.GetAllLogs()).ReturnsAsync([log, log2]);
@@ -82,8 +92,13 @@ public class GetLogsQueryHandlerTest
             Action = Action.UPDATED_PROJECT,
             Changes =
             [
-                new LogChange { Property = "Zitrone", OldValue = "Ungefaltet", NewValue = "Gefaltet" }
-            ]
+                new LogChange
+                {
+                    Property = "Zitrone",
+                    OldValue = "Ungefaltet",
+                    NewValue = "Gefaltet",
+                },
+            ],
         };
 
         _mockLogsRepo.Setup(r => r.GetLogsForProject(1)).ReturnsAsync([log]);
@@ -110,13 +125,21 @@ public class GetLogsQueryHandlerTest
             Action = Action.UPDATED_PROJECT,
             Changes =
             [
-                new LogChange { Property = "d/dx", OldValue = "exp(x)", NewValue = "exp(x)" }
-            ]
+                new LogChange
+                {
+                    Property = "d/dx",
+                    OldValue = "exp(x)",
+                    NewValue = "exp(x)",
+                },
+            ],
         };
 
         _mockLogsRepo.Setup(r => r.GetLogsWithSearch("exp(x)")).ReturnsAsync([log]);
 
-        var result = await _handler.Handle(new GetLogsQuery(null, "exp(x)"), CancellationToken.None);
+        var result = await _handler.Handle(
+            new GetLogsQuery(null, "exp(x)"),
+            CancellationToken.None
+        );
         var logList = result.ToList();
 
         Assert.That(logList, Has.Count.EqualTo(1));
@@ -138,13 +161,21 @@ public class GetLogsQueryHandlerTest
             Action = Action.UPDATED_USER,
             Changes =
             [
-                new LogChange { Property = "flying", OldValue = "yes", NewValue = "no" }
-            ]
+                new LogChange
+                {
+                    Property = "flying",
+                    OldValue = "yes",
+                    NewValue = "no",
+                },
+            ],
         };
 
         _mockLogsRepo.Setup(r => r.GetLogsForUser("Newton")).ReturnsAsync([log]);
 
-        var result = await _handler.Handle(new GetLogsQuery(null, null, "Newton"), CancellationToken.None);
+        var result = await _handler.Handle(
+            new GetLogsQuery(null, null, "Newton"),
+            CancellationToken.None
+        );
         var logList = result.ToList();
 
         Assert.That(logList, Has.Count.EqualTo(1));
@@ -167,13 +198,21 @@ public class GetLogsQueryHandlerTest
             GlobalPluginName = "Gravity",
             Changes =
             [
-                new LogChange { Property = "discovered", OldValue = "no", NewValue = "yes" }
-            ]
+                new LogChange
+                {
+                    Property = "discovered",
+                    OldValue = "no",
+                    NewValue = "yes",
+                },
+            ],
         };
 
         _mockLogsRepo.Setup(r => r.GetLogsForGlobalPlugin(42)).ReturnsAsync([log]);
 
-        var result = await _handler.Handle(new GetLogsQuery(null, null, null, 42), CancellationToken.None);
+        var result = await _handler.Handle(
+            new GetLogsQuery(null, null, null, 42),
+            CancellationToken.None
+        );
         var logList = result.ToList();
 
         Assert.That(logList, Has.Count.EqualTo(1));
@@ -185,10 +224,14 @@ public class GetLogsQueryHandlerTest
     [Test]
     public void GetLogs_ThrowsExceptionWhenProjectNotFound_Test()
     {
-        _mockLogsRepo.Setup(m => m.GetLogsForProject(It.IsAny<int>())).ThrowsAsync(new InvalidOperationException());
+        _mockLogsRepo
+            .Setup(m => m.GetLogsForProject(It.IsAny<int>()))
+            .ThrowsAsync(new InvalidOperationException());
 
         var request = new GetLogsQuery(404);
-        Assert.ThrowsAsync<InvalidOperationException>(async () => await _handler.Handle(request, It.IsAny<CancellationToken>()));
+        Assert.ThrowsAsync<InvalidOperationException>(async () =>
+            await _handler.Handle(request, It.IsAny<CancellationToken>())
+        );
 
         _mockLogsRepo.Verify(m => m.GetLogsForProject(404), Times.Once);
     }

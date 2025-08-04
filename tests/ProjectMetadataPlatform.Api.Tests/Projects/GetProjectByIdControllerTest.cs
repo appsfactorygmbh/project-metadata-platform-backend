@@ -15,20 +15,23 @@ namespace ProjectMetadataPlatform.Api.Tests.Projects;
 [TestFixture]
 public class GetProjectByIdControllerTest
 {
-
     [SetUp]
     public void Setup()
     {
         _mediator = new Mock<IMediator>();
         _controller = new ProjectsController(_mediator.Object);
     }
+
     private ProjectsController _controller;
     private Mock<IMediator> _mediator;
 
     [Test]
     public void MediatorThrowsExceptionTest()
     {
-        _mediator.Setup(mediator => mediator.Send(It.IsAny<GetProjectQuery>(), It.IsAny<CancellationToken>()))
+        _mediator
+            .Setup(mediator =>
+                mediator.Send(It.IsAny<GetProjectQuery>(), It.IsAny<CancellationToken>())
+            )
             .ThrowsAsync(new InvalidDataException("An error message"));
         Assert.ThrowsAsync<InvalidDataException>(() => _controller.Get(1));
     }
@@ -43,15 +46,15 @@ public class GetProjectByIdControllerTest
             ProjectName = "MetaDataPlatform",
             Slug = "metadataplatform",
             ClientName = "Appsfactory",
-            BusinessUnit = "BusinessUnit",
-            TeamNumber = 200,
-            Department = "Security",
             OfferId = "1023",
             Company = "Charlies Schokoladenfabrik",
             CompanyState = CompanyState.EXTERNAL,
-            IsmsLevel = SecurityLevel.VERY_HIGH
+            IsmsLevel = SecurityLevel.VERY_HIGH,
         };
-        _mediator.Setup(m => m.Send(It.Is<GetProjectQuery>(q => q.Id == 50), It.IsAny<CancellationToken>()))
+        _mediator
+            .Setup(m =>
+                m.Send(It.Is<GetProjectQuery>(q => q.Id == 50), It.IsAny<CancellationToken>())
+            )
             .ReturnsAsync(projectsResponseContent);
 
         // act
@@ -73,9 +76,6 @@ public class GetProjectByIdControllerTest
             Assert.That(project.ProjectName, Is.EqualTo("MetaDataPlatform"));
             Assert.That(project.Slug, Is.EqualTo("metadataplatform"));
             Assert.That(project.ClientName, Is.EqualTo("Appsfactory"));
-            Assert.That(project.BusinessUnit, Is.EqualTo("BusinessUnit"));
-            Assert.That(project.TeamNumber, Is.EqualTo(200));
-            Assert.That(project.Department, Is.EqualTo("Security"));
             Assert.That(project.OfferId, Is.EqualTo("1023"));
             Assert.That(project.Company, Is.EqualTo("Charlies Schokoladenfabrik"));
             Assert.That(project.CompanyState, Is.EqualTo(CompanyState.EXTERNAL));

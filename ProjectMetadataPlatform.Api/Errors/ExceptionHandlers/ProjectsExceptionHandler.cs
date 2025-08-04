@@ -7,7 +7,7 @@ namespace ProjectMetadataPlatform.Api.Errors.ExceptionHandlers;
 /// <summary>
 /// Handles exceptions related to projects in the Project Metadata Platform API.
 /// </summary>
-public class ProjectsExceptionHandler: ControllerBase, IExceptionHandler<ProjectException>
+public class ProjectsExceptionHandler : ControllerBase, IExceptionHandler<ProjectException>
 {
     /// <summary>
     /// Handles a specific project exception and returns an appropriate HTTP response.
@@ -18,8 +18,10 @@ public class ProjectsExceptionHandler: ControllerBase, IExceptionHandler<Project
     {
         return exception switch
         {
-            ProjectNotArchivedException projectNotArchivedException => BadRequest(new ErrorResponse(projectNotArchivedException.Message)),
-            _ => null
+            ProjectNotArchivedException projectNotArchivedException => BadRequest(
+                new ErrorResponse(projectNotArchivedException.Message)
+            ),
+            _ => null,
         };
     }
 }

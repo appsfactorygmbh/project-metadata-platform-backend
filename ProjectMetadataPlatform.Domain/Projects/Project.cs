@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using ProjectMetadataPlatform.Domain.Logs;
 using ProjectMetadataPlatform.Domain.Plugins;
+using ProjectMetadataPlatform.Domain.Teams;
 
 namespace ProjectMetadataPlatform.Domain.Projects;
 
@@ -30,21 +31,6 @@ public class Project
     public required string ClientName { get; set; }
 
     /// <summary>
-    /// Gets or sets the business unit associated with the project. This property is required.
-    /// </summary>
-    public required string BusinessUnit { get; set; }
-
-    /// <summary>
-    /// Gets or sets the team number associated with the project. This property is required.
-    /// </summary>
-    public required int TeamNumber { get; set; }
-
-    /// <summary>
-    /// Gets or sets the department associated with the project. This property is required.
-    /// </summary>
-    public required string Department { get; set; }
-
-    /// <summary>
     /// Is used for the many-to-many relation in EF core.
     /// </summary>
     public ICollection<ProjectPlugins>? ProjectPlugins { get; set; }
@@ -55,6 +41,16 @@ public class Project
     public ICollection<Log>? Logs { get; set; }
 
     /// <summary>
+    /// The team that is responsible for the project. It is a many to one relationship. A project has one team. A team can work on multiple projects.
+    /// </summary>
+    public Team? Team { get; set; }
+
+    /// <summary>
+    /// The team id of the responsible team. Used for many to one relationship.
+    /// </summary>
+    public int? TeamId { get; set; }
+
+    /// <summary>
     /// A boolean indicating if a plugin is archived/deleted.
     /// </summary>
     public bool IsArchived { get; set; }
@@ -62,7 +58,7 @@ public class Project
     /// <summary>
     /// Internal id of the offer associated with the project.
     /// </summary>
-    public string OfferId { get; set; } = "";
+    public string? OfferId { get; set; }
 
     /// <summary>
     /// The company that is responsible for the project.

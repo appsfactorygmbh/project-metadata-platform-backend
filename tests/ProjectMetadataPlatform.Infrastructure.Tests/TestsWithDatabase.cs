@@ -28,11 +28,13 @@ public class TestsWithDatabase
     {
         return new ProjectMetadataPlatformDbContext(
             new DbContextOptionsBuilder<ProjectMetadataPlatformDbContext>()
-                .UseSqlite("Datasource=unittest-db.db").Options);
+                .UseSqlite("Datasource=unittest-db.db")
+                .Options
+        );
     }
 
     /// <summary>
-    ///     This method deletes the initially loaded Data from SeedData.
+    /// This method deletes the initially loaded Data from SeedData.
     /// </summary>
     /// <param name="context"></param>
     /// <returns>Database context</returns>

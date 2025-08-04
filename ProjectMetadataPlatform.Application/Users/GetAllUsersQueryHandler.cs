@@ -2,10 +2,11 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using ProjectMetadataPlatform.Application.Interfaces;
 using Microsoft.AspNetCore.Identity;
+using ProjectMetadataPlatform.Application.Interfaces;
 
 namespace ProjectMetadataPlatform.Application.Users;
+
 /// <summary>
 /// Query for retrieving all users.
 /// </summary>
@@ -24,7 +25,10 @@ public class GetAllUsersQueryHandler : IRequestHandler<GetAllUsersQuery, IEnumer
     /// <summary>
     /// Handles the request to retrieve all users.
     /// </summary>
-    public async Task<IEnumerable<IdentityUser>> Handle(GetAllUsersQuery request, CancellationToken cancellationToken)
+    public async Task<IEnumerable<IdentityUser>> Handle(
+        GetAllUsersQuery request,
+        CancellationToken cancellationToken
+    )
     {
         return await _usersRepository.GetAllUsersAsync();
     }

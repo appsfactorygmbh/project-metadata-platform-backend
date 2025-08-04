@@ -1,14 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ProjectMetadataPlatform.Application.Interfaces;
-using ProjectMetadataPlatform.Infrastructure.DataAccess;
-using Microsoft.AspNetCore.Identity;
-using System.Globalization;
 using ProjectMetadataPlatform.Domain.Auth;
 using ProjectMetadataPlatform.Domain.Errors.UserException;
+using ProjectMetadataPlatform.Infrastructure.DataAccess;
 
 namespace ProjectMetadataPlatform.Infrastructure.Users;
 
@@ -19,12 +19,17 @@ public class UsersRepository : RepositoryBase<IdentityUser>, IUsersRepository
 {
     private readonly UserManager<IdentityUser> _userManager;
     private readonly ProjectMetadataPlatformDbContext _context;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="UsersRepository" /> class.
     /// </summary>
     /// <param name="dbContext">The database context for accessing project data.</param>
     /// <param name="userManager">Manager for users of the type user.</param>
-    public UsersRepository(ProjectMetadataPlatformDbContext dbContext,UserManager<IdentityUser> userManager) : base(dbContext)
+    public UsersRepository(
+        ProjectMetadataPlatformDbContext dbContext,
+        UserManager<IdentityUser> userManager
+    )
+        : base(dbContext)
     {
         _userManager = userManager;
         _context = dbContext;
@@ -57,9 +62,7 @@ public class UsersRepository : RepositoryBase<IdentityUser>, IUsersRepository
     /// <returns>Id of the created User.</returns>
     public async Task<string> CreateUserAsync(IdentityUser user, string password)
     {
-        var userIds = await _context.Users
-            .Select(u => u.Id)
-            .ToListAsync();
+        var userIds = await _context.Users.Select(u => u.Id).ToListAsync();
 
         var maxId = userIds
             .Select(id => int.TryParse(id, out var parsedId) ? parsedId : 0)
@@ -70,8 +73,9 @@ public class UsersRepository : RepositoryBase<IdentityUser>, IUsersRepository
 
         var identityResult = await _userManager.CreateAsync(user, password);
         return identityResult.Errors.Any(e => e.Code == "DuplicateUserName")
-            ? throw new UserAlreadyExistsException()
-            : !identityResult.Succeeded ? throw new UserCouldNotBeCreatedException(identityResult) : user.Id;
+                ? throw new UserAlreadyExistsException()
+            : !identityResult.Succeeded ? throw new UserCouldNotBeCreatedException(identityResult)
+            : user.Id;
     }
 
     /// <summary>
@@ -91,11 +95,15 @@ public class UsersRepository : RepositoryBase<IdentityUser>, IUsersRepository
     /// <returns>The stored user.</returns>
     public async Task<IdentityUser> StoreUser(IdentityUser user)
     {
-        var identityResult = user.Id == "" ? await _userManager.CreateAsync(user) : await _userManager.UpdateAsync(user);
+        var identityResult =
+            user.Id == ""
+                ? await _userManager.CreateAsync(user)
+                : await _userManager.UpdateAsync(user);
 
         return identityResult.Errors.Any(e => e.Code == "DuplicateUserName")
-            ? throw new UserAlreadyExistsException()
-            : !identityResult.Succeeded ? throw new UserCouldNotBeCreatedException(identityResult) : user;
+                ? throw new UserAlreadyExistsException()
+            : !identityResult.Succeeded ? throw new UserCouldNotBeCreatedException(identityResult)
+            : user;
     }
 
     /// <summary>
@@ -122,8 +130,13 @@ public class UsersRepository : RepositoryBase<IdentityUser>, IUsersRepository
     public async Task<bool> CheckPasswordFormat(string password)
     {
         var passwordValidator = new PasswordValidator<IdentityUser>();
-        var identityResult = await passwordValidator.ValidateAsync(_userManager, new IdentityUser(), password);
-        return !identityResult.Succeeded ? throw new UserInvalidPasswordFormatException(identityResult) : true;
-
+        var identityResult = await passwordValidator.ValidateAsync(
+            _userManager,
+            new IdentityUser(),
+            password
+        );
+        return !identityResult.Succeeded
+            ? throw new UserInvalidPasswordFormatException(identityResult)
+            : true;
     }
 }
