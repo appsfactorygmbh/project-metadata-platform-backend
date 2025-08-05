@@ -54,6 +54,7 @@ echo "--> Secrets loaded and validated successfully."
 # --- Deploy with Docker Compose ---
 echo "--> Starting deployment with Docker Compose..."
 
-docker-compose -f docker-compose.prod.yml up -d
+docker compose -f ~/pmp-backend/docker-compose-production.yml pull
+docker compose -f ~/pmp-backend/docker-compose-production.yml up -d
 
 echo "--> Deployment complete."
