@@ -65,7 +65,7 @@ jobs:
           username: ${{ secrets.PROD_SSH_USER }}
           key: ${{ secrets.PROD_SSH_KEY }}
           source: |
-            docker-compose.prod.yml
+            docker-compose-production.yml
             deploy-prod.sh
           target: "~/pmp-backend/"
 
