@@ -128,7 +128,7 @@ When changing the domain models or their configurations in the infrastructure la
     ```
 
 6. Commit the generated migration files. The files can be found in the `ProjectMetadataPlatform.Infrastructure/Migrations` directory.
-7. Push the changes to gitlab and create a merge request using the `DB-Migration` description template.
+7. Push the changes to github and create a merge request.
 8. Run the following command to create the migration script, then add it to the merge request description:
 
     With powershell:
@@ -143,8 +143,4 @@ When changing the domain models or their configurations in the infrastructure la
      sh ./dotnet_ef.sh migrations script <name-of-the-last-migration>
     ```
 
-9. Run the migration script on the staging database once the merge request is approved and merged.
-
-### Connecting to the database
-
-See https://gitlab.dit.htwk-leipzig.de/projekt2024_A_Appsfactory_Project_Metadata_Platform/backend/-/wikis/home/DB-Verbindung
+9. Run the migration script on the database once the merge request is approved and merged onto main.
