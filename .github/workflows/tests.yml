@@ -62,7 +62,8 @@ jobs:
             /o:"$SONAR_ORGANIZATION_KEY" \
             /d:sonar.login="${{ secrets.SONAR_TOKEN }}" \
             /d:sonar.host.url="https://sonarcloud.io" \
-            /d:sonar.cs.cobertura.reportsPaths="coverage.xml" \
+            /d:sonar.cs.vscoveragexml.reportsPaths="coverage.xml" \
+            /d:sonar.exclusions=/ProjectMetadataPlatform.Infrastructure/Migrations/** \
             /d:sonar.pullrequest.key="${{ github.event.number }}" \
             /d:sonar.pullrequest.branch="${{ github.head_ref }}" \
             /d:sonar.pullrequest.base="${{ github.base_ref }}" \
@@ -79,7 +80,8 @@ jobs:
             /o:"$SONAR_ORGANIZATION_KEY" \
             /d:sonar.login="${{ secrets.SONAR_TOKEN }}" \
             /d:sonar.host.url="https://sonarcloud.io" \
-            /d:sonar.cs.cobertura.reportsPaths="coverage.xml"
+            /d:sonar.cs.vscoveragexml.reportsPaths="coverage.xml" \
+            /d:sonar.exclusions=/ProjectMetadataPlatform.Infrastructure/Migrations/** \
         env:
           SONAR_PROJECT_KEY: ${{ env.SONAR_PROJECT_KEY }}
           SONAR_ORGANIZATION_KEY: ${{ env.SONAR_ORGANIZATION_KEY }}
