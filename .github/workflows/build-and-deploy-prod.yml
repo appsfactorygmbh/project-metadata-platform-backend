@@ -58,13 +58,15 @@ jobs:
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
 
-      - name: Copy compose file to VM
+      - name: Copy deployment files to VM
         uses: appleboy/scp-action@v1.0.0
         with:
           host: ${{ secrets.PROD_SSH_HOST }}
           username: ${{ secrets.PROD_SSH_USER }}
           key: ${{ secrets.PROD_SSH_KEY }}
-          source: "docker-compose-production.yml"
+          source: |
+            docker-compose.prod.yml
+            deploy-prod.sh
           target: "~/pmp-backend/"
 
       - name: Deploy on VM via SSH
@@ -73,18 +75,12 @@ jobs:
           host: ${{ secrets.PROD_SSH_HOST }}
           username: ${{ secrets.PROD_SSH_USER }}
           key: ${{ secrets.PROD_SSH_KEY }}
-          envs: PMP_DB_USER,PMP_DB_PASSWORD,PMP_DB_NAME,JWT_ISSUER_SIGNING_KEY,PMP_ADMIN_PASSWORD
+          envs: VAULT_ADDR,VAULT_TOKEN
           script: |
-            # Replace placeholders in the compose file with secret values
-            sed -i -e "s/{PMP_DB_USER}/${PMP_DB_USER}/g" -e "s/{PMP_DB_PASSWORD}/${PMP_DB_PASSWORD}/g" -e "s/{PMP_DB_NAME}/${PMP_DB_NAME}/g" -e "s/{JWT_ISSUER_SIGNING_KEY}/${JWT_ISSUER_SIGNING_KEY}/g" -e "s/{PMP_ADMIN_PASSWORD}/${PMP_ADMIN_PASSWORD}/g" ~/pmp-backend/docker-compose-production.yml
+            # Make the script executable
+            chmod +x ~/pmp-backend/deploy-prod.sh
 
-            # Pull the latest prod image and restart the services
-            docker compose -f ~/pmp-backend/docker-compose-production.yml pull
-            docker compose -f ~/pmp-backend/docker-compose-production.yml up -d
+            bash ~/pmp-backend/deploy-prod.sh
         env:
-          # These secrets are passed as environment variables to the sed command
-          PMP_DB_USER: ${{ secrets.PMP_DB_USER }}
-          PMP_DB_PASSWORD: ${{ secrets.PMP_DB_PASSWORD }}
-          PMP_DB_NAME: ${{ secrets.PMP_DB_NAME }}
-          JWT_ISSUER_SIGNING_KEY: ${{ secrets.JWT_ISSUER_SIGNING_KEY }}
-          PMP_ADMIN_PASSWORD: ${{ secrets.PMP_ADMIN_PASSWORD }}
+          VAULT_ADDR: ${{ secrets.VAULT_ADDR }}
+          VAULT_TOKEN: ${{ secrets.VAULT_TOKEN }}
