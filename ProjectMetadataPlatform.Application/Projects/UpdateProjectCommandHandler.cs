@@ -232,7 +232,17 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
             changes.Add(change);
             project.IsmsLevel = request.IsmsLevel;
         }
-
+        if (project.Notes != request.Notes)
+        {
+            var change = new LogChange
+            {
+                Property = nameof(Project.Notes),
+                OldValue = project.Notes.Length > 20 ? project.Notes[..20] + "..." : project.Notes,
+                NewValue = request.Notes.Length > 20 ? request.Notes[..20] + "..." : request.Notes,
+            };
+            changes.Add(change);
+            project.Notes = request.Notes;
+        }
         if (project.IsArchived != request.IsArchived)
         {
             var archivedChanges = new List<LogChange>();

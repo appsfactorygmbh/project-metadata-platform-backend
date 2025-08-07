@@ -28,5 +28,6 @@ public record UpdateProjectCommand(
     int? TeamId,
     SecurityLevel IsmsLevel,
     List<ProjectPlugins> Plugins,
-    bool IsArchived
+    bool IsArchived,
+    string Notes
 ) : IRequest<int>;

@@ -93,6 +93,7 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
             IsmsLevel = request.IsmsLevel,
             ProjectPlugins = request.Plugins,
             TeamId = request.TeamId,
+            Notes = request.Notes ?? string.Empty,
         };
 
         await _projectsRepository.AddProjectAsync(project);
@@ -151,6 +152,18 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
                 {
                     OldValue = "",
                     NewValue = await _teamRepository.RetrieveNameForIdAsync(project.TeamId.Value),
+                    Property = "Team",
+                }
+            );
+        }
+        if (project.Notes != string.Empty)
+        {
+            changes.Add(
+                new()
+                {
+                    OldValue = "",
+                    NewValue =
+                        project.Notes.Length > 20 ? project.Notes[..20] + "..." : project.Notes,
                     Property = "Team",
                 }
             );

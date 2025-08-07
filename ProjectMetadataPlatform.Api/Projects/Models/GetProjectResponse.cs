@@ -27,5 +27,6 @@ public record GetProjectResponse(
     bool IsArchived,
     GetTeamResponse? Team,
     CompanyState CompanyState,
-    SecurityLevel IsmsLevel
+    SecurityLevel IsmsLevel,
+    string Notes
 );

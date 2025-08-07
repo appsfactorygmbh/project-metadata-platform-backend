@@ -24,5 +24,6 @@ public record CreateProjectCommand(
     CompanyState CompanyState,
     int? TeamId,
     SecurityLevel IsmsLevel,
-    List<ProjectPlugins> Plugins
+    List<ProjectPlugins> Plugins,
+    string Notes
 ) : IRequest<int>;

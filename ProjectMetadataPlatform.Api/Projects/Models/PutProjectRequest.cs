@@ -23,6 +23,7 @@ public record PutProjectRequest(
     int? TeamId,
     CompanyState CompanyState,
     SecurityLevel IsmsLevel,
+    string Notes,
     List<UpdateProjectPluginRequest>? PluginList = null,
     bool IsArchived = false
 );
