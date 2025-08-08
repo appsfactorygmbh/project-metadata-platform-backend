@@ -16,6 +16,7 @@ namespace ProjectMetadataPlatform.Application.Projects;
 /// <param name="TeamId">The id of the team associated with the project.</param>
 /// <param name="IsmsLevel">Security Level of project.</param>
 /// <param name="Plugins">The List of the projects plugins.</param>
+/// <param name="Notes">Additonal Project Notes</param>
 public record CreateProjectCommand(
     string ProjectName,
     string ClientName,
