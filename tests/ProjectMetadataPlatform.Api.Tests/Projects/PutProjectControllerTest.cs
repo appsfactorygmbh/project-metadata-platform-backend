@@ -45,7 +45,8 @@ public class PutProjectControllerTest
             TeamId: null,
             CompanyState: CompanyState.EXTERNAL,
             IsmsLevel: SecurityLevel.NORMAL,
-            PluginList: [new UpdateProjectPluginRequest("Url", "PluginName", 3)]
+            PluginList: [new UpdateProjectPluginRequest("Url", "PluginName", 3)],
+            Notes: "Example Notes"
         );
         var result = await _controller.Put(request);
         Assert.That(result.Result, Is.InstanceOf<CreatedResult>());
@@ -75,6 +76,7 @@ public class PutProjectControllerTest
                     && command.Plugins.Single().PluginId == 3
                     && command.Plugins.Single().Url == "Url"
                     && command.Plugins.Single().DisplayName == "PluginName"
+                    && command.Notes == "Example Notes"
                 ),
                 It.IsAny<CancellationToken>()
             )
@@ -95,7 +97,8 @@ public class PutProjectControllerTest
             Company: "Example Company",
             TeamId: null,
             CompanyState: CompanyState.EXTERNAL,
-            IsmsLevel: SecurityLevel.NORMAL
+            IsmsLevel: SecurityLevel.NORMAL,
+            Notes: "Example Notes"
         );
 
         await _controller.Put(request);
@@ -109,6 +112,7 @@ public class PutProjectControllerTest
                     && command.Company == "Example Company"
                     && command.CompanyState == CompanyState.EXTERNAL
                     && command.IsmsLevel == SecurityLevel.NORMAL
+                    && command.Notes == "Example Notes"
                 ),
                 It.IsAny<CancellationToken>()
             )
@@ -129,7 +133,8 @@ public class PutProjectControllerTest
             Company: "Example Company",
             TeamId: null,
             CompanyState: CompanyState.EXTERNAL,
-            IsmsLevel: SecurityLevel.NORMAL
+            IsmsLevel: SecurityLevel.NORMAL,
+            Notes: "Example Notes"
         );
         await _controller.Put(request, 1);
         _mediator.Verify(mediator =>
@@ -142,6 +147,7 @@ public class PutProjectControllerTest
                     && command.Company == "Example Company"
                     && command.CompanyState == CompanyState.EXTERNAL
                     && command.IsmsLevel == SecurityLevel.NORMAL
+                    && command.Notes == "Example Notes"
                 ),
                 It.IsAny<CancellationToken>()
             )
@@ -158,7 +164,8 @@ public class PutProjectControllerTest
             Company: "",
             TeamId: null,
             CompanyState: CompanyState.EXTERNAL,
-            IsmsLevel: SecurityLevel.NORMAL
+            IsmsLevel: SecurityLevel.NORMAL,
+            Notes: ""
         );
 
         var result = await _controller.Put(request);
@@ -181,7 +188,8 @@ public class PutProjectControllerTest
             Company: "Côte-d'Or",
             TeamId: null,
             CompanyState: CompanyState.EXTERNAL,
-            IsmsLevel: SecurityLevel.NORMAL
+            IsmsLevel: SecurityLevel.NORMAL,
+            Notes: "Example Notes"
         );
 
         Assert.ThrowsAsync<ProjectSlugAlreadyExistsException>(() => _controller.Put(request));
@@ -202,7 +210,8 @@ public class PutProjectControllerTest
             Company: "d",
             TeamId: null,
             CompanyState: CompanyState.EXTERNAL,
-            IsmsLevel: SecurityLevel.NORMAL
+            IsmsLevel: SecurityLevel.NORMAL,
+            Notes: "Example Notes"
         );
 
         Assert.ThrowsAsync<InvalidOperationException>(() => _controller.Put(request));
@@ -224,7 +233,8 @@ public class PutProjectControllerTest
             Company: "d",
             TeamId: null,
             CompanyState: CompanyState.INTERNAL,
-            IsmsLevel: SecurityLevel.NORMAL
+            IsmsLevel: SecurityLevel.NORMAL,
+            Notes: "Example Notes"
         );
 
         Assert.ThrowsAsync<InvalidDataException>(() => _controller.Put(request));
@@ -244,7 +254,8 @@ public class PutProjectControllerTest
             TeamId: null,
             CompanyState: CompanyState.EXTERNAL,
             IsmsLevel: SecurityLevel.NORMAL,
-            PluginList: [new UpdateProjectPluginRequest("Url", "PluginName", 3)]
+            PluginList: [new UpdateProjectPluginRequest("Url", "PluginName", 3)],
+            Notes: "Example Notes"
         );
         var result = await _controller.Put(request, 1);
 
@@ -277,6 +288,7 @@ public class PutProjectControllerTest
                     && command.Plugins.Single().Url == "Url"
                     && command.Plugins.Single().DisplayName == "PluginName"
                     && command.Plugins.Single().ProjectId == 1
+                    && command.Notes == "Example Notes"
                 ),
                 It.IsAny<CancellationToken>()
             )
@@ -298,6 +310,7 @@ public class PutProjectControllerTest
             CompanyState: CompanyState.EXTERNAL,
             IsmsLevel: SecurityLevel.NORMAL,
             PluginList: [new UpdateProjectPluginRequest("Url", "PluginName", 3)],
+            Notes: "Example Notes",
             IsArchived: true
         );
 
@@ -330,7 +343,8 @@ public class PutProjectControllerTest
                     && command.Plugins.Single().Url == "Url"
                     && command.Plugins.Single().DisplayName == "PluginName"
                     && command.Plugins.Single().ProjectId == 1
-                    && command.IsArchived == true
+                    && command.Notes == "Example Notes"
+                    && command.IsArchived
                 ),
                 It.IsAny<CancellationToken>()
             )
@@ -355,7 +369,8 @@ public class PutProjectControllerTest
             TeamId: 2,
             CompanyState: CompanyState.INTERNAL,
             IsmsLevel: SecurityLevel.HIGH,
-            PluginList: [new UpdateProjectPluginRequest("UpdatedUrl", "UpdatedPluginName", 4)]
+            PluginList: [new UpdateProjectPluginRequest("UpdatedUrl", "UpdatedPluginName", 4)],
+            Notes: "Updated Notes"
         );
         var updateResult = await _controller.Put(updateRequest, "updatedproject");
 
@@ -385,6 +400,7 @@ public class PutProjectControllerTest
                     && command.Plugins.Single().PluginId == 4
                     && command.Plugins.Single().Url == "UpdatedUrl"
                     && command.Plugins.Single().DisplayName == "UpdatedPluginName"
+                    && command.Notes == "Updated Notes"
                 ),
                 It.IsAny<CancellationToken>()
             )
@@ -408,7 +424,8 @@ public class PutProjectControllerTest
             PluginList: new List<UpdateProjectPluginRequest>
             {
                 new UpdateProjectPluginRequest("UpdatedUrl", "UpdatedPluginName", 4),
-            }
+            },
+            Notes: "Updated Notes"
         );
         Assert.ThrowsAsync<ProjectNotFoundException>(() =>
             _controller.Put(updateRequest, "updatedproject")
@@ -434,6 +451,7 @@ public class PutProjectControllerTest
             CompanyState: CompanyState.INTERNAL,
             IsmsLevel: SecurityLevel.HIGH,
             PluginList: [new UpdateProjectPluginRequest("UpdatedUrl", "UpdatedPluginName", 4)],
+            Notes: "Updated Notes",
             IsArchived: true
         );
         var updateResult = await _controller.Put(updateRequest, "updatedproject");
@@ -464,7 +482,8 @@ public class PutProjectControllerTest
                     && command.Plugins.Single().PluginId == 4
                     && command.Plugins.Single().Url == "UpdatedUrl"
                     && command.Plugins.Single().DisplayName == "UpdatedPluginName"
-                    && command.IsArchived == true
+                    && command.Notes == "Updated Notes"
+                    && command.IsArchived
                 ),
                 It.IsAny<CancellationToken>()
             )

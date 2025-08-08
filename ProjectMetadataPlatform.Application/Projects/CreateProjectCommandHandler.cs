@@ -164,7 +164,7 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
                     OldValue = "",
                     NewValue =
                         project.Notes.Length > 20 ? project.Notes[..20] + "..." : project.Notes,
-                    Property = "Team",
+                    Property = "Notes",
                 }
             );
         }

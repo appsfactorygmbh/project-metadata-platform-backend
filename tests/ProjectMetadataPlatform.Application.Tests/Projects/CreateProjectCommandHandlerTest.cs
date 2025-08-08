@@ -73,7 +73,8 @@ public class CreateProjectCommandHandlerTest
                 CompanyState: CompanyState.EXTERNAL,
                 TeamId: null,
                 IsmsLevel: SecurityLevel.HIGH,
-                Plugins: plugins
+                Plugins: plugins,
+                Notes: "Example Notes"
             ),
             It.IsAny<CancellationToken>()
         );
@@ -120,7 +121,8 @@ public class CreateProjectCommandHandlerTest
                     CompanyState: CompanyState.EXTERNAL,
                     TeamId: null,
                     IsmsLevel: SecurityLevel.HIGH,
-                    Plugins: plugins
+                    Plugins: plugins,
+                    Notes: "Example Notes"
                 ),
                 It.IsAny<CancellationToken>()
             );
