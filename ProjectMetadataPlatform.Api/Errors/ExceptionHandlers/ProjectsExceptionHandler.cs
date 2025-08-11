@@ -21,6 +21,9 @@ public class ProjectsExceptionHandler : ControllerBase, IExceptionHandler<Projec
             ProjectNotArchivedException projectNotArchivedException => BadRequest(
                 new ErrorResponse(projectNotArchivedException.Message)
             ),
+            ProjectNotesSizeException projectNotesSizeException => BadRequest(
+                new ErrorResponse(projectNotesSizeException.Message)
+            ),
             _ => null,
         };
     }

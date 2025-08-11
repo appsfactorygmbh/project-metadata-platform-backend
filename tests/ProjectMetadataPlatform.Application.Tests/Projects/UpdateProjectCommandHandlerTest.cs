@@ -1232,4 +1232,50 @@ public class UpdateProjectCommandHandlerTest
 
         Assert.That(ex.Message, Is.EqualTo("A Project with this slug already exists: new project"));
     }
+
+    [Test]
+    public void ProjectNotesToLong_Test()
+    {
+        var project = new Project
+        {
+            Id = 1,
+            ProjectName = "Example Project",
+            Slug = "example project",
+            ClientName = "Example Client",
+            OfferId = "Offer A",
+            Company = "Company A",
+            CompanyState = CompanyState.EXTERNAL,
+            IsmsLevel = SecurityLevel.VERY_HIGH,
+            ProjectPlugins = [],
+            Notes = "Example Notes",
+        };
+
+        var updateCommand = new UpdateProjectCommand(
+            ProjectName: "New Project",
+            ClientName: project.ClientName,
+            OfferId: project.OfferId,
+            Company: project.Company,
+            CompanyState: project.CompanyState,
+            IsmsLevel: project.IsmsLevel,
+            Id: project.Id,
+            Plugins: [],
+            IsArchived: false,
+            Notes: new string('a', 501),
+            TeamId: null // Assuming TeamId can be null
+        );
+
+        _mockProjectRepo.Setup(m => m.GetProjectWithPluginsAsync(1)).ReturnsAsync(project);
+        _mockSlugHelper.Setup(m => m.GenerateSlug(It.IsAny<string>())).Returns("new project");
+        _mockSlugHelper.Setup(m => m.CheckProjectSlugExists("new project")).ReturnsAsync(false);
+
+        var ex = Assert.ThrowsAsync<ProjectNotesSizeException>(async () =>
+        {
+            await _handler.Handle(updateCommand, CancellationToken.None);
+        });
+
+        Assert.That(
+            ex.Message,
+            Is.EqualTo("The project notes are 501 chars long. Maximum allowed is 500 chars.")
+        );
+    }
 }

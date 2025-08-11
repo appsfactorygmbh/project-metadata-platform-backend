@@ -153,4 +153,64 @@ public class CreateProjectCommandHandlerTest
         );
         _mockProjectRepo.Verify(m => m.AddProjectAsync(It.IsAny<Project>()), Times.Never);
     }
+
+    [Test]
+    public void CreateProject_Test_ThrowsExceptionWhenNotesTooLong()
+    {
+        var plugins = new List<ProjectPlugins>();
+        plugins.Add(new ProjectPlugins { Url = "https://example.com", PluginId = 200 });
+        _mockPluginRepo.Setup(m => m.CheckPluginExists(It.IsAny<int>())).ReturnsAsync(true);
+        _mockSlugHelper.Setup(m => m.GenerateSlug(It.IsAny<string>())).Returns("example_project");
+        _mockSlugHelper
+            .Setup(m => m.GetProjectIdBySlug("example_project"))
+            .ThrowsAsync(
+                new InvalidOperationException(
+                    "Project with this slug does not exist: example_project"
+                )
+            );
+        _mockSlugHelper.Setup(m => m.CheckProjectSlugExists("example_project")).ReturnsAsync(false);
+
+        var ex = Assert.ThrowsAsync<ProjectNotesSizeException>(async () =>
+        {
+            await _handler.Handle(
+                new CreateProjectCommand(
+                    ProjectName: "Example Project",
+                    ClientName: "Example Business Unit",
+                    OfferId: "1",
+                    Company: "Example Department",
+                    CompanyState: CompanyState.EXTERNAL,
+                    TeamId: null,
+                    IsmsLevel: SecurityLevel.HIGH,
+                    Plugins: plugins,
+                    Notes: new string('a', 501)
+                ),
+                It.IsAny<CancellationToken>()
+            );
+        });
+
+        Assert.That(
+            ex.Message,
+            Is.EqualTo("The project notes are 501 chars long. Maximum allowed is 500 chars.")
+        );
+
+        _mockLogRepo.Verify(
+            m =>
+                m.AddProjectLogForCurrentUser(
+                    It.IsAny<Project>(),
+                    Action.ADDED_PROJECT,
+                    It.IsAny<List<LogChange>>()
+                ),
+            Times.Never
+        );
+        _mockLogRepo.Verify(
+            m =>
+                m.AddProjectLogForCurrentUser(
+                    It.IsAny<Project>(),
+                    Action.ADDED_PROJECT_PLUGIN,
+                    It.IsAny<List<LogChange>>()
+                ),
+            Times.Never
+        );
+        _mockProjectRepo.Verify(m => m.AddProjectAsync(It.IsAny<Project>()), Times.Never);
+    }
 }
