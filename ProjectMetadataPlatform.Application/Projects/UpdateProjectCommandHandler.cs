@@ -243,8 +243,13 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
             var change = new LogChange
             {
                 Property = nameof(Project.Notes),
-                OldValue = project.Notes.Length > 50 ? project.Notes[0..50] + "..." : project.Notes,
-                NewValue = request.Notes,
+                OldValue =
+                    project.Notes == ""
+                        ? "null"
+                        : (
+                            project.Notes.Length > 50 ? project.Notes[0..50] + "..." : project.Notes
+                        ),
+                NewValue = request.Notes == "" ? "null" : request.Notes,
             };
             changes.Add(change);
             project.Notes = request.Notes;
