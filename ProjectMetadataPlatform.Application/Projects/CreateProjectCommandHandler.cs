@@ -81,7 +81,10 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
         {
             throw new ProjectSlugAlreadyExistsException(projectSlug);
         }
-
+        if (request.Notes.Length > 500)
+        {
+            throw new ProjectNotesSizeException(request.Notes.Length);
+        }
         var project = new Project
         {
             ProjectName = request.ProjectName,
@@ -93,6 +96,7 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
             IsmsLevel = request.IsmsLevel,
             ProjectPlugins = request.Plugins,
             TeamId = request.TeamId,
+            Notes = request.Notes,
         };
 
         await _projectsRepository.AddProjectAsync(project);
@@ -152,6 +156,17 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
                     OldValue = "",
                     NewValue = await _teamRepository.RetrieveNameForIdAsync(project.TeamId.Value),
                     Property = "Team",
+                }
+            );
+        }
+        if (project.Notes != string.Empty)
+        {
+            changes.Add(
+                new()
+                {
+                    OldValue = "",
+                    NewValue = project.Notes,
+                    Property = "Notes",
                 }
             );
         }

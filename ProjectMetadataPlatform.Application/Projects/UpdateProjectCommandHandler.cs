@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -232,7 +234,26 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
             changes.Add(change);
             project.IsmsLevel = request.IsmsLevel;
         }
-
+        if (project.Notes != request.Notes)
+        {
+            if (request.Notes.Length > 500)
+            {
+                throw new ProjectNotesSizeException(request.Notes.Length);
+            }
+            var change = new LogChange
+            {
+                Property = nameof(Project.Notes),
+                OldValue =
+                    project.Notes == ""
+                        ? "null"
+                        : (
+                            project.Notes.Length > 50 ? project.Notes[0..50] + "..." : project.Notes
+                        ),
+                NewValue = request.Notes == "" ? "null" : request.Notes,
+            };
+            changes.Add(change);
+            project.Notes = request.Notes;
+        }
         if (project.IsArchived != request.IsArchived)
         {
             var archivedChanges = new List<LogChange>();

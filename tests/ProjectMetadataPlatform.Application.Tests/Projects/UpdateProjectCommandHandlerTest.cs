@@ -60,6 +60,7 @@ public class UpdateProjectCommandHandlerTest
             CompanyState = CompanyState.EXTERNAL,
             IsmsLevel = SecurityLevel.HIGH,
             ProjectPlugins = [],
+            Notes = "Example Notes",
         };
         var examplePlugin = new Plugin
         {
@@ -96,7 +97,8 @@ public class UpdateProjectCommandHandlerTest
                 Id: exampleProject.Id,
                 Plugins: projectPluginList,
                 IsArchived: false,
-                TeamId: null
+                TeamId: null,
+                Notes: "Example Notes"
             ),
             It.IsAny<CancellationToken>()
         );
@@ -117,6 +119,7 @@ public class UpdateProjectCommandHandlerTest
             CompanyState = CompanyState.EXTERNAL,
             IsmsLevel = SecurityLevel.HIGH,
             ProjectPlugins = [],
+            Notes = "Example Notes",
         };
         var examplePlugin = new Plugin
         {
@@ -151,7 +154,8 @@ public class UpdateProjectCommandHandlerTest
                     Id: exampleProject.Id,
                     Plugins: projectPluginList,
                     IsArchived: false,
-                    TeamId: null
+                    TeamId: null,
+                    Notes: "Example Notes"
                 ),
                 CancellationToken.None
             )
@@ -173,6 +177,7 @@ public class UpdateProjectCommandHandlerTest
             CompanyState = CompanyState.EXTERNAL,
             IsmsLevel = SecurityLevel.HIGH,
             ProjectPlugins = [],
+            Notes = "Example Notes",
         };
         var examplePlugin = new Plugin
         {
@@ -207,7 +212,8 @@ public class UpdateProjectCommandHandlerTest
                     Id: exampleProject.Id,
                     Plugins: projectPluginList,
                     IsArchived: false,
-                    TeamId: null
+                    TeamId: null,
+                    Notes: "Example Notes"
                 ),
                 CancellationToken.None
             )
@@ -230,6 +236,7 @@ public class UpdateProjectCommandHandlerTest
             CompanyState = CompanyState.EXTERNAL,
             IsmsLevel = SecurityLevel.HIGH,
             ProjectPlugins = [],
+            Notes = "Example Notes",
         };
 
         var updateCommand = new UpdateProjectCommand(
@@ -242,7 +249,8 @@ public class UpdateProjectCommandHandlerTest
             Id: 1,
             Plugins: [],
             IsArchived: false,
-            TeamId: null
+            TeamId: null,
+            Notes: "Updated Notes"
         );
 
         _mockProjectRepo
@@ -262,6 +270,7 @@ public class UpdateProjectCommandHandlerTest
             Assert.That(project.Company, Is.EqualTo("DB"));
             Assert.That(project.CompanyState, Is.EqualTo(CompanyState.INTERNAL));
             Assert.That(project.IsmsLevel, Is.EqualTo(SecurityLevel.NORMAL));
+            Assert.That(project.Notes, Is.EqualTo("Updated Notes"));
         });
     }
 
@@ -300,6 +309,7 @@ public class UpdateProjectCommandHandlerTest
                     DisplayName = "Different Plugin",
                 },
             ],
+            Notes = "Example Notes",
         };
 
         var updateCommand = new UpdateProjectCommand(
@@ -331,6 +341,7 @@ public class UpdateProjectCommandHandlerTest
                     DisplayName = "Example 2 Plugin",
                 },
             ],
+            Notes: "Updated Notes",
             IsArchived: false,
             TeamId: null
         );
@@ -407,6 +418,7 @@ public class UpdateProjectCommandHandlerTest
             IsmsLevel = SecurityLevel.HIGH,
             ProjectPlugins = [],
             IsArchived = false,
+            Notes = "Example Notes",
         };
 
         var updateCommand = new UpdateProjectCommand(
@@ -419,7 +431,8 @@ public class UpdateProjectCommandHandlerTest
             Id: 1,
             Plugins: [],
             IsArchived: true,
-            TeamId: null
+            TeamId: null,
+            Notes: "Example Notes"
         );
 
         _mockProjectRepo
@@ -447,6 +460,7 @@ public class UpdateProjectCommandHandlerTest
             IsmsLevel = SecurityLevel.HIGH,
             IsArchived = false,
             TeamId = null,
+            Notes = "Old Notes",
         };
 
         var updateCommand = new UpdateProjectCommand(
@@ -459,7 +473,8 @@ public class UpdateProjectCommandHandlerTest
             Id: 1,
             Plugins: [],
             IsArchived: false,
-            TeamId: null
+            TeamId: null,
+            Notes: "New Notes"
         );
 
         var slugHelper = new SlugHelper(_mockProjectRepo.Object);
@@ -477,7 +492,7 @@ public class UpdateProjectCommandHandlerTest
                     project,
                     Action.UPDATED_PROJECT,
                     It.Is<List<LogChange>>(changes =>
-                        changes.Count == 7
+                        changes.Count == 8
                         && changes.Any(change =>
                             change.Property == "ProjectName"
                             && change.OldValue == "Old Project Name"
@@ -513,6 +528,11 @@ public class UpdateProjectCommandHandlerTest
                             && change.OldValue == "HIGH"
                             && change.NewValue == "NORMAL"
                         )
+                        && changes.Any(change =>
+                            change.Property == "Notes"
+                            && change.OldValue == "Old Notes"
+                            && change.NewValue == "New Notes"
+                        )
                     )
                 ),
             Times.Once
@@ -535,6 +555,7 @@ public class UpdateProjectCommandHandlerTest
             IsmsLevel = SecurityLevel.VERY_HIGH,
             ProjectPlugins = [],
             IsArchived = false,
+            Notes = "No Change Notes",
         };
 
         var updateCommand = new UpdateProjectCommand(
@@ -547,7 +568,8 @@ public class UpdateProjectCommandHandlerTest
             Id: exampleProject.Id,
             Plugins: exampleProject.ProjectPlugins.ToList(),
             IsArchived: false,
-            TeamId: null
+            TeamId: null,
+            Notes: exampleProject.Notes
         );
         _mockProjectRepo
             .Setup(repo => repo.GetProjectWithPluginsAsync(exampleProject.Id))
@@ -582,6 +604,7 @@ public class UpdateProjectCommandHandlerTest
             ProjectPlugins = [],
             IsArchived = false,
             TeamId = null,
+            Notes = "Example Notes",
         };
 
         var updateCommand = new UpdateProjectCommand(
@@ -594,7 +617,8 @@ public class UpdateProjectCommandHandlerTest
             Id: 1,
             Plugins: project.ProjectPlugins.ToList(),
             IsArchived: false,
-            TeamId: null
+            TeamId: null,
+            Notes: "Example Notes"
         );
 
         _mockProjectRepo
@@ -640,6 +664,7 @@ public class UpdateProjectCommandHandlerTest
             CompanyState = CompanyState.EXTERNAL,
             IsmsLevel = SecurityLevel.VERY_HIGH,
             IsArchived = false,
+            Notes = "Old Notes",
         };
 
         var updateCommand = new UpdateProjectCommand(
@@ -652,7 +677,8 @@ public class UpdateProjectCommandHandlerTest
             Id: project.Id,
             Plugins: [],
             IsArchived: false,
-            TeamId: null
+            TeamId: null,
+            Notes: "New Notes"
         );
 
         _mockProjectRepo
@@ -700,6 +726,7 @@ public class UpdateProjectCommandHandlerTest
             IsmsLevel = SecurityLevel.VERY_HIGH,
             ProjectPlugins = [],
             IsArchived = false,
+            Notes = "Example Notes",
         };
 
         var updateCommand = new UpdateProjectCommand(
@@ -712,7 +739,8 @@ public class UpdateProjectCommandHandlerTest
             Id: project.Id,
             Plugins: [],
             IsArchived: true,
-            TeamId: null
+            TeamId: null,
+            Notes: project.Notes
         );
 
         _mockProjectRepo
@@ -757,6 +785,7 @@ public class UpdateProjectCommandHandlerTest
             IsmsLevel = SecurityLevel.VERY_HIGH,
             ProjectPlugins = [],
             IsArchived = true,
+            Notes = "Example Notes",
         };
 
         var updateCommand = new UpdateProjectCommand(
@@ -769,7 +798,8 @@ public class UpdateProjectCommandHandlerTest
             Id: project.Id,
             Plugins: [],
             IsArchived: false,
-            TeamId: null // Assuming TeamId can be null
+            TeamId: null, // Assuming TeamId can be null
+            Notes: project.Notes
         );
 
         _mockProjectRepo
@@ -814,6 +844,7 @@ public class UpdateProjectCommandHandlerTest
             IsmsLevel = SecurityLevel.VERY_HIGH,
             ProjectPlugins = [],
             IsArchived = true,
+            Notes = "Example Notes",
         };
 
         var updateCommand = new UpdateProjectCommand(
@@ -826,7 +857,8 @@ public class UpdateProjectCommandHandlerTest
             Id: project.Id,
             Plugins: [],
             IsArchived: true,
-            TeamId: null // Assuming TeamId can be null
+            TeamId: null, // Assuming TeamId can be null,
+            Notes: project.Notes
         );
 
         _mockProjectRepo
@@ -870,6 +902,7 @@ public class UpdateProjectCommandHandlerTest
                     DisplayName = "Example Plugin",
                 },
             ],
+            Notes = "Example Notes",
             IsArchived = false,
         };
 
@@ -882,6 +915,7 @@ public class UpdateProjectCommandHandlerTest
             IsmsLevel: project.IsmsLevel,
             Id: project.Id,
             Plugins: [],
+            Notes: project.Notes,
             IsArchived: false,
             TeamId: null // Assuming TeamId can be null
         );
@@ -935,6 +969,7 @@ public class UpdateProjectCommandHandlerTest
             Company = "Company A",
             CompanyState = CompanyState.EXTERNAL,
             IsmsLevel = SecurityLevel.VERY_HIGH,
+            Notes = "Example Notes",
             ProjectPlugins = [],
             IsArchived = false,
         };
@@ -956,6 +991,7 @@ public class UpdateProjectCommandHandlerTest
                     DisplayName = "Example Plugin",
                 },
             ],
+            Notes: project.Notes,
             IsArchived: false,
             TeamId: null // Assuming TeamId can be null
         );
@@ -1019,6 +1055,7 @@ public class UpdateProjectCommandHandlerTest
                 },
             ],
             IsArchived = false,
+            Notes = "Example Notes",
         };
 
         var updateCommand = new UpdateProjectCommand(
@@ -1039,7 +1076,8 @@ public class UpdateProjectCommandHandlerTest
                 },
             ],
             IsArchived: false,
-            TeamId: null
+            TeamId: null,
+            Notes: project.Notes
         );
 
         _mockProjectRepo
@@ -1110,6 +1148,7 @@ public class UpdateProjectCommandHandlerTest
                     DisplayName = "Example Plugin",
                 },
             ],
+            Notes: project.Notes,
             IsArchived: false,
             TeamId: null // Assuming TeamId can be null
         );
@@ -1156,6 +1195,7 @@ public class UpdateProjectCommandHandlerTest
                     DisplayName = "Example Plugin",
                 },
             ],
+            Notes = "Example Notes",
         };
 
         var updateCommand = new UpdateProjectCommand(
@@ -1175,6 +1215,7 @@ public class UpdateProjectCommandHandlerTest
                     DisplayName = "Example Plugin",
                 },
             ],
+            Notes: project.Notes,
             IsArchived: false,
             TeamId: null // Assuming TeamId can be null
         );
@@ -1190,5 +1231,51 @@ public class UpdateProjectCommandHandlerTest
         });
 
         Assert.That(ex.Message, Is.EqualTo("A Project with this slug already exists: new project"));
+    }
+
+    [Test]
+    public void ProjectNotesToLong_Test()
+    {
+        var project = new Project
+        {
+            Id = 1,
+            ProjectName = "Example Project",
+            Slug = "example project",
+            ClientName = "Example Client",
+            OfferId = "Offer A",
+            Company = "Company A",
+            CompanyState = CompanyState.EXTERNAL,
+            IsmsLevel = SecurityLevel.VERY_HIGH,
+            ProjectPlugins = [],
+            Notes = "Example Notes",
+        };
+
+        var updateCommand = new UpdateProjectCommand(
+            ProjectName: "New Project",
+            ClientName: project.ClientName,
+            OfferId: project.OfferId,
+            Company: project.Company,
+            CompanyState: project.CompanyState,
+            IsmsLevel: project.IsmsLevel,
+            Id: project.Id,
+            Plugins: [],
+            IsArchived: false,
+            Notes: new string('a', 501),
+            TeamId: null // Assuming TeamId can be null
+        );
+
+        _mockProjectRepo.Setup(m => m.GetProjectWithPluginsAsync(1)).ReturnsAsync(project);
+        _mockSlugHelper.Setup(m => m.GenerateSlug(It.IsAny<string>())).Returns("new project");
+        _mockSlugHelper.Setup(m => m.CheckProjectSlugExists("new project")).ReturnsAsync(false);
+
+        var ex = Assert.ThrowsAsync<ProjectNotesSizeException>(async () =>
+        {
+            await _handler.Handle(updateCommand, CancellationToken.None);
+        });
+
+        Assert.That(
+            ex.Message,
+            Is.EqualTo("The project notes are 501 chars long. Maximum allowed is 500 chars.")
+        );
     }
 }

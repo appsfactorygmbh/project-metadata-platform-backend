@@ -56,6 +56,7 @@ public class ProjectsRepository : RepositoryBase<Project>, IProjectsRepository
                     && EF.Functions.Like(project.Team.TeamName.ToLower(), $"%{lowerTextSearch}%")
                 )
                 || EF.Functions.Like(project.Company.ToLower(), $"%{lowerTextSearch}%")
+                || EF.Functions.Like(project.Notes.ToLower(), $"%{lowerTextSearch}%")
             );
         }
 
