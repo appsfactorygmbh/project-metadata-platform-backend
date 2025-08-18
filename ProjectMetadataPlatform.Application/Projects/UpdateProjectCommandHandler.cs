@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -236,7 +237,8 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
         }
         if (project.Notes != request.Notes)
         {
-            if (request.Notes.Length > 500)
+            var notesInfo = new StringInfo(request.Notes);
+            if (notesInfo.LengthInTextElements > 500)
             {
                 throw new ProjectNotesSizeException(request.Notes.Length);
             }

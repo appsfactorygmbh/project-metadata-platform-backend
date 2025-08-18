@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -81,7 +82,8 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
         {
             throw new ProjectSlugAlreadyExistsException(projectSlug);
         }
-        if (request.Notes.Length > 500)
+        var notesInfo = new StringInfo(request.Notes);
+        if (notesInfo.LengthInTextElements > 500)
         {
             throw new ProjectNotesSizeException(request.Notes.Length);
         }
