@@ -66,7 +66,8 @@ public class ProjectsController : ControllerBase
                     BusinessUnit = project.Team.BusinessUnit,
                     PTL = project.Team.PTL,
                 },
-            IsmsLevel: project.IsmsLevel
+            IsmsLevel: project.IsmsLevel,
+            Notes: project.Notes
         ));
         return Ok(response);
     }
@@ -122,7 +123,8 @@ public class ProjectsController : ControllerBase
                     BusinessUnit = project.Team.BusinessUnit,
                     PTL = project.Team.PTL,
                 },
-            IsmsLevel: project.IsmsLevel
+            IsmsLevel: project.IsmsLevel,
+            Notes: project.Notes
         );
 
         return Ok(response);
@@ -285,7 +287,8 @@ public class ProjectsController : ControllerBase
                             DisplayName = p.DisplayName,
                             Url = p.Url,
                         })
-                        .ToList()
+                        .ToList(),
+                    Notes: projectRequest.Notes
                 )
                 : new UpdateProjectCommand(
                     Id: projectId.Value,
@@ -305,7 +308,8 @@ public class ProjectsController : ControllerBase
                             Url = p.Url,
                         })
                         .ToList(),
-                    IsArchived: projectRequest.IsArchived
+                    IsArchived: projectRequest.IsArchived,
+                    Notes: projectRequest.Notes
                 );
 
         var id = await _mediator.Send(command);

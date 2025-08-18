@@ -74,4 +74,9 @@ public class Project
     /// The security level of the project.
     /// </summary>
     public SecurityLevel IsmsLevel { get; set; }
+
+    /// <summary>
+    /// Notes or additional information about the project.
+    /// </summary>
+    public string Notes { get; set; } = "";
 }

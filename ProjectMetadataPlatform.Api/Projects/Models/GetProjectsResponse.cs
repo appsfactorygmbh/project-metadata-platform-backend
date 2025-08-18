@@ -15,6 +15,7 @@ namespace ProjectMetadataPlatform.Api.Projects.Models;
 /// <param name="Company">The company associated with the project.</param>
 /// <param name="Team">The team working on the project. Optional.</param>
 /// <param name="IsmsLevel">The ISMS (Information Security Management System) level of the project.</param>
+/// <param name="Notes">Additonal Notes on the project</param>
 public record GetProjectsResponse(
     int Id,
     string Slug,
@@ -23,5 +24,6 @@ public record GetProjectsResponse(
     string Company,
     bool IsArchived,
     GetTeamResponse? Team,
-    SecurityLevel IsmsLevel
+    SecurityLevel IsmsLevel,
+    string Notes
 );

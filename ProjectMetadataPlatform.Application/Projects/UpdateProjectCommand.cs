@@ -18,6 +18,7 @@ namespace ProjectMetadataPlatform.Application.Projects;
 /// <param name="Id">Id of the project</param>
 /// <param name="Plugins">List of plugins associated with the project</param>
 /// <param name="IsArchived">Indicates if the project is archived</param>
+/// <param name="Notes">Additional Project Notes</param>
 public record UpdateProjectCommand(
     int Id,
     string ProjectName,
@@ -28,5 +29,6 @@ public record UpdateProjectCommand(
     int? TeamId,
     SecurityLevel IsmsLevel,
     List<ProjectPlugins> Plugins,
-    bool IsArchived
+    bool IsArchived,
+    string Notes
 ) : IRequest<int>;
