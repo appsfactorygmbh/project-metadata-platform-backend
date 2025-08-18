@@ -17,6 +17,7 @@ namespace ProjectMetadataPlatform.Api.Projects.Models;
 /// <param name="Team">The team working on the project. Optional.</param>
 /// <param name="CompanyState">The state of the company. (INTERNAL or EXTERNAL)</param>
 /// <param name="IsmsLevel">The security level of the project (NORMAL, HIGH, VERY_HIGH)</param>
+/// <param name="Notes">Additonal Notes on the project</param>
 public record GetProjectResponse(
     int Id,
     string Slug,
@@ -27,5 +28,6 @@ public record GetProjectResponse(
     bool IsArchived,
     GetTeamResponse? Team,
     CompanyState CompanyState,
-    SecurityLevel IsmsLevel
+    SecurityLevel IsmsLevel,
+    string Notes
 );

@@ -20,7 +20,8 @@ public class ProjectManagement : IntegrationTestsBase
           "offerId": "testId",
           "company": "testCompany",
           "companyState": "EXTERNAL",
-          "ismsLevel": "NORMAL"
+          "ismsLevel": "NORMAL",
+          "notes": "Example Notes"
         }
         """
     );
@@ -33,7 +34,8 @@ public class ProjectManagement : IntegrationTestsBase
           "offerId": "testId2",
           "company": "testCompany2",
           "companyState": "EXTERNAL",
-          "ismsLevel": "VERY_HIGH"
+          "ismsLevel": "VERY_HIGH",
+          "notes": "Example Notes 2"
         }
         """
     );
@@ -47,7 +49,8 @@ public class ProjectManagement : IntegrationTestsBase
           "offerId": "testId",
           "company": "testCompany",
           "companyState": "EXTERNAL",
-          "ismsLevel": "NORMAL"
+          "ismsLevel": "NORMAL",
+          "notes": "Example Notes"
         }
         """
     );
@@ -60,7 +63,8 @@ public class ProjectManagement : IntegrationTestsBase
           "offerId": "testId2",
           "company": "testCompany2",
           "companyState": "INTERNAL",
-          "ismsLevel": "HIGH"
+          "ismsLevel": "HIGH",
+          "notes": "testNotes2"
         }
         """
     );
@@ -75,6 +79,7 @@ public class ProjectManagement : IntegrationTestsBase
                      "company": "testCompany",
                      "companyState": "EXTERNAL",
                      "ismsLevel": "NORMAL",
+                     "notes": "testNotes",
                      "pluginList": [
                        {
                          "url": "www.appsfactory.gitlab.com",
@@ -107,6 +112,7 @@ public class ProjectManagement : IntegrationTestsBase
                      "company": "testCompany",
                      "companyState": "EXTERNAL",
                      "ismsLevel": "NORMAL",
+                     "notes": "testNotes",
                      "pluginList": [
                        {
                          "url": "www.appsfactory.gitlab.com",
@@ -156,6 +162,7 @@ public class ProjectManagement : IntegrationTestsBase
         rootElement.GetProperty("companyState").GetString().Should().Be("EXTERNAL");
         rootElement.GetProperty("ismsLevel").GetString().Should().Be("NORMAL");
         rootElement.GetProperty("id").GetInt32().Should().BeGreaterThan(0);
+        rootElement.GetProperty("notes").GetString().Should().Be("Example Notes");
     }
 
     [Test]
@@ -186,6 +193,7 @@ public class ProjectManagement : IntegrationTestsBase
         firstProject.GetProperty("clientName").GetString().Should().Be("testClient");
         firstProject.GetProperty("company").GetString().Should().Be("testCompany");
         firstProject.GetProperty("ismsLevel").GetString().Should().Be("NORMAL");
+        firstProject.GetProperty("notes").GetString().Should().Be("Example Notes");
         firstProject.GetProperty("id").GetInt32().Should().BeGreaterThan(0);
 
         var secondProject = rootElement[1];
@@ -193,6 +201,7 @@ public class ProjectManagement : IntegrationTestsBase
         secondProject.GetProperty("clientName").GetString().Should().Be("testClient2");
         secondProject.GetProperty("company").GetString().Should().Be("testCompany2");
         secondProject.GetProperty("ismsLevel").GetString().Should().Be("VERY_HIGH");
+        secondProject.GetProperty("notes").GetString().Should().Be("Example Notes 2");
         secondProject.GetProperty("id").GetInt32().Should().BeGreaterThan(0);
     }
 
@@ -230,6 +239,7 @@ public class ProjectManagement : IntegrationTestsBase
         rootElement.GetProperty("company").GetString().Should().Be("testCompany2");
         rootElement.GetProperty("companyState").GetString().Should().Be("INTERNAL");
         rootElement.GetProperty("ismsLevel").GetString().Should().Be("HIGH");
+        rootElement.GetProperty("notes").GetString().Should().Be("testNotes2");
         rootElement.GetProperty("id").GetInt32().Should().BeGreaterThan(0);
 
         var logs = await ToJsonElement(client.GetAsync("/Logs"));
@@ -240,7 +250,7 @@ public class ProjectManagement : IntegrationTestsBase
             .GetString()
             .Should()
             .Be(
-                "admin created a new project with properties: ProjectName = testProject, Slug = testproject, ClientName = testClient, OfferId = testId, Company = testCompany, CompanyState = EXTERNAL, IsmsLevel = NORMAL"
+                "admin created a new project with properties: ProjectName = testProject, Slug = testproject, ClientName = testClient, OfferId = testId, Company = testCompany, CompanyState = EXTERNAL, IsmsLevel = NORMAL, Notes = Example Notes"
             );
 
         logs[0]
@@ -248,7 +258,7 @@ public class ProjectManagement : IntegrationTestsBase
             .GetString()
             .Should()
             .Be(
-                "admin updated project testProject:  set ClientName from testClient to testClient2,  set OfferId from testId to testId2,  set Company from testCompany to testCompany2,  set CompanyState from EXTERNAL to INTERNAL,  set IsmsLevel from NORMAL to HIGH"
+                "admin updated project testProject:  set ClientName from testClient to testClient2,  set OfferId from testId to testId2,  set Company from testCompany to testCompany2,  set CompanyState from EXTERNAL to INTERNAL,  set IsmsLevel from NORMAL to HIGH,  set Notes from Example Notes to testNotes2"
             );
     }
 
@@ -299,6 +309,7 @@ public class ProjectManagement : IntegrationTestsBase
         project.GetProperty("company").GetString().Should().Be("testCompany");
         project.GetProperty("companyState").GetString().Should().Be("EXTERNAL");
         project.GetProperty("ismsLevel").GetString().Should().Be("NORMAL");
+        project.GetProperty("notes").GetString().Should().Be("testNotes");
         project.GetProperty("id").GetInt32().Should().BeGreaterThan(0);
 
         projectPlugins = await ToJsonElement(client.GetAsync($"/Projects/{projectId}/Plugins"));
@@ -323,7 +334,7 @@ public class ProjectManagement : IntegrationTestsBase
             .GetString()
             .Should()
             .Be(
-                "admin created a new project with properties: ProjectName = testProject, Slug = testproject, ClientName = testClient, OfferId = testId, Company = testCompany, CompanyState = EXTERNAL, IsmsLevel = NORMAL"
+                "admin created a new project with properties: ProjectName = testProject, Slug = testproject, ClientName = testClient, OfferId = testId, Company = testCompany, CompanyState = EXTERNAL, IsmsLevel = NORMAL, Notes = testNotes"
             );
 
         logs[4]
@@ -418,7 +429,7 @@ public class ProjectManagement : IntegrationTestsBase
             .GetString()
             .Should()
             .Be(
-                "admin created a new project with properties: ProjectName = testProject, Slug = testproject, ClientName = testClient, OfferId = testId, Company = testCompany, CompanyState = EXTERNAL, IsmsLevel = NORMAL"
+                "admin created a new project with properties: ProjectName = testProject, Slug = testproject, ClientName = testClient, OfferId = testId, Company = testCompany, CompanyState = EXTERNAL, IsmsLevel = NORMAL, Notes = Example Notes"
             );
         logs[1]
             .GetProperty("logMessage")
