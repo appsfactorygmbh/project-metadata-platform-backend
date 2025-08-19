@@ -1181,10 +1181,7 @@ public class UpdateProjectCommandHandlerTest
             Company = "Company A",
             CompanyState = CompanyState.EXTERNAL,
             IsmsLevel = SecurityLevel.VERY_HIGH,
-            ProjectPlugins =
-            [
-
-            ],
+            ProjectPlugins = [],
             Notes = "Example Notes",
         };
 
@@ -1196,10 +1193,7 @@ public class UpdateProjectCommandHandlerTest
             CompanyState: project.CompanyState,
             IsmsLevel: project.IsmsLevel,
             Id: project.Id,
-            Plugins:
-            [
-
-            ],
+            Plugins: [],
             Notes: project.Notes,
             IsArchived: false,
             TeamId: null // Assuming TeamId can be null
