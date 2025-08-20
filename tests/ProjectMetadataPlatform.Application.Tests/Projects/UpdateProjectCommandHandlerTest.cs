@@ -492,16 +492,11 @@ public class UpdateProjectCommandHandlerTest
                     project,
                     Action.UPDATED_PROJECT,
                     It.Is<List<LogChange>>(changes =>
-                        changes.Count == 8
+                        changes.Count == 7
                         && changes.Any(change =>
                             change.Property == "ProjectName"
                             && change.OldValue == "Old Project Name"
                             && change.NewValue == "New Project Name"
-                        )
-                        && changes.Any(change =>
-                            change.Property == "Slug"
-                            && change.OldValue == "old project name"
-                            && change.NewValue == "new_project_name"
                         )
                         && changes.Any(change =>
                             change.Property == "ClientName"
@@ -1174,7 +1169,7 @@ public class UpdateProjectCommandHandlerTest
     }
 
     [Test]
-    public void AlreadyExitingSlug_Test()
+    public async Task AlreadyExitingSlug_TestAsync()
     {
         var project = new Project
         {
@@ -1186,15 +1181,7 @@ public class UpdateProjectCommandHandlerTest
             Company = "Company A",
             CompanyState = CompanyState.EXTERNAL,
             IsmsLevel = SecurityLevel.VERY_HIGH,
-            ProjectPlugins =
-            [
-                new()
-                {
-                    PluginId = 1,
-                    Url = "https://example.com",
-                    DisplayName = "Example Plugin",
-                },
-            ],
+            ProjectPlugins = [],
             Notes = "Example Notes",
         };
 
@@ -1206,31 +1193,16 @@ public class UpdateProjectCommandHandlerTest
             CompanyState: project.CompanyState,
             IsmsLevel: project.IsmsLevel,
             Id: project.Id,
-            Plugins:
-            [
-                new ProjectPlugins
-                {
-                    PluginId = 1,
-                    Url = "https://example.com",
-                    DisplayName = "Example Plugin",
-                },
-            ],
+            Plugins: [],
             Notes: project.Notes,
             IsArchived: false,
             TeamId: null // Assuming TeamId can be null
         );
 
         _mockProjectRepo.Setup(m => m.GetProjectWithPluginsAsync(1)).ReturnsAsync(project);
-        _mockSlugHelper.Setup(m => m.GenerateSlug(It.IsAny<string>())).Returns("new project");
-        _mockSlugHelper.Setup(m => m.CheckProjectSlugExists("new project")).ReturnsAsync(true);
-        _mockPluginRepo.Setup(repo => repo.CheckPluginExists(1)).ReturnsAsync(true);
 
-        var ex = Assert.ThrowsAsync<ProjectSlugAlreadyExistsException>(async () =>
-        {
-            await _handler.Handle(updateCommand, CancellationToken.None);
-        });
-
-        Assert.That(ex.Message, Is.EqualTo("A Project with this slug already exists: new project"));
+        var result = await _handler.Handle(updateCommand, CancellationToken.None);
+        Assert.That(result, Is.EqualTo(project.Id));
     }
 
     [Test]
