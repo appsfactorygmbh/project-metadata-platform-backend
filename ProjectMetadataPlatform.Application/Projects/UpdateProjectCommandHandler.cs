@@ -150,30 +150,14 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
 
         if (project.ProjectName != request.ProjectName)
         {
-            var projectSlug = _slugHelper.GenerateSlug(request.ProjectName);
-
-            if (await _slugHelper.CheckProjectSlugExists(projectSlug))
-            {
-                throw new ProjectSlugAlreadyExistsException(projectSlug);
-            }
-
             var changeName = new LogChange
             {
                 Property = nameof(Project.ProjectName),
                 OldValue = project.ProjectName,
                 NewValue = request.ProjectName,
             };
-            var changeSlug = new LogChange()
-            {
-                Property = nameof(Project.Slug),
-                OldValue = project.Slug,
-                NewValue = projectSlug,
-            };
-
-            changes.Add(changeSlug);
             changes.Add(changeName);
             project.ProjectName = request.ProjectName;
-            project.Slug = projectSlug;
         }
 
         if (project.ClientName != request.ClientName)
